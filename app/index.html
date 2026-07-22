@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard médico persistente</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="search-box">
+        <div class="search-row search-row-top">
+          <input id="search" type="search" placeholder="Buscar tema o póster">
+        </div>
+        <div class="search-row search-row-actions">
+          <button id="expandAllBtn" class="sidebar-mini-btn" title="Expandir todas las carpetas">Expandir</button>
+          <button id="collapseAllBtn" class="sidebar-mini-btn" title="Colapsar todas las carpetas">Colapsar</button>
+        </div>
+      </div>
+      <div class="tree" id="tree"></div>
+      <div class="results" id="results"></div>
+    </aside>
+
+    <main class="main">
+      <div class="manager-wrap">
+        <details class="menu-tree">
+          <summary><span>📁 Carpetas</span><span class="summary-right">expandir</span></summary>
+          <div class="menu-body">
+            <div class="menu-row">
+              <button class="btn btn-accent" id="addRootFolderBtn">Nueva principal</button>
+              <button class="btn" id="addSubfolderBtn">Nueva subcarpeta</button>
+            </div>
+            <div class="menu-row">
+              <button class="btn" id="moveFolderBtn">Mover subcarpeta</button>
+              <button class="btn" id="renameFolderBtn">Renombrar</button>
+            </div>
+            <div class="menu-row">
+              <button class="btn btn-danger" id="deleteFolderBtn">Eliminar</button>
+              <div></div>
+            </div>
+            <div class="menu-field">
+              <label for="moveFolderTargetSelect">Destino para la carpeta o subcarpeta seleccionada</label>
+              <select id="moveFolderTargetSelect" class="select-control"></select>
+            </div>
+          </div>
+        </details>
+
+        <details class="menu-tree">
+          <summary><span>🖼️ Pósteres</span><span class="summary-right">expandir</span></summary>
+          <div class="menu-body">
+            <div class="menu-row">
+              <button class="btn btn-accent" id="addFilesBtn">Añadir</button>
+              <button class="btn" id="movePosterBtn">Mover</button>
+            </div>
+            <div class="menu-row">
+              <button class="btn" id="renamePosterBtn">Renombrar</button>
+              <button class="btn btn-danger" id="deletePosterBtn">Eliminar</button>
+            </div>
+            <div class="menu-field">
+              <label for="moveTargetSelect">Destino para el póster seleccionado</label>
+              <select id="moveTargetSelect" class="select-control"></select>
+            </div>
+          </div>
+        </details>
+
+        <details class="menu-tree">
+          <summary><span>💾 Guardado</span><span class="summary-right">expandir</span></summary>
+          <div class="menu-body status-box">
+            <div id="selectedInfo">Selección actual: ninguna</div>
+            <div class="stats">
+              <span class="chip" id="statFiles">0 posters</span>
+              <span class="chip" id="statAreas">0 áreas</span>
+              <span class="chip" id="saveState">Biblioteca base</span>
+            </div>
+            <div class="status-note">Usa <strong>Guardar biblioteca</strong> para conservar la estructura y los pósteres añadidos. En nuevas versiones, mantén la carpeta <strong>biblioteca</strong> y sustituye solo <strong>app</strong>.</div>
+            <div class="menu-row">
+              <button class="btn btn-save" id="saveLibraryBtn">Guardar biblioteca</button>
+              <button class="btn btn-green" id="loadLibraryBtn">Abrir guardada</button>
+            </div>
+            <div class="menu-row">
+              <button class="btn" id="exportBtn">Copia JSON</button>
+              <button class="btn btn-danger" id="restoreBtn">Restaurar base</button>
+            </div>
+            <div id="savedFeedback">✔ Biblioteca guardada</div>
+          </div>
+        </details>
+
+        <input class="file-input" type="file" id="filePicker" accept="image/*,.pdf" multiple>
+        <input class="file-input" type="file" id="importPicker" accept="application/json,.json,.js,text/javascript,text/plain">
+      </div>
+
+      <div class="topbar">
+        <div class="info-line" id="infoLine">
+          <span class="info-part-title" id="title">Selecciona un póster</span>
+          <span class="info-sep">|</span>
+          <span class="info-part-meta" id="meta">Elige un elemento del menú izquierdo</span>
+          <span class="info-sep">|</span>
+          <span class="info-part-crumbs" id="crumbs"></span>
+        </div>
+        <span class="info-hidden-note" id="infoHiddenNote" style="display:none;">Información oculta</span>
+        <button class="toggle-info-btn" id="toggleInfoBtn">Ocultar info</button>
+      </div>
+
+      <div class="viewer-wrap">
+        <div class="viewer-card">
+          <div class="viewer-inner" id="viewer">
+            <div class="empty"><strong>Dashboard listo</strong>Los pósteres se ajustan a la ventana. Haz clic en una imagen para verla ampliada.</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-img-wrap">
+      <button class="lb-btn-close" id="lightboxClose">Cerrar</button>
+      <img id="lightboxImage" alt="Poster ampliado">
+    </div>
+    <div class="lightbox-controls">
+      <button class="lb-btn" id="lbPrev">← Anterior</button>
+      <button class="lb-btn" id="lbZoomOut">−</button>
+      <button class="lb-btn" id="lbReset">Ajustar</button>
+      <button class="lb-btn" id="lbZoomIn">＋</button>
+      <button class="lb-btn" id="lbFullscreen">Pantalla completa</button>
+      <button class="lb-btn" id="lbNext">Siguiente →</button>
+    </div>
+    <div class="lightbox-title" id="lightboxTitle"></div>
+  </div>
+
+  <script src="../biblioteca/biblioteca.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
