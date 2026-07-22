@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
-  "version": 1,
-  "exportedAt": null,
+  "version": 2,
+  "exportedAt": "2026-07-22T12:30:00.292Z",
   "tree": {
     "id": "f-1",
     "type": "folder",
@@ -123,9 +123,19 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Cardiologia",
             "breadcrumb": "Cardiologia / Antiagregacion iam",
             "source": "asset"
+          },
+          {
+            "id": "u-h434cgu7-mrterb5j",
+            "type": "file",
+            "title": " Inotropos guía póster",
+            "ext": ".png",
+            "source": "asset",
+            "breadcrumb": "Cardiologia /  Inotropos guía póster",
+            "specialty": "Cardiologia",
+            "path": "../biblioteca/assets/cardiologia/inotropos-guia-poster.png"
           }
         ],
-        "file_count": 8
+        "file_count": 9
       },
       {
         "id": "f-15",
@@ -169,9 +179,19 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Ecografia",
             "breadcrumb": "Ecografia / Vexus",
             "source": "asset"
+          },
+          {
+            "id": "u-w5ea64ql-mrvu1bym",
+            "type": "file",
+            "title": "ETT exploracion",
+            "ext": ".png",
+            "source": "asset",
+            "breadcrumb": "Ecografia / ETT exploracion",
+            "specialty": "Ecografia",
+            "path": "../biblioteca/assets/ecografia/ett-exploracion.png"
           }
         ],
-        "file_count": 2
+        "file_count": 3
       },
       {
         "id": "f-20",
@@ -217,9 +237,19 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Endocrino",
             "breadcrumb": "Endocrino / Tyr",
             "source": "asset"
+          },
+          {
+            "id": "u-467d0afp-mrtf5z49",
+            "type": "file",
+            "title": "Gasometria arterial",
+            "ext": ".png",
+            "source": "asset",
+            "breadcrumb": "Endocrino / Gasometria arterial",
+            "specialty": "Endocrino",
+            "path": "../biblioteca/assets/endocrino/gasometria-arterial.png"
           }
         ],
-        "file_count": 4
+        "file_count": 5
       },
       {
         "id": "f-25",
@@ -281,9 +311,49 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Infecciones",
             "breadcrumb": "Infecciones / Clostridium 2",
             "source": "asset"
+          },
+          {
+            "id": "u-n9pavymf-mrtf9z82",
+            "type": "file",
+            "title": "Espectro ANTB",
+            "ext": ".pdf",
+            "source": "asset",
+            "breadcrumb": "Infecciones / Espectro ANTB",
+            "specialty": "Infecciones",
+            "path": "../biblioteca/assets/infecciones/espectro-antb.pdf"
+          },
+          {
+            "id": "u-s42rt8aw-mrtfbb2t",
+            "type": "file",
+            "title": "Trat ANTB combinado",
+            "ext": ".png",
+            "source": "asset",
+            "breadcrumb": "Infecciones / Trat ANTB combinado",
+            "specialty": "Infecciones",
+            "path": "../biblioteca/assets/infecciones/trat-antb-combinado.png"
+          },
+          {
+            "id": "u-3q7ay16r-mrtfderz",
+            "type": "file",
+            "title": "Algoritmo shock",
+            "ext": ".png",
+            "source": "asset",
+            "breadcrumb": "Infecciones / Algoritmo shock",
+            "specialty": "Infecciones",
+            "path": "../biblioteca/assets/infecciones/algoritmo-shock.png"
+          },
+          {
+            "id": "u-3wsxk5yd-mrtffdye",
+            "type": "file",
+            "title": "PROA 2025 Antibioticos nuevos para BGNMR",
+            "ext": ".png",
+            "source": "asset",
+            "breadcrumb": "Infecciones / PROA 2025 Antibioticos nuevos para BGNMR",
+            "specialty": "Infecciones",
+            "path": "../biblioteca/assets/infecciones/proa-2025-antibioticos-nuevos-para-bgnmr.png"
           }
         ],
-        "file_count": 1
+        "file_count": 5
       },
       {
         "id": "f-32",
@@ -536,8 +606,64 @@ window.BIBLIOTECA_DATA = {
           }
         ],
         "file_count": 10
+      },
+      {
+        "id": "f-6hyg0pre-mrtm320x",
+        "type": "folder",
+        "title": "RCP",
+        "children": [
+          {
+            "id": "u-98xdg899-mrtm5a1p",
+            "type": "file",
+            "title": "RCP protocolo 1",
+            "ext": ".png",
+            "source": "asset",
+            "breadcrumb": "RCP / RCP protocolo 1",
+            "specialty": "RCP",
+            "path": "../biblioteca/assets/rcp/rcp-protocolo-1.png"
+          },
+          {
+            "id": "u-013r82eq-mrvuxp1p",
+            "type": "file",
+            "title": "RCP protocolo 2",
+            "ext": ".png",
+            "source": "asset",
+            "breadcrumb": "RCP / RCP protocolo 2",
+            "specialty": "RCP",
+            "path": "../biblioteca/assets/rcp/rcp-protocolo-2.png"
+          }
+        ],
+        "file_count": 2
+      },
+      {
+        "id": "f-7mt3exx3-mrtm3e37",
+        "type": "folder",
+        "title": "Nutrición",
+        "children": [
+          {
+            "id": "u-oar4bycc-mrvx26fh",
+            "type": "file",
+            "title": "Protocolo estreñimiento 1",
+            "ext": ".png",
+            "source": "asset",
+            "breadcrumb": "Nutrición / Protocolo estreñimiento 1",
+            "specialty": "Nutrición",
+            "path": "../biblioteca/assets/nutricion/protocolo-estrenimiento-1.png"
+          },
+          {
+            "id": "u-nu9ik9wz-mrvx2bi4",
+            "type": "file",
+            "title": "Protocolo estreñimiento 2",
+            "ext": ".png",
+            "source": "asset",
+            "breadcrumb": "Nutrición / Protocolo estreñimiento 2",
+            "specialty": "Nutrición",
+            "path": "../biblioteca/assets/nutricion/protocolo-estrenimiento-2.png"
+          }
+        ],
+        "file_count": 2
       }
     ],
-    "file_count": 37
+    "file_count": 48
   }
 };
