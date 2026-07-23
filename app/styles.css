@@ -546,7 +546,7 @@ button { cursor: pointer; }
 .html-lightbox-stage {
   flex: 1;
   min-height: 0;
-  overflow: scroll;
+  overflow: auto;
   background: #0b1220;
   cursor: grab;
   overscroll-behavior: contain;
@@ -557,22 +557,13 @@ button { cursor: pointer; }
   touch-action: none;
   user-select: none;
 }
-.html-lightbox-size {
-  overflow: hidden;
-  line-height: 0;
-  min-width: 100%;
-}
-.html-lightbox-scaler {
-  transform-origin: 0 0;
-  will-change: transform;
-  pointer-events: none;
-}
 .html-lightbox-frame {
   display: block;
   border: 0;
   background: #fff;
   width: 1200px;
   height: 800px;
+  transform-origin: 0 0;
   pointer-events: none;
 }
 .html-lightbox-hint {

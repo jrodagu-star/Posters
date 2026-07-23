@@ -54,8 +54,6 @@ const els = {
   htmlLightbox: document.getElementById('htmlLightbox'),
   htmlLbTitle: document.getElementById('htmlLbTitle'),
   htmlLbStage: document.getElementById('htmlLbStage'),
-  htmlLbSize: document.getElementById('htmlLbSize'),
-  htmlLbScaler: document.getElementById('htmlLbScaler'),
   htmlLbFrame: document.getElementById('htmlLbFrame'),
   htmlLbZoomIn: document.getElementById('htmlLbZoomIn'),
   htmlLbZoomOut: document.getElementById('htmlLbZoomOut'),
@@ -417,6 +415,22 @@ function showFile(file) {
   openParentsByFilePath(file.path || file.id);
 }
 
+function prepareHtmlDocument(doc) {
+  if (!doc || !doc.documentElement) return;
+  let style = doc.getElementById('dashboard-html-viewer-fix');
+  if (!style) {
+    style = doc.createElement('style');
+    style.id = 'dashboard-html-viewer-fix';
+    (doc.head || doc.documentElement).appendChild(style);
+  }
+  // Un solo scroll: el del visor externo. La tabla usa su ancho natural.
+  style.textContent = [
+    'html, body { margin: 0 !important; padding: 0 !important; overflow: hidden !important; height: auto !important; max-width: none !important; }',
+    '.wrap, .table-wrap, [class*="scroll"], main, section { overflow: visible !important; max-width: none !important; }',
+    'table { width: max-content !important; max-width: none !important; }'
+  ].join('\n');
+}
+
 function measureHtmlFrameSize() {
   const iframe = els.htmlLbFrame;
   let w = 1200;
@@ -424,22 +438,22 @@ function measureHtmlFrameSize() {
   try {
     const doc = iframe.contentDocument || iframe.contentWindow?.document;
     if (doc && doc.documentElement) {
+      prepareHtmlDocument(doc);
       const body = doc.body;
       const root = doc.documentElement;
-      // Force layout at a wide canvas so large tables report real size
-      iframe.style.width = '2400px';
-      iframe.style.height = '200px';
+      iframe.style.zoom = '1';
+      iframe.style.transform = 'none';
+      iframe.style.width = '3200px';
+      iframe.style.height = 'auto';
       w = Math.max(
         root.scrollWidth || 0,
         body ? body.scrollWidth : 0,
-        root.offsetWidth || 0,
         body ? body.offsetWidth : 0,
         900
       );
       h = Math.max(
         root.scrollHeight || 0,
         body ? body.scrollHeight : 0,
-        root.offsetHeight || 0,
         body ? body.offsetHeight : 0,
         700
       );
@@ -447,19 +461,17 @@ function measureHtmlFrameSize() {
   } catch (e) {}
   state.htmlLbNaturalW = Math.ceil(w);
   state.htmlLbNaturalH = Math.ceil(h);
-  iframe.style.width = state.htmlLbNaturalW + 'px';
-  iframe.style.height = state.htmlLbNaturalH + 'px';
 }
 
 function applyHtmlLbTransform() {
   const scale = state.htmlLbScale;
   const w = state.htmlLbNaturalW;
   const h = state.htmlLbNaturalH;
-  els.htmlLbScaler.style.width = w + 'px';
-  els.htmlLbScaler.style.height = h + 'px';
-  els.htmlLbScaler.style.transform = 'scale(' + scale + ')';
-  els.htmlLbSize.style.width = Math.ceil(w * scale) + 'px';
-  els.htmlLbSize.style.height = Math.ceil(h * scale) + 'px';
+  const iframe = els.htmlLbFrame;
+  iframe.style.width = w + 'px';
+  iframe.style.height = h + 'px';
+  iframe.style.zoom = String(scale);
+  iframe.style.transform = 'none';
   els.htmlLbZoomLabel.textContent = Math.round(scale * 100) + '%';
 }
 
@@ -482,7 +494,6 @@ function fitHtmlLightbox() {
   const stage = els.htmlLbStage;
   const pad = 8;
   const availW = Math.max(200, stage.clientWidth - pad);
-  // Ajustar al ANCHO de la pantalla: la tabla ocupa todo el ancho y permite scroll vertical
   const scale = availW / state.htmlLbNaturalW;
   setHtmlLbScale(scale, false);
   stage.scrollLeft = 0;
@@ -498,9 +509,11 @@ function openHtmlLightbox(file) {
   const src = fileSrc(file);
   const frame = els.htmlLbFrame;
   const onLoad = () => {
-    // Double rAF so layout settles before measuring large tables
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
+        try {
+          prepareHtmlDocument(frame.contentDocument || frame.contentWindow?.document);
+        } catch (e) {}
         measureHtmlFrameSize();
         fitHtmlLightbox();
       });
