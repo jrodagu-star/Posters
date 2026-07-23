@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "exportedAt": "2026-07-23T16:14:00.083Z",
+  "exportedAt": "2026-07-23T16:45:41.847Z",
   "tree": {
     "id": "f-1",
     "type": "folder",
@@ -601,9 +601,27 @@ window.BIBLIOTECA_DATA = {
               }
             ],
             "file_count": 2
+          },
+          {
+            "id": "f-humidificador",
+            "type": "folder",
+            "title": "Humidificador",
+            "children": [
+              {
+                "id": "p-humidificador-6",
+                "type": "file",
+                "title": "Poster humidificador 6",
+                "path": "../biblioteca/assets/respiratorio/humidificador/poster-humidificador-6.pdf",
+                "ext": ".pdf",
+                "specialty": "Respiratorio",
+                "breadcrumb": "Respiratorio / Humidificador / Poster humidificador 6",
+                "source": "asset"
+              }
+            ],
+            "file_count": 1
           }
         ],
-        "file_count": 10
+        "file_count": 11
       },
       {
         "id": "f-6hyg0pre-mrtm320x",
@@ -690,6 +708,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 1
       }
     ],
-    "file_count": 49
+    "file_count": 50
   }
 };
