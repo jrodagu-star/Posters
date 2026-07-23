@@ -2,7 +2,9 @@ const STORAGE_KEY = 'dashboard_medicina_persistente_state_v6';
 const DB_NAME = 'dashboard_medicina_persistente_v6_db';
 const DB_STORE = 'state';
 const LIB = window.BIBLIOTECA_DATA || { tree: { id: 'f-root', type: 'folder', title: 'Temas', children: [] } };
-const VALID_EXTS = ['.gif', '.jpeg', '.jpg', '.pdf', '.png', '.webp'];
+const VALID_EXTS = ['.gif', '.htm', '.html', '.jpeg', '.jpg', '.pdf', '.png', '.webp'];
+const IMAGE_EXTS = ['.gif', '.jpeg', '.jpg', '.png', '.webp'];
+const HTML_EXTS = ['.htm', '.html'];
 
 const els = {
   tree: document.getElementById('tree'),
@@ -77,8 +79,18 @@ const state = {
 function clone(obj) { return JSON.parse(JSON.stringify(obj)); }
 function uuid(prefix = 'n') { return prefix + '-' + Math.random().toString(36).slice(2, 10) + '-' + Date.now().toString(36); }
 function extFromName(name) { const m = /\.[^.]+$/.exec(name || ''); return m ? m[0].toLowerCase() : ''; }
-function kindLabel(ext) { return ext === '.pdf' ? 'PDF' : 'Imagen'; }
-function icon(ext) { return ext === '.pdf' ? '📄' : '🖼️'; }
+function isImageExt(ext) { return IMAGE_EXTS.includes(ext); }
+function isHtmlExt(ext) { return HTML_EXTS.includes(ext); }
+function kindLabel(ext) {
+  if (ext === '.pdf') return 'PDF';
+  if (isHtmlExt(ext)) return 'HTML';
+  return 'Imagen';
+}
+function icon(ext) {
+  if (ext === '.pdf') return '📄';
+  if (isHtmlExt(ext)) return '🌐';
+  return '🖼️';
+}
 function escapeHtml(text) {
   return String(text || '')
     .replace(/&/g, '&amp;')
@@ -305,8 +317,8 @@ function resetLightboxView() {
   applyLightboxTransform();
 }
 function openLightboxFromFile(file) {
-  if (!file || file.ext === '.pdf') return;
-  state.lightboxGallery = getSiblingFiles(file.id);
+  if (!file || !isImageExt(file.ext)) return;
+  state.lightboxGallery = getSiblingFiles(file.id).filter(f => isImageExt(f.ext));
   state.lightboxIndex = state.lightboxGallery.findIndex(f => f.id === file.id);
   state.lightboxScale = 1;
   state.lightboxPanX = 0;
@@ -343,6 +355,7 @@ function lightboxShowAt(index) {
   if (index < 0) index = state.lightboxGallery.length - 1;
   if (index >= state.lightboxGallery.length) index = 0;
   const file = state.lightboxGallery[index];
+  if (!file || !isImageExt(file.ext)) return;
   state.lightboxIndex = index;
   state.lightboxScale = 1;
   state.lightboxPanX = 0;
@@ -361,11 +374,14 @@ function showFile(file) {
   setActive(file.path || file.id);
   setSelection(file.id, 'file');
   els.title.textContent = file.title;
-  els.meta.textContent = kindLabel(file.ext) + ' · ' + (file.specialty || 'General') + (file.ext !== '.pdf' ? ' · clic para ampliar' : '');
+  const canZoom = isImageExt(file.ext);
+  els.meta.textContent = kindLabel(file.ext) + ' · ' + (file.specialty || 'General') + (canZoom ? ' · clic para ampliar' : '');
   els.crumbs.textContent = file.breadcrumb || file.title;
   const src = fileSrc(file);
   if (file.ext === '.pdf') {
     els.viewer.innerHTML = '<object data="' + escapeHtml(src) + '" type="application/pdf"><iframe src="' + escapeHtml(src) + '"></iframe></object>';
+  } else if (isHtmlExt(file.ext)) {
+    els.viewer.innerHTML = '<iframe class="html-poster" title="' + escapeHtml(file.title) + '" src="' + escapeHtml(src) + '" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>';
   } else {
     els.viewer.innerHTML = '<img class="fit-poster" src="' + escapeHtml(src) + '" alt="' + escapeHtml(file.title) + '">';
     const img = els.viewer.querySelector('img');
@@ -381,6 +397,7 @@ function clearDropTargets() {
 
 function thumbMarkup(node) {
   if (node.ext === '.pdf') return '<span class="file-thumb-placeholder">📄</span>';
+  if (isHtmlExt(node.ext)) return '<span class="file-thumb-placeholder">🌐</span>';
   return '<img class="file-thumb" src="' + escapeHtml(fileSrc(node)) + '" alt="">';
 }
 
