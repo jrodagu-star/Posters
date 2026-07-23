@@ -563,20 +563,23 @@ button { cursor: pointer; }
 .html-lightbox-stage {
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow: auto;
   position: relative;
   background: #0b1220;
   cursor: grab;
-  touch-action: none;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
 }
-.html-lightbox-stage.dragging { cursor: grabbing; }
+.html-lightbox-stage.dragging {
+  cursor: grabbing;
+  touch-action: none;
+  user-select: none;
+}
 .html-lightbox-board {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   transform-origin: 0 0;
-  will-change: transform;
   pointer-events: none;
+  line-height: 0;
 }
 .html-lightbox-frame {
   display: block;
