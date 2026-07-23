@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Calculadora de perfusión continua de sedantes, analgésicos y control de agitación en UCI">
+<title>Calculadora sedación UCI</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231a4a7a'/%3E%3Ctext x='50' y='68' font-size='60' text-anchor='middle' fill='white' font-family='Arial'%3E%E2%9C%9A%3C/text%3E%3C/svg%3E">
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; margin: 20px; background: #f7f7f9; color: #222; }
+  @media print { body { margin: 10px; background: white; } .peso-box { background: #333 !important; -webkit-print-color-adjust: exact; } }
+  @media (max-width: 900px) {
+    body { margin: 10px; }
+    table, thead, tbody, th, td, tr { display: block; }
+    thead { display: none; }
+    tr { background: white; margin-bottom: 14px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 8px; }
+    tr:nth-child(even) td { background: transparent; }
+    td { border: none; padding: 6px 4px; }
+    td::before { content: attr(data-label); font-weight: 600; font-size: 11px; color: #666; text-transform: uppercase; display: block; margin-bottom: 3px; }
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  h2 { font-size: 17px; margin: 24px 0 8px; padding: 8px 14px; border-radius: 6px; color: white; }
+  h2.sedante  { background: linear-gradient(90deg, #1a4a7a, #2d6aa3); }
+  h2.analgesico { background: linear-gradient(90deg, #6a1a7a, #9c3eb8); }
+  h2.agitacion  { background: linear-gradient(90deg, #b8540e, #e07a2c); }
+  h2.relajante  { background: linear-gradient(90deg, #0d4f3c, #1a8060); }
+  h2 .subtitle { font-size: 12px; font-weight: 400; opacity: 0.9; margin-left: 8px; }
+
+  .peso-box { background: #1a4a7a; color: white; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .peso-box label { font-weight: 600; }
+  .peso-box input { padding: 6px 10px; border-radius: 4px; border: none; font-size: 16px; width: 80px; }
+
+  table { width: 100%; border-collapse: collapse; background: white; font-size: 13px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  th { color: white; padding: 10px 8px; text-align: left; font-weight: 600; vertical-align: top; font-size: 12px; }
+  table.sedante th  { background: #2d6aa3; }
+  table.analgesico th { background: #9c3eb8; }
+  table.agitacion  th { background: #e07a2c; }
+  table.relajante  th { background: #1a8060; }
+  td { padding: 10px 8px; border-bottom: 1px solid #e0e0e0; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafbfc; }
+
+  .fcol { font-weight: 700; min-width: 110px; }
+  table.sedante .fcol  { color: #1a4a7a; }
+  table.analgesico .fcol { color: #6a1a7a; }
+  table.agitacion  .fcol { color: #b8540e; }
+  table.relajante  .fcol { color: #0d4f3c; }
+
+  .dilucion { font-size: 12px; color: #555; background: #eef4fa; padding: 6px 8px; border-radius: 4px; margin-top: 4px; display: inline-block; }
+  .dosis-input { width: 70px; padding: 4px 6px; border: 1px solid #aac; border-radius: 4px; font-size: 13px; }
+  .resultado { font-weight: 700; color: #c0392b; background: #fff5e6; padding: 4px 8px; border-radius: 4px; display: inline-block; min-width: 60px; text-align: center; }
+  .unidad { color: #666; font-size: 12px; }
+
+  /* Barra gráfica */
+  .dose-bar-wrap { width: 100%; min-width: 200px; }
+  .dose-bar {
+    position: relative;
+    height: 28px;
+    border-radius: 4px;
+    background: #eee;
+    display: flex;
+  }
+  .dose-seg {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(0,0,0,0.75);
+    text-shadow: 0 1px 1px rgba(255,255,255,0.5);
+    overflow: visible;
+    white-space: nowrap;
+    padding: 0 4px;
+  }
+  .seg-green   { background: #5fb55f; }
+  .seg-yellow  { background: #f5c542; }
+  .seg-orange  { background: #f08a3c; }
+  .seg-red     { background: #d94c4c; color: #fff; text-shadow: none; }
+  .seg-darkred { background: #8b1a1a; color: #fff; text-shadow: none; }
+  .seg-redlight { background: #e8806e; color: #fff; text-shadow: none; }
+
+  .marker {
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    width: 3px;
+    background: #000;
+    border-left: 1px solid #fff;
+    border-right: 1px solid #fff;
+    box-shadow: 0 0 0 1px #000;
+    transition: left 0.2s ease;
+    pointer-events: none;
+  }
+  .marker::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 7px solid #000;
+  }
+  .axis {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #666;
+    margin-top: 3px;
+    padding: 0 2px;
+  }
+  .legend-zone {
+    font-size: 12px;
+    margin-top: 5px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    display: inline-block;
+    font-weight: 600;
+  }
+  .legend-bar { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; align-items: center; margin-bottom: 10px; background: white; padding: 8px 12px; border-radius: 6px; }
+  .legend-bar span.sw { width: 16px; height: 12px; display: inline-block; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+
+  .nota { background: #fffbe6; border-left: 4px solid #f0b400; padding: 10px 14px; margin-top: 16px; font-size: 13px; border-radius: 4px; }
+  .alerta { color: #c0392b; font-weight: 600; }
+  .formula { font-family: "Courier New", monospace; font-size: 11px; color: #555; background: #f0f0f0; padding: 2px 4px; border-radius: 3px; }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; font-size: 12px; color: #1a4a7a; }
+
+  .vo-tag { background: #eee; color: #555; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>Calculadora de perfusión continua — Sedación, analgesia y control de agitación en UCI</h1>
+<p style="font-size:13px;color:#555;">Fármacos agrupados según su efecto principal. Introduce peso y dosis; la velocidad en ml/h y el indicador gráfico se actualizan al instante. Los valores se guardan localmente en este navegador.</p>
+
+<div class="peso-box">
+  <label for="peso">Peso del paciente (kg):</label>
+  <input type="number" id="peso" value="70" min="1" max="250" step="0.5" oninput="recalcular()">
+  <span style="font-size:13px;opacity:0.9;">Cambia el peso y todas las velocidades se actualizan.</span>
+</div>
+
+<div class="legend-bar">
+  <b>Leyenda de efecto:</b>
+  <span><span class="sw" style="background:#5fb55f"></span>Ligero / analgesia</span>
+  <span><span class="sw" style="background:#f5c542"></span>Moderado</span>
+  <span><span class="sw" style="background:#f08a3c"></span>Profundo</span>
+  <span><span class="sw" style="background:#d94c4c"></span>Riesgo / apnea</span>
+  <span><span class="sw" style="background:#8b1a1a"></span>Tóxico / PRIS</span>
+  <span style="margin-left:8px;">▼ marcador = dosis actual</span>
+</div>
+
+<!-- ============================================== -->
+<!-- SEDANTES -->
+<!-- ============================================== -->
+<h2 class="sedante">💤 SEDANTES <span class="subtitle">— hipnóticos para sedación continua en VM (objetivo RASS 0 a −2 salvo indicación específica)</span></h2>
+
+<table class="sedante">
+<thead>
+<tr>
+  <th style="width:10%">Fármaco</th>
+  <th style="width:14%">Presentación y dilución</th>
+  <th style="width:12%">Rango habitual</th>
+  <th style="width:32%">Efecto según dosis</th>
+  <th style="width:10%">Dosis</th>
+  <th style="width:8%">Velocidad</th>
+  <th style="width:14%">Efectos adversos clave</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+  <td class="fcol">Propofol 2%</td>
+  <td>Vial 2% = <b>20 mg/ml</b><br><span class="dilucion">Sin diluir</span></td>
+  <td>0,3–3 mg/kg/h<br>(5–50 µg/kg/min)<br><span class="alerta">Máx 4 mg/kg/h si &gt;48 h</span></td>
+  <td>
+    <div class="dose-bar-wrap">
+      <div class="dose-bar">
+        <div class="dose-seg seg-green"   style="flex:1">Ligera</div>
+        <div class="dose-seg seg-yellow"  style="flex:1">Moderada</div>
+        <div class="dose-seg seg-orange"  style="flex:1">Profunda</div>
+        <div class="dose-seg seg-redlight" style="flex:1">Dosis altas</div>
+        <div class="dose-seg seg-red"     style="flex:2">⚠️ PRIS</div>
+        <div class="dose-seg seg-darkred" style="flex:2">⚠️ Dosis excesivas</div>
+        <div class="marker" id="mk_propofol" style="left:0%"></div>
+      </div>
+      <div class="axis"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>6</span><span>8+</span></div>
+    </div>
+  </td>
+  <td><input type="number" class="dosis-input" id="d_propofol" value="2" min="0" step="0.1" oninput="recalcular()"> <span class="unidad">mg/kg/h</span></td>
+  <td><span class="resultado" id="v_propofol">—</span> <span class="unidad">ml/h</span></td>
+  <td>Hipotensión, bradicardia, hipertrigliceridemia, PRIS (acidosis láctica, rabdomiólisis, fallo cardíaco)</td>
+</tr>
+
+<tr>
+  <td class="fcol">Midazolam</td>
+  <td>Vial 50 mg/10 ml<br><span class="dilucion">250 mg en 250 ml SSF<br><b>1 mg/ml</b></span></td>
+  <td>0,02–0,1 mg/kg/h<br>(1,4–7 mg/h en 70 kg)</td>
+  <td>
+    <div class="dose-bar-wrap">
+      <div class="dose-bar">
+        <div class="dose-seg seg-green"  style="flex:2">Ansiolisis</div>
+        <div class="dose-seg seg-yellow" style="flex:3">Sed. ligera</div>
+        <div class="dose-seg seg-orange" style="flex:3">Sed. profunda</div>
+        <div class="dose-seg seg-red"    style="flex:2">Acumulación</div>
+        <div class="marker" id="mk_midazolam" style="left:0%"></div>
+      </div>
+      <div class="axis"><span>0</span><span>0,04</span><span>0,07</span><span>0,1</span><span>0,15+</span></div>
+    </div>
+  </td>
+  <td><input type="number" class="dosis-input" id="d_midazolam" value="0.05" min="0" step="0.01" oninput="recalcular()"> <span class="unidad">mg/kg/h</span></td>
+  <td><span class="resultado" id="v_midazolam">—</span> <span class="unidad">ml/h</span></td>
+  <td>Delirium (alto riesgo, evitar PADIS), depresión respiratoria, hipotensión, tolerancia, abstinencia</td>
+</tr>
+
+<tr>
+  <td class="fcol">Ketamina</td>
+  <td>Vial 500 mg/10 ml (50 mg/ml)<br><span class="dilucion">500 mg en 100 ml SSF<br><b>5 mg/ml</b></span></td>
+  <td>0,1–0,5 mg/kg/h (analg.)<br>1–3 mg/kg/h (sedación)</td>
+  <td>
+    <div class="dose-bar-wrap">
+      <div class="dose-bar">
+        <div class="dose-seg seg-green"  style="flex:1">Analgesia</div>
+        <div class="dose-seg seg-yellow" style="flex:2">Sed. ligera</div>
+        <div class="dose-seg seg-orange" style="flex:2">Sed. disociativa</div>
+        <div class="dose-seg seg-red"    style="flex:1">Emergencia/HTA</div>
+        <div class="marker" id="mk_ketamina" style="left:0%"></div>
+      </div>
+      <div class="axis"><span>0</span><span>0,5</span><span>1,5</span><span>3</span><span>4+</span></div>
+    </div>
+  </td>
+  <td><input type="number" class="dosis-input" id="d_ketamina" value="0.3" min="0" step="0.1" oninput="recalcular()"> <span class="unidad">mg/kg/h</span></td>
+  <td><span class="resultado" id="v_ketamina">—</span> <span class="unidad">ml/h</span></td>
+  <td>Taquicardia, HTA, hipersalivación, alucinaciones al despertar, ↑PIC (controvertido), broncodilatador</td>
+</tr>
+
+</tbody>
+</table>
+
+<!-- ============================================== -->
+<!-- ANALGÉSICOS -->
+<!-- ============================================== -->
+<h2 class="analgesico">💊 ANALGÉSICOS <span class="subtitle">— analgosedación: tratar el dolor primero (CPOT ≤ 2 / BPS ≤ 4) antes de añadir hipnótico</span></h2>
+
+<table class="analgesico">
+<thead>
+<tr>
+  <th style="width:10%">Fármaco</th>
+  <th style="width:14%">Presentación y dilución</th>
+  <th style="width:12%">Rango habitual</th>
+  <th style="width:32%">Efecto según dosis</th>
+  <th style="width:10%">Dosis</th>
+  <th style="width:8%">Velocidad</th>
+  <th style="width:14%">Efectos adversos clave</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+  <td class="fcol">Fentanilo</td>
+  <td>Amp. 150 µg/3 ml (50 µg/ml)<br><span class="dilucion">900 µg en 100 ml SSF<br><b>9 µg/ml</b></span></td>
+  <td>1–3 µg/kg/h<br>(70–210 µg/h en 70 kg)</td>
+  <td>
+    <div class="dose-bar-wrap">
+      <div class="dose-bar">
+        <div class="dose-seg seg-green"  style="flex:10">Analgesia</div>
+        <div class="dose-seg seg-orange" style="flex:7">Analgesia alta</div>
+        <div class="dose-seg seg-red"    style="flex:23">⚠️ Riesgo: sed. profunda / rigidez tor.</div>
+        <div class="marker" id="mk_fentanilo" style="left:0%"></div>
+      </div>
+      <div class="axis"><span>0</span><span>1</span><span>1,7</span><span>3</span><span>4+</span></div>
+    </div>
+  </td>
+  <td><input type="number" class="dosis-input" id="d_fentanilo" value="1.5" min="0" step="0.1" oninput="recalcular()"> <span class="unidad">µg/kg/h</span></td>
+  <td><span class="resultado" id="v_fentanilo">—</span> <span class="unidad">ml/h</span></td>
+  <td>Depresión respiratoria, bradicardia, hipotensión, íleo, delirium dosis-dependiente, tolerancia. <span class="alerta">Tras 4–6 h de perfusión: efecto acumulativo</span> (vida media contextual prolongada por redistribución en tejido graso, despertar tardío)</td>
+</tr>
+
+<tr>
+  <td class="fcol">Remifentanilo</td>
+  <td>Vial 5 mg polvo<br><span class="dilucion">5 mg en 100 ml SSF<br><b>50 µg/ml</b></span></td>
+  <td>0,025–0,2 µg/kg/min<br>(habitual 0,05–0,1 en VM)<br><span class="alerta">&gt;0,05 inhibe respiración</span></td>
+  <td>
+    <div class="dose-bar-wrap">
+      <div class="dose-bar">
+        <div class="dose-seg seg-green"  style="flex:1">Analg. sin apnea</div>
+        <div class="dose-seg seg-yellow" style="flex:1">Analgosedación</div>
+        <div class="dose-seg seg-orange" style="flex:2">Apnea / bradi.</div>
+        <div class="dose-seg seg-red"    style="flex:1">Rigidez / hipoT</div>
+        <div class="marker" id="mk_remi" style="left:0%"></div>
+      </div>
+      <div class="axis"><span>0</span><span>0,05</span><span>0,1</span><span>0,2</span><span>0,3+</span></div>
+    </div>
+  </td>
+  <td><input type="number" class="dosis-input" id="d_remi" value="0.05" min="0" step="0.01" oninput="recalcular()"> <span class="unidad">µg/kg/min</span></td>
+  <td><span class="resultado" id="v_remi">—</span> <span class="unidad">ml/h</span></td>
+  <td>Hipotensión, bradicardia marcada, rigidez torácica con bolos, hiperalgesia, sin analgesia residual</td>
+</tr>
+
+<tr>
+  <td class="fcol">Cloruro mórfico</td>
+  <td>Amp. 10 mg/ml<br><span class="dilucion">50 mg en 50 ml SSF<br><b>1 mg/ml</b></span></td>
+  <td>1–12 mg/h<br>(0,015–0,15 mg/kg/h)</td>
+  <td>
+    <div class="dose-bar-wrap">
+      <div class="dose-bar">
+        <div class="dose-seg seg-green"  style="flex:1">Analgesia</div>
+        <div class="dose-seg seg-yellow" style="flex:2">Analg+sed</div>
+        <div class="dose-seg seg-orange" style="flex:2">Sed. profunda</div>
+        <div class="dose-seg seg-red"    style="flex:1">Depres. resp.</div>
+        <div class="marker" id="mk_morfina" style="left:0%"></div>
+      </div>
+      <div class="axis"><span>0</span><span>3</span><span>6</span><span>10</span><span>12+</span></div>
+    </div>
+  </td>
+  <td><input type="number" class="dosis-input" id="d_morfina" value="3" min="0" step="0.5" oninput="recalcular()"> <span class="unidad">mg/h</span></td>
+  <td><span class="resultado" id="v_morfina">—</span> <span class="unidad">ml/h</span></td>
+  <td>Liberación de histamina (hipotensión, prurito, broncoespasmo), íleo, acumulación de M6G en IRC</td>
+</tr>
+
+</tbody>
+</table>
+
+<!-- ============================================== -->
+<!-- CONTROL DE AGITACIÓN / DELIRIUM -->
+<!-- ============================================== -->
+<h2 class="agitacion">⚡ CONTROL DE AGITACIÓN Y DELIRIUM <span class="subtitle">— sedación cooperativa, manejo de delirium hiperactivo y destete ventilatorio</span></h2>
+
+<table class="agitacion">
+<thead>
+<tr>
+  <th style="width:10%">Fármaco</th>
+  <th style="width:14%">Presentación y dilución</th>
+  <th style="width:12%">Rango habitual</th>
+  <th style="width:32%">Efecto según dosis</th>
+  <th style="width:10%">Dosis</th>
+  <th style="width:8%">Velocidad</th>
+  <th style="width:14%">Efectos adversos clave</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+  <td class="fcol">Dexmedetomidina</td>
+  <td>Vial 200 µg/2 ml<br><span class="dilucion">200 µg → 50 ml SSF<br><b>4 µg/ml</b></span></td>
+  <td>0,2–1,4 µg/kg/h<br><span class="alerta">Sin bolo de carga</span></td>
+  <td>
+    <div class="dose-bar-wrap">
+      <div class="dose-bar">
+        <div class="dose-seg seg-green"  style="flex:2">Ligera cooperativa</div>
+        <div class="dose-seg seg-yellow" style="flex:3">Moderada</div>
+        <div class="dose-seg seg-orange" style="flex:2">Profunda</div>
+        <div class="dose-seg seg-red"    style="flex:1">↑Brad/HipoT</div>
+        <div class="marker" id="mk_dexme" style="left:0%"></div>
+      </div>
+      <div class="axis"><span>0</span><span>0,4</span><span>0,7</span><span>1,2</span><span>1,4+</span></div>
+    </div>
+  </td>
+  <td><input type="number" class="dosis-input" id="d_dexme" value="0.5" min="0" step="0.1" oninput="recalcular()"> <span class="unidad">µg/kg/h</span></td>
+  <td><span class="resultado" id="v_dexme">—</span> <span class="unidad">ml/h</span></td>
+  <td>Bradicardia (~13%), hipotensión (~25%), hipertensión transitoria, sequedad bucal, bloqueo AV</td>
+</tr>
+
+<tr>
+  <td class="fcol">Quetiapina <span class="vo-tag">VO/SNG</span></td>
+  <td>Comp. 25, 100, 200 mg<br><span class="dilucion">Vía oral o por sonda</span></td>
+  <td>25–50 mg/12 h inicio<br>Titular 50–200 mg/día<br>Máx 400 mg/día</td>
+  <td>
+    <div class="dose-bar-wrap" style="padding: 10px 0; color: #555; font-style: italic; font-size: 12px;">
+      Uso enteral en delirium hiperactivo refractario. Permite reducir otros sedantes.<br>
+      Mejor perfil cardiovascular que haloperidol pero también prolonga QTc.
+    </div>
+  </td>
+  <td style="font-size:12px; color:#555;">Dosis enteral, no aplica cálculo en ml/h</td>
+  <td style="text-align:center; font-style:italic; color:#888;">—</td>
+  <td>Somnolencia, hipotensión postural, prolongación QTc (menor que haloperidol), hiperglucemia</td>
+</tr>
+
+</tbody>
+</table>
+
+<!-- ============================================== -->
+<!-- RELAJANTES NEUROMUSCULARES -->
+<!-- ============================================== -->
+<h2 class="relajante">🔒 RELAJANTES NEUROMUSCULARES <span class="subtitle">— bloqueo neuromuscular. Requiere sedación profunda (RASS −5) y analgesia previas. Monitorizar con TOF</span></h2>
+
+<div style="background:#fff3cd; border-left:4px solid #f0b400; padding:8px 14px; margin-bottom:10px; font-size:12px; border-radius:4px;">
+  <b>⚠️ Antes de iniciar:</b> asegurar sedación profunda (BIS 40–60 o RASS −5) y analgesia. Protección ocular, profilaxis de úlceras por presión y TVP. Monitorizar con TOF (objetivo 1–2/4). Indicaciones: SDRA grave con asincronía, HTIC refractaria, hipotermia terapéutica, ECMO con disconfort.
+</div>
+
+<table class="relajante">
+<thead>
+<tr>
+  <th style="width:10%">Fármaco</th>
+  <th style="width:14%">Presentación y dilución</th>
+  <th style="width:12%">Rango habitual</th>
+  <th style="width:32%">Efecto según dosis</th>
+  <th style="width:10%">Dosis</th>
+  <th style="width:8%">Velocidad</th>
+  <th style="width:14%">Efectos adversos clave</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+  <td class="fcol">Cisatracurio</td>
+  <td>Vial 150 mg/30 ml (5 mg/ml) o 10 mg/5 ml (2 mg/ml)<br><span class="dilucion">300 mg en 100 ml SSF<br><b>3 mg/ml</b></span></td>
+  <td>0,5–10 µg/kg/min<br>(habitual 1–3 µg/kg/min)<br>Bolo inicial: 0,15–0,2 mg/kg</td>
+  <td>
+    <div class="dose-bar-wrap">
+      <div class="dose-bar">
+        <div class="dose-seg seg-green"  style="flex:1">Parcial</div>
+        <div class="dose-seg seg-yellow" style="flex:2">Eficaz</div>
+        <div class="dose-seg seg-orange" style="flex:3">Profundo</div>
+        <div class="dose-seg seg-red"    style="flex:4">Sobre-bloqueo</div>
+        <div class="marker" id="mk_cisatracurio" style="left:0%"></div>
+      </div>
+      <div class="axis"><span>0</span><span>1</span><span>3</span><span>6</span><span>10+</span></div>
+    </div>
+  </td>
+  <td><input type="number" class="dosis-input" id="d_cisatracurio" value="2" min="0" step="0.5" oninput="recalcular()"> <span class="unidad">µg/kg/min</span></td>
+  <td><span class="resultado" id="v_cisatracurio">—</span> <span class="unidad">ml/h</span></td>
+  <td>Independiente de función hepatorrenal (eliminación de Hofmann). Sin liberación de histamina relevante. Riesgo de <b>miopatía del paciente crítico</b> en infusión prolongada, sobre todo con corticoides. Sin efectos hemodinámicos directos</td>
+</tr>
+
+<tr>
+  <td class="fcol">Rocuronio</td>
+  <td>Vial 50 mg/5 ml (10 mg/ml)<br><span class="dilucion">500 mg en 100 ml SSF<br><b>5 mg/ml</b></span></td>
+  <td>5–12 µg/kg/min<br>(0,3–0,6 mg/kg/h)<br>Bolo IOT: 0,6–1,2 mg/kg</td>
+  <td>
+    <div class="dose-bar-wrap">
+      <div class="dose-bar">
+        <div class="dose-seg seg-green"  style="flex:1">Parcial</div>
+        <div class="dose-seg seg-yellow" style="flex:2">Eficaz</div>
+        <div class="dose-seg seg-orange" style="flex:2">Profundo</div>
+        <div class="dose-seg seg-red"    style="flex:2">Acumulación</div>
+        <div class="marker" id="mk_rocuronio" style="left:0%"></div>
+      </div>
+      <div class="axis"><span>0</span><span>5</span><span>10</span><span>15</span><span>20+</span></div>
+    </div>
+  </td>
+  <td><input type="number" class="dosis-input" id="d_rocuronio" value="8" min="0" step="0.5" oninput="recalcular()"> <span class="unidad">µg/kg/min</span></td>
+  <td><span class="resultado" id="v_rocuronio">—</span> <span class="unidad">ml/h</span></td>
+  <td>Acumulación en hepatopatía e IRC. Posible taquicardia leve. Reversible con <b>sugammadex</b> (2–4 mg/kg, o 16 mg/kg para reversión inmediata). Riesgo de miopatía del crítico con uso prolongado</td>
+</tr>
+
+</tbody>
+</table>
+
+<div class="nota">
+<b>Notas prácticas (PADIS 2018)</b>
+<ul style="margin:6px 0 0 0;padding-left:20px;">
+  <li><b>Analgesia primero</b> (analgosedación) antes de añadir hipnótico.</li>
+  <li>Objetivo de sedación ligera (RASS 0 a −2) salvo indicación específica (SDRA grave, HTIC, estatus, ECMO inestable).</li>
+  <li>Preferir <b>propofol o dexmedetomidina</b> sobre benzodiazepinas en VM.</li>
+  <li>Vigilar combinación <b>opioide + BZD</b> (↑ delirium y mortalidad).</li>
+  <li>Antipsicóticos: no previenen ni acortan el delirium, solo controlan síntomas. Monitorizar QTc.</li>
+  <li>Si propofol &gt;4 mg/kg/h o &gt;48 h: monitorizar pH, lactato, CK, triglicéridos y ECG (riesgo de PRIS).</li>
+</ul>
+
+<details>
+<summary>Ver fórmulas y concentraciones</summary>
+<div style="margin-top:8px;font-size:12px;">
+<ul>
+  <li>Propofol 2%: <span class="formula">20 mg/ml</span> (vial sin diluir)</li>
+  <li>Midazolam: <span class="formula">1 mg/ml</span> (250 mg en 250 ml SSF)</li>
+  <li>Ketamina: <span class="formula">5 mg/ml</span> (500 mg en 100 ml SSF)</li>
+  <li>Fentanilo: <span class="formula">9 µg/ml</span> (900 µg en 100 ml SSF)</li>
+  <li>Remifentanilo: <span class="formula">50 µg/ml</span> (5 mg en 100 ml SSF)</li>
+  <li>Morfina: <span class="formula">1 mg/ml</span> (50 mg en 50 ml SSF)</li>
+  <li>Dexmedetomidina: <span class="formula">4 µg/ml</span> (200 µg en 50 ml SSF)</li>
+  <li>Cisatracurio: <span class="formula">3 mg/ml</span> (300 mg en 100 ml SSF)</li>
+  <li>Rocuronio: <span class="formula">5 mg/ml</span> (500 mg en 100 ml SSF)</li>
+</ul>
+<p><b>Fórmula general:</b> <span class="formula">ml/h = (dosis × peso) / concentración</span> (ajustando unidades y tiempo)</p>
+</div>
+</details>
+</div>
+
+<p style="font-size:11px;color:#888;margin-top:20px;">Calculadora orientativa. Verificar siempre las dosis según protocolo local, función orgánica y respuesta clínica individual.</p>
+
+<script>
+const drugs = {
+  propofol:  { max: 8,    zones: [{lim:1, name:'Sedación ligera', color:'#5fb55f'}, {lim:2, name:'Sedación moderada', color:'#f5c542'}, {lim:3, name:'Sedación profunda', color:'#f08a3c'}, {lim:4, name:'Dosis altas', color:'#e8806e'}, {lim:6, name:'⚠️ PRIS', color:'#d94c4c'}, {lim:8, name:'⚠️ Dosis excesivas', color:'#8b1a1a'}] },
+  midazolam: { max: 0.15, zones: [{lim:0.04, name:'Ansiolisis', color:'#5fb55f'}, {lim:0.07, name:'Sedación ligera', color:'#f5c542'}, {lim:0.1, name:'Sedación profunda', color:'#f08a3c'}, {lim:0.15, name:'Acumulación / delirium', color:'#d94c4c'}] },
+  ketamina:  { max: 4,    zones: [{lim:0.5, name:'Analgesia subanestésica', color:'#5fb55f'}, {lim:1.5, name:'Sedación ligera', color:'#f5c542'}, {lim:3, name:'Sedación disociativa', color:'#f08a3c'}, {lim:4, name:'Emergencia / HTA', color:'#d94c4c'}] },
+  fentanilo: { max: 4,    zones: [{lim:1, name:'Analgesia', color:'#5fb55f'}, {lim:1.7, name:'Analgesia alta', color:'#f08a3c'}, {lim:4, name:'⚠️ Riesgo: sedación profunda / rigidez torácica', color:'#d94c4c'}] },
+  remi:      { max: 0.3,  zones: [{lim:0.05, name:'Analgesia sin apnea', color:'#5fb55f'}, {lim:0.1, name:'Analgosedación', color:'#f5c542'}, {lim:0.2, name:'Apnea / bradicardia', color:'#f08a3c'}, {lim:0.3, name:'Rigidez / hipotensión severa', color:'#d94c4c'}] },
+  morfina:   { max: 12,   zones: [{lim:3, name:'Analgesia', color:'#5fb55f'}, {lim:6, name:'Analgesia + sedación', color:'#f5c542'}, {lim:10, name:'Sedación profunda', color:'#f08a3c'}, {lim:12, name:'Depresión respiratoria', color:'#d94c4c'}] },
+  dexme:     { max: 1.4,  zones: [{lim:0.4, name:'Sedación ligera cooperativa', color:'#5fb55f'}, {lim:0.7, name:'Sedación moderada', color:'#f5c542'}, {lim:1.2, name:'Sedación profunda', color:'#f08a3c'}, {lim:1.4, name:'↑ bradicardia/hipotensión', color:'#d94c4c'}] },
+  cisatracurio: { max: 10, zones: [{lim:1, name:'Bloqueo parcial', color:'#5fb55f'}, {lim:3, name:'Bloqueo eficaz', color:'#f5c542'}, {lim:6, name:'Bloqueo profundo', color:'#f08a3c'}, {lim:10, name:'Sobre-bloqueo', color:'#d94c4c'}] },
+  rocuronio:    { max: 20, zones: [{lim:5, name:'Bloqueo parcial', color:'#5fb55f'}, {lim:10, name:'Bloqueo eficaz', color:'#f5c542'}, {lim:15, name:'Bloqueo profundo', color:'#f08a3c'}, {lim:20, name:'Acumulación', color:'#d94c4c'}] }
+};
+
+function updateMarker(id, dose, cfg) {
+  const max = cfg.max;
+  const pct = Math.min(100, Math.max(0, (dose / max) * 100));
+  const mk = document.getElementById('mk_' + id);
+  if (mk) mk.style.left = pct + '%';
+
+}
+
+function recalcular() {
+  const peso = parseFloat(document.getElementById('peso').value) || 0;
+  guardarEstado();
+
+  // Sedantes
+  const d_prop = parseFloat(document.getElementById('d_propofol').value) || 0;
+  document.getElementById('v_propofol').textContent = ((d_prop * peso) / 20).toFixed(1);
+  updateMarker('propofol', d_prop, drugs.propofol);
+
+  const d_mid = parseFloat(document.getElementById('d_midazolam').value) || 0;
+  document.getElementById('v_midazolam').textContent = ((d_mid * peso) / 1).toFixed(2);
+  updateMarker('midazolam', d_mid, drugs.midazolam);
+
+  const d_ket = parseFloat(document.getElementById('d_ketamina').value) || 0;
+  document.getElementById('v_ketamina').textContent = ((d_ket * peso) / 5).toFixed(2);
+  updateMarker('ketamina', d_ket, drugs.ketamina);
+
+  // Analgésicos
+  const d_fent = parseFloat(document.getElementById('d_fentanilo').value) || 0;
+  document.getElementById('v_fentanilo').textContent = ((d_fent * peso) / 9).toFixed(2);
+  updateMarker('fentanilo', d_fent, drugs.fentanilo);
+
+  const d_rem = parseFloat(document.getElementById('d_remi').value) || 0;
+  document.getElementById('v_remi').textContent = ((d_rem * peso * 60) / 50).toFixed(2);
+  updateMarker('remi', d_rem, drugs.remi);
+
+  const d_mor = parseFloat(document.getElementById('d_morfina').value) || 0;
+  document.getElementById('v_morfina').textContent = (d_mor / 1).toFixed(1);
+  updateMarker('morfina', d_mor, drugs.morfina);
+
+  // Agitación
+  const d_dex = parseFloat(document.getElementById('d_dexme').value) || 0;
+  document.getElementById('v_dexme').textContent = ((d_dex * peso) / 4).toFixed(2);
+  updateMarker('dexme', d_dex, drugs.dexme);
+
+  // Relajantes neuromusculares
+  // Cisatracurio 3 mg/ml = 3000 µg/ml. Dosis en µg/kg/min → ml/h = (dosis × peso × 60) / 3000
+  const d_cis = parseFloat(document.getElementById('d_cisatracurio').value) || 0;
+  document.getElementById('v_cisatracurio').textContent = ((d_cis * peso * 60) / 3000).toFixed(2);
+  updateMarker('cisatracurio', d_cis, drugs.cisatracurio);
+
+  // Rocuronio 5 mg/ml = 5000 µg/ml. Dosis en µg/kg/min → ml/h = (dosis × peso × 60) / 5000
+  const d_roc = parseFloat(document.getElementById('d_rocuronio').value) || 0;
+  document.getElementById('v_rocuronio').textContent = ((d_roc * peso * 60) / 5000).toFixed(2);
+  updateMarker('rocuronio', d_roc, drugs.rocuronio);
+}
+
+// Persistencia local de los valores
+const CAMPOS = ['peso','d_propofol','d_midazolam','d_ketamina','d_fentanilo','d_remi','d_morfina','d_dexme','d_cisatracurio','d_rocuronio'];
+function guardarEstado() {
+  try {
+    const estado = {};
+    CAMPOS.forEach(id => { const el = document.getElementById(id); if (el) estado[id] = el.value; });
+    localStorage.setItem('calc_sedacion_uci', JSON.stringify(estado));
+  } catch(e) {}
+}
+function cargarEstado() {
+  try {
+    const raw = localStorage.getItem('calc_sedacion_uci');
+    if (!raw) return;
+    const estado = JSON.parse(raw);
+    CAMPOS.forEach(id => { if (estado[id] !== undefined) { const el = document.getElementById(id); if (el) el.value = estado[id]; } });
+  } catch(e) {}
+}
+cargarEstado();
+recalcular();
+</script>
+
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>

@@ -14,12 +14,16 @@
           <input id="search" type="search" placeholder="Buscar tema o póster">
         </div>
         <div class="search-row search-row-actions">
+          <button id="homeBtn" class="sidebar-mini-btn" title="Inicio y colapsar todas las carpetas">Inicio</button>
           <button id="expandAllBtn" class="sidebar-mini-btn" title="Expandir todas las carpetas">Expandir</button>
           <button id="collapseAllBtn" class="sidebar-mini-btn" title="Colapsar todas las carpetas">Colapsar</button>
         </div>
       </div>
       <div class="tree" id="tree"></div>
       <div class="results" id="results"></div>
+      <div class="sidebar-footer">
+        <button type="button" class="sidebar-calc-btn" id="calculadorasBtn" title="Calculadoras y dashboards de cálculo">Calculadoras</button>
+      </div>
     </aside>
 
     <main class="main">
@@ -67,13 +71,6 @@
         <details class="menu-tree">
           <summary><span>💾 Guardado</span><span class="summary-right">expandir</span></summary>
           <div class="menu-body status-box">
-            <div id="selectedInfo">Selección actual: ninguna</div>
-            <div class="stats">
-              <span class="chip" id="statFiles">0 posters</span>
-              <span class="chip" id="statAreas">0 áreas</span>
-              <span class="chip" id="saveState">Biblioteca base</span>
-            </div>
-            <div class="status-note">Usa <strong>Guardar biblioteca</strong> para conservar la estructura y los pósteres añadidos. En nuevas versiones, mantén la carpeta <strong>biblioteca</strong> y sustituye solo <strong>app</strong>.</div>
             <div class="menu-row">
               <button class="btn btn-save" id="saveLibraryBtn">Guardar biblioteca</button>
               <button class="btn btn-green" id="loadLibraryBtn">Abrir guardada</button>
@@ -83,6 +80,12 @@
               <button class="btn btn-danger" id="restoreBtn">Restaurar base</button>
             </div>
             <div id="savedFeedback">✔ Biblioteca guardada</div>
+            <div hidden aria-hidden="true">
+              <div id="selectedInfo"></div>
+              <span id="statFiles"></span>
+              <span id="statAreas"></span>
+              <span id="saveState"></span>
+            </div>
           </div>
         </details>
 
@@ -120,7 +123,7 @@
     <div class="lightbox-controls">
       <button class="lb-btn" id="lbPrev">← Anterior</button>
       <button class="lb-btn" id="lbZoomOut">−</button>
-      <button class="lb-btn" id="lbReset">Ajustar</button>
+      <button class="lb-btn" id="lbReset" title="Ajustar al ancho de la pantalla">Ajustar ancho</button>
       <button class="lb-btn" id="lbZoomIn">＋</button>
       <button class="lb-btn" id="lbFullscreen">Pantalla completa</button>
       <button class="lb-btn" id="lbNext">Siguiente →</button>
@@ -133,7 +136,7 @@
       <div class="html-lightbox-title" id="htmlLbTitle">Póster HTML</div>
       <div class="html-lightbox-controls">
         <button class="lb-btn" id="htmlLbZoomOut" title="Alejar">Alejar −</button>
-        <button class="lb-btn" id="htmlLbFit" title="Ajustar a pantalla">Ajustar</button>
+        <button class="lb-btn" id="htmlLbFit" title="Ajustar al ancho de la pantalla">Ajustar ancho</button>
         <button class="lb-btn" id="htmlLbZoomIn" title="Acercar">Acercar ＋</button>
         <span class="html-lb-zoom" id="htmlLbZoomLabel">100%</span>
         <button class="lb-btn" id="htmlLbFullscreen" title="Pantalla completa del sistema">Pantalla completa</button>
@@ -145,7 +148,7 @@
         <iframe class="html-lightbox-frame" id="htmlLbFrame" title="Póster HTML ampliado" scrolling="no" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
       </div>
     </div>
-    <div class="html-lightbox-hint">Arrastra para moverte por el póster · Rueda para acercar/alejar</div>
+    <div class="html-lightbox-hint">Ajuste al ancho · Arrastra para moverte · Rueda para acercar/alejar</div>
   </div>
 
   <div class="pdf-lightbox" id="pdfLightbox" aria-hidden="true">

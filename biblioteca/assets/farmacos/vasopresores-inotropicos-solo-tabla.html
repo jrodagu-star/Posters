@@ -1,0 +1,2128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Medicación UCI — vasopresores, hipotensores, antiarrítmicos (solo tabla)</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; font-family: system-ui, sans-serif; font-size: 13px; }
+    th, td { border: 1px solid #333; padding: 6px 8px; vertical-align: top; }
+    td { text-align: left; }
+    th {
+      background: #3d6b94;
+      color: #f8fafc;
+      text-align: center;
+      vertical-align: middle;
+    }
+    tbody tr:nth-child(even) { background: #f7fafc; }
+    tbody tr.vasopresor { background: #fed7d7; }
+    tbody tr.inotropo { background: #c6f6d5; }
+    tbody tr.vasodilatador { background: #e9d8fd; }
+    tbody tr.fc-subir { background: #d1fae5; }
+    tbody tr.fc-bajar { background: #fef3c7; }
+    tbody tr.vaso-hipota { background: #ede9fe; }
+    tbody tr.hipo-fc { background: #cffafe; }
+    caption { caption-side: top; font-weight: bold; margin-bottom: 0.5rem; text-align: center; }
+    caption .caption-titulo { display: block; line-height: 1.25; }
+    caption .caption-sub {
+      display: block;
+      font-weight: normal;
+      font-size: 0.72em;
+      margin-top: 0.2rem;
+      color: #4a5568;
+    }
+    body { margin: 1rem; }
+    .post-tabla {
+      max-width: 900px;
+      margin-top: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .bloque-post {
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      border-left-width: 4px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #2d3748;
+    }
+    .bloque-post h2 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .bloque-tipo-efecto {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+      border-left-color: #475569;
+    }
+    .bloque-tipo-efecto h2 { color: #1e293b; }
+    .bloque-leyenda-iconos {
+      background: #fffbeb;
+      border-color: #fde68a;
+      border-left-color: #d97706;
+    }
+    .bloque-leyenda-iconos h2 { color: #92400e; }
+    .bloque-leyenda-iconos .legenda-admin { margin-top: 0; }
+    .legenda-wrap {
+      margin-top: 0.65rem;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .legenda-estab24 + .legenda-admin {
+      margin-top: 0.75rem;
+    }
+    .legenda-parrafo {
+      margin: 0.65rem 0 0;
+      text-align: left;
+      line-height: 1.55;
+      font-size: inherit;
+    }
+    .legenda-wrap > .legenda-parrafo:first-of-type {
+      margin-top: 0.5rem;
+    }
+    .legenda-estab24 {
+      margin: 0.85rem 0 0;
+      padding: 0.75rem 0 0;
+      border-top: 1px dashed #cbd5e1;
+    }
+    .legenda-reloj-fila {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .legenda-reloj-fila .legenda-parrafo {
+      margin: 0;
+      flex: 1;
+      min-width: 0;
+    }
+    .legenda-reloj-marco {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin: 0.12rem 0 0;
+      padding: 2px 4px;
+      border-radius: 4px;
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+    }
+    .legenda-reloj-svg {
+      display: block;
+      color: #0c4a6e;
+    }
+    .legenda-ok-separado {
+      margin-top: 0.85rem;
+      padding: 0.65rem 0 0;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .legenda-ok-separado .estab24-ok {
+      flex-shrink: 0;
+      margin: 0.12rem 0 0;
+    }
+    .legenda-ok-separado .legenda-parrafo {
+      margin: 0;
+      flex: 1;
+      min-width: 0;
+    }
+    .bloque-nota {
+      background: #fafafa;
+      border-color: #d4d4d4;
+      border-left-color: #525252;
+    }
+    .bloque-nota h2 { color: #262626; }
+    .bloque-post .bloque-texto { margin: 0; }
+    .bloque-nota .bloque-texto { font-size: 12px; line-height: 1.45; }
+    .bloque-recom {
+      background: #ebf8ff;
+      border-color: #90cdf4;
+      border-left-color: #2b6cb0;
+      color: #2c5282;
+    }
+    .bloque-recom h2 { color: #2c5282; }
+    .bloque-recom ol { margin: 0; padding-left: 1.35rem; }
+    .bloque-recom li { margin-bottom: 6px; }
+    .bloque-recom li:last-child { margin-bottom: 0; }
+    .wrap { overflow-x: auto; }
+    .tabla-copy {
+      text-align: right;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: #64748b;
+      margin: 0.4rem 0 0;
+      padding: 0 2px 0 0;
+      letter-spacing: 0.02em;
+    }
+    .admin-cell { text-align: center; vertical-align: middle; white-space: nowrap; }
+    .admin-cell .stack { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; line-height: 1.2; }
+    .pvc-ok {
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      padding: 4px 8px; border-radius: 6px; background: #6ee7b7; color: #064e3b; font-weight: 600;
+      border: 1px solid #34d399;
+    }
+    .pvc-no {
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      padding: 4px 8px; border-radius: 6px; background: #fed7d7; color: #742a2a; font-weight: 600;
+      border: 1px solid #fc8181;
+    }
+    .luz-si {
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      padding: 4px 8px; border-radius: 6px; background: #fefcbf; color: #744210; font-weight: 600;
+      border: 1px solid #f6e05e;
+    }
+    .luz-no {
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      padding: 4px 8px; border-radius: 6px; background: #e2e8f0; color: #4a5568; font-weight: 500;
+      border: 1px solid #cbd5e0;
+    }
+    .luz-no svg { opacity: 0.75; }
+    .luz-ok {
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      padding: 4px 8px; border-radius: 6px; background: #6ee7b7; color: #064e3b; font-weight: 600;
+      border: 1px solid #34d399;
+    }
+    .luz-con-motivo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      max-width: 120px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .luz-con-motivo .luz-motivo {
+      font-size: 9px;
+      line-height: 1.2;
+      color: #78350f;
+      font-weight: 600;
+    }
+    .admin-cell.estab24-cell {
+      white-space: normal;
+      max-width: 128px;
+      vertical-align: middle;
+    }
+    .estab24-bloque {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .estab24-bloque .estab24-ico {
+      display: block;
+      color: #0f172a;
+      flex-shrink: 0;
+    }
+    .estab24-motivo {
+      font-size: 9px;
+      line-height: 1.2;
+      color: #1e293b;
+      font-weight: 600;
+    }
+    .estab24-ok {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #6ee7b7;
+      color: #064e3b;
+      font-weight: 700;
+      border: 1px solid #34d399;
+      font-size: 11px;
+    }
+    .admin-cell svg { flex-shrink: 0; vertical-align: middle; }
+    .legenda-admin { display: flex; flex-wrap: wrap; gap: 12px 20px; margin-top: 0.75rem; font-size: 12px; align-items: center; }
+    .legenda-admin span { display: inline-flex; align-items: center; gap: 6px; }
+    .via-req {
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      padding: 4px 8px; border-radius: 6px; background: #2b6cb0; color: #fff; font-weight: 700;
+      border: 1px solid #2c5282; font-size: 11px;
+    }
+    .via-pref {
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      padding: 4px 8px; border-radius: 6px; background: #feebc8; color: #7b341e; font-weight: 600;
+      border: 1px solid #ed8936; font-size: 11px;
+    }
+    .via-perf {
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      padding: 4px 8px; border-radius: 6px; background: #c6f6d5; color: #22543d; font-weight: 600;
+      border: 1px solid #68d391; font-size: 11px;
+    }
+    th.vol-dil-col,
+    td.vol-dil-cell {
+      width: 0.01%;
+      white-space: nowrap;
+      padding-left: 8px;
+      padding-right: 8px;
+      min-width: 108px;
+    }
+    .vol-dil-cell {
+      text-align: center;
+      vertical-align: middle;
+    }
+    .vol-graph {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .vol-bag {
+      position: relative;
+      width: 28px;
+      height: 36px;
+      border-radius: 5px 5px 6px 6px;
+      border: 1.5px solid #64748b;
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      overflow: hidden;
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.65);
+    }
+    .vol-bag::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 4px;
+      border-radius: 1px;
+      border: 1px solid #94a3b8;
+      background: #e2e8f0;
+      z-index: 2;
+    }
+    .vol-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: calc(var(--vol-pct, 50) * 1%);
+      min-height: 3px;
+      background: linear-gradient(180deg, #a5f3fc 0%, #22d3ee 45%, #0891b2 100%);
+      z-index: 1;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .vol-fill--sg {
+      background: linear-gradient(180deg, #fde68a 0%, #fbbf24 45%, #d97706 100%);
+    }
+    .vol-fill--ssf {
+      background: linear-gradient(180deg, #93c5fd 0%, #3b82f6 50%, #1d4ed8 100%);
+    }
+    .vol-bag--sg {
+      border-color: #d97706;
+      background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+    }
+    .vol-bag--ssf {
+      border-color: #2563eb;
+      background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+    }
+    .vol-bag-lbl {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 44%;
+      bottom: 10%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      font-size: 8px;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      pointer-events: none;
+      text-align: center;
+      padding: 0 1px;
+    }
+    .vol-bag--sg .vol-bag-lbl {
+      color: #78350f;
+      text-shadow: 0 0 2px rgb(255 255 255 / 0.9);
+    }
+    .vol-bag--ssf .vol-bag-lbl {
+      color: #fff;
+      text-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
+    }
+    .vol-dil-bags {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 5px;
+    }
+    .vol-graph--mix {
+      gap: 3px;
+    }
+    .vol-graph--mix .vol-bag {
+      width: 24px;
+      height: 32px;
+    }
+    .vol-graph--mix .vol-bag-lbl {
+      font-size: 7px;
+    }
+    .vol-txt {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.2;
+      text-align: center;
+    }
+    .vol-graph--dual {
+      gap: 8px;
+    }
+    .vol-graph__item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .vol-graph--dual .vol-txt {
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .vol-graph--dual small {
+      font-weight: 600;
+      color: #475569;
+      font-size: 11px;
+    }
+    .td-mlh {
+      text-align: center;
+      vertical-align: middle;
+      padding: 5px 2px !important;
+      max-width: 78px;
+    }
+    .td-mlh-span {
+      text-align: center;
+      vertical-align: middle;
+      padding: 8px 6px !important;
+    }
+    .mlh-rango {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0f172a;
+      font-variant-numeric: tabular-nums;
+    }
+    .mlh-rango--span {
+      max-width: 240px;
+      margin: 0 auto;
+    }
+    .mlh-rango .mlh-min { min-width: 1.4em; text-align: left; color: #0369a1; }
+    .mlh-rango .mlh-max { min-width: 1.4em; text-align: right; color: #0c4a6e; }
+    .mlh-rango .mlh-bar {
+      flex: 1;
+      min-width: 12px;
+      max-width: 42px;
+      height: 5px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #bae6fd, #0ea5e9 55%, #0369a1);
+      box-shadow: 0 0 0 1px rgb(15 23 42 / 0.06);
+    }
+    .mlh-pill {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #e0f2fe, #bae6fd);
+      border: 1px solid #7dd3fc;
+      font-weight: 700;
+      font-size: 12px;
+      color: #0c4a6e;
+      white-space: nowrap;
+    }
+    .mlh-rango--dobj .mlh-bar {
+      max-width: 36px;
+    }
+    .dobj-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+    .dobj-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      width: 100%;
+    }
+    .dobj-unit {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #334155;
+      line-height: 1.15;
+      text-align: center;
+      letter-spacing: 0.01em;
+    }
+    .dobj-etiq {
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.15;
+      text-align: center;
+    }
+    .dobj-carga-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: center;
+      gap: 0.15em 0.35em;
+      line-height: 1.2;
+      text-align: center;
+    }
+    .dobj-carga-dosis {
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+    tr.fc-bajar td.amio-quad-cell {
+      vertical-align: top;
+      text-align: center;
+      padding: 4px 4px 5px !important;
+    }
+    tr.fc-bajar td.amio-quad-cell .amio-dual-stack {
+      justify-content: flex-start;
+      margin-top: 0;
+    }
+    /* Misma altura de la fase ① → la línea ①|② queda alineada entre columnas */
+    tr.fc-bajar td.amio-quad-cell .amio-dual-stack > .amio-dual-phase:first-of-type {
+      min-height: 4.75rem;
+      justify-content: flex-start;
+      box-sizing: border-box;
+    }
+    tr.fc-bajar td.amio-quad-cell .amio-dual-phase--rule {
+      margin-top: 0;
+      padding-top: 6px;
+    }
+    /* Nº amp (misma escala que concentración: valor = amio-conc-val, resto = amio-conc-sub) */
+    tr.fc-bajar td.dosis-n-amp.amio-quad-cell .dosis-n-amp-val,
+    tr.fc-bajar td.dosis-n-amp.amio-quad-cell .dosis-n-amp-val--sm {
+      font-size: 11px;
+      line-height: 1.2;
+    }
+    tr.fc-bajar td.dosis-n-amp.amio-quad-cell .dosis-n-amp-lbl,
+    tr.fc-bajar td.dosis-n-amp.amio-quad-cell .dosis-n-amp-sub,
+    tr.fc-bajar td.dosis-n-amp.amio-quad-cell .dosis-n-amp-range {
+      font-size: 11px;
+    }
+    tr.fc-bajar td.dosis-obj-amio .amio-dosis-line {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #334155;
+      line-height: 1.2;
+      text-align: center;
+    }
+    tr.fc-bajar td.dosis-obj-amio .amio-dosis-line strong {
+      font-weight: 700;
+      font-size: 1em;
+      color: #0f172a;
+    }
+    .amio-dual-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      width: 100%;
+      max-width: 10.5rem;
+      margin: 0 auto;
+    }
+    .td-mlh-span .amio-dual-stack {
+      max-width: 14rem;
+    }
+    .amio-dual-phase {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      width: 100%;
+    }
+    .amio-dual-phase--rule {
+      margin-top: 0;
+      padding-top: 6px;
+      border-top: 1px solid #cbd5e1;
+    }
+    .amio-ph-tag {
+      font-size: 0.62rem;
+      font-weight: 800;
+      color: #9a3412;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+    tr.fc-bajar .amio-ph-tag {
+      font-size: 0.58rem;
+    }
+    .amio-conc-val {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    .amio-conc-sub {
+      font-size: 0.58rem;
+      font-weight: 600;
+      color: #64748b;
+      line-height: 1.15;
+      text-align: center;
+    }
+    .mlh-pill--amio {
+      font-size: 11px;
+      padding: 2px 10px;
+    }
+    .amp-cell { vertical-align: middle; text-align: center; padding: 8px 6px; min-width: 118px; max-width: 160px; }
+    .amp-graph { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .amp-graph .amp-vial { flex-shrink: 0; }
+    .amp-vial-pair {
+      display: inline-flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 5px;
+    }
+    .amp-vial-noradr .amp-vial-voltxt,
+    .amp-vial-dual .amp-vial-voltxt {
+      user-select: none;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .amp-data { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 100%; }
+    .amp-dose { font-weight: 700; font-size: 11px; color: #0f172a; line-height: 1.2; }
+    .amp-sub { font-size: 11px; font-weight: 600; color: #475569; line-height: 1.2; }
+    .amp-vol {
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      font-size: 10px; font-weight: 600; color: #1e40af;
+      background: #eff6ff; border: 1px solid #93c5fd; border-radius: 5px; padding: 2px 7px;
+    }
+    .amp-vol svg { flex-shrink: 0; opacity: 0.9; }
+    td.dosis-obj {
+      text-align: center;
+      vertical-align: middle;
+      padding: 5px 4px;
+      max-width: 92px;
+    }
+    .dosis-obj-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 0;
+    }
+    th.dosis-n-amp-th {
+      vertical-align: middle;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    /* Columna «Concentración» (6.ª): centrado horizontal y vertical (la fila amiodarona usa tr.fc-bajar td.amio-quad-cell → vertical-align: top) */
+    thead tr:first-child > th:nth-child(6),
+    tbody td:nth-child(6) {
+      text-align: center;
+      vertical-align: middle;
+    }
+    td.dosis-n-amp {
+      vertical-align: top;
+      text-align: center;
+      padding: 5px 2px;
+      max-width: 5.4rem;
+    }
+    .dosis-n-amp-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .dosis-n-amp-val {
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.15;
+      color: #0f172a;
+    }
+    .dosis-n-amp-sub,
+    .dosis-n-amp-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      line-height: 1.15;
+      max-width: 5rem;
+    }
+    .dosis-n-amp-icons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0 1px;
+      max-width: 4.75rem;
+    }
+    .dosis-n-amp-icons--mult {
+      flex-wrap: nowrap;
+      gap: 1px;
+      max-width: none;
+    }
+    .dosis-n-amp-ico {
+      flex-shrink: 0;
+      display: block;
+      color: #475569;
+    }
+    .dosis-n-amp-mult,
+    .dosis-n-amp-range {
+      font-size: 11px;
+      font-weight: 800;
+      color: #1e40af;
+      line-height: 1;
+      padding: 0 1px;
+    }
+    .dosis-n-amp-range {
+      font-size: 11px;
+      font-weight: 700;
+      color: #334155;
+    }
+    .dosis-n-amp-val--sm {
+      font-size: 11px;
+      line-height: 1.1;
+    }
+    td.dosis-n-amp .dosis-n-amp-ico {
+      width: 9px;
+      height: 10px;
+    }
+    .tipo-cell {
+      text-align: center;
+      vertical-align: middle;
+      max-width: 158px;
+      min-width: 108px;
+      padding: 8px 6px;
+    }
+    .tipo-ico {
+      display: block;
+      margin: 0 auto 6px;
+      color: inherit;
+    }
+    .tipo-icons-pair {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      margin: 0 auto 6px;
+      flex-wrap: wrap;
+    }
+    .tipo-icons-pair .tipo-ico {
+      margin: 0;
+      flex-shrink: 0;
+    }
+    .tipo-desc {
+      display: block;
+      font-size: 10px;
+      line-height: 1.3;
+      color: #334155;
+      font-weight: 600;
+    }
+    .tipo-moa {
+      display: block;
+      margin-top: 5px;
+      font-size: 8.5px;
+      line-height: 1.3;
+      font-weight: 500;
+      color: #475569;
+      letter-spacing: 0.01em;
+    }
+    th.tipo-col { max-width: 130px; }
+    th.farmaco-col,
+    td.farmaco-cell {
+      min-width: 12.5rem;
+      max-width: 19rem;
+      width: 13%;
+      box-sizing: border-box;
+      vertical-align: middle;
+    }
+    td.farmaco-cell {
+      white-space: normal;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    td.farmaco-cell .farmaco-pa,
+    td.farmaco-cell .farmaco-pa strong {
+      font-size: 15px;
+      line-height: 1.25;
+    }
+    td.farmaco-cell .farmaco-pa strong {
+      font-weight: 700;
+      color: #0f172a;
+    }
+    td.farmaco-cell .farmaco-comercial {
+      font-size: 12px;
+      font-weight: 500;
+      color: #64748b;
+      line-height: 1.25;
+    }
+    .farmaco-linea {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge-nevera {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 3px 5px;
+      border-radius: 5px;
+      background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
+      color: #0369a1;
+      border: 1px solid #38bdf8;
+      line-height: 0;
+    }
+    .badge-nevera svg { display: block; }
+    .badge-nevera--stack {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 4px 5px 3px;
+      line-height: 1;
+    }
+    .badge-nevera-label {
+      display: block;
+      font-size: 9px;
+      font-weight: 600;
+      color: #075985;
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+    }
+    tbody tr.vasopresor .tipo-cell .tipo-ico { color: #b91c1c; }
+    tbody tr.inotropo .tipo-cell .tipo-ico { color: #15803d; }
+    tbody tr.inotropo .tipo-cell .tipo-ico.tipo-ico-fcup { color: #047857; }
+    tbody tr.fc-subir .tipo-cell .tipo-ico { color: #047857; }
+    tbody tr.fc-bajar .tipo-cell .tipo-ico { color: #c2410c; }
+    tbody tr.vasodilatador .tipo-cell .tipo-ico { color: #6b21a8; }
+    tbody tr.vaso-hipota .tipo-cell .tipo-ico { color: #5b21b6; }
+    tbody tr.hipo-fc .tipo-cell .tipo-ico { color: #0369a1; }
+    tbody tr.hipo-fc .tipo-cell .tipo-ico.tipo-ico-vasod { color: #6b21a8; }
+    tbody tr.hipo-fc .tipo-cell .tipo-ico.tipo-ico-fcbaj { color: #c2410c; }
+    .print-ayuda {
+      font-size: 12px;
+      color: #475569;
+      max-width: 900px;
+      margin: 0 0 0.75rem 0;
+      padding: 8px 12px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      border-left: 3px solid #64748b;
+      line-height: 1.45;
+    }
+    @media print {
+      @page {
+        size: A3 landscape;
+        margin: 8mm;
+      }
+      html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+      }
+      .print-ayuda { display: none !important; }
+      .print-anverso {
+        page-break-after: auto;
+        break-after: auto;
+      }
+      .wrap {
+        overflow: visible !important;
+        max-width: none !important;
+      }
+      .tabla-copy {
+        font-size: 7.5pt !important;
+        color: #475569 !important;
+        margin-top: 0.25rem !important;
+        text-align: right !important;
+      }
+      .post-tabla {
+        max-width: none !important;
+        margin-top: 0 !important;
+        gap: 0.65rem !important;
+      }
+      .bloque-post {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        padding: 10px 12px !important;
+        font-size: 12pt !important;
+      }
+      .bloque-post h2 { font-size: 14pt !important; }
+      .bloque-nota .bloque-texto { font-size: 12pt !important; }
+      table {
+        width: 100% !important;
+        font-size: 9pt !important;
+      }
+      th.farmaco-col,
+      td.farmaco-cell {
+        min-width: 11.5rem !important;
+        max-width: 24rem !important;
+        width: 14% !important;
+      }
+      td.farmaco-cell .farmaco-pa,
+      td.farmaco-cell .farmaco-pa strong {
+        font-size: 11.5pt !important;
+      }
+      td.farmaco-cell .farmaco-comercial {
+        font-size: 8.75pt !important;
+      }
+      caption {
+        font-size: 10pt !important;
+        margin-bottom: 0.35rem !important;
+      }
+      caption .caption-sub {
+        font-size: 8pt !important;
+        color: #374151 !important;
+      }
+      th, td {
+        padding: 3px 5px !important;
+        border-color: #222 !important;
+      }
+      td.dosis-obj .mlh-rango--dobj {
+        font-size: 9.5pt !important;
+        gap: 2px !important;
+      }
+      td.dosis-obj .mlh-rango--dobj .mlh-bar {
+        max-width: 34px !important;
+        height: 5px !important;
+      }
+      td.dosis-obj .dobj-unit {
+        font-size: 7.5pt !important;
+      }
+      td.dosis-obj .dobj-etiq {
+        font-size: 7pt !important;
+      }
+      td.dosis-obj .dobj-carga-dosis {
+        font-size: 7.5pt !important;
+      }
+      tr.fc-bajar .amio-ph-tag { font-size: 7.5pt !important; }
+      tr.fc-bajar .amio-conc-val { font-size: 9pt !important; }
+      tr.fc-bajar .amio-conc-sub { font-size: 7.5pt !important; }
+      tr.fc-bajar td.dosis-n-amp.amio-quad-cell .dosis-n-amp-val,
+      tr.fc-bajar td.dosis-n-amp.amio-quad-cell .dosis-n-amp-val--sm { font-size: 9pt !important; }
+      tr.fc-bajar td.dosis-n-amp.amio-quad-cell .dosis-n-amp-lbl,
+      tr.fc-bajar td.dosis-n-amp.amio-quad-cell .dosis-n-amp-sub,
+      tr.fc-bajar td.dosis-n-amp.amio-quad-cell .dosis-n-amp-range { font-size: 9pt !important; }
+      tr.fc-bajar td.dosis-obj-amio .amio-dosis-line { font-size: 9pt !important; line-height: 1.2 !important; }
+      tr.fc-bajar td.amio-quad-cell .amio-dual-stack > .amio-dual-phase:first-of-type {
+        min-height: 18mm !important;
+      }
+      tr.fc-bajar .mlh-pill--amio { font-size: 9.5pt !important; padding: 2px 8px !important; }
+      td.dosis-n-amp .dosis-n-amp-val {
+        font-size: 9pt !important;
+      }
+      td.dosis-n-amp .dosis-n-amp-val--sm {
+        font-size: 9pt !important;
+      }
+      td.dosis-n-amp .dosis-n-amp-mult,
+      td.dosis-n-amp .dosis-n-amp-range {
+        font-size: 9pt !important;
+      }
+      td.dosis-n-amp .dosis-n-amp-sub,
+      td.dosis-n-amp .dosis-n-amp-lbl {
+        font-size: 9pt !important;
+      }
+      td.dosis-n-amp .dosis-n-amp-ico {
+        width: 9pt !important;
+        height: 9.5pt !important;
+      }
+      th.dosis-n-amp-th {
+        font-size: 9pt !important;
+      }
+      .badge-nevera-label {
+        font-size: 7.5pt !important;
+      }
+      th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      tbody tr.vasopresor,
+      tbody tr.inotropo,
+      tbody tr.vasodilatador,
+      tbody tr.fc-subir,
+      tbody tr.fc-bajar,
+      tbody tr.vaso-hipota,
+      tbody tr.hipo-fc {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      thead { display: table-header-group; }
+      tr { page-break-inside: avoid; }
+      .legenda-admin {
+        font-size: 10pt !important;
+        gap: 6px 10px !important;
+      }
+      .legenda-wrap,
+      .legenda-parrafo {
+        font-size: 10pt !important;
+        line-height: 1.45 !important;
+      }
+      .legenda-reloj-fila {
+        gap: 5px !important;
+      }
+      .legenda-ok-separado {
+        gap: 5px !important;
+      }
+      .legenda-reloj-marco {
+        padding: 1px 3px !important;
+      }
+      .legenda-reloj-svg {
+        width: 14px !important;
+        height: 14px !important;
+      }
+      .tipo-desc { font-size: 8pt !important; }
+      .tipo-moa { font-size: 7pt !important; margin-top: 3px !important; }
+      .luz-motivo { font-size: 7.5pt !important; }
+      .estab24-motivo { font-size: 7.5pt !important; }
+      .mlh-rango { font-size: 9.5pt !important; gap: 2px !important; }
+      .mlh-rango .mlh-bar { max-width: 38px !important; height: 5px !important; }
+      .mlh-pill { font-size: 9.5pt !important; padding: 2px 7px !important; }
+      .estab24-ok {
+        font-size: 11pt !important;
+        padding: 2px 6px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .pvc-ok,
+      .luz-ok {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .vol-bag {
+        width: 28px;
+        height: 36px;
+      }
+      .vol-bag-lbl {
+        font-size: 8pt !important;
+        top: 42%;
+      }
+      .vol-graph--mix .vol-bag-lbl {
+        font-size: 7.5pt !important;
+      }
+      .vol-txt { font-size: 9pt !important; }
+      .vol-graph--dual .vol-txt { font-size: 9pt !important; }
+      .vol-graph--dual small { font-size: 9pt !important; }
+      .amp-data .amp-dose,
+      .amp-data .amp-sub {
+        font-size: 9pt !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <p class="print-ayuda"><strong>Impresión A3 (una cara, horizontal):</strong> esta versión incluye solo la <strong>tabla</strong>. En el navegador use <em>Imprimir → tamaño A3 → horizontal (apaisado)</em>.</p>
+  <div class="print-anverso">
+  <div class="wrap">
+  <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+    <defs>
+      <symbol id="ico-vasopresor" viewBox="0 0 32 32">
+        <path d="M6 10 L6 22 M26 10 L26 22" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M6 10 Q16 18 26 10" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M6 22 Q16 14 26 22" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M16 2 v5 M13 4 l3 3 3-3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="ico-inotropo" viewBox="0 0 32 32">
+        <path d="M16 27.5C9.5 22 5 17.5 5 11.5 5 7.5 8 5 11.5 5 13.8 5 15.5 6.3 16 8.2 16.5 6.3 18.2 5 20.5 5 24 5 27 7.5 27 11.5 27 17.5 22.5 22 16 27.5Z" fill="currentColor" opacity="0.92"/>
+        <path d="M16 11.5v9M11.5 16h9" stroke="#f0fdf4" stroke-width="2.2" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="ico-fc-up" viewBox="0 0 32 32">
+        <polyline points="2,16 6,16 8,8 12,24 16,8 20,20 24,12 30,12" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M26 10v-8 M23 5l3-3 3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="ico-antiarr" viewBox="0 0 32 32">
+        <polyline points="2,16 6,16 8,8 12,24 16,8 20,20 24,12 30,12" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M26 22v8 M23 27l3 3 3-3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="ico-vasodil" viewBox="0 0 32 32">
+        <path d="M7 8 L7 24 M25 8 L25 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M7 9 Q16 22 25 9" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M7 23 Q16 10 25 23" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M16 2 v7 M13 5l3-3 3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="ico-hipo" viewBox="0 0 32 32">
+        <path d="M7 8 L7 24 M25 8 L25 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M7 9 Q16 22 25 9" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M7 23 Q16 10 25 23" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M16 2 v7 M13 5l3-3 3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="ico-hipo-fc" viewBox="0 0 32 32">
+        <path d="M14 24c-1.8-1.8-4.5-4.2-4.5-7a4.5 4.5 0 019 0c0 2.8-2.7 5.2-4.5 7z" fill="currentColor" opacity="0.9"/>
+        <path d="M22 6v8 M19 10l3-3 3 3" stroke="currentColor" stroke-width="2"/>
+        <path d="M26 20v6 M23 24l3 3 3-3" stroke="currentColor" stroke-width="2"/>
+      </symbol>
+      <symbol id="ico-reloj" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="ico-amp-mini" viewBox="0 0 22 18">
+        <rect x="1" y="5" width="13" height="9" rx="1.2" fill="#f8fafc" stroke="#64748b" stroke-width="0.85"/>
+        <rect x="2.2" y="6.5" width="10.6" height="5.8" rx="0.55" fill="#bae6fd"/>
+        <rect x="14" y="5.8" width="5.5" height="7.2" rx="0.9" fill="#e2e8f0" stroke="#64748b" stroke-width="0.75"/>
+      </symbol>
+    </defs>
+  </svg>
+  <table>
+    <caption><span class="caption-titulo">MEDICACION UCI - VASOPRESORES, HIPOTENSORES, ANTIARRITMICOS</span><span class="caption-sub">Preparacion, dosis y cuidados.</span></caption>
+    <thead>
+      <tr>
+        <th rowspan="2" class="tipo-col" title="Clase farmacológica y efecto hemodinámico; icono orientativo">Tipo / efecto</th>
+        <th rowspan="2" class="farmaco-col">Fármaco</th>
+        <th rowspan="2" title="Composición de la ampolla o vial (icono ilustrativo)">Ampolla</th>
+        <th rowspan="2" class="vol-dil-col" title="Disolvente (volumen y tipo): bolsa con relleno proporcional al volumen; interior ámbar = SG 5 % (SG5%); interior azul = SSF; dos bolsas si ambos disolventes son opción según FT">Disolvente</th>
+        <th rowspan="2" class="dosis-n-amp-th">Nº amp</th>
+        <th rowspan="2">Concentración</th>
+        <th rowspan="2">Dosis objetivo</th>
+        <th colspan="5" title="Rango aproximado de ml/h por peso corporal (50–90 kg)">ml/h según peso</th>
+        <th rowspan="2" title="Compatibilidad con equipo de infusión convencional de PVC">Equipo<br><small>(PVC)</small></th>
+        <th rowspan="2" title="Sí (amarillo) = proteger de la luz (motivo debajo); NO (verde) = no precisa protección habitual.">Protección<br><small>luz</small></th>
+        <th rowspan="2" title="Estabilidad o uso de mezcla perfundida más allá de 24 h: reloj + texto cuando hay precaución según FT / criterios de la hoja.">Estabilidad<br><small>&gt;24&nbsp;h</small></th>
+        <th rowspan="2" title="Vía central (CVC) frente a periférica: riesgo de extravasación, ficha técnica y protocolo">Vía<br><small>(CVC)</small></th>
+      </tr>
+      <tr>
+        <th>50 kg</th>
+        <th>60 kg</th>
+        <th>70 kg</th>
+        <th>80 kg</th>
+        <th>90 kg</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="vasopresor">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-vasopresor"/></svg>
+          <span class="tipo-desc">VASOPRESOR</span>
+          <span class="tipo-moa">α₁+ · β₁+</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Noradrenalina</strong></span><span class="farmaco-comercial"> (Norages)</span></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla: concentración 1 mg/ml — volumen total 4 ml">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 1 mg/ml, 4 ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#7dd3fc"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#0c4a6e" font-size="10" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">4 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">1&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph" title="100 ml — SG 5 %" role="img" aria-label="100 ml en solución glucosada al 5 por ciento">
+            <div class="vol-bag vol-bag--sg" aria-hidden="true"><div class="vol-fill vol-fill--sg" style="--vol-pct:40"></div><span class="vol-bag-lbl">SG5%</span></div>
+            <span class="vol-txt">100&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="16 mg en 4 amp.">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">16&nbsp;mg</div>
+            <div class="dosis-n-amp-icons" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg>
+            </div>
+            <span class="dosis-n-amp-lbl">4 amp.</span>
+          </div>
+        </td>
+        <td>0,16 mg/ml</td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="0,25–0,5 µg/Kg/min" role="img" aria-label="0,25 a 0,5 microgramos por kilo y minuto"><span class="mlh-min">0,25</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">0,5</span></div>
+          <span class="dobj-unit">µg/K/min</span>
+        </div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="5–9 ml/h a 50 kg" role="img" aria-label="5 a 9 ml/h"><span class="mlh-min">5</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">9</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="6–11 ml/h a 60 kg" role="img" aria-label="6 a 11 ml/h"><span class="mlh-min">6</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">11</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="7–13 ml/h a 70 kg" role="img" aria-label="7 a 13 ml/h"><span class="mlh-min">7</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">13</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="8–15 ml/h a 80 kg" role="img" aria-label="8 a 15 ml/h"><span class="mlh-min">8</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">15</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="8–17 ml/h a 90 kg" role="img" aria-label="8 a 17 ml/h"><span class="mlh-min">8</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">17</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-ok" title="PVC habitual admisible; adsorción mínima en uso clínico típico">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <span class="luz-ok" title="No precisa protección de luz habitual en perfusión (según FT / protocolo del centro)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            NO
+          </span>
+        </td>
+        <td class="admin-cell estab24-cell"><span class="estab24-ok" title="Mezcla perfundida habitualmente estable &gt;24 h según criterios de esta hoja / FT"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>OK</span></td>
+        <td class="admin-cell">
+          <span class="via-pref" title="Riesgo de extravasación; preferir vía central si perfusión prolongada; periférica solo con vía calibrosa y vigilancia">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="14"/><path d="M9 14h6l-.5 7h-5l-.5-7z"/></svg>
+            Pref. CVC
+          </span>
+        </td>
+      </tr>
+      <tr class="vasopresor">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-vasopresor"/></svg>
+          <span class="tipo-desc">VASOPRESOR</span>
+          <span class="tipo-moa">V₁+</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Vasopresina</strong></span><span class="farmaco-comercial"> (Empressin)</span></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla: 20 UI/ml — presentaciones 1 ml y 2 ml">
+            <div class="amp-vial-pair" role="group" aria-label="amp. 20 UI/ml: presentación 1 ml y presentación 2 ml">
+              <svg class="amp-vial amp-vial-dual" viewBox="0 0 40 32" width="40" height="32" role="img" aria-label="Ampolla 1 ml, 20 UI/ml">
+                <rect x="3" y="6" width="26" height="16" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.05"/>
+                <rect class="amp-vial-liquid" x="5" y="9" width="22" height="11" rx="1" fill="#c4b5fd"/>
+                <text class="amp-vial-voltxt" x="16" y="14.5" text-anchor="middle" dominant-baseline="middle" fill="#4c1d95" font-size="8.5" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">1 ml</text>
+                <rect x="29" y="8" width="8" height="13" rx="1.2" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+              </svg>
+              <svg class="amp-vial amp-vial-dual" viewBox="0 0 40 32" width="40" height="32" role="img" aria-label="Ampolla 2 ml, 20 UI/ml">
+                <rect x="3" y="6" width="26" height="16" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.05"/>
+                <rect class="amp-vial-liquid" x="5" y="9" width="22" height="11" rx="1" fill="#c4b5fd"/>
+                <text class="amp-vial-voltxt" x="16" y="14.5" text-anchor="middle" dominant-baseline="middle" fill="#4c1d95" font-size="8.5" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">2 ml</text>
+                <rect x="29" y="8" width="8" height="13" rx="1.2" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+              </svg>
+            </div>
+            <div class="amp-data">
+              <span class="amp-dose">20&nbsp;UI/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph" title="50 ml — SSF 0,9 %" role="img" aria-label="50 ml en suero salino fisiológico 0,9 por ciento">
+            <div class="vol-bag vol-bag--ssf" aria-hidden="true"><div class="vol-fill vol-fill--ssf" style="--vol-pct:20"></div><span class="vol-bag-lbl">SSF</span></div>
+            <span class="vol-txt">50&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="40 UI en 2 amp.">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">40&nbsp;UI</div>
+            <div class="dosis-n-amp-icons" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg>
+            </div>
+            <span class="dosis-n-amp-lbl">2 amp.</span>
+          </div>
+        </td>
+        <td>0,8 UI/ml</td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="0,03–0,04 UI/min" role="img" aria-label="0,03 a 0,04 UI por minuto"><span class="mlh-min">0,03</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">0,04</span></div>
+          <span class="dobj-unit">UI/min</span>
+        </div></td>
+        <td colspan="5" class="td-mlh-span"><div class="mlh-rango mlh-rango--span" title="Misma velocidad en todos los pesos (UI/min fijas)" role="img" aria-label="2,3 a 3 ml/h en todos los pesos"><span class="mlh-min">2,3</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">3</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-ok" title="PVC habitual admisible">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <span class="luz-ok" title="No precisa protección de luz habitual en perfusión (según FT / protocolo del centro)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            NO
+          </span>
+        </td>
+        <td class="admin-cell estab24-cell"><span class="estab24-ok" title="Mezcla perfundida habitualmente estable &gt;24 h según criterios de esta hoja / FT"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>OK</span></td>
+        <td class="admin-cell">
+          <span class="via-pref" title="Riesgo de extravasación; preferir vía central si perfusión prolongada">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="14"/><path d="M9 14h6l-.5 7h-5l-.5-7z"/></svg>
+            Pref. CVC
+          </span>
+        </td>
+      </tr>
+      <tr class="vasopresor">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-vasopresor"/></svg>
+          <span class="tipo-desc">VASOPRESOR</span>
+          <span class="tipo-moa">α₁+ · β₁+ · β₂+</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Adrenalina</strong></span></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla: 1 mg/ml — volumen total 1 ml">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 1 mg/ml, 1 ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#7dd3fc"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#0c4a6e" font-size="10" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">1 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">1&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph" title="100 ml — SG 5 %" role="img" aria-label="100 ml en solución glucosada al 5 por ciento">
+            <div class="vol-bag vol-bag--sg" aria-hidden="true"><div class="vol-fill vol-fill--sg" style="--vol-pct:40"></div><span class="vol-bag-lbl">SG5%</span></div>
+            <span class="vol-txt">100&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="10 mg en 10 amp.">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">10&nbsp;mg</div>
+            <div class="dosis-n-amp-icons dosis-n-amp-icons--mult" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><span class="dosis-n-amp-mult">×10</span>
+            </div>
+            <span class="dosis-n-amp-lbl">10 amp.</span>
+          </div>
+        </td>
+        <td>0,1 mg/ml</td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="0,05–0,3 µg/Kg/min" role="img" aria-label="0,05 a 0,3 microgramos por kilo y minuto"><span class="mlh-min">0,05</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">0,3</span></div>
+          <span class="dobj-unit">µg/K/min</span>
+        </div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="2–9 ml/h a 50 kg" role="img" aria-label="2 a 9 ml/h"><span class="mlh-min">2</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">9</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="2–11 ml/h a 60 kg" role="img" aria-label="2 a 11 ml/h"><span class="mlh-min">2</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">11</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="2–13 ml/h a 70 kg" role="img" aria-label="2 a 13 ml/h"><span class="mlh-min">2</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">13</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="2–14 ml/h a 80 kg" role="img" aria-label="2 a 14 ml/h"><span class="mlh-min">2</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">14</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="3–16 ml/h a 90 kg" role="img" aria-label="3 a 16 ml/h"><span class="mlh-min">3</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">16</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-ok" title="PVC habitual admisible">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <span class="luz-ok" title="No precisa protección de luz habitual en perfusión (según FT / protocolo del centro)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            NO
+          </span>
+        </td>
+        <td class="admin-cell estab24-cell"><span class="estab24-ok" title="Mezcla perfundida habitualmente estable &gt;24 h según criterios de esta hoja / FT"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>OK</span></td>
+        <td class="admin-cell">
+          <span class="via-pref" title="Riesgo de extravasación; preferir CVC si perfusión prolongada; periférica con vía calibrosa y vigilancia">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="14"/><path d="M9 14h6l-.5 7h-5l-.5-7z"/></svg>
+            Pref. CVC
+          </span>
+        </td>
+      </tr>
+      <tr class="vasopresor">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-vasopresor"/></svg>
+          <span class="tipo-desc">VASOPRESOR</span>
+          <span class="tipo-moa">↓NO–cGMP</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Azul de metileno</strong></span><span class="farmaco-comercial"> (Proveblue)</span></td>
+        <td class="amp-cell amp-mb">
+          <div class="amp-graph" title="Ampolla: 100 mg — solución 10 % — 10 ml">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 100 mg solución 10 %, 10 ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#22d3ee"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#155e75" font-size="9.5" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">10 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">100&nbsp;mg</span>
+              <span class="amp-sub">Sol. 10&nbsp;%</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph" title="100 ml — SG 5 %" role="img" aria-label="100 ml en solución glucosada al 5 por ciento">
+            <div class="vol-bag vol-bag--sg" aria-hidden="true"><div class="vol-fill vol-fill--sg" style="--vol-pct:40"></div><span class="vol-bag-lbl">SG5%</span></div>
+            <span class="vol-txt">100&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="100 mg — 1 amp.">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">100&nbsp;mg</div>
+            <div class="dosis-n-amp-icons" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg>
+            </div>
+            <span class="dosis-n-amp-lbl">1 amp.</span>
+          </div>
+        </td>
+        <td>1 mg/ml</td>
+        <td class="dosis-obj"><div class="dosis-obj-inner dobj-stack">
+          <div class="dobj-block dobj-block--carga" title="Carga: bolo IV 1–2 mg/Kg (no es perfusión de mesa; según protocolo)">
+            <span class="dobj-carga-line"><span class="dobj-etiq">Carga:</span> <span class="dobj-carga-dosis">1–2&nbsp;mg/Kg</span></span>
+          </div>
+          <div class="dobj-block" title="Perfusión continua: 0,25–1 mg/K/h">
+            <span class="dobj-etiq">Perfusión</span>
+            <div class="mlh-rango mlh-rango--dobj" role="img" aria-label="0,25 a 1 mg por Kg y hora"><span class="mlh-min">0,25</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">1</span></div>
+            <span class="dobj-unit">mg/K/h</span>
+          </div>
+        </div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="13–50 ml/h a 50 kg" role="img" aria-label="13 a 50 ml/h"><span class="mlh-min">13</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">50</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="15–60 ml/h a 60 kg" role="img" aria-label="15 a 60 ml/h"><span class="mlh-min">15</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">60</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="18–70 ml/h a 70 kg" role="img" aria-label="18 a 70 ml/h"><span class="mlh-min">18</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">70</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="20–80 ml/h a 80 kg" role="img" aria-label="20 a 80 ml/h"><span class="mlh-min">20</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">80</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="23–90 ml/h a 90 kg" role="img" aria-label="23 a 90 ml/h"><span class="mlh-min">23</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">90</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-ok" title="PVC habitual admisible">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <span class="luz-ok" title="No precisa protección de luz habitual en perfusión (según FT / protocolo del centro)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            NO
+          </span>
+        </td>
+        <td class="admin-cell estab24-cell"><span class="estab24-ok" title="Mezcla perfundida habitualmente estable &gt;24 h según criterios de esta hoja / FT"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>OK</span></td>
+        <td class="admin-cell">
+          <span class="via-pref" title="Necrosis tisular si extravasación; preferir CVC para perfusión continua">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="14"/><path d="M9 14h6l-.5 7h-5l-.5-7z"/></svg>
+            Pref. CVC
+          </span>
+        </td>
+      </tr>
+      <tr class="vasopresor">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-vasopresor"/></svg>
+          <span class="tipo-desc">VASOPRESOR</span>
+          <span class="tipo-moa">AT₁+</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Angiotensina II</strong></span><span class="farmaco-comercial"> (Giapreza)</span></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Vial 1 ml — 2,5 mg/ml (según presentación comercial)">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Vial 2,5 mg/ml, 1 ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#7dd3fc"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#0c4a6e" font-size="10" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">1 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">2,5&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph vol-graph--mix" title="250 ml; según ficha técnica: SG 5 % o SSF 0,9 %" role="img" aria-label="250 ml; glucosado 5 por ciento o salino 0,9 por ciento según ficha técnica">
+            <div class="vol-dil-bags" aria-hidden="true">
+              <div class="vol-bag vol-bag--sg"><div class="vol-fill vol-fill--sg" style="--vol-pct:100"></div><span class="vol-bag-lbl">SG5%</span></div>
+              <div class="vol-bag vol-bag--ssf"><div class="vol-fill vol-fill--ssf" style="--vol-pct:100"></div><span class="vol-bag-lbl">SSF</span></div>
+            </div>
+            <span class="vol-txt">250&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="2,5 mg — 1 amp. / vial">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">2,5&nbsp;mg</div>
+            <div class="dosis-n-amp-icons" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg>
+            </div>
+            <span class="dosis-n-amp-lbl">1 amp.</span>
+          </div>
+        </td>
+        <td>10 µg/ml</td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="0,02–0,04 µg/Kg/min" role="img" aria-label="0,02 a 0,04 microgramos por kilo y minuto"><span class="mlh-min">0,02</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">0,04</span></div>
+          <span class="dobj-unit">µg/K/min</span>
+        </div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="6–12 ml/h a 50 kg" role="img" aria-label="6 a 12 ml/h"><span class="mlh-min">6</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">12</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="7–14 ml/h a 60 kg" role="img" aria-label="7 a 14 ml/h"><span class="mlh-min">7</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">14</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="8–17 ml/h a 70 kg" role="img" aria-label="8 a 17 ml/h"><span class="mlh-min">8</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">17</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="10–19 ml/h a 80 kg" role="img" aria-label="10 a 19 ml/h"><span class="mlh-min">10</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">19</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="11–22 ml/h a 90 kg" role="img" aria-label="11 a 22 ml/h"><span class="mlh-min">11</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">22</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-ok" title="PVC habitual admisible">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <span class="luz-ok" title="No precisa protección de luz habitual en perfusión (según FT / protocolo del centro)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            NO
+          </span>
+        </td>
+        <td class="admin-cell estab24-cell"><span class="estab24-ok" title="Mezcla perfundida habitualmente estable &gt;24 h según criterios de esta hoja / FT"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>OK</span></td>
+        <td class="admin-cell">
+          <span class="via-req" title="Ficha técnica: administración por vía central venosa; periférica solo si CVC no disponible">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="14"/><path d="M9 14h6l-.5 7h-5l-.5-7z"/></svg>
+            CVC
+          </span>
+        </td>
+      </tr>
+      <tr class="inotropo">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-inotropo"/></svg>
+          <span class="tipo-desc">INOTRÓPICO · ↑ fuerza cardíaca · vasodilatación · ↓ TA</span>
+          <span class="tipo-moa">β₁+ &gt; β₂+</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Dobutamina</strong></span></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla: 250 mg en 20 ml — concentración 12,5 mg/ml">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 250 mg, 20 ml — 12,5 mg/ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#86efac"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#14532d" font-size="9.5" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">20 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">250&nbsp;mg</span>
+              <span class="amp-sub">12,5&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph" title="250 ml — SG 5 %" role="img" aria-label="250 ml en solución glucosada al 5 por ciento">
+            <div class="vol-bag vol-bag--sg" aria-hidden="true"><div class="vol-fill vol-fill--sg" style="--vol-pct:100"></div><span class="vol-bag-lbl">SG5%</span></div>
+            <span class="vol-txt">250&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="500 mg en 2 amp. (250 mg c/u)">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">500&nbsp;mg</div>
+            <div class="dosis-n-amp-icons" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg>
+            </div>
+            <span class="dosis-n-amp-lbl">2 amp.</span>
+          </div>
+        </td>
+        <td>2 mg/ml</td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="2–20 µg/Kg/min" role="img" aria-label="2 a 20 microgramos por kilo y minuto"><span class="mlh-min">2</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">20</span></div>
+          <span class="dobj-unit">µg/K/min</span>
+        </div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="3–30 ml/h a 50 kg" role="img" aria-label="3 a 30 ml/h"><span class="mlh-min">3</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">30</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="4–36 ml/h a 60 kg" role="img" aria-label="4 a 36 ml/h"><span class="mlh-min">4</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">36</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="4–42 ml/h a 70 kg" role="img" aria-label="4 a 42 ml/h"><span class="mlh-min">4</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">42</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="5–48 ml/h a 80 kg" role="img" aria-label="5 a 48 ml/h"><span class="mlh-min">5</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">48</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="5–54 ml/h a 90 kg" role="img" aria-label="5 a 54 ml/h"><span class="mlh-min">5</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">54</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-ok" title="PVC habitual admisible">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <span class="luz-ok" title="No precisa protección de luz habitual en perfusión (según FT / protocolo del centro)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            NO
+          </span>
+        </td>
+        <td class="admin-cell estab24-cell"><span class="estab24-ok" title="Mezcla perfundida habitualmente estable &gt;24 h según criterios de esta hoja / FT"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>OK</span></td>
+        <td class="admin-cell">
+          <span class="via-perf" title="Habitualmente periférica con buen calibre; CVC si prolongada o según criterio">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 8h4v8H6zM14 10h4v4h-4z"/><path d="M10 12h4"/></svg>
+            Perif. OK
+          </span>
+        </td>
+      </tr>
+      <tr class="inotropo">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-inotropo"/></svg>
+          <span class="tipo-desc">INOTRÓPICO · ↑ fuerza cardíaca · vasodilatación · ↓ TA</span>
+          <span class="tipo-moa">PDE3−</span>
+        </td>
+        <td class="farmaco-cell">
+          <span class="farmaco-linea">
+            <span class="farmaco-pa"><strong>Milrinona</strong></span><span class="farmaco-comercial"> (Corotrope)</span>
+            <span class="badge-nevera badge-nevera--stack" role="group" aria-label="Requiere conservación en nevera según ficha técnica" title="Conservación en nevera / cadena de frío (presentación; según ficha técnica)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2h14a2 2 0 012 2v16a2 2 0 01-2 2H5a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M5 10h14"/><path d="M9 6V4M15 6V4"/></svg>
+              <small class="badge-nevera-label">nevera</small>
+            </span>
+          </span>
+        </td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla: 10 mg en 10 ml — 1 mg/ml">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 10 mg, 10 ml — 1 mg/ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#7dd3fc"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#0c4a6e" font-size="9.5" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">10 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">10&nbsp;mg</span>
+              <span class="amp-sub">1&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph vol-graph--mix" title="80 ml; según ficha técnica: SG 5 % o SSF 0,9 %" role="img" aria-label="80 ml; glucosado 5 por ciento o salino 0,9 por ciento según ficha técnica">
+            <div class="vol-dil-bags" aria-hidden="true">
+              <div class="vol-bag vol-bag--sg"><div class="vol-fill vol-fill--sg" style="--vol-pct:32"></div><span class="vol-bag-lbl">SG5%</span></div>
+              <div class="vol-bag vol-bag--ssf"><div class="vol-fill vol-fill--ssf" style="--vol-pct:32"></div><span class="vol-bag-lbl">SSF</span></div>
+            </div>
+            <span class="vol-txt">80&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="20 mg en 2 amp.">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">20&nbsp;mg</div>
+            <div class="dosis-n-amp-icons" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg>
+            </div>
+            <span class="dosis-n-amp-lbl">2 amp.</span>
+          </div>
+        </td>
+        <td>0,2 mg/ml</td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="0,25–0,75 µg/Kg/min" role="img" aria-label="0,25 a 0,75 microgramos por kilo y minuto"><span class="mlh-min">0,25</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">0,75</span></div>
+          <span class="dobj-unit">µg/K/min</span>
+        </div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="4–11 ml/h a 50 kg" role="img" aria-label="4 a 11 ml/h"><span class="mlh-min">4</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">11</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="5–14 ml/h a 60 kg" role="img" aria-label="5 a 14 ml/h"><span class="mlh-min">5</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">14</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="5–16 ml/h a 70 kg" role="img" aria-label="5 a 16 ml/h"><span class="mlh-min">5</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">16</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="6–18 ml/h a 80 kg" role="img" aria-label="6 a 18 ml/h"><span class="mlh-min">6</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">18</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="7–20 ml/h a 90 kg" role="img" aria-label="7 a 20 ml/h"><span class="mlh-min">7</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">20</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-ok" title="PVC habitual admisible; adsorción leve posible según tiempo/concentración">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <span class="luz-ok" title="No precisa protección de luz habitual en perfusión (según FT / protocolo del centro)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            NO
+          </span>
+        </td>
+        <td class="admin-cell estab24-cell"><span class="estab24-ok" title="Mezcla perfundida habitualmente estable &gt;24 h según criterios de esta hoja / FT"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>OK</span></td>
+        <td class="admin-cell">
+          <span class="via-pref" title="Riesgo de extravasación; preferir CVC si la perfusión es prolongada">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="14"/><path d="M9 14h6l-.5 7h-5l-.5-7z"/></svg>
+            Pref. CVC
+          </span>
+        </td>
+      </tr>
+      <tr class="fc-subir">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-fc-up"/></svg>
+          <span class="tipo-desc">↑ FC · catecolamina · ↓ TA</span>
+          <span class="tipo-moa">β₁+ · β₂+</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Isoprenalina</strong></span><span class="farmaco-comercial"> (Aleudrina)</span></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla: 0,2 mg — 1 ml (0,2 mg/ml)">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 0,2 mg/ml, 1 ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#34d399"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#065f46" font-size="10" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">1 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">0,2&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph vol-graph--mix" title="100 ml; según FT: líquido compatible (SG 5 % o SSF 0,9 %)" role="img" aria-label="100 ml; glucosado 5 por ciento o salino según ficha técnica">
+            <div class="vol-dil-bags" aria-hidden="true">
+              <div class="vol-bag vol-bag--sg"><div class="vol-fill vol-fill--sg" style="--vol-pct:40"></div><span class="vol-bag-lbl">SG5%</span></div>
+              <div class="vol-bag vol-bag--ssf"><div class="vol-fill vol-fill--ssf" style="--vol-pct:40"></div><span class="vol-bag-lbl">SSF</span></div>
+            </div>
+            <span class="vol-txt">100&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="1 mg en 5 amp. (0,2 mg c/u)">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">1&nbsp;mg</div>
+            <div class="dosis-n-amp-icons dosis-n-amp-icons--mult" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><span class="dosis-n-amp-mult">×5</span>
+            </div>
+            <span class="dosis-n-amp-lbl">5 amp.</span>
+          </div>
+        </td>
+        <td>10&nbsp;µg/ml<br><small>(0,01&nbsp;mg/ml)</small></td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="0,02–0,1 µg/Kg/min (titular)" role="img" aria-label="0,02 a 0,1 microgramos por kilo y minuto"><span class="mlh-min">0,02</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">0,1</span></div>
+          <span class="dobj-unit">µg/K/min</span>
+        </div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="6–30 ml/h a 50 kg" role="img" aria-label="6 a 30 ml/h"><span class="mlh-min">6</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">30</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="7,2–36 ml/h a 60 kg" role="img" aria-label="7,2 a 36 ml/h"><span class="mlh-min">7,2</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">36</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="8,4–42 ml/h a 70 kg" role="img" aria-label="8,4 a 42 ml/h"><span class="mlh-min">8,4</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">42</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="9,6–48 ml/h a 80 kg" role="img" aria-label="9,6 a 48 ml/h"><span class="mlh-min">9,6</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">48</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="10,8–54 ml/h a 90 kg" role="img" aria-label="10,8 a 54 ml/h"><span class="mlh-min">10,8</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">54</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-ok" title="PVC habitual admisible">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <div class="luz-con-motivo">
+            <span class="luz-si" title="Proteger mezcla/línea de la luz (isoprenalina)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm-8-5h2v-2H4v2zm16 0h2v-2h-2v2zm-1.4-7.05l1.41-1.41 1.41 1.41-1.41 1.41-1.41-1.41zM5.99 5.99 4.58 4.58 3.17 5.99 4.58 7.4l1.41-1.41zM12 4V2h-1v2h1zm7.05 3.95l1.41-1.41-1.41-1.41-1.41 1.41 1.41 1.41z"/></svg>
+              Sí
+            </span>
+            <small class="luz-motivo">Pierde potencia</small>
+          </div>
+        </td>
+        <td class="admin-cell estab24-cell">
+          <div class="estab24-bloque" title="Aleudrina (isoprenalina): muy fotosensible — precaución con mezclas perfundidas prolongadas; según FT">
+            <svg class="estab24-ico" width="18" height="18" aria-hidden="true" focusable="false"><use href="#ico-reloj"/></svg>
+            <small class="estab24-motivo">muy fotosensible</small>
+          </div>
+        </td>
+        <td class="admin-cell">
+          <span class="via-pref" title="Catecolamina; preferir CVC si perfusión prolongada">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="14"/><path d="M9 14h6l-.5 7h-5l-.5-7z"/></svg>
+            Pref. CVC
+          </span>
+        </td>
+      </tr>
+      <tr class="inotropo">
+        <td class="tipo-cell">
+          <div class="tipo-icons-pair" role="group" aria-label="Inotrópico; hipertensión; ↑ frecuencia cardíaca">
+            <svg class="tipo-ico" width="34" height="34" aria-hidden="true" focusable="false"><use href="#ico-inotropo"/></svg>
+            <svg class="tipo-ico tipo-ico-fcup" width="34" height="34" aria-hidden="true" focusable="false"><use href="#ico-fc-up"/></svg>
+          </div>
+          <span class="tipo-desc">INOTRÓPICO · HIPERTENSIÓN · <strong>↑</strong> FC</span>
+          <span class="tipo-moa">D₁+ · β₁+ · α₁+</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Dopamina</strong></span></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla habitual: 200 mg en 5 ml (40 mg/ml) — según presentación local">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 200 mg, 5 ml — 40 mg/ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#6ee7b7"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#14532d" font-size="10" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">5 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">200&nbsp;mg</span>
+              <span class="amp-sub">40&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph" title="250 ml — SG 5 % (habitualmente recomendada para dopamina IV; según FT)" role="img" aria-label="250 ml en solución glucosada al 5 por ciento">
+            <div class="vol-bag vol-bag--sg" aria-hidden="true"><div class="vol-fill vol-fill--sg" style="--vol-pct:100"></div><span class="vol-bag-lbl">SG5%</span></div>
+            <span class="vol-txt">250&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="400 mg en 2 amp.">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">400&nbsp;mg</div>
+            <div class="dosis-n-amp-icons" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg>
+            </div>
+            <span class="dosis-n-amp-lbl">2 amp.</span>
+          </div>
+        </td>
+        <td>1,6&nbsp;mg/ml<br><small>(400&nbsp;mg/250&nbsp;ml)</small></td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="2–20 µg/Kg/min (titular; dosis altas α según FT)" role="img" aria-label="2 a 20 microgramos por kilo y minuto"><span class="mlh-min">2</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">20</span></div>
+          <span class="dobj-unit">µg/K/min</span>
+        </div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="3,8–37,5 ml/h a 50 kg" role="img" aria-label="3,8 a 37,5 ml/h"><span class="mlh-min">3,8</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">37,5</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="4,5–45 ml/h a 60 kg" role="img" aria-label="4,5 a 45 ml/h"><span class="mlh-min">4,5</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">45</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="5,3–52,5 ml/h a 70 kg" role="img" aria-label="5,3 a 52,5 ml/h"><span class="mlh-min">5,3</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">52,5</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="6–60 ml/h a 80 kg" role="img" aria-label="6 a 60 ml/h"><span class="mlh-min">6</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">60</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="6,8–67,5 ml/h a 90 kg" role="img" aria-label="6,8 a 67,5 ml/h"><span class="mlh-min">6,8</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">67,5</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-ok" title="PVC habitual admisible; adsorción leve posible con perfusión muy prolongada según FT">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <span class="luz-ok" title="No precisa protección de luz habitual en perfusión (según FT / protocolo del centro)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            NO
+          </span>
+        </td>
+        <td class="admin-cell estab24-cell"><span class="estab24-ok" title="Mezcla perfundida habitualmente estable &gt;24 h según criterios de esta hoja / FT"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>OK</span></td>
+        <td class="admin-cell">
+          <span class="via-perf" title="Habitualmente periférica con calibre adecuado; CVC si dosis altas o prolongadas según protocolo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 8h4v8H6zM14 10h4v4h-4z"/><path d="M10 12h4"/></svg>
+            Perif. OK
+          </span>
+        </td>
+      </tr>
+      <tr class="fc-bajar">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-antiarr"/></svg>
+          <span class="tipo-desc">ANTIARRÍTMICO · ↓ FC</span>
+          <span class="tipo-moa">III · multicanal · β−</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Amiodarona</strong></span><span class="farmaco-comercial"> (Trangorex / Cordarone)</span></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla concentrado: 150 mg en 3 ml (50 mg/ml)">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 150 mg, 3 ml — 50 mg/ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#fbbf24"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#92400e" font-size="10" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">3 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">150&nbsp;mg</span>
+              <span class="amp-sub">50&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph vol-graph--dual" title="SG 5 %: 100 ml (carga) y 250 ml (mantenimiento 24 h); solo glucosado según FT" role="img" aria-label="100 ml carga y 250 ml para 24 horas; solución glucosada al 5 por ciento">
+            <div class="vol-graph__item">
+              <div class="vol-bag vol-bag--sg" aria-hidden="true"><div class="vol-fill vol-fill--sg" style="--vol-pct:40"></div><span class="vol-bag-lbl">SG5%</span></div>
+              <span class="vol-txt">100&nbsp;ml <small>(carga)</small></span>
+            </div>
+            <div class="vol-graph__item">
+              <div class="vol-bag vol-bag--sg" aria-hidden="true"><div class="vol-fill vol-fill--sg" style="--vol-pct:100"></div><span class="vol-bag-lbl">SG5%</span></div>
+              <span class="vol-txt">250&nbsp;ml <small>(24&nbsp;h)</small></span>
+            </div>
+          </div>
+        </td>
+        <td class="dosis-n-amp amio-quad-cell" title="① Carga: 2 amp. (300 mg). ② PC 24 h: 6–8 amp. (900–1200 mg)">
+          <div class="amio-dual-stack">
+            <div class="amio-dual-phase">
+              <span class="amio-ph-tag">①</span>
+              <div class="dosis-n-amp-val">300&nbsp;mg</div>
+              <div class="dosis-n-amp-icons" aria-hidden="true">
+                <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg>
+              </div>
+              <span class="dosis-n-amp-lbl">2 amp.</span>
+            </div>
+            <div class="amio-dual-phase amio-dual-phase--rule">
+              <span class="amio-ph-tag">②</span>
+              <div class="dosis-n-amp-val dosis-n-amp-val--sm">900–1200&nbsp;mg</div>
+              <div class="dosis-n-amp-icons dosis-n-amp-icons--mult" aria-hidden="true">
+                <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><span class="dosis-n-amp-range">6–8</span>
+              </div>
+              <span class="dosis-n-amp-lbl">amp.</span>
+            </div>
+          </div>
+        </td>
+        <td class="amio-quad-cell"><div class="amio-dual-stack">
+            <div class="amio-dual-phase">
+              <span class="amio-ph-tag">①</span>
+              <div class="amio-conc-val">3&nbsp;mg/ml</div>
+              <div class="amio-conc-sub">300&nbsp;mg/100&nbsp;ml</div>
+            </div>
+            <div class="amio-dual-phase amio-dual-phase--rule">
+              <span class="amio-ph-tag">②</span>
+              <div class="amio-conc-val">3,6–4,8&nbsp;mg/ml</div>
+              <div class="amio-conc-sub">900–1200&nbsp;mg/250&nbsp;ml</div>
+            </div>
+          </div></td>
+        <td class="dosis-obj-amio amio-quad-cell"><div class="amio-dual-stack">
+            <div class="amio-dual-phase">
+              <span class="amio-ph-tag">①</span>
+              <div class="amio-dosis-line">300&nbsp;mg en 20′</div>
+            </div>
+            <div class="amio-dual-phase amio-dual-phase--rule">
+              <span class="amio-ph-tag">②</span>
+              <div class="amio-dosis-line">900–1200&nbsp;mg</div>
+            </div>
+          </div></td>
+        <td colspan="5" class="td-mlh-span amio-quad-cell"><div class="amio-dual-stack">
+            <div class="amio-dual-phase">
+              <span class="amio-ph-tag">①</span>
+              <span class="mlh-pill mlh-pill--amio" title="Carga: ~300 ml/h; bolus 100 ml en ~20′">~300&nbsp;ml/h</span>
+            </div>
+            <div class="amio-dual-phase amio-dual-phase--rule">
+              <span class="amio-ph-tag">②</span>
+              <span class="mlh-pill mlh-pill--amio" title="PC 24 h: ~11 ml/h; 250 ml en 24 h">~11&nbsp;ml/h</span>
+            </div>
+          </div></td>
+        <td class="admin-cell">
+          <span class="pvc-no" title="No PVC; adsorción — equipo de baja adsorción / filtro en línea según FT">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 8l8 8M16 8l-8 8"/></svg>
+            No PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <div class="luz-con-motivo">
+            <span class="luz-si" title="Proteger mezcla/línea de la luz (amiodarona)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm-8-5h2v-2H4v2zm16 0h2v-2h-2v2zm-1.4-7.05l1.41-1.41 1.41 1.41-1.41 1.41-1.41-1.41zM5.99 5.99 4.58 4.58 3.17 5.99 4.58 7.4l1.41-1.41zM12 4V2h-1v2h1zm7.05 3.95l1.41-1.41-1.41-1.41-1.41 1.41 1.41 1.41z"/></svg>
+              Sí
+            </span>
+            <small class="luz-motivo">Degradación</small>
+          </div>
+        </td>
+        <td class="admin-cell estab24-cell">
+          <div class="estab24-bloque" title="Amiodarona: degradación fotoquímica — precaución &gt;24 h; según FT">
+            <svg class="estab24-ico" width="18" height="18" aria-hidden="true" focusable="false"><use href="#ico-reloj"/></svg>
+            <small class="estab24-motivo">degradación fotoquímica</small>
+          </div>
+        </td>
+        <td class="admin-cell">
+          <span class="via-pref" title="Concentraciones altas o prolongadas: preferir CVC; filtro 0,22 µm según FT">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="14"/><path d="M9 14h6l-.5 7h-5l-.5-7z"/></svg>
+            Pref. CVC
+          </span>
+        </td>
+      </tr>
+      <tr class="vasodilatador">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-vasodil"/></svg>
+          <span class="tipo-desc">VASODILATADOR · ↓ TA</span>
+          <span class="tipo-moa">↑NO · sGC+</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Nitroglicerina</strong></span><span class="farmaco-comercial"> (Solinitrina)</span></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla: 50 mg en 10 ml — concentración 5 mg/ml">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 50 mg, 10 ml — 5 mg/ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#f472b6"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#831843" font-size="9.5" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">10 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">50&nbsp;mg</span>
+              <span class="amp-sub">5&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph vol-graph--mix" title="250 ml; dilución en SG 5 % o SSF 0,9 % según ficha técnica / disponibilidad" role="img" aria-label="250 ml; glucosado 5 por ciento o salino 0,9 por ciento">
+            <div class="vol-dil-bags" aria-hidden="true">
+              <div class="vol-bag vol-bag--sg"><div class="vol-fill vol-fill--sg" style="--vol-pct:100"></div><span class="vol-bag-lbl">SG5%</span></div>
+              <div class="vol-bag vol-bag--ssf"><div class="vol-fill vol-fill--ssf" style="--vol-pct:100"></div><span class="vol-bag-lbl">SSF</span></div>
+            </div>
+            <span class="vol-txt">250&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="50 mg — 1 amp.">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">50&nbsp;mg</div>
+            <div class="dosis-n-amp-icons" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg>
+            </div>
+            <span class="dosis-n-amp-lbl">1 amp.</span>
+          </div>
+        </td>
+        <td>200 µg/ml<br><small>(0,2 mg/ml)</small></td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="5–200 µg/min (titular; máx. según protocolo, p. ej. hasta 400)" role="img" aria-label="5 a 200 microgramos por minuto"><span class="mlh-min">5</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">200</span></div>
+          <span class="dobj-unit">µg/min</span>
+        </div></td>
+        <td colspan="5" class="td-mlh-span"><div class="mlh-rango mlh-rango--span" title="µg/min; mismas ml/h en todos los pesos" role="img" aria-label="1,5 a 60 ml/h"><span class="mlh-min">1,5</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">60</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-no" title="Adsorción importante a PVC; usar equipo polietileno (PE) o baja adsorción, no PVC convencional">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 8l8 8M16 8l-8 8"/></svg>
+            No PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <span class="luz-ok" title="No precisa protección de luz habitual en perfusión (según FT / protocolo del centro)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            NO
+          </span>
+        </td>
+        <td class="admin-cell estab24-cell"><span class="estab24-ok" title="Mezcla perfundida habitualmente estable &gt;24 h según criterios de esta hoja / FT"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>OK</span></td>
+        <td class="admin-cell">
+          <span class="via-perf" title="Habitualmente vía periférica; calibre adecuado y monitorización">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 8h4v8H6zM14 10h4v4h-4z"/><path d="M10 12h4"/></svg>
+            Perif. OK
+          </span>
+        </td>
+      </tr>
+      <tr class="vasodilatador">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-hipo"/></svg>
+          <span class="tipo-desc">VASODILATADOR · ↓ TA</span>
+          <span class="tipo-moa">↑NO · sGC+</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Nitroprusiato</strong></span></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla habitual: 50 mg en 5 ml (10 mg/ml) — ver presentación local">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 50 mg, 5 ml — 10 mg/ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#fb7185"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#9f1239" font-size="10" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">5 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">50&nbsp;mg</span>
+              <span class="amp-sub">10&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph" title="250 ml — SG 5 % (habitualmente; según FT)" role="img" aria-label="250 ml en solución glucosada al 5 por ciento">
+            <div class="vol-bag vol-bag--sg" aria-hidden="true"><div class="vol-fill vol-fill--sg" style="--vol-pct:100"></div><span class="vol-bag-lbl">SG5%</span></div>
+            <span class="vol-txt">250&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="50 mg — 1 amp.">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">50&nbsp;mg</div>
+            <div class="dosis-n-amp-icons" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg>
+            </div>
+            <span class="dosis-n-amp-lbl">1 amp.</span>
+          </div>
+        </td>
+        <td>200&nbsp;µg/ml<br><small>(0,2 mg/ml)</small></td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="0,25–2 µg/Kg/min (titular; monitor CN⁻)" role="img" aria-label="0,25 a 2 microgramos por kilo y minuto"><span class="mlh-min">0,25</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">2</span></div>
+          <span class="dobj-unit">µg/K/min</span>
+        </div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="4–30 ml/h a 50 kg" role="img" aria-label="4 a 30 ml/h"><span class="mlh-min">4</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">30</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="5–36 ml/h a 60 kg" role="img" aria-label="5 a 36 ml/h"><span class="mlh-min">5</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">36</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="5–42 ml/h a 70 kg" role="img" aria-label="5 a 42 ml/h"><span class="mlh-min">5</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">42</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="6–48 ml/h a 80 kg" role="img" aria-label="6 a 48 ml/h"><span class="mlh-min">6</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">48</span></div></td>
+        <td class="td-mlh"><div class="mlh-rango" title="7–54 ml/h a 90 kg" role="img" aria-label="7 a 54 ml/h"><span class="mlh-min">7</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">54</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-no" title="No usar PVC; fotodegradación y adsorción — equipo opaco / PE">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 8l8 8M16 8l-8 8"/></svg>
+            No PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <div class="luz-con-motivo">
+            <span class="luz-si" title="Proteger mezcla/línea de la luz (nitroprusiato)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm-8-5h2v-2H4v2zm16 0h2v-2h-2v2zm-1.4-7.05l1.41-1.41 1.41 1.41-1.41 1.41-1.41-1.41zM5.99 5.99 4.58 4.58 3.17 5.99 4.58 7.4l1.41-1.41zM12 4V2h-1v2h1zm7.05 3.95l1.41-1.41-1.41-1.41-1.41 1.41 1.41 1.41z"/></svg>
+              Sí
+            </span>
+            <small class="luz-motivo">Degrada a cianuro</small>
+          </div>
+        </td>
+        <td class="admin-cell estab24-cell">
+          <div class="estab24-bloque" title="Nitroprusiato: degradación + riesgo de cianuro con perfusión prolongada; según FT">
+            <svg class="estab24-ico" width="18" height="18" aria-hidden="true" focusable="false"><use href="#ico-reloj"/></svg>
+            <small class="estab24-motivo">degradación + riesgo de cianuro</small>
+          </div>
+        </td>
+        <td class="admin-cell">
+          <span class="via-req" title="Perfusión por CVC; vigilancia invasiva de TA; riesgo de cianuro con uso prolongado">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="14"/><path d="M9 14h6l-.5 7h-5l-.5-7z"/></svg>
+            CVC
+          </span>
+        </td>
+      </tr>
+      <tr class="vaso-hipota">
+        <td class="tipo-cell">
+          <svg class="tipo-ico" width="36" height="36" aria-hidden="true" focusable="false"><use href="#ico-hipo"/></svg>
+          <span class="tipo-desc">VASODILATADOR · ↓ TA</span>
+          <span class="tipo-moa">α₁− · 5-HT1A+</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Urapidilo</strong></span><span class="farmaco-comercial"> (Elgadil)</span><br><small>Evita TQ refleja</small></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla: 50 mg en 10 ml (5 mg/ml)">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 50 mg, 10 ml — 5 mg/ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#a78bfa"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#5b21b6" font-size="9.5" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">10 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">50&nbsp;mg</span>
+              <span class="amp-sub">5&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph vol-graph--mix" title="250 ml; compatible SG 5/10 % o SSF 0,9 %; no mezclas alcalinas" role="img" aria-label="250 ml; glucosado 5 por ciento o salino 0,9 por ciento según ficha técnica">
+            <div class="vol-dil-bags" aria-hidden="true">
+              <div class="vol-bag vol-bag--sg"><div class="vol-fill vol-fill--sg" style="--vol-pct:100"></div><span class="vol-bag-lbl">SG5%</span></div>
+              <div class="vol-bag vol-bag--ssf"><div class="vol-fill vol-fill--ssf" style="--vol-pct:100"></div><span class="vol-bag-lbl">SSF</span></div>
+            </div>
+            <span class="vol-txt">250&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="250 mg en 5 amp.">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">250&nbsp;mg</div>
+            <div class="dosis-n-amp-icons dosis-n-amp-icons--mult" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><span class="dosis-n-amp-mult">×5</span>
+            </div>
+            <span class="dosis-n-amp-lbl">5 amp.</span>
+          </div>
+        </td>
+        <td>1&nbsp;mg/ml</td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="9–30 mg/h (mantenimiento; crisis HTA ej.)" role="img" aria-label="9 a 30 mg por hora"><span class="mlh-min">9</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">30</span></div>
+          <span class="dobj-unit">mg/h</span>
+        </div></td>
+        <td colspan="5" class="td-mlh-span"><div class="mlh-rango mlh-rango--span" title="mg/h fijos; mismas ml/h en todos los pesos" role="img" aria-label="9 a 30 ml/h"><span class="mlh-min">9</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">30</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-ok" title="PVC habitual admisible">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <span class="luz-ok" title="No precisa protección de luz habitual en perfusión (según FT / protocolo del centro)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            NO
+          </span>
+        </td>
+        <td class="admin-cell estab24-cell"><span class="estab24-ok" title="Mezcla perfundida habitualmente estable &gt;24 h según criterios de esta hoja / FT"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>OK</span></td>
+        <td class="admin-cell">
+          <span class="via-pref" title="Hipotensor potente; preferir CVC / vigilancia estrecha de TA">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="14"/><path d="M9 14h6l-.5 7h-5l-.5-7z"/></svg>
+            Pref. CVC
+          </span>
+        </td>
+      </tr>
+      <tr class="hipo-fc">
+        <td class="tipo-cell">
+          <div class="tipo-icons-pair" role="group" aria-label="Vasodilatador; disminución de frecuencia cardíaca">
+            <svg class="tipo-ico tipo-ico-vasod" width="34" height="34" aria-hidden="true" focusable="false"><use href="#ico-vasodil"/></svg>
+            <svg class="tipo-ico tipo-ico-fcbaj" width="34" height="34" aria-hidden="true" focusable="false"><use href="#ico-antiarr"/></svg>
+          </div>
+          <span class="tipo-desc">VASODILATADOR · ↓ FC</span>
+          <span class="tipo-moa">α₁− · β−</span>
+        </td>
+        <td class="farmaco-cell"><span class="farmaco-pa"><strong>Labetalol</strong></span><span class="farmaco-comercial"> (Trandate)</span></td>
+        <td class="amp-cell">
+          <div class="amp-graph" title="Ampolla: 100 mg en 20 ml (5 mg/ml) — mezcla de referencia 5 amp (500 mg) en 250 ml — Trandate">
+            <svg class="amp-vial amp-vial-noradr" viewBox="0 0 58 32" width="54" height="30" role="img" aria-label="Ampolla 100 mg, 20 ml — 5 mg/ml">
+              <rect x="5" y="7" width="40" height="18" rx="2" fill="#f8fafc" stroke="#64748b" stroke-width="1.1"/>
+              <rect class="amp-vial-liquid" x="7" y="10" width="36" height="12" rx="1" fill="#67e8f9"/>
+              <text class="amp-vial-voltxt" x="25" y="16" text-anchor="middle" dominant-baseline="middle" fill="#0c4a6e" font-size="9.5" font-weight="700" font-family="system-ui,Segoe UI,sans-serif">20 ml</text>
+              <rect x="45" y="9" width="10" height="14" rx="1.5" fill="#e2e8f0" stroke="#64748b" stroke-width="1"/>
+            </svg>
+            <div class="amp-data">
+              <span class="amp-dose">100&nbsp;mg</span>
+              <span class="amp-sub">5&nbsp;mg/ml</span>
+            </div>
+          </div>
+        </td>
+        <td class="vol-dil-cell">
+          <div class="vol-graph vol-graph--mix" title="250 ml; según FT: SG 5 % o SSF 0,9 %" role="img" aria-label="250 ml; glucosado 5 por ciento o salino 0,9 por ciento según ficha técnica">
+            <div class="vol-dil-bags" aria-hidden="true">
+              <div class="vol-bag vol-bag--sg"><div class="vol-fill vol-fill--sg" style="--vol-pct:100"></div><span class="vol-bag-lbl">SG5%</span></div>
+              <div class="vol-bag vol-bag--ssf"><div class="vol-fill vol-fill--ssf" style="--vol-pct:100"></div><span class="vol-bag-lbl">SSF</span></div>
+            </div>
+            <span class="vol-txt">250&nbsp;ml</span>
+          </div>
+        </td>
+        <td class="dosis-n-amp" title="500 mg en 5 amp. (mezcla de referencia)">
+          <div class="dosis-n-amp-inner">
+            <div class="dosis-n-amp-val">500&nbsp;mg</div>
+            <div class="dosis-n-amp-icons dosis-n-amp-icons--mult" aria-hidden="true">
+              <svg class="dosis-n-amp-ico" width="10" height="11" viewBox="0 0 22 18" aria-hidden="true"><use href="#ico-amp-mini"/></svg><span class="dosis-n-amp-mult">×5</span>
+            </div>
+            <span class="dosis-n-amp-lbl">5 amp.</span>
+          </div>
+        </td>
+        <td>2&nbsp;mg/ml<br><small>(500&nbsp;mg/250&nbsp;ml)</small></td>
+        <td class="dosis-obj"><div class="dosis-obj-inner">
+          <div class="mlh-rango mlh-rango--dobj" title="20–120 mg/h (titular; HTA grave)" role="img" aria-label="20 a 120 mg por hora"><span class="mlh-min">20</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">120</span></div>
+          <span class="dobj-unit">mg/h</span>
+        </div></td>
+        <td colspan="5" class="td-mlh-span"><div class="mlh-rango mlh-rango--span" title="Labetalol: 500 mg en 250 ml → 2 mg/ml; ml/h = mg/h ÷ 2 (20–120 mg/h)" role="img" aria-label="10 a 60 ml/h"><span class="mlh-min">10</span><span class="mlh-bar" aria-hidden="true"></span><span class="mlh-max">60</span></div></td>
+        <td class="admin-cell">
+          <span class="pvc-ok" title="PVC habitual admisible">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+            PVC
+          </span>
+        </td>
+        <td class="admin-cell">
+          <div class="luz-con-motivo">
+            <span class="luz-si" title="Proteger mezcla/línea de la luz (labetalol)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm-8-5h2v-2H4v2zm16 0h2v-2h-2v2zm-1.4-7.05l1.41-1.41 1.41 1.41-1.41 1.41-1.41-1.41zM5.99 5.99 4.58 4.58 3.17 5.99 4.58 7.4l1.41-1.41zM12 4V2h-1v2h1zm7.05 3.95l1.41-1.41-1.41-1.41-1.41 1.41 1.41 1.41z"/></svg>
+              Sí
+            </span>
+            <small class="luz-motivo">Oxidación y pierde potencia</small>
+          </div>
+        </td>
+        <td class="admin-cell estab24-cell">
+          <div class="estab24-bloque" title="Trandate (labetalol): oxidación acelerada — precaución con mezcla &gt;24 h; según FT">
+            <svg class="estab24-ico" width="18" height="18" aria-hidden="true" focusable="false"><use href="#ico-reloj"/></svg>
+            <small class="estab24-motivo">oxidación acelerada</small>
+          </div>
+        </td>
+        <td class="admin-cell">
+          <span class="via-pref" title="Hipotensión; preferir CVC si perfusión agresiva">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="3" x2="12" y2="14"/><path d="M9 14h6l-.5 7h-5l-.5-7z"/></svg>
+            Pref. CVC
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="tabla-copy" lang="es">&copy; J. Rodriguez. 2026. HMPS.</p>
+  </div>
+  </div>
+
+</body>
+</html>

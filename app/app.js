@@ -5,13 +5,24 @@ const LIB = window.BIBLIOTECA_DATA || { tree: { id: 'f-root', type: 'folder', ti
 const VALID_EXTS = ['.gif', '.htm', '.html', '.jpeg', '.jpg', '.pdf', '.png', '.webp'];
 const IMAGE_EXTS = ['.gif', '.jpeg', '.jpg', '.png', '.webp'];
 const HTML_EXTS = ['.htm', '.html'];
+const CALCULADORAS = [
+  {
+    id: 'sedacion-uci',
+    title: 'Sedación UCI',
+    description: 'Perfusión continua de sedantes, analgésicos, agitación y relajantes.',
+    path: '../biblioteca/assets/calculadoras/calculadora-sedacion-uci.html'
+  }
+];
+const HOME_IMAGE = '../biblioteca/assets/inicio-uci.png';
 
 const els = {
   tree: document.getElementById('tree'),
   results: document.getElementById('results'),
   search: document.getElementById('search'),
+  homeBtn: document.getElementById('homeBtn'),
   expandAllBtn: document.getElementById('expandAllBtn'),
   collapseAllBtn: document.getElementById('collapseAllBtn'),
+  calculadorasBtn: document.getElementById('calculadorasBtn'),
   title: document.getElementById('title'),
   meta: document.getElementById('meta'),
   crumbs: document.getElementById('crumbs'),
@@ -267,6 +278,7 @@ function firstFile(node = state.tree) {
 function setSelection(id, type) {
   state.selectedId = id;
   state.selectedType = type;
+  if (els.calculadorasBtn) els.calculadorasBtn.classList.remove('active');
   const found = findNodeAndParentById(id);
   if (!found.node) {
     els.selectedInfo.textContent = 'Selección actual: ninguna';
@@ -334,12 +346,20 @@ function applyLightboxTransform() {
   els.lightboxImage.style.transform = 'translate3d(' + state.lightboxPanX + 'px,' + state.lightboxPanY + 'px,0) scale(' + state.lightboxScale + ')';
   els.lightboxImage.classList.toggle('can-pan', state.lightboxScale > 1);
 }
-function resetLightboxView() {
+function fitLightboxToWidth() {
   state.lightboxScale = 1;
   state.lightboxPanX = 0;
   state.lightboxPanY = 0;
   stopLightboxDrag();
   applyLightboxTransform();
+  const wrap = getLightboxWrap();
+  if (wrap) {
+    wrap.scrollLeft = 0;
+    wrap.scrollTop = 0;
+  }
+}
+function resetLightboxView() {
+  fitLightboxToWidth();
 }
 function openLightboxFromFile(file) {
   if (!file || !isImageExt(file.ext)) return;
@@ -389,6 +409,93 @@ function lightboxShowAt(index) {
   els.lightboxImage.alt = file.title || 'Póster ampliado';
   els.lightboxTitle.textContent = file.title || '';
   applyLightboxTransform();
+}
+
+function showHome() {
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  state.currentFile = null;
+  state.currentFileParentId = null;
+  state.currentPath = null;
+  state.selectedId = null;
+  state.selectedType = null;
+  document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
+  if (els.calculadorasBtn) els.calculadorasBtn.classList.remove('active');
+  els.selectedInfo.textContent = 'Selección actual: ninguna';
+  els.title.textContent = 'Cuidados intensivos';
+  els.meta.textContent = 'Inicio';
+  els.crumbs.textContent = 'Inicio';
+  els.viewer.innerHTML =
+    '<div class="home-view">' +
+      '<img class="home-image" src="' + escapeHtml(normalizeAssetPath(HOME_IMAGE)) + '" alt="Cuidados intensivos">' +
+    '</div>';
+}
+
+function showCalculadoras() {
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  state.currentFile = null;
+  state.currentFileParentId = null;
+  state.currentPath = null;
+  state.selectedId = null;
+  state.selectedType = null;
+  document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
+  if (els.calculadorasBtn) els.calculadorasBtn.classList.add('active');
+  els.selectedInfo.textContent = 'Selección actual: Calculadoras';
+  els.title.textContent = 'Calculadoras';
+  els.meta.textContent = 'Dashboards de cálculo';
+  els.crumbs.textContent = 'Calculadoras';
+  const cards = CALCULADORAS.map(calc =>
+    '<button type="button" class="calculadora-card" data-calc-id="' + escapeHtml(calc.id) + '">' +
+      '<span class="calculadora-card-title">' + escapeHtml(calc.title) + '</span>' +
+      '<span class="calculadora-card-desc">' + escapeHtml(calc.description) + '</span>' +
+      '<span class="calculadora-card-cta">Abrir</span>' +
+    '</button>'
+  ).join('');
+  els.viewer.innerHTML =
+    '<div class="calculadoras-panel">' +
+      '<div class="calculadoras-panel-head">' +
+        '<div>' +
+          '<h2 class="calculadoras-title">Calculadoras</h2>' +
+          '<p class="calculadoras-lead">Elige un dashboard de cálculo.</p>' +
+        '</div>' +
+        '<button type="button" class="btn" id="closeCalculadorasSectionBtn">Cerrar</button>' +
+      '</div>' +
+      '<div class="calculadoras-grid" id="calculadorasGrid">' + cards + '</div>' +
+    '</div>';
+  const closeSectionBtn = document.getElementById('closeCalculadorasSectionBtn');
+  if (closeSectionBtn) closeSectionBtn.addEventListener('click', () => showHome());
+  els.viewer.querySelectorAll('.calculadora-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const calc = CALCULADORAS.find(c => c.id === btn.dataset.calcId);
+      if (calc) openCalculadora(calc);
+    });
+  });
+}
+
+function openCalculadora(calc) {
+  if (!calc) return;
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  if (els.calculadorasBtn) els.calculadorasBtn.classList.add('active');
+  els.title.textContent = calc.title;
+  els.meta.textContent = 'Calculadora';
+  els.crumbs.textContent = 'Calculadoras / ' + calc.title;
+  els.selectedInfo.textContent = 'Selección actual: ' + calc.title;
+  const src = normalizeAssetPath(calc.path);
+  els.viewer.innerHTML =
+    '<div class="calculadora-view">' +
+      '<div class="calculadora-toolbar">' +
+        '<div class="calculadora-toolbar-title">' + escapeHtml(calc.title) + '</div>' +
+        '<button type="button" class="btn btn-accent" id="closeCalculadoraBtn">Cerrar</button>' +
+      '</div>' +
+      '<iframe class="calculadora-frame" id="calculadoraFrame" title="' + escapeHtml(calc.title) + '" src="' + escapeHtml(src) + '"></iframe>' +
+    '</div>';
+  const closeBtn = document.getElementById('closeCalculadoraBtn');
+  if (closeBtn) closeBtn.addEventListener('click', () => showHome());
 }
 
 function showFile(file) {
@@ -506,15 +613,13 @@ function fitHtmlPreview() {
   iframe.style.height = size.h + 'px';
   board.style.width = size.w + 'px';
   board.style.height = size.h + 'px';
-  board.style.zoom = '1';
+  board.style.transform = 'none';
   const pad = 8;
-  const scale = Math.min(
-    Math.max(80, stage.clientWidth - pad) / size.w,
-    Math.max(80, stage.clientHeight - pad) / size.h
-  );
-  const x = (stage.clientWidth - size.w * scale) / 2;
-  const y = (stage.clientHeight - size.h * scale) / 2;
-  board.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + scale + ')';
+  // Ajuste al ancho: letra más legible; scroll vertical para el resto
+  const scale = Math.max(80, stage.clientWidth - pad) / size.w;
+  board.style.zoom = String(scale);
+  stage.scrollLeft = 0;
+  stage.scrollTop = 0;
 }
 
 function applyHtmlLbTransform() {
@@ -538,8 +643,8 @@ function fitHtmlLightbox() {
   const stage = els.htmlLbStage;
   const pad = 16;
   const availW = Math.max(200, stage.clientWidth - pad);
-  const availH = Math.max(200, stage.clientHeight - pad);
-  const scale = Math.min(availW / size.w, availH / size.h);
+  // Ajuste al ancho de la pantalla (no a toda la página): texto más grande
+  const scale = availW / size.w;
   state.htmlLbFitScale = scale;
   state.htmlLbScale = scale;
   applyHtmlLbTransform();
@@ -947,6 +1052,7 @@ function deleteFolder() {
   saveLocalState();
   const fallback = firstFile();
   if (fallback) showFile(fallback);
+  else showHome();
 }
 
 function renamePoster() {
@@ -978,14 +1084,7 @@ function deletePoster() {
   if (wasCurrent) {
     const fallback = firstFile();
     if (fallback) showFile(fallback);
-    else {
-      state.currentFile = null;
-      state.currentPath = null;
-      els.title.textContent = 'Selecciona un póster';
-      els.meta.textContent = 'Elige un elemento del menú izquierdo.';
-      els.crumbs.textContent = '';
-      els.viewer.innerHTML = '<div class="empty">No quedan pósteres.</div>';
-    }
+    else showHome();
   }
 }
 
@@ -1109,14 +1208,18 @@ async function restoreBaseLibrary() {
   await clearPersistedState();
   renderTree();
   renderSearch('');
-  const first = firstFile();
-  if (first) showFile(first);
+  showHome();
 }
 
 function initEvents() {
   els.search.addEventListener('input', e => renderSearch(e.target.value));
+  if (els.homeBtn) els.homeBtn.addEventListener('click', () => {
+    collapseAllFolders();
+    showHome();
+  });
   els.expandAllBtn.addEventListener('click', expandAllFolders);
   els.collapseAllBtn.addEventListener('click', collapseAllFolders);
+  if (els.calculadorasBtn) els.calculadorasBtn.addEventListener('click', showCalculadoras);
   els.addRootFolderBtn.addEventListener('click', addRootFolder);
   els.addSubfolderBtn.addEventListener('click', addSubfolder);
   els.moveFolderBtn.addEventListener('click', moveSelectedFolder);
@@ -1144,8 +1247,11 @@ function initEvents() {
   els.lbFullscreen.addEventListener('click', () => {
     toggleFullscreenLightbox().catch(() => alert('No se pudo activar la pantalla completa.'));
   });
+  els.lightboxImage.addEventListener('load', () => {
+    fitLightboxToWidth();
+  });
   els.lbZoomIn.addEventListener('click', () => {
-    state.lightboxScale = Math.min(4, state.lightboxScale + 0.2);
+    state.lightboxScale = Math.min(6, state.lightboxScale + 0.2);
     applyLightboxTransform();
   });
   els.lbZoomOut.addEventListener('click', () => {
@@ -1157,11 +1263,6 @@ function initEvents() {
     applyLightboxTransform();
   });
   els.lbReset.addEventListener('click', resetLightboxView);
-  els.lightboxImage.addEventListener('load', () => {
-    state.lightboxPanX = 0;
-    state.lightboxPanY = 0;
-    applyLightboxTransform();
-  });
   els.lightboxImage.addEventListener('wheel', e => {
     e.preventDefault();
     state.lightboxScale = Math.max(0.4, Math.min(4, state.lightboxScale + (e.deltaY < 0 ? 0.12 : -0.12)));
@@ -1238,6 +1339,9 @@ function initEvents() {
     if (els.htmlLightbox.classList.contains('open')) {
       setTimeout(fitHtmlLightbox, 120);
     }
+    if (els.lightbox.classList.contains('open')) {
+      setTimeout(fitLightboxToWidth, 120);
+    }
   });
   window.addEventListener('resize', () => {
     if (document.getElementById('viewerHtmlFrame')) fitHtmlPreview();
@@ -1311,8 +1415,7 @@ async function loadState() {
   }
   rebuildMetadata(state.tree);
   renderTree();
-  const first = firstFile();
-  if (first) showFile(first);
+  showHome();
 }
 
 initEvents();
@@ -1323,6 +1426,5 @@ loadState().catch(err => {
   normalizeTreePaths(state.tree);
   rebuildMetadata(state.tree);
   renderTree();
-  const first = firstFile();
-  if (first) showFile(first);
+  showHome();
 });
