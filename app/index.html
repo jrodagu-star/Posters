@@ -128,6 +128,28 @@
     <div class="lightbox-title" id="lightboxTitle"></div>
   </div>
 
+  <div class="html-lightbox" id="htmlLightbox" aria-hidden="true">
+    <div class="html-lightbox-bar">
+      <div class="html-lightbox-title" id="htmlLbTitle">Póster HTML</div>
+      <div class="html-lightbox-controls">
+        <button class="lb-btn" id="htmlLbZoomOut" title="Reducir">−</button>
+        <button class="lb-btn" id="htmlLbReset" title="Ajustar a pantalla">Ajustar</button>
+        <button class="lb-btn" id="htmlLbZoomIn" title="Ampliar">＋</button>
+        <span class="html-lb-zoom" id="htmlLbZoomLabel">100%</span>
+        <button class="lb-btn" id="htmlLbFullscreen" title="Pantalla completa del sistema">Pantalla completa</button>
+        <button class="lb-btn" id="htmlLbClose">Cerrar</button>
+      </div>
+    </div>
+    <div class="html-lightbox-stage" id="htmlLbStage">
+      <div class="html-lightbox-size" id="htmlLbSize">
+        <div class="html-lightbox-scaler" id="htmlLbScaler">
+          <iframe class="html-lightbox-frame" id="htmlLbFrame" title="Póster HTML ampliado" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+        </div>
+      </div>
+    </div>
+    <div class="html-lightbox-hint">Rueda: desplazar · Ctrl + rueda: zoom · Arrastra para mover</div>
+  </div>
+
   <script src="../biblioteca/biblioteca.js"></script>
   <script src="app.js"></script>
 </body>

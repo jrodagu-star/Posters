@@ -50,7 +50,19 @@ const els = {
   lbZoomIn: document.getElementById('lbZoomIn'),
   lbZoomOut: document.getElementById('lbZoomOut'),
   lbReset: document.getElementById('lbReset'),
-  lbFullscreen: document.getElementById('lbFullscreen')
+  lbFullscreen: document.getElementById('lbFullscreen'),
+  htmlLightbox: document.getElementById('htmlLightbox'),
+  htmlLbTitle: document.getElementById('htmlLbTitle'),
+  htmlLbStage: document.getElementById('htmlLbStage'),
+  htmlLbSize: document.getElementById('htmlLbSize'),
+  htmlLbScaler: document.getElementById('htmlLbScaler'),
+  htmlLbFrame: document.getElementById('htmlLbFrame'),
+  htmlLbZoomIn: document.getElementById('htmlLbZoomIn'),
+  htmlLbZoomOut: document.getElementById('htmlLbZoomOut'),
+  htmlLbReset: document.getElementById('htmlLbReset'),
+  htmlLbFullscreen: document.getElementById('htmlLbFullscreen'),
+  htmlLbClose: document.getElementById('htmlLbClose'),
+  htmlLbZoomLabel: document.getElementById('htmlLbZoomLabel')
 };
 
 const state = {
@@ -73,6 +85,14 @@ const state = {
   lightboxStartPanY: 0,
   lightboxGallery: [],
   lightboxIndex: -1,
+  htmlLbScale: 1,
+  htmlLbNaturalW: 1200,
+  htmlLbNaturalH: 800,
+  htmlLbDragging: false,
+  htmlLbDragStartX: 0,
+  htmlLbDragStartY: 0,
+  htmlLbScrollLeft: 0,
+  htmlLbScrollTop: 0,
   lastSavedMode: 'base'
 };
 
@@ -374,20 +394,125 @@ function showFile(file) {
   setActive(file.path || file.id);
   setSelection(file.id, 'file');
   els.title.textContent = file.title;
-  const canZoom = isImageExt(file.ext);
+  const canZoom = isImageExt(file.ext) || isHtmlExt(file.ext);
   els.meta.textContent = kindLabel(file.ext) + ' · ' + (file.specialty || 'General') + (canZoom ? ' · clic para ampliar' : '');
   els.crumbs.textContent = file.breadcrumb || file.title;
   const src = fileSrc(file);
   if (file.ext === '.pdf') {
     els.viewer.innerHTML = '<object data="' + escapeHtml(src) + '" type="application/pdf"><iframe src="' + escapeHtml(src) + '"></iframe></object>';
   } else if (isHtmlExt(file.ext)) {
-    els.viewer.innerHTML = '<iframe class="html-poster" title="' + escapeHtml(file.title) + '" src="' + escapeHtml(src) + '" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>';
+    els.viewer.innerHTML =
+      '<div class="viewer-html-wrap">' +
+        '<iframe class="html-poster" title="' + escapeHtml(file.title) + '" src="' + escapeHtml(src) + '" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>' +
+        '<button type="button" class="viewer-html-open" id="openHtmlLbBtn"><span>Abrir en pantalla completa</span></button>' +
+      '</div>';
+    const openBtn = document.getElementById('openHtmlLbBtn');
+    if (openBtn) openBtn.addEventListener('click', () => openHtmlLightbox(file));
+    openHtmlLightbox(file);
   } else {
     els.viewer.innerHTML = '<img class="fit-poster" src="' + escapeHtml(src) + '" alt="' + escapeHtml(file.title) + '">';
     const img = els.viewer.querySelector('img');
     img.addEventListener('click', () => openLightboxFromFile(file));
   }
   openParentsByFilePath(file.path || file.id);
+}
+
+function measureHtmlFrameSize() {
+  const iframe = els.htmlLbFrame;
+  let w = 1200;
+  let h = 800;
+  try {
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (doc && doc.documentElement) {
+      const body = doc.body;
+      const root = doc.documentElement;
+      w = Math.max(
+        root.scrollWidth || 0,
+        body ? body.scrollWidth : 0,
+        root.offsetWidth || 0,
+        body ? body.offsetWidth : 0,
+        800
+      );
+      h = Math.max(
+        root.scrollHeight || 0,
+        body ? body.scrollHeight : 0,
+        root.offsetHeight || 0,
+        body ? body.offsetHeight : 0,
+        600
+      );
+    }
+  } catch (e) {}
+  state.htmlLbNaturalW = Math.ceil(w);
+  state.htmlLbNaturalH = Math.ceil(h);
+  iframe.style.width = state.htmlLbNaturalW + 'px';
+  iframe.style.height = state.htmlLbNaturalH + 'px';
+}
+
+function applyHtmlLbTransform() {
+  const scale = state.htmlLbScale;
+  const w = state.htmlLbNaturalW;
+  const h = state.htmlLbNaturalH;
+  els.htmlLbScaler.style.width = w + 'px';
+  els.htmlLbScaler.style.height = h + 'px';
+  els.htmlLbScaler.style.transform = 'scale(' + scale + ')';
+  els.htmlLbSize.style.width = Math.ceil(w * scale) + 'px';
+  els.htmlLbSize.style.height = Math.ceil(h * scale) + 'px';
+  els.htmlLbZoomLabel.textContent = Math.round(scale * 100) + '%';
+}
+
+function setHtmlLbScale(next) {
+  state.htmlLbScale = Math.max(0.25, Math.min(4, next));
+  applyHtmlLbTransform();
+}
+
+function fitHtmlLightbox() {
+  measureHtmlFrameSize();
+  const stage = els.htmlLbStage;
+  const pad = 16;
+  const availW = Math.max(200, stage.clientWidth - pad);
+  const availH = Math.max(200, stage.clientHeight - pad);
+  const scaleW = availW / state.htmlLbNaturalW;
+  const scaleH = availH / state.htmlLbNaturalH;
+  setHtmlLbScale(Math.min(scaleW, scaleH, 1));
+  stage.scrollLeft = 0;
+  stage.scrollTop = 0;
+}
+
+function openHtmlLightbox(file) {
+  if (!file || !isHtmlExt(file.ext)) return;
+  closeLightbox();
+  els.htmlLbTitle.textContent = file.title || 'Póster HTML';
+  els.htmlLightbox.classList.add('open');
+  els.htmlLightbox.setAttribute('aria-hidden', 'false');
+  const src = fileSrc(file);
+  const frame = els.htmlLbFrame;
+  const onLoad = () => {
+    measureHtmlFrameSize();
+    fitHtmlLightbox();
+  };
+  frame.onload = onLoad;
+  if (frame.getAttribute('src') !== src) frame.src = src;
+  else onLoad();
+}
+
+async function toggleHtmlLightboxFullscreen() {
+  const target = els.htmlLightbox;
+  if (!document.fullscreenElement) {
+    if (target.requestFullscreen) await target.requestFullscreen();
+    else alert('La pantalla completa no está disponible en este navegador.');
+  } else if (document.exitFullscreen) {
+    await document.exitFullscreen();
+  }
+}
+
+async function closeHtmlLightbox() {
+  if (document.fullscreenElement === els.htmlLightbox) {
+    try { await document.exitFullscreen(); } catch (e) {}
+  }
+  els.htmlLightbox.classList.remove('open');
+  els.htmlLightbox.setAttribute('aria-hidden', 'true');
+  state.htmlLbDragging = false;
+  els.htmlLbStage.classList.remove('dragging');
 }
 
 function clearDropTargets() {
@@ -939,15 +1064,73 @@ function initEvents() {
     if (wrap) wrap.classList.add('dragging');
   });
   window.addEventListener('pointermove', e => {
-    if (!state.lightboxDragging) return;
-    state.lightboxPanX = state.lightboxStartPanX + (e.clientX - state.lightboxDragStartX);
-    state.lightboxPanY = state.lightboxStartPanY + (e.clientY - state.lightboxDragStartY);
-    applyLightboxTransform();
+    if (state.lightboxDragging) {
+      state.lightboxPanX = state.lightboxStartPanX + (e.clientX - state.lightboxDragStartX);
+      state.lightboxPanY = state.lightboxStartPanY + (e.clientY - state.lightboxDragStartY);
+      applyLightboxTransform();
+      return;
+    }
+    if (!state.htmlLbDragging) return;
+    els.htmlLbStage.scrollLeft = state.htmlLbScrollLeft - (e.clientX - state.htmlLbDragStartX);
+    els.htmlLbStage.scrollTop = state.htmlLbScrollTop - (e.clientY - state.htmlLbDragStartY);
   });
-  window.addEventListener('pointerup', stopLightboxDrag);
-  window.addEventListener('pointercancel', stopLightboxDrag);
+  window.addEventListener('pointerup', () => {
+    stopLightboxDrag();
+    state.htmlLbDragging = false;
+    els.htmlLbStage.classList.remove('dragging');
+  });
+  window.addEventListener('pointercancel', () => {
+    stopLightboxDrag();
+    state.htmlLbDragging = false;
+    els.htmlLbStage.classList.remove('dragging');
+  });
+
+  els.htmlLbClose.addEventListener('click', () => { closeHtmlLightbox().catch(() => {}); });
+  els.htmlLbZoomIn.addEventListener('click', () => setHtmlLbScale(state.htmlLbScale + 0.15));
+  els.htmlLbZoomOut.addEventListener('click', () => setHtmlLbScale(state.htmlLbScale - 0.15));
+  els.htmlLbReset.addEventListener('click', fitHtmlLightbox);
+  els.htmlLbFullscreen.addEventListener('click', () => {
+    toggleHtmlLightboxFullscreen().catch(() => alert('No se pudo activar la pantalla completa.'));
+  });
+  els.htmlLbStage.addEventListener('wheel', e => {
+    if (!els.htmlLightbox.classList.contains('open')) return;
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.12 : -0.12;
+      setHtmlLbScale(state.htmlLbScale + delta);
+    }
+  }, { passive: false });
+  els.htmlLbStage.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    if (e.target.closest('button')) return;
+    state.htmlLbDragging = true;
+    state.htmlLbDragStartX = e.clientX;
+    state.htmlLbDragStartY = e.clientY;
+    state.htmlLbScrollLeft = els.htmlLbStage.scrollLeft;
+    state.htmlLbScrollTop = els.htmlLbStage.scrollTop;
+    els.htmlLbStage.classList.add('dragging');
+  });
+  document.addEventListener('fullscreenchange', () => {
+    if (els.htmlLightbox.classList.contains('open')) {
+      setTimeout(fitHtmlLightbox, 50);
+    }
+  });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'Escape') {
+      if (els.htmlLightbox.classList.contains('open')) closeHtmlLightbox().catch(() => {});
+      else closeLightbox();
+      return;
+    }
+    if (els.htmlLightbox.classList.contains('open')) {
+      if (e.key.toLowerCase() === 'f') {
+        toggleHtmlLightboxFullscreen().catch(() => {});
+        return;
+      }
+      if (e.key === '+' || e.key === '=') setHtmlLbScale(state.htmlLbScale + 0.15);
+      if (e.key === '-') setHtmlLbScale(state.htmlLbScale - 0.15);
+      if (e.key.toLowerCase() === '0') fitHtmlLightbox();
+      return;
+    }
     if (!els.lightbox.classList.contains('open')) return;
     if (e.key.toLowerCase() === 'f') {
       toggleFullscreenLightbox().catch(() => {});
