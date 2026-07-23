@@ -426,19 +426,22 @@ function measureHtmlFrameSize() {
     if (doc && doc.documentElement) {
       const body = doc.body;
       const root = doc.documentElement;
+      // Force layout at a wide canvas so large tables report real size
+      iframe.style.width = '2400px';
+      iframe.style.height = '200px';
       w = Math.max(
         root.scrollWidth || 0,
         body ? body.scrollWidth : 0,
         root.offsetWidth || 0,
         body ? body.offsetWidth : 0,
-        800
+        900
       );
       h = Math.max(
         root.scrollHeight || 0,
         body ? body.scrollHeight : 0,
         root.offsetHeight || 0,
         body ? body.offsetHeight : 0,
-        600
+        700
       );
     }
   } catch (e) {}
@@ -460,20 +463,28 @@ function applyHtmlLbTransform() {
   els.htmlLbZoomLabel.textContent = Math.round(scale * 100) + '%';
 }
 
-function setHtmlLbScale(next) {
-  state.htmlLbScale = Math.max(0.25, Math.min(4, next));
+function setHtmlLbScale(next, keepScroll) {
+  const stage = els.htmlLbStage;
+  const prevLeft = stage.scrollLeft;
+  const prevTop = stage.scrollTop;
+  const prevScale = state.htmlLbScale || 1;
+  state.htmlLbScale = Math.max(0.2, Math.min(5, next));
   applyHtmlLbTransform();
+  if (keepScroll && prevScale > 0) {
+    const ratio = state.htmlLbScale / prevScale;
+    stage.scrollLeft = prevLeft * ratio;
+    stage.scrollTop = prevTop * ratio;
+  }
 }
 
 function fitHtmlLightbox() {
   measureHtmlFrameSize();
   const stage = els.htmlLbStage;
-  const pad = 16;
+  const pad = 8;
   const availW = Math.max(200, stage.clientWidth - pad);
-  const availH = Math.max(200, stage.clientHeight - pad);
-  const scaleW = availW / state.htmlLbNaturalW;
-  const scaleH = availH / state.htmlLbNaturalH;
-  setHtmlLbScale(Math.min(scaleW, scaleH, 1));
+  // Ajustar al ANCHO de la pantalla: la tabla ocupa todo el ancho y permite scroll vertical
+  const scale = availW / state.htmlLbNaturalW;
+  setHtmlLbScale(scale, false);
   stage.scrollLeft = 0;
   stage.scrollTop = 0;
 }
@@ -487,8 +498,13 @@ function openHtmlLightbox(file) {
   const src = fileSrc(file);
   const frame = els.htmlLbFrame;
   const onLoad = () => {
-    measureHtmlFrameSize();
-    fitHtmlLightbox();
+    // Double rAF so layout settles before measuring large tables
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        measureHtmlFrameSize();
+        fitHtmlLightbox();
+      });
+    });
   };
   frame.onload = onLoad;
   if (frame.getAttribute('src') !== src) frame.src = src;
@@ -1064,30 +1080,17 @@ function initEvents() {
     if (wrap) wrap.classList.add('dragging');
   });
   window.addEventListener('pointermove', e => {
-    if (state.lightboxDragging) {
-      state.lightboxPanX = state.lightboxStartPanX + (e.clientX - state.lightboxDragStartX);
-      state.lightboxPanY = state.lightboxStartPanY + (e.clientY - state.lightboxDragStartY);
-      applyLightboxTransform();
-      return;
-    }
-    if (!state.htmlLbDragging) return;
-    els.htmlLbStage.scrollLeft = state.htmlLbScrollLeft - (e.clientX - state.htmlLbDragStartX);
-    els.htmlLbStage.scrollTop = state.htmlLbScrollTop - (e.clientY - state.htmlLbDragStartY);
+    if (!state.lightboxDragging) return;
+    state.lightboxPanX = state.lightboxStartPanX + (e.clientX - state.lightboxDragStartX);
+    state.lightboxPanY = state.lightboxStartPanY + (e.clientY - state.lightboxDragStartY);
+    applyLightboxTransform();
   });
-  window.addEventListener('pointerup', () => {
-    stopLightboxDrag();
-    state.htmlLbDragging = false;
-    els.htmlLbStage.classList.remove('dragging');
-  });
-  window.addEventListener('pointercancel', () => {
-    stopLightboxDrag();
-    state.htmlLbDragging = false;
-    els.htmlLbStage.classList.remove('dragging');
-  });
+  window.addEventListener('pointerup', stopLightboxDrag);
+  window.addEventListener('pointercancel', stopLightboxDrag);
 
   els.htmlLbClose.addEventListener('click', () => { closeHtmlLightbox().catch(() => {}); });
-  els.htmlLbZoomIn.addEventListener('click', () => setHtmlLbScale(state.htmlLbScale + 0.15));
-  els.htmlLbZoomOut.addEventListener('click', () => setHtmlLbScale(state.htmlLbScale - 0.15));
+  els.htmlLbZoomIn.addEventListener('click', () => setHtmlLbScale(state.htmlLbScale + 0.15, true));
+  els.htmlLbZoomOut.addEventListener('click', () => setHtmlLbScale(state.htmlLbScale - 0.15, true));
   els.htmlLbReset.addEventListener('click', fitHtmlLightbox);
   els.htmlLbFullscreen.addEventListener('click', () => {
     toggleHtmlLightboxFullscreen().catch(() => alert('No se pudo activar la pantalla completa.'));
@@ -1097,22 +1100,40 @@ function initEvents() {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
       const delta = e.deltaY < 0 ? 0.12 : -0.12;
-      setHtmlLbScale(state.htmlLbScale + delta);
+      setHtmlLbScale(state.htmlLbScale + delta, true);
     }
+    // Sin Ctrl: scroll nativo vertical/horizontal del stage
   }, { passive: false });
   els.htmlLbStage.addEventListener('pointerdown', e => {
     if (e.button !== 0) return;
     if (e.target.closest('button')) return;
+    e.preventDefault();
     state.htmlLbDragging = true;
     state.htmlLbDragStartX = e.clientX;
     state.htmlLbDragStartY = e.clientY;
     state.htmlLbScrollLeft = els.htmlLbStage.scrollLeft;
     state.htmlLbScrollTop = els.htmlLbStage.scrollTop;
     els.htmlLbStage.classList.add('dragging');
+    try { els.htmlLbStage.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  els.htmlLbStage.addEventListener('pointermove', e => {
+    if (!state.htmlLbDragging) return;
+    e.preventDefault();
+    els.htmlLbStage.scrollLeft = state.htmlLbScrollLeft - (e.clientX - state.htmlLbDragStartX);
+    els.htmlLbStage.scrollTop = state.htmlLbScrollTop - (e.clientY - state.htmlLbDragStartY);
+  });
+  els.htmlLbStage.addEventListener('pointerup', e => {
+    state.htmlLbDragging = false;
+    els.htmlLbStage.classList.remove('dragging');
+    try { els.htmlLbStage.releasePointerCapture(e.pointerId); } catch (err) {}
+  });
+  els.htmlLbStage.addEventListener('pointercancel', () => {
+    state.htmlLbDragging = false;
+    els.htmlLbStage.classList.remove('dragging');
   });
   document.addEventListener('fullscreenchange', () => {
     if (els.htmlLightbox.classList.contains('open')) {
-      setTimeout(fitHtmlLightbox, 50);
+      setTimeout(fitHtmlLightbox, 120);
     }
   });
   document.addEventListener('keydown', e => {
@@ -1126,9 +1147,15 @@ function initEvents() {
         toggleHtmlLightboxFullscreen().catch(() => {});
         return;
       }
-      if (e.key === '+' || e.key === '=') setHtmlLbScale(state.htmlLbScale + 0.15);
-      if (e.key === '-') setHtmlLbScale(state.htmlLbScale - 0.15);
+      if (e.key === '+' || e.key === '=') setHtmlLbScale(state.htmlLbScale + 0.15, true);
+      if (e.key === '-') setHtmlLbScale(state.htmlLbScale - 0.15, true);
       if (e.key.toLowerCase() === '0') fitHtmlLightbox();
+      if (e.key === 'ArrowDown') els.htmlLbStage.scrollTop += 60;
+      if (e.key === 'ArrowUp') els.htmlLbStage.scrollTop -= 60;
+      if (e.key === 'ArrowRight') els.htmlLbStage.scrollLeft += 60;
+      if (e.key === 'ArrowLeft') els.htmlLbStage.scrollLeft -= 60;
+      if (e.key === 'PageDown') els.htmlLbStage.scrollTop += els.htmlLbStage.clientHeight * 0.9;
+      if (e.key === 'PageUp') els.htmlLbStage.scrollTop -= els.htmlLbStage.clientHeight * 0.9;
       return;
     }
     if (!els.lightbox.classList.contains('open')) return;

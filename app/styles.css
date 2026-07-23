@@ -546,15 +546,21 @@ button { cursor: pointer; }
 .html-lightbox-stage {
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  overflow: scroll;
   background: #0b1220;
   cursor: grab;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
-.html-lightbox-stage.dragging { cursor: grabbing; }
+.html-lightbox-stage.dragging {
+  cursor: grabbing;
+  touch-action: none;
+  user-select: none;
+}
 .html-lightbox-size {
   overflow: hidden;
   line-height: 0;
+  min-width: 100%;
 }
 .html-lightbox-scaler {
   transform-origin: 0 0;
