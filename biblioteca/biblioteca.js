@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "exportedAt": "2026-07-23T10:47:38.699Z",
+  "exportedAt": "2026-07-23T12:04:11.625Z",
   "tree": {
     "id": "f-1",
     "type": "folder",
@@ -665,10 +665,21 @@ window.BIBLIOTECA_DATA = {
         "id": "f-wr3a6ayl-mrxd5alw",
         "type": "folder",
         "title": "Fármacos",
-        "children": [],
-        "file_count": 0
+        "children": [
+          {
+            "id": "u-apx5x8lo-mrxfhlr0",
+            "type": "file",
+            "title": "vasopresores-inotropicos",
+            "ext": ".html",
+            "source": "asset",
+            "breadcrumb": "Fármacos / vasopresores-inotropicos",
+            "specialty": "Fármacos",
+            "path": "../biblioteca/assets/farmacos/vasopresores-inotropicos.html"
+          }
+        ],
+        "file_count": 1
       }
     ],
-    "file_count": 47
+    "file_count": 48
   }
 };
