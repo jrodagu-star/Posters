@@ -148,6 +148,18 @@
     <div class="html-lightbox-hint">Arrastra para moverte por el póster · Rueda para acercar/alejar</div>
   </div>
 
+  <div class="pdf-lightbox" id="pdfLightbox" aria-hidden="true">
+    <div class="pdf-lightbox-bar">
+      <div class="pdf-lightbox-title" id="pdfLbTitle">Póster PDF</div>
+      <div class="pdf-lightbox-controls">
+        <button class="lb-btn" id="pdfLbFullscreen" title="Pantalla completa del sistema">Pantalla completa</button>
+        <button class="lb-btn" id="pdfLbClose">Cerrar</button>
+      </div>
+    </div>
+    <iframe class="pdf-lightbox-frame" id="pdfLbFrame" title="Póster PDF ampliado"></iframe>
+    <div class="pdf-lightbox-hint">Usa la rueda o las barras del visor PDF para desplazarte · Ctrl + rueda para zoom</div>
+  </div>
+
   <script src="../biblioteca/biblioteca.js"></script>
   <script src="app.js"></script>
 </body>

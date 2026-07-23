@@ -61,7 +61,12 @@ const els = {
   htmlLbFit: document.getElementById('htmlLbFit'),
   htmlLbFullscreen: document.getElementById('htmlLbFullscreen'),
   htmlLbClose: document.getElementById('htmlLbClose'),
-  htmlLbZoomLabel: document.getElementById('htmlLbZoomLabel')
+  htmlLbZoomLabel: document.getElementById('htmlLbZoomLabel'),
+  pdfLightbox: document.getElementById('pdfLightbox'),
+  pdfLbTitle: document.getElementById('pdfLbTitle'),
+  pdfLbFrame: document.getElementById('pdfLbFrame'),
+  pdfLbFullscreen: document.getElementById('pdfLbFullscreen'),
+  pdfLbClose: document.getElementById('pdfLbClose')
 };
 
 const state = {
@@ -394,12 +399,22 @@ function showFile(file) {
   setActive(file.path || file.id);
   setSelection(file.id, 'file');
   els.title.textContent = file.title;
-  const canZoom = isImageExt(file.ext) || isHtmlExt(file.ext);
-  els.meta.textContent = kindLabel(file.ext) + ' · ' + (file.specialty || 'General') + (canZoom ? ' · clic para ampliar' : '');
+  const canZoom = isImageExt(file.ext) || isHtmlExt(file.ext) || file.ext === '.pdf';
+  let metaExtra = '';
+  if (isImageExt(file.ext)) metaExtra = ' · clic para ampliar';
+  else if (isHtmlExt(file.ext) || file.ext === '.pdf') metaExtra = ' · scroll y pantalla completa';
+  els.meta.textContent = kindLabel(file.ext) + ' · ' + (file.specialty || 'General') + metaExtra;
   els.crumbs.textContent = file.breadcrumb || file.title;
   const src = fileSrc(file);
   if (file.ext === '.pdf') {
-    els.viewer.innerHTML = '<object data="' + escapeHtml(src) + '" type="application/pdf"><iframe src="' + escapeHtml(src) + '"></iframe></object>';
+    const pdfSrc = src + (src.includes('#') ? '' : '#view=FitH&toolbar=1&navpanes=0');
+    els.viewer.innerHTML =
+      '<div class="viewer-pdf-wrap">' +
+        '<iframe class="viewer-pdf-frame" id="viewerPdfFrame" title="' + escapeHtml(file.title) + '" src="' + escapeHtml(pdfSrc) + '"></iframe>' +
+        '<button type="button" class="viewer-html-open" id="openPdfLbBtn">Ampliar a pantalla completa</button>' +
+      '</div>';
+    const openPdfBtn = document.getElementById('openPdfLbBtn');
+    if (openPdfBtn) openPdfBtn.addEventListener('click', () => openPdfLightbox(file));
   } else if (isHtmlExt(file.ext)) {
     els.viewer.innerHTML =
       '<div class="viewer-html-wrap">' +
@@ -549,6 +564,7 @@ function setHtmlLbScale(next) {
 function openHtmlLightbox(file) {
   if (!file || !isHtmlExt(file.ext)) return;
   closeLightbox();
+  closePdfLightbox().catch(() => {});
   els.htmlLbTitle.textContent = file.title || 'Póster HTML';
   els.htmlLightbox.classList.add('open');
   els.htmlLightbox.setAttribute('aria-hidden', 'false');
@@ -582,6 +598,40 @@ async function closeHtmlLightbox() {
   els.htmlLightbox.setAttribute('aria-hidden', 'true');
   state.htmlLbDragging = false;
   els.htmlLbStage.classList.remove('dragging');
+}
+
+function pdfViewerSrc(file) {
+  const src = fileSrc(file);
+  return src + (src.includes('#') ? '' : '#view=FitH&toolbar=1&navpanes=0');
+}
+
+function openPdfLightbox(file) {
+  if (!file || file.ext !== '.pdf') return;
+  closeLightbox();
+  closeHtmlLightbox().catch(() => {});
+  els.pdfLbTitle.textContent = file.title || 'Póster PDF';
+  els.pdfLbFrame.src = pdfViewerSrc(file);
+  els.pdfLightbox.classList.add('open');
+  els.pdfLightbox.setAttribute('aria-hidden', 'false');
+}
+
+async function togglePdfLightboxFullscreen() {
+  const target = els.pdfLightbox;
+  if (!document.fullscreenElement) {
+    if (target.requestFullscreen) await target.requestFullscreen();
+    else alert('La pantalla completa no está disponible en este navegador.');
+  } else if (document.exitFullscreen) {
+    await document.exitFullscreen();
+  }
+}
+
+async function closePdfLightbox() {
+  if (document.fullscreenElement === els.pdfLightbox) {
+    try { await document.exitFullscreen(); } catch (e) {}
+  }
+  els.pdfLightbox.classList.remove('open');
+  els.pdfLightbox.setAttribute('aria-hidden', 'true');
+  els.pdfLbFrame.removeAttribute('src');
 }
 
 function clearDropTargets() {
@@ -1148,6 +1198,10 @@ function initEvents() {
   els.htmlLbFullscreen.addEventListener('click', () => {
     toggleHtmlLightboxFullscreen().catch(() => alert('No se pudo activar la pantalla completa.'));
   });
+  els.pdfLbClose.addEventListener('click', () => { closePdfLightbox().catch(() => {}); });
+  els.pdfLbFullscreen.addEventListener('click', () => {
+    togglePdfLightboxFullscreen().catch(() => alert('No se pudo activar la pantalla completa.'));
+  });
   els.htmlLbStage.addEventListener('wheel', e => {
     if (!els.htmlLightbox.classList.contains('open')) return;
     e.preventDefault();
@@ -1191,8 +1245,13 @@ function initEvents() {
   });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-      if (els.htmlLightbox.classList.contains('open')) closeHtmlLightbox().catch(() => {});
+      if (els.pdfLightbox.classList.contains('open')) closePdfLightbox().catch(() => {});
+      else if (els.htmlLightbox.classList.contains('open')) closeHtmlLightbox().catch(() => {});
       else closeLightbox();
+      return;
+    }
+    if (els.pdfLightbox.classList.contains('open')) {
+      if (e.key.toLowerCase() === 'f') togglePdfLightboxFullscreen().catch(() => {});
       return;
     }
     if (els.htmlLightbox.classList.contains('open')) {
