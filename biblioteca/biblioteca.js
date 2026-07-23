@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "exportedAt": "2026-07-22T12:30:00.292Z",
+  "exportedAt": "2026-07-23T10:47:38.699Z",
   "tree": {
     "id": "f-1",
     "type": "folder",
@@ -92,16 +92,6 @@ window.BIBLIOTECA_DATA = {
             "title": "Shock cardiogenico",
             "children": [
               {
-                "id": "p-12",
-                "type": "file",
-                "title": "Inotropos guía póster",
-                "path": "../biblioteca/assets/cardiologia/shock-cardiogenico/inotropos-guia-poster.png",
-                "ext": ".png",
-                "specialty": "Cardiologia",
-                "breadcrumb": "Cardiologia / Shock cardiogenico / Inotropos guía póster",
-                "source": "asset"
-              },
-              {
                 "id": "p-13",
                 "type": "file",
                 "title": "Shock cardiogenico stenosis aortica",
@@ -110,32 +100,40 @@ window.BIBLIOTECA_DATA = {
                 "specialty": "Cardiologia",
                 "breadcrumb": "Cardiologia / Shock cardiogenico / Shock cardiogenico stenosis aortica",
                 "source": "asset"
+              },
+              {
+                "id": "u-h434cgu7-mrterb5j",
+                "type": "file",
+                "title": " Inotropos guía póster",
+                "ext": ".png",
+                "source": "asset",
+                "breadcrumb": "Cardiologia / Shock cardiogenico /  Inotropos guía póster",
+                "specialty": "Cardiologia",
+                "path": "../biblioteca/assets/cardiologia/shock-cardiogenico/inotropos-guia-poster.png"
               }
             ],
             "file_count": 2
           },
           {
-            "id": "p-14",
-            "type": "file",
-            "title": "Antiagregacion iam",
-            "path": "../biblioteca/assets/cardiologia/antiagregacion-iam.png",
-            "ext": ".png",
-            "specialty": "Cardiologia",
-            "breadcrumb": "Cardiologia / Antiagregacion iam",
-            "source": "asset"
-          },
-          {
-            "id": "u-h434cgu7-mrterb5j",
-            "type": "file",
-            "title": " Inotropos guía póster",
-            "ext": ".png",
-            "source": "asset",
-            "breadcrumb": "Cardiologia /  Inotropos guía póster",
-            "specialty": "Cardiologia",
-            "path": "../biblioteca/assets/cardiologia/inotropos-guia-poster.png"
+            "id": "f-1nlzarqj-mrxd3qv7",
+            "type": "folder",
+            "title": "Cardiopatia isquémica",
+            "children": [
+              {
+                "id": "p-14",
+                "type": "file",
+                "title": "Antiagregacion iam",
+                "path": "../biblioteca/assets/cardiologia/antiagregacion-iam.png",
+                "ext": ".png",
+                "specialty": "Cardiologia",
+                "breadcrumb": "Cardiologia / Cardiopatia isquémica / Antiagregacion iam",
+                "source": "asset"
+              }
+            ],
+            "file_count": 1
           }
         ],
-        "file_count": 9
+        "file_count": 8
       },
       {
         "id": "f-15",
@@ -662,8 +660,15 @@ window.BIBLIOTECA_DATA = {
           }
         ],
         "file_count": 2
+      },
+      {
+        "id": "f-wr3a6ayl-mrxd5alw",
+        "type": "folder",
+        "title": "Fármacos",
+        "children": [],
+        "file_count": 0
       }
     ],
-    "file_count": 48
+    "file_count": 47
   }
 };
