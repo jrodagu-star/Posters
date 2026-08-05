@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "exportedAt": "2026-08-05T09:26:03.971Z",
+  "exportedAt": "2026-08-05T09:26:51.550Z",
   "tree": {
     "id": "f-1",
     "type": "folder",
@@ -36,9 +36,19 @@ window.BIBLIOTECA_DATA = {
                 "specialty": "Cardiologia",
                 "breadcrumb": "Cardiologia / Arritmias / QRS complejos",
                 "source": "asset"
+              },
+              {
+                "id": "p-brugada",
+                "type": "file",
+                "title": "Brugada",
+                "path": "../biblioteca/assets/cardiologia/arritmias/brugada.png",
+                "ext": ".png",
+                "specialty": "Cardiologia",
+                "breadcrumb": "Cardiologia / Arritmias / Brugada",
+                "source": "asset"
               }
             ],
-            "file_count": 2
+            "file_count": 3
           },
           {
             "id": "f-6",
@@ -143,7 +153,7 @@ window.BIBLIOTECA_DATA = {
             "source": "asset"
           }
         ],
-        "file_count": 9
+        "file_count": 10
       },
       {
         "id": "f-15",
@@ -738,6 +748,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 3
       }
     ],
-    "file_count": 53
+    "file_count": 54
   }
 };
