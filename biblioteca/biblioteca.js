@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "exportedAt": "2026-07-23T17:06:29.775Z",
+  "exportedAt": "2026-08-05T09:22:42.774Z",
   "tree": {
     "id": "f-1",
     "type": "folder",
@@ -723,11 +723,21 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Fármacos",
             "breadcrumb": "Fármacos / Compatibilidad fármacos en Y",
             "source": "asset"
+          },
+          {
+            "id": "p-ionotropes-master-guide",
+            "type": "file",
+            "title": "Ionotropes Master Guide",
+            "path": "../biblioteca/assets/farmacos/ionotropes-master-guide.png",
+            "ext": ".png",
+            "specialty": "Fármacos",
+            "breadcrumb": "Fármacos / Ionotropes Master Guide",
+            "source": "asset"
           }
         ],
-        "file_count": 2
+        "file_count": 3
       }
     ],
-    "file_count": 52
+    "file_count": 53
   }
 };
