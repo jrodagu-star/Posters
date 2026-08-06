@@ -11,6 +11,12 @@ const CALCULADORAS = [
     title: 'Sedación UCI',
     description: 'Perfusión continua de sedantes, analgésicos, agitación y relajantes.',
     path: '../biblioteca/assets/calculadoras/calculadora-sedacion-uci.html'
+  },
+  {
+    id: 'nutricion-clinica-uci',
+    title: 'Nutrición Clínica UCI',
+    description: 'Dashboard de nutrición clínica en UCI.',
+    url: 'https://icuconnect-nutricion.web.app'
   }
 ];
 const HOME_IMAGE = '../biblioteca/assets/inicio-uci.png';
@@ -482,20 +488,26 @@ function openCalculadora(calc) {
   closePdfLightbox().catch(() => {});
   if (els.calculadorasBtn) els.calculadorasBtn.classList.add('active');
   els.title.textContent = calc.title;
-  els.meta.textContent = 'Calculadora';
+  els.meta.textContent = calc.url ? 'Enlace externo' : 'Calculadora';
   els.crumbs.textContent = 'Calculadoras / ' + calc.title;
   els.selectedInfo.textContent = 'Selección actual: ' + calc.title;
-  const src = normalizeAssetPath(calc.path);
+  const src = calc.url || normalizeAssetPath(calc.path);
+  const openExternalBtn = calc.url
+    ? '<a class="btn" href="' + escapeHtml(calc.url) + '" target="_blank" rel="noopener noreferrer">Abrir en pestaña</a>'
+    : '';
   els.viewer.innerHTML =
     '<div class="calculadora-view">' +
       '<div class="calculadora-toolbar">' +
         '<div class="calculadora-toolbar-title">' + escapeHtml(calc.title) + '</div>' +
-        '<button type="button" class="btn btn-accent" id="closeCalculadoraBtn">Cerrar</button>' +
+        '<div class="calculadora-toolbar-actions">' +
+          openExternalBtn +
+          '<button type="button" class="btn btn-accent" id="closeCalculadoraBtn">Cerrar</button>' +
+        '</div>' +
       '</div>' +
       '<iframe class="calculadora-frame" id="calculadoraFrame" title="' + escapeHtml(calc.title) + '" src="' + escapeHtml(src) + '"></iframe>' +
     '</div>';
   const closeBtn = document.getElementById('closeCalculadoraBtn');
-  if (closeBtn) closeBtn.addEventListener('click', () => showHome());
+  if (closeBtn) closeBtn.addEventListener('click', () => showCalculadoras());
 }
 
 function showFile(file) {
