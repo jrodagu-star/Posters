@@ -166,29 +166,74 @@ function normalizeAssetPath(path) {
 function isValidAudience(value) {
   return AUDIENCES.some(item => item.id === value);
 }
+function isSharedAudience(value) {
+  return value === 'todos' || value === 'all';
+}
+function getAudiences(file) {
+  if (!file) return [DEFAULT_AUDIENCE];
+  if (isSharedAudience(file.audience)) return AUDIENCES.map(item => item.id);
+  if (Array.isArray(file.audiences) && file.audiences.length) {
+    const list = [...new Set(file.audiences.filter(isValidAudience))];
+    if (list.length) return list;
+  }
+  return [isValidAudience(file.audience) ? file.audience : DEFAULT_AUDIENCE];
+}
 function getAudience(file) {
-  return isValidAudience(file && file.audience) ? file.audience : DEFAULT_AUDIENCE;
+  return getAudiences(file)[0] || DEFAULT_AUDIENCE;
 }
 function audienceLabel(id) {
+  if (isSharedAudience(id)) return 'Todos';
   const found = AUDIENCES.find(item => item.id === id);
   return found ? found.label : AUDIENCES[0].label;
+}
+function fileAudienceLabel(file) {
+  const list = getAudiences(file);
+  if (list.length >= AUDIENCES.length) return 'Todos';
+  return list.map(audienceLabel).join(' · ');
+}
+function normalizeAudienceField(file) {
+  if (!file || file.type !== 'file') return;
+  if (isSharedAudience(file.audience)) {
+    file.audience = 'todos';
+    delete file.audiences;
+    return;
+  }
+  if (Array.isArray(file.audiences) && file.audiences.length) {
+    const list = [...new Set(file.audiences.filter(isValidAudience))];
+    if (list.length >= AUDIENCES.length) {
+      file.audience = 'todos';
+      delete file.audiences;
+      return;
+    }
+    if (list.length === 1) {
+      file.audience = list[0];
+      delete file.audiences;
+      return;
+    }
+    if (list.length > 1) {
+      file.audiences = list;
+      file.audience = list[0];
+      return;
+    }
+  }
+  file.audience = isValidAudience(file.audience) ? file.audience : DEFAULT_AUDIENCE;
 }
 function ensureAudience(node) {
   if (!node) return;
   if (node.type === 'file') {
-    node.audience = getAudience(node);
+    normalizeAudienceField(node);
     return;
   }
   (node.children || []).forEach(ensureAudience);
 }
 function matchesAudienceFilter(file) {
-  return getAudience(file) === state.audienceFilter;
+  return getAudiences(file).includes(state.audienceFilter);
 }
 function normalizeTreePaths(node) {
   if (!node) return;
   if (node.type === 'file') {
     if (node.source !== 'upload' && node.path) node.path = normalizeAssetPath(node.path);
-    node.audience = getAudience(node);
+    normalizeAudienceField(node);
     return;
   }
   (node.children || []).forEach(normalizeTreePaths);
@@ -559,7 +604,7 @@ function showFile(file) {
   let metaExtra = '';
   if (isImageExt(file.ext)) metaExtra = ' · clic para ampliar';
   else if (isHtmlExt(file.ext) || file.ext === '.pdf') metaExtra = ' · scroll y pantalla completa';
-  els.meta.textContent = kindLabel(file.ext) + ' · ' + audienceLabel(getAudience(file)) + ' · ' + (file.specialty || 'General') + metaExtra;
+  els.meta.textContent = kindLabel(file.ext) + ' · ' + fileAudienceLabel(file) + ' · ' + (file.specialty || 'General') + metaExtra;
   els.crumbs.textContent = file.breadcrumb || file.title;
   const src = fileSrc(file);
   if (file.ext === '.pdf') {
@@ -984,7 +1029,7 @@ function renderSearch(query) {
     els.results.innerHTML = '';
     return;
   }
-  const matches = flattenVisible(state.tree).filter(f => (f.title + ' ' + f.breadcrumb + ' ' + (f.specialty || '') + ' ' + audienceLabel(getAudience(f))).toLowerCase().includes(q)).slice(0, 100);
+  const matches = flattenVisible(state.tree).filter(f => (f.title + ' ' + f.breadcrumb + ' ' + (f.specialty || '') + ' ' + fileAudienceLabel(f)).toLowerCase().includes(q)).slice(0, 100);
   els.tree.style.display = 'none';
   els.results.style.display = 'block';
   if (!matches.length) {
@@ -1066,8 +1111,9 @@ function pickTargetFolder() {
 
 async function readFilesAsUploads(fileList) {
   const accepted = [];
-  const audience = isValidAudience(els.newPosterAudienceSelect && els.newPosterAudienceSelect.value)
-    ? els.newPosterAudienceSelect.value
+  const selectedAudience = els.newPosterAudienceSelect && els.newPosterAudienceSelect.value;
+  const audience = isSharedAudience(selectedAudience) || isValidAudience(selectedAudience)
+    ? (isSharedAudience(selectedAudience) ? 'todos' : selectedAudience)
     : DEFAULT_AUDIENCE;
   for (const file of fileList) {
     const ext = extFromName(file.name);

@@ -635,7 +635,8 @@ window.BIBLIOTECA_DATA = {
                 "ext": ".pdf",
                 "specialty": "Respiratorio",
                 "breadcrumb": "Respiratorio / Humidificador / Poster humidificador 6",
-                "source": "asset"
+                "source": "asset",
+                "audience": "todos"
               }
             ],
             "file_count": 1
