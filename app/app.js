@@ -16,7 +16,7 @@ const CALCULADORAS = [
     id: 'sedacion-uci',
     title: 'Sedación UCI',
     description: 'Perfusión continua de sedantes, analgésicos, agitación y relajantes.',
-    path: '../biblioteca/assets/calculadoras/calculadora-sedacion-uci.html?v=20260807g'
+    path: '../biblioteca/assets/calculadoras/calculadora-sedacion-uci.html?v=20260807i'
   },
   {
     id: 'nutricion-clinica-uci',

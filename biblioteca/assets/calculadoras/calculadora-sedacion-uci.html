@@ -411,7 +411,7 @@
 
 <tr>
   <td class="fcol">Cloruro mórfico</td>
-  <td>Amp. 10 mg/ml<br><span class="dilucion">50 mg en 50 ml SSF<br><b>1 mg/ml</b></span></td>
+  <td>Amp. 10 mg/ml<br><span class="dilucion">50 mg en 100 ml SSF<br><b>0,5 mg/ml</b></span></td>
   <td>1–12 mg/h<br>(0,015–0,15 mg/kg/h)</td>
   <td>
     <div class="dose-bar-wrap">
@@ -428,8 +428,8 @@
   <td data-label="Velocidad">
     <div class="rate-wheel" data-drug="morfina">
       <div class="rate-face" data-input="v_morfina"><div class="rate-pointer" id="ptr_morfina"></div></div>
-      <input type="range" class="rate-range" id="v_morfina" min="0" max="20" step="0.1" value="3" aria-label="ml/h Morfina" oninput="recalcular()">
-      <div class="rate-readout"><span id="v_morfina_txt">3.0</span> ml/h</div>
+      <input type="range" class="rate-range" id="v_morfina" min="0" max="40" step="0.1" value="6" aria-label="ml/h Morfina" oninput="recalcular()">
+      <div class="rate-readout"><span id="v_morfina_txt">6.0</span> ml/h</div>
       <div class="rate-btns">
         <button type="button" onclick="stepRate('v_morfina',-0.1)">−</button>
         <button type="button" onclick="stepRate('v_morfina',0.1)">+</button>
@@ -619,7 +619,7 @@
   <li>Ketamina: <span class="formula">5 mg/ml</span> (500 mg en 100 ml SSF)</li>
   <li>Fentanilo: <span class="formula">9 µg/ml</span> (900 µg en 100 ml SSF)</li>
   <li>Remifentanilo: <span class="formula">50 µg/ml</span> (5 mg en 100 ml SSF)</li>
-  <li>Morfina: <span class="formula">1 mg/ml</span> (50 mg en 50 ml SSF)</li>
+  <li>Morfina: <span class="formula">0,5 mg/ml</span> (50 mg en 100 ml SSF)</li>
   <li>Dexmedetomidina: <span class="formula">4 µg/ml</span> (200 µg en 50 ml SSF)</li>
   <li>Cisatracurio: <span class="formula">3 mg/ml</span> (300 mg en 100 ml SSF)</li>
   <li>Rocuronio: <span class="formula">5 mg/ml</span> (500 mg en 100 ml SSF)</li>
@@ -665,8 +665,8 @@ const drugs = {
   },
   morfina: {
     max: 12, unit: 'mg/h', decimals: 1,
-    doseFromRate: (mlh) => mlh,
-    rateFromDose: (d) => d,
+    doseFromRate: (mlh) => mlh * 0.5,
+    rateFromDose: (d) => d / 0.5,
     zones: [{lim:3, name:'Analgesia', color:'#5fb55f'}, {lim:6, name:'Analgesia + sedación', color:'#f5c542'}, {lim:10, name:'Sedación profunda', color:'#f08a3c'}, {lim:12, name:'Depresión respiratoria', color:'#d94c4c'}]
   },
   dexme: {
