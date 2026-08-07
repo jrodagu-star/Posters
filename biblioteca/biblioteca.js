@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "exportedAt": "2026-08-05T09:26:51.550Z",
+  "exportedAt": "2026-08-07T10:03:56.146Z",
   "tree": {
     "id": "f-1",
     "type": "folder",
@@ -743,11 +743,22 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Fármacos",
             "breadcrumb": "Fármacos / Ionotropes Master Guide",
             "source": "asset"
+          },
+          {
+            "id": "p-ambisome-240-hd",
+            "type": "file",
+            "title": "AmBisome 240 mg — Hospital de Día",
+            "path": "../biblioteca/assets/farmacos/ambisome-240-mg-hospital-de-dia.html",
+            "ext": ".html",
+            "specialty": "Fármacos",
+            "breadcrumb": "Fármacos / AmBisome 240 mg — Hospital de Día",
+            "source": "asset",
+            "audience": "enfermeria"
           }
         ],
-        "file_count": 3
+        "file_count": 4
       }
     ],
-    "file_count": 54
+    "file_count": 55
   }
 };

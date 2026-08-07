@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AmBisome 240 mg — Preparación y administración en Hospital de Día</title>
+<style>
+  :root{
+    --bg:#0d1526;
+    --panel:#152137;
+    --panel2:#1b2a45;
+    --line:#2b3d5e;
+    --ink:#eaf1fb;
+    --muted:#9db0cd;
+    --blue:#4da3ff;
+    --blue-d:#1e6fd9;
+    --red:#ff5c5c;
+    --red-bg:#3a1218;
+    --green:#31d18a;
+    --green-bg:#0f2f24;
+    --amber:#ffbe4d;
+    --amber-bg:#3a2c0d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  body{padding:26px clamp(16px,2.4vw,44px) 40px}
+  .wrap{max-width:1780px;margin:0 auto}
+
+  /* ---------- HEADER ---------- */
+  header{
+    display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;
+    background:linear-gradient(100deg,#12305c 0%,#1b4a8f 55%,#2266bd 100%);
+    border:1px solid #2f6bb5;border-radius:18px;
+    padding:22px clamp(18px,2vw,34px);
+  }
+  .kicker{font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:#a9d0ff;font-weight:700}
+  h1{font-size:clamp(28px,3.1vw,46px);line-height:1.07;font-weight:800;margin-top:6px;letter-spacing:-.5px}
+  h1 small{display:block;font-size:clamp(14px,1.15vw,19px);font-weight:600;color:#c9e2ff;margin-top:9px;letter-spacing:0}
+  .keyfacts{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+  .kf{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.28);
+      border-radius:12px;padding:11px 16px;min-width:132px;text-align:center}
+  .kf b{display:block;font-size:clamp(19px,1.7vw,26px);line-height:1.1}
+  .kf span{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;color:#cfe6ff;margin-top:4px;font-weight:600}
+
+  /* ---------- BANNER ROJO ---------- */
+  .alert{
+    margin-top:16px;display:flex;gap:18px;align-items:center;
+    background:var(--red-bg);border:2px solid var(--red);border-radius:16px;
+    padding:16px 22px;
+  }
+  .alert svg{flex:0 0 auto}
+  .alert-txt b{display:block;font-size:clamp(19px,1.75vw,27px);color:#ffd2d2;letter-spacing:-.2px}
+  .alert-txt p{font-size:clamp(13px,1.02vw,16px);color:#ffb9b9;margin-top:5px;line-height:1.45}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 18px 18px;margin-top:16px}
+  .card h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);
+    font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:9px}
+  .card h2 .h2note{margin-left:auto;letter-spacing:0;text-transform:none;font-size:12.5px;color:var(--muted);font-weight:600}
+
+  /* ================= CRONOGRAMA ================= */
+  .timeline{display:grid;grid-template-columns:repeat(8,1fr);gap:0;position:relative}
+  .tl-rail{position:absolute;left:0;right:0;top:34px;height:4px;
+    background:linear-gradient(90deg,#1e6fd9,#4da3ff 55%,#31d18a);border-radius:2px;z-index:0}
+  .node{position:relative;z-index:1;padding:0 7px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .t{font-size:11px;font-weight:800;letter-spacing:.09em;color:#ffd390;background:var(--amber-bg);
+     border:1px solid #7a5c17;border-radius:999px;padding:3px 10px;white-space:nowrap}
+  .dot{width:30px;height:30px;border-radius:50%;background:var(--blue-d);border:4px solid var(--bg);
+    display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;margin-top:6px}
+  .node.fin .dot{background:#1d9c68}
+  .node.warnnode .dot{background:#c9873c}
+  .nbody{background:var(--panel2);border:1px solid var(--line);border-radius:13px;
+    padding:12px 11px 13px;margin-top:10px;width:100%;flex:1;display:flex;flex-direction:column;align-items:center}
+  .node.fin .nbody{border-color:#1f6b4e;background:var(--green-bg)}
+  .node.warnnode .nbody{border-color:#7a5c17;background:var(--amber-bg)}
+  .nbody .art{height:62px;display:flex;align-items:flex-end;justify-content:center;gap:3px;margin-bottom:9px}
+  .nbody h3{font-size:14px;font-weight:800;line-height:1.22;letter-spacing:-.2px}
+  .nbody p{font-size:12.2px;color:#c4d4ea;line-height:1.45;margin-top:6px}
+  .nbody p b{color:#fff}
+  .nbody .hi{display:block;margin-top:8px;font-size:11px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.07em;color:#ff9a9a}
+  .node.fin .nbody p{color:#bdead6}
+  .node.warnnode .nbody p{color:#f0dcb4}
+  @media(max-width:1500px){
+    .timeline{grid-template-columns:repeat(4,1fr);row-gap:22px}
+    .tl-rail{display:none}
+  }
+  @media(max-width:860px){.timeline{grid-template-columns:repeat(2,1fr)}}
+
+  /* ================= BANDEJA DE VIALES ================= */
+  .rack{margin-top:16px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;
+    padding:16px 18px;display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center}
+  @media(max-width:1100px){.rack{grid-template-columns:1fr}}
+  .rack h3{font-size:14.5px;font-weight:800;margin-bottom:4px}
+  .rack .rsub{font-size:12.6px;color:var(--muted);line-height:1.5;max-width:640px}
+  .vials{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end}
+  .vial{text-align:center;width:104px}
+  .vial .vl{font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .vial .vv{font-size:17px;font-weight:800;margin-top:7px;line-height:1.1}
+  .vial .vm{font-size:11.5px;color:#a9c2e2;margin-top:2px}
+  .vial.cut .vl{color:#ffd390}
+  .vial.cut .vv{color:#ffd390}
+  .vial .badge{display:inline-block;margin-top:6px;font-size:9.8px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.07em;padding:2px 7px;border-radius:999px;background:var(--amber-bg);color:#ffd390;border:1px solid #7a5c17}
+  .totalbox{background:linear-gradient(135deg,#0e3a6b,#124a86);border:1px solid #2f6bb5;border-radius:12px;
+    padding:11px 15px;margin-top:12px;display:inline-block}
+  .totalbox b{font-size:19px}
+  .totalbox span{font-size:12px;color:#c9e2ff;display:block;margin-top:2px}
+
+  /* ================= COLUMNAS INFERIORES ================= */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:960px){.cols{grid-template-columns:1fr}header{grid-template-columns:1fr}.keyfacts{justify-content:flex-start}}
+  .cols .card{margin-top:16px}
+
+  .step{display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:start;
+    background:var(--panel2);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;margin-bottom:11px;position:relative}
+  .step:last-child{margin-bottom:0}
+  .icon{width:52px;height:52px;border-radius:13px;background:#102a4d;
+    border:1px solid #2d5a91;display:flex;align-items:center;justify-content:center}
+  .num{position:absolute;top:-9px;left:-9px;width:26px;height:26px;border-radius:50%;
+    background:var(--blue-d);color:#fff;font-size:13.5px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;border:2px solid var(--panel)}
+  .step h3{font-size:clamp(15px,1.18vw,18.5px);font-weight:700;line-height:1.25;letter-spacing:-.2px}
+  .step p{font-size:clamp(12.8px,1vw,15px);color:#c4d4ea;line-height:1.5;margin-top:5px}
+  .step p strong{color:#fff;font-weight:700}
+
+  .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    padding:3px 9px;border-radius:999px;margin-top:8px}
+  .tag.red{background:var(--red-bg);color:#ff9a9a;border:1px solid #7d2b2b}
+  .tag.green{background:var(--green-bg);color:#7ff0bd;border:1px solid #1f6b4e}
+  .tag.amber{background:var(--amber-bg);color:#ffd390;border:1px solid #7a5c17}
+
+  .box{border-radius:14px;padding:14px 16px;margin-bottom:12px;border:1px solid var(--line);background:var(--panel2)}
+  .box:last-child{margin-bottom:0}
+  .box h3{font-size:14.5px;font-weight:800;margin-bottom:8px}
+  .box ul{list-style:none;font-size:13.6px;line-height:1.62;color:#c4d4ea}
+  .box li{padding-left:17px;position:relative;margin-bottom:5px}
+  .box li:last-child{margin-bottom:0}
+  .box li::before{content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:2px;background:var(--blue)}
+  .box li b{color:#fff}
+  .box.warn{background:var(--amber-bg);border-color:#7a5c17}
+  .box.warn h3{color:#ffd390}
+  .box.warn li::before{background:var(--amber)}
+  .box.warn ul{color:#f0dcb4}
+  .box.ok{background:var(--green-bg);border-color:#1f6b4e}
+  .box.ok h3{color:#7ff0bd}
+  .box.ok li::before{background:var(--green)}
+  .box.ok ul{color:#bdead6}
+  .box.danger{background:var(--red-bg);border-color:#7d2b2b}
+  .box.danger h3{color:#ff9a9a}
+  .box.danger li::before{background:var(--red)}
+  .box.danger ul{color:#f3c6c6}
+
+  .calc{background:linear-gradient(135deg,#0e3a6b,#124a86);border:1px solid #2f6bb5;
+    border-radius:14px;padding:16px;text-align:center;margin-bottom:12px}
+  .calc .lbl{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:#a9d0ff;font-weight:800}
+  .calc .big{font-size:clamp(34px,3.4vw,50px);font-weight:800;line-height:1;margin:9px 0 4px;letter-spacing:-1px}
+  .calc .big span{font-size:.42em;font-weight:700;color:#c9e2ff;letter-spacing:0}
+  .calc .sub{font-size:12.8px;color:#c9e2ff;line-height:1.5}
+  .calcrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .cc{background:rgba(0,0,0,.24);border-radius:10px;padding:9px}
+  .cc b{display:block;font-size:17.5px}
+  .cc span{font-size:10.8px;color:#b6d5f5;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+  th,td{padding:7px 8px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.09em}
+  td b{color:#fff}
+  tr:last-child td{border-bottom:none}
+
+  footer{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
+    font-size:11.8px;color:var(--muted);line-height:1.6}
+  footer a{color:var(--blue);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="kicker">Hospital de Día · Protocolo de enfermería</div>
+    <h1>AmBisome® 240 mg
+      <small>Anfotericina B liposomal · Reconstitución, dilución y perfusión intravenosa</small>
+    </h1>
+  </div>
+  <div class="keyfacts">
+    <div class="kf"><b>5 × 50 mg</b><span>Viales</span></div>
+    <div class="kf"><b>12 ml</b><span>Agua p.p.i. / vial</span></div>
+    <div class="kf"><b>SG 5%</b><span>Único diluyente</span></div>
+    <div class="kf"><b>4 h</b><span>Perfusión</span></div>
+  </div>
+</header>
+
+<!-- BANNER ROJO -->
+<div class="alert">
+  <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#ff5c5c" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/>
+    <line x1="12" y1="9" x2="12" y2="13.5"/><circle cx="12" cy="17" r="1" fill="#ff5c5c" stroke="none"/>
+  </svg>
+  <div class="alert-txt">
+    <b>NUNCA suero salino. NUNCA mezclar con otros fármacos.</b>
+    <p>El cloruro sódico precipita el liposoma. No reconstituir ni diluir con SSF, no usar una vía que haya llevado salino sin <strong>lavarla antes con SG 5%</strong>, y no añadir ningún otro medicamento ni electrolito a la bolsa ni en Y. Si no es posible lavar la vía, usar una luz o acceso distinto.</p>
+  </div>
+</div>
+
+<!-- ================= CRONOGRAMA DE PREPARACIÓN ================= -->
+<div class="card">
+  <h2>
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="13" r="8.5"/><path d="M12 9.5V13l2.5 2"/><path d="M9 2h6"/></svg>
+    A · Cronograma de preparación
+    <span class="h2note">Tiempo total aproximado: 15 minutos · técnica aséptica en todo el proceso</span>
+  </h2>
+
+  <div class="timeline">
+    <div class="tl-rail"></div>
+
+    <!-- 1 -->
+    <div class="node">
+      <div class="t">min 0</div><div class="dot">1</div>
+      <div class="nbody">
+        <div class="art">
+          <svg width="48" height="58" viewBox="0 0 48 58" fill="none">
+            <rect x="6" y="8" width="36" height="44" rx="4" stroke="#7ec2ff" stroke-width="2"/>
+            <path d="M13 6h22" stroke="#7ec2ff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M13 20h14M13 28h18M13 36h11" stroke="#5f9fd8" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="35" cy="41" r="9" fill="#0f2f24" stroke="#31d18a" stroke-width="2"/>
+            <path d="M31 41.5l2.8 2.8L39 39" stroke="#31d18a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Verificar y preparar material</h3>
+        <p>Paciente, dosis y <b>nombre exacto del producto</b>. Reunir 5 viales, 5 jeringas, agua p.p.i., 5 filtros de 5 µm y la bolsa de SG 5% 500 ml.</p>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="node">
+      <div class="t">min 1 – 2</div><div class="dot">2</div>
+      <div class="nbody">
+        <div class="art">
+          <svg width="72" height="46" viewBox="0 0 72 46" fill="none">
+            <g stroke="#7ec2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="14" y="10" width="40" height="13" rx="2"/>
+              <path d="M14 16.5H6M6 12v9"/>
+              <path d="M54 16.5h8"/>
+              <path d="M62 13.5v6"/>
+              <path d="M24 10v13M32 10v13M40 10v13"/>
+            </g>
+            <rect x="16" y="12" width="32" height="9" fill="#2f7fd6" opacity=".55"/>
+            <text x="36" y="40" text-anchor="middle" fill="#a9d0ff" font-size="12" font-weight="700" font-family="Segoe UI,sans-serif">12 ml × 5</text>
+          </svg>
+        </div>
+        <h3>Cargar 5 jeringas con 12 ml de agua p.p.i.</h3>
+        <p>Agua estéril para preparaciones inyectables, <b>sin conservantes</b>. Una jeringa por vial.</p>
+        <span class="hi">Nunca salino</span>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="node">
+      <div class="t">min 2 – 7</div><div class="dot">3</div>
+      <div class="nbody">
+        <div class="art">
+          <svg width="70" height="58" viewBox="0 0 70 58" fill="none">
+            <!-- vial -->
+            <g stroke="#7ec2ff" stroke-width="2" stroke-linejoin="round">
+              <path d="M22 6h14v6l2 4v34a3 3 0 0 1-3 3H23a3 3 0 0 1-3-3V16l2-4V6Z"/>
+            </g>
+            <path d="M21 30h16v20a2 2 0 0 1-2 2H23a2 2 0 0 1-2-2V30Z" fill="#e8c24a" opacity=".72"/>
+            <rect x="21" y="3" width="16" height="4" rx="1.5" fill="#7ec2ff"/>
+            <!-- flechas agitación -->
+            <g stroke="#ffbe4d" stroke-width="2" stroke-linecap="round">
+              <path d="M47 16c4 2 6 5 6 9"/><path d="M53 25l-3-3M53 25l3-3"/>
+              <path d="M12 42c-4-2-6-5-6-9"/><path d="M6 33l3 3M6 33l-3 3"/>
+            </g>
+          </svg>
+        </div>
+        <h3>Reconstituir los 5 viales, uno a uno</h3>
+        <p>Inyectar los 12 ml e <b>inmediatamente agitar con fuerza 30 s</b>. Repetir vial a vial hasta completar los 5. Resultado: <b>4 mg/ml</b>.</p>
+        <span class="hi" style="color:#ffd390">30 s por vial, sin excepción</span>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="node">
+      <div class="t">min 8</div><div class="dot">4</div>
+      <div class="nbody">
+        <div class="art">
+          <svg width="64" height="58" viewBox="0 0 64 58" fill="none">
+            <g stroke="#7ec2ff" stroke-width="2" stroke-linejoin="round">
+              <path d="M14 8h14v6l2 4v32a3 3 0 0 1-3 3H15a3 3 0 0 1-3-3V18l2-4V8Z"/>
+            </g>
+            <path d="M13 28h16v22a2 2 0 0 1-2 2H15a2 2 0 0 1-2-2V28Z" fill="#e8c24a" opacity=".72"/>
+            <rect x="13" y="5" width="16" height="4" rx="1.5" fill="#7ec2ff"/>
+            <circle cx="45" cy="26" r="11" stroke="#31d18a" stroke-width="2.2" fill="none"/>
+            <path d="M53 34l7 7" stroke="#31d18a" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Inspeccionar a contraluz</h3>
+        <p>Debe verse una <b>dispersión amarilla translúcida</b>, sin partículas. Si quedan, seguir agitando; si hay precipitado, desechar el vial.</p>
+        <span class="hi" style="color:#7ff0bd">Amarillo translúcido = correcto</span>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="node warnnode">
+      <div class="t">min 9</div><div class="dot">5</div>
+      <div class="nbody">
+        <div class="art">
+          <svg width="66" height="58" viewBox="0 0 66 58" fill="none">
+            <g stroke="#ffbe4d" stroke-width="2" stroke-linejoin="round">
+              <path d="M8 8h14v6l2 4v32a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V18l2-4V8Z"/>
+            </g>
+            <path d="M7 32h16v18a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V32Z" fill="#e8c24a" opacity=".72"/>
+            <rect x="7" y="5" width="16" height="4" rx="1.5" fill="#ffbe4d"/>
+            <g stroke="#ffbe4d" stroke-width="2" stroke-linecap="round">
+              <path d="M30 22h16"/><path d="M41 17l5 5-5 5"/>
+              <rect x="49" y="12" width="13" height="20" rx="2"/>
+              <path d="M49 17h13"/><path d="M53 22v6M58 22v6"/>
+            </g>
+            <text x="38" y="46" text-anchor="middle" fill="#ffd390" font-size="13" font-weight="800" font-family="Segoe UI,sans-serif">2,4 ml</text>
+          </svg>
+        </div>
+        <h3>Desechar 2,4 ml de un vial</h3>
+        <p>Extraer <b>2,4 ml</b> del quinto vial y tirarlos. Ese vial queda con <b>9,6 ml</b>.</p>
+        <span class="hi" style="color:#ffd390">Ver verificación de dosis</span>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="node">
+      <div class="t">min 10 – 12</div><div class="dot">6</div>
+      <div class="nbody">
+        <div class="art">
+          <svg width="66" height="58" viewBox="0 0 66 58" fill="none">
+            <g stroke="#7ec2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="14" width="26" height="11" rx="2"/>
+              <path d="M4 19.5H1"/><path d="M30 19.5h6"/>
+              <path d="M36 12l10 7.5L36 27V12Z"/>
+            </g>
+            <rect x="6" y="16" width="20" height="7" fill="#e8c24a" opacity=".7"/>
+            <g stroke="#31d18a" stroke-width="2" stroke-linejoin="round">
+              <path d="M50 10h13v5l-4 5v20a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3V20l-1-5v-5Z"/>
+            </g>
+            <text x="42" y="53" text-anchor="middle" fill="#a9d0ff" font-size="11.5" font-weight="700" font-family="Segoe UI,sans-serif">filtro 5 µm</text>
+          </svg>
+        </div>
+        <h3>Pasar a la bolsa a través del filtro</h3>
+        <p>Cargar cada vial en una jeringa, acoplar un <b>filtro de 5 µm nuevo</b> e inyectarlo en la bolsa de <b>SG 5% 500 ml</b>. Un filtro y una jeringa por vial.</p>
+        <span class="hi">Bolsa de glucosa, jamás de SSF</span>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="node">
+      <div class="t">min 13</div><div class="dot">7</div>
+      <div class="nbody">
+        <div class="art">
+          <svg width="56" height="58" viewBox="0 0 56 58" fill="none">
+            <g stroke="#7ec2ff" stroke-width="2" stroke-linejoin="round">
+              <path d="M16 6h20v6l-5 6v29a4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4V18l-5-6V6Z"/>
+            </g>
+            <path d="M21 26h11v21a3 3 0 0 1-3 3h-5a3 3 0 0 1-3-3V26Z" fill="#e8c24a" opacity=".6"/>
+            <g stroke="#31d18a" stroke-width="2" stroke-linecap="round">
+              <path d="M42 20a10 10 0 0 1 0 18"/><path d="M46 36l-4 3 4 3" transform="translate(-1,-3)"/>
+              <path d="M12 38a10 10 0 0 1 0-18"/><path d="M8 22l4-3-4-3" transform="translate(1,3)"/>
+            </g>
+          </svg>
+        </div>
+        <h3>Homogeneizar y etiquetar</h3>
+        <p>Mezclar con movimientos suaves, sin agitar la bolsa. Etiquetar con fármaco, dosis, hora de preparación y vía.</p>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="node fin">
+      <div class="t">min 15</div><div class="dot">✓</div>
+      <div class="nbody">
+        <div class="art">
+          <svg width="58" height="58" viewBox="0 0 58 58" fill="none">
+            <g stroke="#31d18a" stroke-width="2" stroke-linejoin="round">
+              <path d="M16 6h20v6l-5 6v29a4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4V18l-5-6V6Z"/>
+            </g>
+            <path d="M21 22h11v25a3 3 0 0 1-3 3h-5a3 3 0 0 1-3-3V22Z" fill="#31d18a" opacity=".35"/>
+            <circle cx="44" cy="43" r="12" fill="#0f2f24" stroke="#31d18a" stroke-width="2"/>
+            <path d="M38.5 43.5l3.8 3.8L50 40" stroke="#31d18a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Lista para perfundir</h3>
+        <p><b>557,6 ml</b> a <b>0,41 mg/ml</b>. Usar de inmediato. Conectar y programar la bomba.</p>
+        <span class="hi" style="color:#7ff0bd">139 ml/h durante 4 h</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BANDEJA DE VIALES -->
+  <div class="rack">
+    <div>
+      <h3>Cómo queda cada vial antes de pasarlo a la bolsa</h3>
+      <p class="rsub">Cada vial de 50 mg reconstituido con 12 ml de agua p.p.i. contiene <b style="color:#fff">4 mg/ml</b>. Los cuatro primeros se vacían completos; del quinto se descartan 2,4 ml antes de trasvasarlo.</p>
+      <div class="totalbox">
+        <b>57,6 ml · 230,4 mg</b>
+        <span>Total que entra en la bolsa de SG 5% 500 ml</span>
+      </div>
+    </div>
+    <div class="vials">
+      <!-- viales llenos -->
+      <div class="vial">
+        <div class="vl">Vial 1</div>
+        <svg width="60" height="126" viewBox="0 0 60 126" fill="none">
+          <rect x="20" y="4" width="20" height="7" rx="2" fill="#7ec2ff"/>
+          <path d="M23 11h14v8l5 8v88a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V27l5-8v-8Z" stroke="#5f9fd8" stroke-width="2"/>
+          <path d="M18 42h24v73a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V42Z" fill="#e8c24a" fill-opacity=".72"/>
+          <path d="M18 42h24" stroke="#f6dd8a" stroke-width="2"/>
+        </svg>
+        <div class="vv">12 ml</div><div class="vm">48 mg · completo</div>
+      </div>
+      <div class="vial">
+        <div class="vl">Vial 2</div>
+        <svg width="60" height="126" viewBox="0 0 60 126" fill="none">
+          <rect x="20" y="4" width="20" height="7" rx="2" fill="#7ec2ff"/>
+          <path d="M23 11h14v8l5 8v88a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V27l5-8v-8Z" stroke="#5f9fd8" stroke-width="2"/>
+          <path d="M18 42h24v73a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V42Z" fill="#e8c24a" fill-opacity=".72"/>
+          <path d="M18 42h24" stroke="#f6dd8a" stroke-width="2"/>
+        </svg>
+        <div class="vv">12 ml</div><div class="vm">48 mg · completo</div>
+      </div>
+      <div class="vial">
+        <div class="vl">Vial 3</div>
+        <svg width="60" height="126" viewBox="0 0 60 126" fill="none">
+          <rect x="20" y="4" width="20" height="7" rx="2" fill="#7ec2ff"/>
+          <path d="M23 11h14v8l5 8v88a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V27l5-8v-8Z" stroke="#5f9fd8" stroke-width="2"/>
+          <path d="M18 42h24v73a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V42Z" fill="#e8c24a" fill-opacity=".72"/>
+          <path d="M18 42h24" stroke="#f6dd8a" stroke-width="2"/>
+        </svg>
+        <div class="vv">12 ml</div><div class="vm">48 mg · completo</div>
+      </div>
+      <div class="vial">
+        <div class="vl">Vial 4</div>
+        <svg width="60" height="126" viewBox="0 0 60 126" fill="none">
+          <rect x="20" y="4" width="20" height="7" rx="2" fill="#7ec2ff"/>
+          <path d="M23 11h14v8l5 8v88a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V27l5-8v-8Z" stroke="#5f9fd8" stroke-width="2"/>
+          <path d="M18 42h24v73a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V42Z" fill="#e8c24a" fill-opacity=".72"/>
+          <path d="M18 42h24" stroke="#f6dd8a" stroke-width="2"/>
+        </svg>
+        <div class="vv">12 ml</div><div class="vm">48 mg · completo</div>
+      </div>
+      <!-- vial recortado -->
+      <div class="vial cut">
+        <div class="vl">Vial 5</div>
+        <svg width="60" height="126" viewBox="0 0 60 126" fill="none">
+          <rect x="20" y="4" width="20" height="7" rx="2" fill="#ffbe4d"/>
+          <path d="M23 11h14v8l5 8v88a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V27l5-8v-8Z" stroke="#c99a3e" stroke-width="2"/>
+          <path d="M18 42h24" stroke="#ffbe4d" stroke-width="1.6" stroke-dasharray="4 3" opacity=".8"/>
+          <path d="M18 57h24v58a5 5 0 0 1-5 5H23a5 5 0 0 1-5-5V57Z" fill="#e8c24a" fill-opacity=".72"/>
+          <path d="M18 57h24" stroke="#f6dd8a" stroke-width="2"/>
+        </svg>
+        <div class="vv">9,6 ml</div><div class="vm">38,4 mg</div>
+        <span class="badge">−2,4 ml</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= COLUMNAS INFERIORES ================= -->
+<div class="cols">
+
+  <div class="card">
+    <h2>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="2.2" stroke-linecap="round"><path d="M12 2v6"/><circle cx="12" cy="14" r="8"/><path d="M12 11v3l2 2"/></svg>
+      B · Administración
+    </h2>
+
+    <div class="calc">
+      <div class="lbl">Programar bomba Agilia</div>
+      <div class="big">139 <span>ml/h</span></div>
+      <div class="sub">557,6 ml totales ÷ 4 h · VTBI 558 ml</div>
+      <div class="calcrow">
+        <div class="cc"><b>0,41 mg/ml</b><span>Conc. final</span></div>
+        <div class="cc"><b>0,2 – 2 mg/ml</b><span>Rango permitido ✓</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">8</span>
+      <div class="icon">
+        <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#7ec2ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2.5c3.5 4 5.5 6.6 5.5 9.3A5.5 5.5 0 0 1 6.5 11.8C6.5 9.1 8.5 6.5 12 2.5Z"/>
+          <path d="M9 20.5h6"/><path d="M12 17.5v3"/>
+        </svg>
+      </div>
+      <div>
+        <h3>Lavar la vía con SG 5%</h3>
+        <p>Si el acceso ha llevado suero salino, <strong>purgarlo bien con SG 5%</strong> antes de conectar. Si no es posible, usar otra luz o un acceso distinto. Purgar también el sistema con la propia mezcla.</p>
+        <span class="tag red">Salino residual = precipitación</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">9</span>
+      <div class="icon">
+        <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#7ec2ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="2.5" width="16" height="19" rx="2.5"/><rect x="7" y="5.5" width="10" height="5" rx="1"/>
+          <circle cx="8.5" cy="15" r="1.3"/><circle cx="12" cy="15" r="1.3"/><circle cx="15.5" cy="15" r="1.3"/>
+          <circle cx="8.5" cy="18.5" r="1.3"/><circle cx="12" cy="18.5" r="1.3"/><circle cx="15.5" cy="18.5" r="1.3"/>
+        </svg>
+      </div>
+      <div>
+        <h3>Bomba Agilia: 139 ml/h durante 4 h</h3>
+        <p>Introducir volumen a infundir <strong>558 ml</strong> y velocidad <strong>139 ml/h</strong>. Puede usarse filtro en línea, pero el poro <strong>nunca menor de 1 µm</strong>.</p>
+        <span class="tag green">Filtro en línea ≥ 1 µm</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">10</span>
+      <div class="icon">
+        <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#7ec2ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7.5"/><path d="M16.5 16.5 21.5 21.5"/><path d="M11 8v6M8 11h6"/>
+        </svg>
+      </div>
+      <div>
+        <h3>Vigilar durante la perfusión</h3>
+        <p>Constantes al inicio, a los 30 min y luego cada hora. Vigilar <strong>fiebre, escalofríos y tiritona</strong>, y también taquicardia, hipotensión, rubefacción, disnea, opresión torácica o dolor lumbar/óseo.</p>
+        <span class="tag amber">Primera dosis: máxima vigilancia</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="num">11</span>
+      <div class="icon">
+        <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#7ec2ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.5 6.5 9.5 17.5 4 12"/>
+        </svg>
+      </div>
+      <div>
+        <h3>Al terminar</h3>
+        <p>Lavar la vía con <strong>SG 5%</strong>. Retirar el sistema, registrar dosis, hora de inicio y fin, incidencias y constantes. Desechar restos: <strong>no reutilizar viales abiertos</strong>.</p>
+        <span class="tag green">Registrar en la historia</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4 5.5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10v-6l-8-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+      C · Seguridad y alternativas
+    </h2>
+
+    <div class="box warn">
+      <h3>⚠ Verificación de dosis (importante)</h3>
+      <ul>
+        <li>5 viales × 12 ml a 4 mg/ml = <b>60 ml = 240 mg</b>.</li>
+        <li>Al desechar 2,4 ml quedan <b>57,6 ml = 230,4 mg</b> (−9,6 mg, un 4 % menos).</li>
+        <li>Si la dosis prescrita es <b>exactamente 240 mg</b>, no debe desecharse nada: usar los 60 ml completos → total 560 ml a <b>140 ml/h</b>.</li>
+        <li>Confirmar con Farmacia qué dosis persigue el protocolo del servicio antes de aplicar el descarte.</li>
+      </ul>
+    </div>
+
+    <div class="box ok">
+      <h3>✓ Formas de simplificarlo</h3>
+      <ul>
+        <li><b>Volumen exacto:</b> retirar de la bolsa un volumen igual al que se va a añadir (≈58 ml de los 500 ml). El total queda en 500 ml redondos → <b>125 ml/h</b>, sin decimales.</li>
+        <li><b>Bolsa más pequeña:</b> 250 ml de SG 5% da 0,78 mg/ml y 100 ml da 1,4 mg/ml; ambas dentro del rango 0,2–2 mg/ml.</li>
+        <li><b>Tiempo de perfusión:</b> la ficha técnica indica <b>30–60 min</b> de forma estándar y ≥2 h solo para dosis &gt;5 mg/kg o si hay reacciones. Las 4 h son una pauta conservadora: puede acortarse si el paciente tolera bien.</li>
+        <li><b>Preparación centralizada:</b> el concentrado aguanta <b>7 días a 2–8 °C</b> y la mezcla diluida <b>hasta 7 días a 2–8 °C</b> (a 0,5 mg/ml), por lo que Farmacia puede prepararla en campana.</li>
+        <li><b>Dosis de prueba:</b> al iniciar un ciclo nuevo se aconseja pasar ~1 mg en 10 min y observar 30 min antes de continuar.</li>
+      </ul>
+    </div>
+
+    <div class="box danger">
+      <h3>✕ Si aparece reacción a la perfusión</h3>
+      <ul>
+        <li><b>Detener la perfusión</b> y avisar al médico responsable.</li>
+        <li>Leve-moderada: reanudar más lenta (≥2 h) tras premedicación pautada — paracetamol, antihistamínico y/o hidrocortisona.</li>
+        <li><b>Anafilaxia:</b> suspender de forma definitiva. El paciente no debe recibir más perfusiones de este fármaco.</li>
+        <li>Suele ceder rápido al parar y puede no repetirse en dosis posteriores.</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <h3>Conservación de la mezcla</h3>
+      <table>
+        <tr><th>Situación</th><th>Máximo</th></tr>
+        <tr><td>Vial reconstituido, 25 °C</td><td><b>24 h</b></td></tr>
+        <tr><td>Vial reconstituido, 2–8 °C</td><td><b>7 días</b></td></tr>
+        <tr><td>Diluido en SG 5% (~0,5 mg/ml), 25 °C</td><td><b>72 h</b></td></tr>
+        <tr><td>Diluido en SG 5% (~0,5 mg/ml), 2–8 °C</td><td><b>7 días</b></td></tr>
+        <tr><td>Sin preparación aséptica validada</td><td><b>24 h a 2–8 °C</b></td></tr>
+      </table>
+      <ul style="margin-top:9px">
+        <li>No congelar. No conservar por encima de 25 °C.</li>
+        <li>Sin conservante antibacteriano: lo ideal es usarlo <b>de inmediato</b>.</li>
+        <li>Nunca guardar viales parcialmente usados.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div>
+    <b style="color:#c8d8ef">Fuentes:</b>
+    <a href="https://cima.aemps.es/cima/dochtml/ft/61117/FichaTecnica_61117.html">Ficha técnica AmBisome liposomal 50 mg — CIMA / AEMPS</a> ·
+    <a href="https://www.accessdata.fda.gov/drugsatfda_docs/label/2021/050740Orig1s033lbl.pdf">Prescribing Information AmBisome — FDA</a> ·
+    <a href="https://www.gilead.com/-/media/project/ambisome/global/pdf/reconstitution-leavepiece-glucose_website-version.pdf">Guía de reconstitución AmBisome — Gilead</a>
+  </div>
+  <div style="text-align:right">
+    Documento de apoyo para enfermería · No sustituye a la prescripción individual ni al protocolo del servicio.<br>
+    Revisión: agosto 2026 · Hospital de Día
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
