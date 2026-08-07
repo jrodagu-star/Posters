@@ -5,6 +5,12 @@ const LIB = window.BIBLIOTECA_DATA || { tree: { id: 'f-root', type: 'folder', ti
 const VALID_EXTS = ['.gif', '.htm', '.html', '.jpeg', '.jpg', '.pdf', '.png', '.webp'];
 const IMAGE_EXTS = ['.gif', '.jpeg', '.jpg', '.png', '.webp'];
 const HTML_EXTS = ['.htm', '.html'];
+const AUDIENCES = [
+  { id: 'medicina', label: 'Medicina' },
+  { id: 'enfermeria', label: 'Enfermería' },
+  { id: 'tcae', label: 'TCAE' }
+];
+const DEFAULT_AUDIENCE = 'medicina';
 const CALCULADORAS = [
   {
     id: 'sedacion-uci',
@@ -83,7 +89,11 @@ const els = {
   pdfLbTitle: document.getElementById('pdfLbTitle'),
   pdfLbFrame: document.getElementById('pdfLbFrame'),
   pdfLbFullscreen: document.getElementById('pdfLbFullscreen'),
-  pdfLbClose: document.getElementById('pdfLbClose')
+  pdfLbClose: document.getElementById('pdfLbClose'),
+  newPosterAudienceSelect: document.getElementById('newPosterAudienceSelect'),
+  audienceMedicinaBtn: document.getElementById('audienceMedicinaBtn'),
+  audienceEnfermeriaBtn: document.getElementById('audienceEnfermeriaBtn'),
+  audienceTcaeBtn: document.getElementById('audienceTcaeBtn')
 };
 
 const state = {
@@ -115,7 +125,8 @@ const state = {
   htmlLbDragStartY: 0,
   htmlLbScrollLeft: 0,
   htmlLbScrollTop: 0,
-  lastSavedMode: 'base'
+  lastSavedMode: 'base',
+  audienceFilter: DEFAULT_AUDIENCE
 };
 
 function clone(obj) { return JSON.parse(JSON.stringify(obj)); }
@@ -152,10 +163,32 @@ function normalizeAssetPath(path) {
   if (idxAssets >= 0) return '../biblioteca/' + p.slice(idxAssets);
   return p;
 }
+function isValidAudience(value) {
+  return AUDIENCES.some(item => item.id === value);
+}
+function getAudience(file) {
+  return isValidAudience(file && file.audience) ? file.audience : DEFAULT_AUDIENCE;
+}
+function audienceLabel(id) {
+  const found = AUDIENCES.find(item => item.id === id);
+  return found ? found.label : AUDIENCES[0].label;
+}
+function ensureAudience(node) {
+  if (!node) return;
+  if (node.type === 'file') {
+    node.audience = getAudience(node);
+    return;
+  }
+  (node.children || []).forEach(ensureAudience);
+}
+function matchesAudienceFilter(file) {
+  return getAudience(file) === state.audienceFilter;
+}
 function normalizeTreePaths(node) {
   if (!node) return;
   if (node.type === 'file') {
     if (node.source !== 'upload' && node.path) node.path = normalizeAssetPath(node.path);
+    node.audience = getAudience(node);
     return;
   }
   (node.children || []).forEach(normalizeTreePaths);
@@ -232,11 +265,11 @@ function rebuildMetadata(node, parentFolders = []) {
   (node.children || []).forEach(child => rebuildMetadata(child, node.title === 'Temas' ? parentFolders : [...parentFolders, node.title]));
 }
 
-function countFiles(node) {
-  if (node.type === 'file') return 1;
+function countFiles(node, filtered = false) {
+  if (node.type === 'file') return filtered ? (matchesAudienceFilter(node) ? 1 : 0) : 1;
   let total = 0;
-  (node.children || []).forEach(c => { total += countFiles(c); });
-  node.file_count = total;
+  (node.children || []).forEach(c => { total += countFiles(c, filtered); });
+  if (!filtered) node.file_count = total;
   return total;
 }
 
@@ -244,6 +277,10 @@ function flatten(node) {
   if (!node) return [];
   if (node.type === 'file') return [node];
   return (node.children || []).flatMap(flatten);
+}
+
+function flattenVisible(node = state.tree) {
+  return flatten(node).filter(matchesAudienceFilter);
 }
 
 function listRootAreas() {
@@ -273,7 +310,7 @@ function findNodeAndParentById(id, node = state.tree, parent = null) {
 
 function firstFile(node = state.tree) {
   if (!node) return null;
-  if (node.type === 'file') return node;
+  if (node.type === 'file') return matchesAudienceFilter(node) ? node : null;
   for (const child of (node.children || [])) {
     const found = firstFile(child);
     if (found) return found;
@@ -320,7 +357,7 @@ function openParentsByFilePath(path) {
 function getSiblingFiles(fileId) {
   const found = findNodeAndParentById(fileId);
   if (!found.parent || found.parent.type !== 'folder') return [];
-  return (found.parent.children || []).filter(child => child.type === 'file');
+  return (found.parent.children || []).filter(child => child.type === 'file' && matchesAudienceFilter(child));
 }
 
 function getLightboxWrap() {
@@ -522,7 +559,7 @@ function showFile(file) {
   let metaExtra = '';
   if (isImageExt(file.ext)) metaExtra = ' · clic para ampliar';
   else if (isHtmlExt(file.ext) || file.ext === '.pdf') metaExtra = ' · scroll y pantalla completa';
-  els.meta.textContent = kindLabel(file.ext) + ' · ' + (file.specialty || 'General') + metaExtra;
+  els.meta.textContent = kindLabel(file.ext) + ' · ' + audienceLabel(getAudience(file)) + ' · ' + (file.specialty || 'General') + metaExtra;
   els.crumbs.textContent = file.breadcrumb || file.title;
   const src = fileSrc(file);
   if (file.ext === '.pdf') {
@@ -764,6 +801,7 @@ function thumbMarkup(node) {
 
 function createNode(node) {
   if (node.type === 'file') {
+    if (!matchesAudienceFilter(node)) return null;
     const wrap = document.createElement('div');
     wrap.className = 'file';
     const btn = document.createElement('button');
@@ -791,7 +829,8 @@ function createNode(node) {
   label.className = 'folder-label';
   label.dataset.id = node.id;
   label.draggable = node.title !== 'Temas';
-  const count = node.title === 'Temas' ? '' : '<span class="badge">' + countFiles(node) + '</span>';
+  const visibleCount = countFiles(node, true);
+  const count = node.title === 'Temas' ? '' : '<span class="badge">' + visibleCount + '</span>';
   label.innerHTML = '<span class="caret">▸</span><span>📁</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(node.title) + '</span>' + count;
   const children = document.createElement('div');
   children.className = 'folder-children';
@@ -827,7 +866,10 @@ function createNode(node) {
     state.draggedItem = null;
     clearDropTargets();
   });
-  (node.children || []).forEach(child => children.appendChild(createNode(child)));
+  (node.children || []).forEach(child => {
+    const childEl = createNode(child);
+    if (childEl) children.appendChild(childEl);
+  });
   wrap.appendChild(label);
   wrap.appendChild(children);
   return wrap;
@@ -836,14 +878,14 @@ function createNode(node) {
 function renderTree() {
   countFiles(state.tree);
   rebuildMetadata(state.tree);
+  ensureAudience(state.tree);
   els.tree.innerHTML = '';
-  (state.tree.children || []).forEach(child => els.tree.appendChild(createNode(child)));
-  Array.from(document.querySelectorAll('.tree > .folder')).slice(0, 3).forEach(folder => {
-    folder.classList.add('open');
-    const caret = folder.querySelector(':scope > .folder-label .caret');
-    if (caret) caret.textContent = '▾';
+  (state.tree.children || []).forEach(child => {
+    const childEl = createNode(child);
+    if (childEl) els.tree.appendChild(childEl);
   });
   updateStats();
+  updateAudienceButtons();
   if (state.currentFile) openParentsByFilePath(state.currentFile.path || state.currentFile.id);
   if (state.currentPath) setActive(state.currentPath);
   if (state.selectedId) setSelection(state.selectedId, state.selectedType);
@@ -889,7 +931,7 @@ function renderSearch(query) {
     els.results.innerHTML = '';
     return;
   }
-  const matches = flatten(state.tree).filter(f => (f.title + ' ' + f.breadcrumb + ' ' + (f.specialty || '')).toLowerCase().includes(q)).slice(0, 100);
+  const matches = flattenVisible(state.tree).filter(f => (f.title + ' ' + f.breadcrumb + ' ' + (f.specialty || '') + ' ' + audienceLabel(getAudience(f))).toLowerCase().includes(q)).slice(0, 100);
   els.tree.style.display = 'none';
   els.results.style.display = 'block';
   if (!matches.length) {
@@ -918,9 +960,26 @@ function renderSearch(query) {
   if (state.currentPath) setActive(state.currentPath);
 }
 
+function updateAudienceButtons() {
+  document.querySelectorAll('.audience-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.audience === state.audienceFilter);
+  });
+}
+
+function setAudienceFilter(audience) {
+  if (!isValidAudience(audience) || audience === state.audienceFilter) return;
+  state.audienceFilter = audience;
+  updateAudienceButtons();
+  renderTree();
+  renderSearch(els.search.value);
+  if (state.currentFile && !matchesAudienceFilter(state.currentFile)) {
+    showHome();
+  }
+}
+
 function updateStats() {
-  const files = flatten(state.tree);
-  els.statFiles.textContent = files.length + ' pósteres';
+  const files = flattenVisible(state.tree);
+  els.statFiles.textContent = files.length + ' pósteres (' + audienceLabel(state.audienceFilter) + ')';
   els.statAreas.textContent = listRootAreas().length + ' áreas';
   let saveText = 'Biblioteca base';
   if (state.lastSavedMode === 'saved_file') saveText = 'Guardada en archivo';
@@ -954,6 +1013,9 @@ function pickTargetFolder() {
 
 async function readFilesAsUploads(fileList) {
   const accepted = [];
+  const audience = isValidAudience(els.newPosterAudienceSelect && els.newPosterAudienceSelect.value)
+    ? els.newPosterAudienceSelect.value
+    : DEFAULT_AUDIENCE;
   for (const file of fileList) {
     const ext = extFromName(file.name);
     if (!VALID_EXTS.includes(ext)) continue;
@@ -963,7 +1025,15 @@ async function readFilesAsUploads(fileList) {
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
-    accepted.push({ id: uuid('u'), type: 'file', title: file.name.replace(/\.[^.]+$/, ''), ext, source: 'upload', dataUrl });
+    accepted.push({
+      id: uuid('u'),
+      type: 'file',
+      title: file.name.replace(/\.[^.]+$/, ''),
+      ext,
+      source: 'upload',
+      dataUrl,
+      audience
+    });
   }
   return accepted;
 }
@@ -1107,6 +1177,8 @@ async function addFilesToFolder(files) {
   if (!uploads.length) { alert('No se han seleccionado archivos válidos.'); return; }
   folder.children.push(...uploads);
   rebuildMetadata(state.tree);
+  const audience = getAudience(uploads[0]);
+  if (audience !== state.audienceFilter) state.audienceFilter = audience;
   renderTree();
   renderSearch(els.search.value);
   saveLocalState();
@@ -1181,6 +1253,7 @@ async function loadLibraryFromFile(file) {
     const importedTree = data.tree || data;
     if (!importedTree || importedTree.type !== 'folder') { alert('Archivo de biblioteca no válido o incompatible.'); return; }
     normalizeTreePaths(importedTree);
+    ensureAudience(importedTree);
     state.tree = importedTree;
     rebuildMetadata(state.tree);
     renderTree();
@@ -1211,6 +1284,8 @@ async function clearPersistedState() {
 async function restoreBaseLibrary() {
   if (!confirm('¿Restaurar la biblioteca base cargada en este paquete?')) return;
   state.tree = clone((window.BIBLIOTECA_DATA && window.BIBLIOTECA_DATA.tree) || LIB.tree);
+  normalizeTreePaths(state.tree);
+  ensureAudience(state.tree);
   state.currentFile = null;
   state.currentPath = null;
   state.selectedId = null;
@@ -1224,6 +1299,9 @@ async function restoreBaseLibrary() {
 }
 
 function initEvents() {
+  document.querySelectorAll('details.sidebar-edit, details.menu-tree').forEach(details => {
+    details.open = false;
+  });
   els.search.addEventListener('input', e => renderSearch(e.target.value));
   if (els.homeBtn) els.homeBtn.addEventListener('click', () => {
     collapseAllFolders();
@@ -1232,6 +1310,9 @@ function initEvents() {
   els.expandAllBtn.addEventListener('click', expandAllFolders);
   els.collapseAllBtn.addEventListener('click', collapseAllFolders);
   if (els.calculadorasBtn) els.calculadorasBtn.addEventListener('click', showCalculadoras);
+  document.querySelectorAll('.audience-btn').forEach(btn => {
+    btn.addEventListener('click', () => setAudienceFilter(btn.dataset.audience));
+  });
   els.addRootFolderBtn.addEventListener('click', addRootFolder);
   els.addSubfolderBtn.addEventListener('click', addSubfolder);
   els.moveFolderBtn.addEventListener('click', moveSelectedFolder);
@@ -1416,16 +1497,19 @@ async function loadState() {
   }
   if (saved && saved.type === 'folder') {
     normalizeTreePaths(saved);
+    ensureAudience(saved);
     state.tree = saved;
     state.loadedFromSaved = true;
     state.lastSavedMode = 'autosaved';
   } else {
     state.tree = clone((window.BIBLIOTECA_DATA && window.BIBLIOTECA_DATA.tree) || LIB.tree);
     normalizeTreePaths(state.tree);
+    ensureAudience(state.tree);
     state.loadedFromSaved = false;
     state.lastSavedMode = 'base';
   }
   rebuildMetadata(state.tree);
+  updateAudienceButtons();
   renderTree();
   showHome();
 }

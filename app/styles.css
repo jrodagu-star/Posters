@@ -97,6 +97,11 @@ button { cursor: pointer; }
   padding: 10px;
   border-top: 1px solid var(--line);
   background: var(--panel2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: min(42vh, 360px);
+  overflow: auto;
 }
 .sidebar-calc-btn {
   width: 100%;
@@ -119,6 +124,34 @@ button { cursor: pointer; }
 .sidebar-calc-btn.active {
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.22);
   background: rgba(82,214,181,.32);
+}
+.sidebar-edit {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #0f1624;
+  overflow: hidden;
+}
+.sidebar-edit > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #d7e6ff;
+  user-select: none;
+  background: rgba(255,255,255,.03);
+}
+.sidebar-edit > summary::-webkit-details-marker { display: none; }
+.sidebar-edit-body {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border-top: 1px solid var(--line);
+}
+.sidebar-edit .menu-tree {
+  max-width: none;
+  min-width: 0;
+  flex: none;
 }
 
 .calculadoras-panel {
@@ -282,6 +315,8 @@ button { cursor: pointer; }
 .tree > .folder:nth-child(10) > .folder-label { background: rgba(248,100,100,.22); border-left: 4px solid #f86464; }
 .tree > .folder:nth-child(11) > .folder-label { background: rgba(160,248,255,.22); border-left: 4px solid #a0f8ff; }
 .tree > .folder:nth-child(12) > .folder-label { background: rgba(255,165,50,.22);  border-left: 4px solid #ffa532; }
+.tree > .folder:nth-child(13) > .folder-label { background: rgba(120,220,170,.22); border-left: 4px solid #78dcaa; }
+.tree > .folder:nth-child(14) > .folder-label { background: rgba(200,120,255,.22); border-left: 4px solid #c878ff; }
 
 /* Etiquetas comunes */
 .folder-label, .file-label, .result-item {
@@ -374,16 +409,42 @@ button { cursor: pointer; }
   min-width: 0;
 }
 
-/* ── Barra de menús superiores ─────────────────────────── */
+/* ── Selector de tipo de póster ────────────────────────── */
 .manager-wrap {
-  padding: 4px 8px;
+  padding: 8px 10px;
   border-bottom: 1px solid var(--line);
   background: rgba(13,17,23,.95);
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: stretch;
   flex-shrink: 0;
+}
+.audience-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.audience-btn {
+  border: 1px solid var(--line);
+  background: #182338;
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.audience-btn:hover {
+  background: #22314d;
+  border-color: rgba(79,179,232,.45);
+}
+.audience-btn.active {
+  background: rgba(79,179,232,.22);
+  border-color: rgba(79,179,232,.65);
+  color: #d9f2ff;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
 }
 
 /* Cada sección colapsable */

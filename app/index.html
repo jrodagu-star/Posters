@@ -23,74 +23,90 @@
       <div class="results" id="results"></div>
       <div class="sidebar-footer">
         <button type="button" class="sidebar-calc-btn" id="calculadorasBtn" title="Calculadoras y dashboards de cálculo">Calculadoras</button>
+        <details class="sidebar-edit">
+          <summary>✏️ Edición</summary>
+          <div class="sidebar-edit-body">
+            <details class="menu-tree">
+              <summary><span>📁 Carpetas</span><span class="summary-right">expandir</span></summary>
+              <div class="menu-body">
+                <div class="menu-row">
+                  <button class="btn btn-accent" id="addRootFolderBtn">Nueva principal</button>
+                  <button class="btn" id="addSubfolderBtn">Nueva subcarpeta</button>
+                </div>
+                <div class="menu-row">
+                  <button class="btn" id="moveFolderBtn">Mover subcarpeta</button>
+                  <button class="btn" id="renameFolderBtn">Renombrar</button>
+                </div>
+                <div class="menu-row">
+                  <button class="btn btn-danger" id="deleteFolderBtn">Eliminar</button>
+                  <div></div>
+                </div>
+                <div class="menu-field">
+                  <label for="moveFolderTargetSelect">Destino para la carpeta o subcarpeta seleccionada</label>
+                  <select id="moveFolderTargetSelect" class="select-control"></select>
+                </div>
+              </div>
+            </details>
+
+            <details class="menu-tree">
+              <summary><span>🖼️ Pósteres</span><span class="summary-right">expandir</span></summary>
+              <div class="menu-body">
+                <div class="menu-field">
+                  <label for="newPosterAudienceSelect">Tipo al añadir</label>
+                  <select id="newPosterAudienceSelect" class="select-control">
+                    <option value="medicina" selected>Medicina</option>
+                    <option value="enfermeria">Enfermería</option>
+                    <option value="tcae">TCAE</option>
+                  </select>
+                </div>
+                <div class="menu-row">
+                  <button class="btn btn-accent" id="addFilesBtn">Añadir</button>
+                  <button class="btn" id="movePosterBtn">Mover</button>
+                </div>
+                <div class="menu-row">
+                  <button class="btn" id="renamePosterBtn">Renombrar</button>
+                  <button class="btn btn-danger" id="deletePosterBtn">Eliminar</button>
+                </div>
+                <div class="menu-field">
+                  <label for="moveTargetSelect">Destino para el póster seleccionado</label>
+                  <select id="moveTargetSelect" class="select-control"></select>
+                </div>
+              </div>
+            </details>
+
+            <details class="menu-tree">
+              <summary><span>💾 Guardado</span><span class="summary-right">expandir</span></summary>
+              <div class="menu-body status-box">
+                <div class="menu-row">
+                  <button class="btn btn-save" id="saveLibraryBtn">Guardar biblioteca</button>
+                  <button class="btn btn-green" id="loadLibraryBtn">Abrir guardada</button>
+                </div>
+                <div class="menu-row">
+                  <button class="btn" id="exportBtn">Copia JSON</button>
+                  <button class="btn btn-danger" id="restoreBtn">Restaurar base</button>
+                </div>
+                <div id="savedFeedback">✔ Biblioteca guardada</div>
+                <div hidden aria-hidden="true">
+                  <div id="selectedInfo"></div>
+                  <span id="statFiles"></span>
+                  <span id="statAreas"></span>
+                  <span id="saveState"></span>
+                </div>
+              </div>
+            </details>
+
+            <input class="file-input" type="file" id="filePicker" accept="image/*,.pdf,.htm,.html,text/html" multiple>
+            <input class="file-input" type="file" id="importPicker" accept="application/json,.json,.js,text/javascript,text/plain">
+          </div>
+        </details>
       </div>
     </aside>
 
     <main class="main">
-      <div class="manager-wrap">
-        <details class="menu-tree">
-          <summary><span>📁 Carpetas</span><span class="summary-right">expandir</span></summary>
-          <div class="menu-body">
-            <div class="menu-row">
-              <button class="btn btn-accent" id="addRootFolderBtn">Nueva principal</button>
-              <button class="btn" id="addSubfolderBtn">Nueva subcarpeta</button>
-            </div>
-            <div class="menu-row">
-              <button class="btn" id="moveFolderBtn">Mover subcarpeta</button>
-              <button class="btn" id="renameFolderBtn">Renombrar</button>
-            </div>
-            <div class="menu-row">
-              <button class="btn btn-danger" id="deleteFolderBtn">Eliminar</button>
-              <div></div>
-            </div>
-            <div class="menu-field">
-              <label for="moveFolderTargetSelect">Destino para la carpeta o subcarpeta seleccionada</label>
-              <select id="moveFolderTargetSelect" class="select-control"></select>
-            </div>
-          </div>
-        </details>
-
-        <details class="menu-tree">
-          <summary><span>🖼️ Pósteres</span><span class="summary-right">expandir</span></summary>
-          <div class="menu-body">
-            <div class="menu-row">
-              <button class="btn btn-accent" id="addFilesBtn">Añadir</button>
-              <button class="btn" id="movePosterBtn">Mover</button>
-            </div>
-            <div class="menu-row">
-              <button class="btn" id="renamePosterBtn">Renombrar</button>
-              <button class="btn btn-danger" id="deletePosterBtn">Eliminar</button>
-            </div>
-            <div class="menu-field">
-              <label for="moveTargetSelect">Destino para el póster seleccionado</label>
-              <select id="moveTargetSelect" class="select-control"></select>
-            </div>
-          </div>
-        </details>
-
-        <details class="menu-tree">
-          <summary><span>💾 Guardado</span><span class="summary-right">expandir</span></summary>
-          <div class="menu-body status-box">
-            <div class="menu-row">
-              <button class="btn btn-save" id="saveLibraryBtn">Guardar biblioteca</button>
-              <button class="btn btn-green" id="loadLibraryBtn">Abrir guardada</button>
-            </div>
-            <div class="menu-row">
-              <button class="btn" id="exportBtn">Copia JSON</button>
-              <button class="btn btn-danger" id="restoreBtn">Restaurar base</button>
-            </div>
-            <div id="savedFeedback">✔ Biblioteca guardada</div>
-            <div hidden aria-hidden="true">
-              <div id="selectedInfo"></div>
-              <span id="statFiles"></span>
-              <span id="statAreas"></span>
-              <span id="saveState"></span>
-            </div>
-          </div>
-        </details>
-
-        <input class="file-input" type="file" id="filePicker" accept="image/*,.pdf,.htm,.html,text/html" multiple>
-        <input class="file-input" type="file" id="importPicker" accept="application/json,.json,.js,text/javascript,text/plain">
+      <div class="manager-wrap audience-bar" role="group" aria-label="Tipo de pósteres">
+        <button type="button" class="audience-btn active" id="audienceMedicinaBtn" data-audience="medicina">Medicina</button>
+        <button type="button" class="audience-btn" id="audienceEnfermeriaBtn" data-audience="enfermeria">Enfermería</button>
+        <button type="button" class="audience-btn" id="audienceTcaeBtn" data-audience="tcae">TCAE</button>
       </div>
 
       <div class="topbar">
@@ -163,7 +179,7 @@
     <div class="pdf-lightbox-hint">Usa la rueda o las barras del visor PDF para desplazarte · Ctrl + rueda para zoom</div>
   </div>
 
-  <script src="../biblioteca/biblioteca.js?v=20260806b"></script>
-  <script src="app.js?v=20260806b"></script>
+  <script src="../biblioteca/biblioteca.js?v=20260807b"></script>
+  <script src="app.js?v=20260807b"></script>
 </body>
 </html>
