@@ -27,9 +27,25 @@
   h2.relajante  { background: linear-gradient(90deg, #0d4f3c, #1a8060); }
   h2 .subtitle { font-size: 12px; font-weight: 400; opacity: 0.9; margin-left: 8px; }
 
-  .peso-box { background: #1a4a7a; color: white; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .peso-box { background: #1a4a7a; color: white; padding: 14px 18px; border-radius: 8px; margin-bottom: 16px; display: grid; gap: 10px; }
+  .peso-box .peso-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .peso-box label { font-weight: 600; }
-  .peso-box input { padding: 6px 10px; border-radius: 4px; border: none; font-size: 16px; width: 80px; }
+  .peso-box .peso-val { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; min-width: 90px; text-align: right; }
+  .peso-box .peso-val span { font-size: 16px; font-weight: 600; opacity: 0.85; margin-left: 4px; }
+  .peso-slider {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 10px;
+    border-radius: 999px; background: linear-gradient(90deg, #6eb0e8, #cfe6ff);
+    outline: none; cursor: pointer;
+  }
+  .peso-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%;
+    background: #fff; border: 3px solid #0d355c; box-shadow: 0 2px 6px rgba(0,0,0,.3); cursor: grab;
+  }
+  .peso-slider::-moz-range-thumb {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #fff; border: 3px solid #0d355c; box-shadow: 0 2px 6px rgba(0,0,0,.3); cursor: grab;
+  }
+  .peso-scale { display: flex; justify-content: space-between; font-size: 11px; opacity: 0.8; }
 
   table { width: 100%; border-collapse: collapse; background: white; font-size: 13px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
   th { color: white; padding: 10px 8px; text-align: left; font-weight: 600; vertical-align: top; font-size: 12px; }
@@ -50,6 +66,47 @@
   .dosis-input { width: 70px; padding: 4px 6px; border: 1px solid #aac; border-radius: 4px; font-size: 13px; }
   .resultado { font-weight: 700; color: #c0392b; background: #fff5e6; padding: 4px 8px; border-radius: 4px; display: inline-block; min-width: 60px; text-align: center; }
   .unidad { color: #666; font-size: 12px; }
+
+  .rate-wheel {
+    width: 84px; user-select: none; touch-action: none;
+  }
+  .rate-face {
+    width: 84px; height: 84px; border-radius: 50%;
+    background:
+      repeating-conic-gradient(from 0deg, #d8dee8 0deg 8deg, #eef2f7 8deg 16deg),
+      radial-gradient(circle at 50% 50%, #f7f9fc 0 34%, transparent 35%),
+      radial-gradient(circle at 32% 28%, #ffffff, #b8c2d0 62%, #7f8a99 100%);
+    box-shadow:
+      inset 0 3px 8px rgba(255,255,255,.55),
+      inset 0 -4px 10px rgba(0,0,0,.28),
+      0 3px 8px rgba(0,0,0,.2);
+    position: relative; cursor: grab; margin: 0 auto;
+  }
+  .rate-face:active { cursor: grabbing; }
+  .rate-face::after {
+    content: ''; position: absolute; inset: 28px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #fff, #d5dbe5 70%, #9aa5b4);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,.8), 0 1px 2px rgba(0,0,0,.2);
+  }
+  .rate-pointer {
+    position: absolute; left: 50%; top: 8px; width: 4px; height: 28px;
+    margin-left: -2px; border-radius: 2px;
+    background: linear-gradient(#1a4a7a, #0d355c);
+    transform-origin: 50% 34px; transform: rotate(-135deg);
+    z-index: 2; box-shadow: 0 0 0 1px rgba(255,255,255,.4);
+  }
+  .rate-range {
+    width: 100%; margin-top: 6px; accent-color: #1a4a7a;
+  }
+  .rate-readout {
+    text-align: center; margin-top: 2px; font-size: 13px; font-weight: 800; color: #1a4a7a;
+  }
+  .rate-btns { display: flex; justify-content: center; gap: 6px; margin-top: 4px; }
+  .rate-btns button {
+    width: 28px; height: 24px; border-radius: 6px; border: 1px solid #9bb4d0;
+    background: #eef4fa; color: #1a4a7a; font-weight: 800; cursor: pointer; line-height: 1;
+  }
+  .rate-btns button:hover { background: #dceaf8; }
 
   /* Barra gráfica */
   .dose-bar-wrap { width: 100%; min-width: 200px; }
@@ -134,12 +191,15 @@
 <body>
 
 <h1>Calculadora de perfusión continua — Sedación, analgesia y control de agitación en UCI</h1>
-<p style="font-size:13px;color:#555;">Fármacos agrupados según su efecto principal. Introduce peso y dosis; la velocidad en ml/h y el indicador gráfico se actualizan al instante. Los valores se guardan localmente en este navegador.</p>
+<p style="font-size:13px;color:#555;">Fármacos agrupados según su efecto principal. Ajusta el peso con el deslizador y la velocidad de perfusión (ml/h) con la rueda de cada fármaco; la dosis se calcula al instante. Los valores se guardan localmente en este navegador.</p>
 
 <div class="peso-box">
-  <label for="peso">Peso del paciente (kg):</label>
-  <input type="number" id="peso" value="70" min="1" max="250" step="0.5" oninput="recalcular()">
-  <span style="font-size:13px;opacity:0.9;">Cambia el peso y todas las velocidades se actualizan.</span>
+  <div class="peso-top">
+    <label for="peso">Peso del paciente</label>
+    <div class="peso-val" id="peso_txt">70<span>kg</span></div>
+  </div>
+  <input type="range" class="peso-slider" id="peso" value="70" min="30" max="200" step="1" oninput="recalcular()">
+  <div class="peso-scale"><span>30 kg</span><span>115 kg</span><span>200 kg</span></div>
 </div>
 
 <div class="legend-bar">
@@ -164,8 +224,8 @@
   <th style="width:14%">Presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
   <th style="width:32%">Efecto según dosis</th>
+  <th style="width:12%">Velocidad (ml/h)</th>
   <th style="width:10%">Dosis</th>
-  <th style="width:8%">Velocidad</th>
   <th style="width:14%">Efectos adversos clave</th>
 </tr>
 </thead>
@@ -189,8 +249,18 @@
       <div class="axis"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>6</span><span>8+</span></div>
     </div>
   </td>
-  <td><input type="number" class="dosis-input" id="d_propofol" value="2" min="0" step="0.1" oninput="recalcular()"> <span class="unidad">mg/kg/h</span></td>
-  <td><span class="resultado" id="v_propofol">—</span> <span class="unidad">ml/h</span></td>
+  <td data-label="Velocidad">
+    <div class="rate-wheel" data-drug="propofol">
+      <div class="rate-face" data-input="v_propofol"><div class="rate-pointer" id="ptr_propofol"></div></div>
+      <input type="range" class="rate-range" id="v_propofol" min="0" max="50" step="0.1" value="7" aria-label="ml/h Propofol" oninput="recalcular()">
+      <div class="rate-readout"><span id="v_propofol_txt">7.0</span> ml/h</div>
+      <div class="rate-btns">
+        <button type="button" onclick="stepRate('v_propofol',-0.1)">−</button>
+        <button type="button" onclick="stepRate('v_propofol',0.1)">+</button>
+      </div>
+    </div>
+  </td>
+  <td data-label="Dosis"><span class="resultado" id="d_propofol">—</span> <span class="unidad">mg/kg/h</span></td>
   <td>Hipotensión, bradicardia, hipertrigliceridemia, PRIS (acidosis láctica, rabdomiólisis, fallo cardíaco)</td>
 </tr>
 
@@ -210,8 +280,18 @@
       <div class="axis"><span>0</span><span>0,04</span><span>0,07</span><span>0,1</span><span>0,15+</span></div>
     </div>
   </td>
-  <td><input type="number" class="dosis-input" id="d_midazolam" value="0.05" min="0" step="0.01" oninput="recalcular()"> <span class="unidad">mg/kg/h</span></td>
-  <td><span class="resultado" id="v_midazolam">—</span> <span class="unidad">ml/h</span></td>
+  <td data-label="Velocidad">
+    <div class="rate-wheel" data-drug="midazolam">
+      <div class="rate-face" data-input="v_midazolam"><div class="rate-pointer" id="ptr_midazolam"></div></div>
+      <input type="range" class="rate-range" id="v_midazolam" min="0" max="20" step="0.1" value="3.5" aria-label="ml/h Midazolam" oninput="recalcular()">
+      <div class="rate-readout"><span id="v_midazolam_txt">3.5</span> ml/h</div>
+      <div class="rate-btns">
+        <button type="button" onclick="stepRate('v_midazolam',-0.1)">−</button>
+        <button type="button" onclick="stepRate('v_midazolam',0.1)">+</button>
+      </div>
+    </div>
+  </td>
+  <td data-label="Dosis"><span class="resultado" id="d_midazolam">—</span> <span class="unidad">mg/kg/h</span></td>
   <td>Delirium (alto riesgo, evitar PADIS), depresión respiratoria, hipotensión, tolerancia, abstinencia</td>
 </tr>
 
@@ -231,8 +311,18 @@
       <div class="axis"><span>0</span><span>0,5</span><span>1,5</span><span>3</span><span>4+</span></div>
     </div>
   </td>
-  <td><input type="number" class="dosis-input" id="d_ketamina" value="0.3" min="0" step="0.1" oninput="recalcular()"> <span class="unidad">mg/kg/h</span></td>
-  <td><span class="resultado" id="v_ketamina">—</span> <span class="unidad">ml/h</span></td>
+  <td data-label="Velocidad">
+    <div class="rate-wheel" data-drug="ketamina">
+      <div class="rate-face" data-input="v_ketamina"><div class="rate-pointer" id="ptr_ketamina"></div></div>
+      <input type="range" class="rate-range" id="v_ketamina" min="0" max="40" step="0.1" value="4.2" aria-label="ml/h Ketamina" oninput="recalcular()">
+      <div class="rate-readout"><span id="v_ketamina_txt">4.2</span> ml/h</div>
+      <div class="rate-btns">
+        <button type="button" onclick="stepRate('v_ketamina',-0.1)">−</button>
+        <button type="button" onclick="stepRate('v_ketamina',0.1)">+</button>
+      </div>
+    </div>
+  </td>
+  <td data-label="Dosis"><span class="resultado" id="d_ketamina">—</span> <span class="unidad">mg/kg/h</span></td>
   <td>Taquicardia, HTA, hipersalivación, alucinaciones al despertar, ↑PIC (controvertido), broncodilatador</td>
 </tr>
 
@@ -251,8 +341,8 @@
   <th style="width:14%">Presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
   <th style="width:32%">Efecto según dosis</th>
+  <th style="width:12%">Velocidad (ml/h)</th>
   <th style="width:10%">Dosis</th>
-  <th style="width:8%">Velocidad</th>
   <th style="width:14%">Efectos adversos clave</th>
 </tr>
 </thead>
@@ -273,8 +363,18 @@
       <div class="axis"><span>0</span><span>1</span><span>1,7</span><span>3</span><span>4+</span></div>
     </div>
   </td>
-  <td><input type="number" class="dosis-input" id="d_fentanilo" value="1.5" min="0" step="0.1" oninput="recalcular()"> <span class="unidad">µg/kg/h</span></td>
-  <td><span class="resultado" id="v_fentanilo">—</span> <span class="unidad">ml/h</span></td>
+  <td data-label="Velocidad">
+    <div class="rate-wheel" data-drug="fentanilo">
+      <div class="rate-face" data-input="v_fentanilo"><div class="rate-pointer" id="ptr_fentanilo"></div></div>
+      <input type="range" class="rate-range" id="v_fentanilo" min="0" max="40" step="0.1" value="11.7" aria-label="ml/h Fentanilo" oninput="recalcular()">
+      <div class="rate-readout"><span id="v_fentanilo_txt">11.7</span> ml/h</div>
+      <div class="rate-btns">
+        <button type="button" onclick="stepRate('v_fentanilo',-0.1)">−</button>
+        <button type="button" onclick="stepRate('v_fentanilo',0.1)">+</button>
+      </div>
+    </div>
+  </td>
+  <td data-label="Dosis"><span class="resultado" id="d_fentanilo">—</span> <span class="unidad">µg/kg/h</span></td>
   <td>Depresión respiratoria, bradicardia, hipotensión, íleo, delirium dosis-dependiente, tolerancia. <span class="alerta">Tras 4–6 h de perfusión: efecto acumulativo</span> (vida media contextual prolongada por redistribución en tejido graso, despertar tardío)</td>
 </tr>
 
@@ -294,8 +394,18 @@
       <div class="axis"><span>0</span><span>0,05</span><span>0,1</span><span>0,2</span><span>0,3+</span></div>
     </div>
   </td>
-  <td><input type="number" class="dosis-input" id="d_remi" value="0.05" min="0" step="0.01" oninput="recalcular()"> <span class="unidad">µg/kg/min</span></td>
-  <td><span class="resultado" id="v_remi">—</span> <span class="unidad">ml/h</span></td>
+  <td data-label="Velocidad">
+    <div class="rate-wheel" data-drug="remi">
+      <div class="rate-face" data-input="v_remi"><div class="rate-pointer" id="ptr_remi"></div></div>
+      <input type="range" class="rate-range" id="v_remi" min="0" max="30" step="0.1" value="4.2" aria-label="ml/h Remifentanilo" oninput="recalcular()">
+      <div class="rate-readout"><span id="v_remi_txt">4.2</span> ml/h</div>
+      <div class="rate-btns">
+        <button type="button" onclick="stepRate('v_remi',-0.1)">−</button>
+        <button type="button" onclick="stepRate('v_remi',0.1)">+</button>
+      </div>
+    </div>
+  </td>
+  <td data-label="Dosis"><span class="resultado" id="d_remi">—</span> <span class="unidad">µg/kg/min</span></td>
   <td>Hipotensión, bradicardia marcada, rigidez torácica con bolos, hiperalgesia, sin analgesia residual</td>
 </tr>
 
@@ -315,8 +425,18 @@
       <div class="axis"><span>0</span><span>3</span><span>6</span><span>10</span><span>12+</span></div>
     </div>
   </td>
-  <td><input type="number" class="dosis-input" id="d_morfina" value="3" min="0" step="0.5" oninput="recalcular()"> <span class="unidad">mg/h</span></td>
-  <td><span class="resultado" id="v_morfina">—</span> <span class="unidad">ml/h</span></td>
+  <td data-label="Velocidad">
+    <div class="rate-wheel" data-drug="morfina">
+      <div class="rate-face" data-input="v_morfina"><div class="rate-pointer" id="ptr_morfina"></div></div>
+      <input type="range" class="rate-range" id="v_morfina" min="0" max="20" step="0.1" value="3" aria-label="ml/h Morfina" oninput="recalcular()">
+      <div class="rate-readout"><span id="v_morfina_txt">3.0</span> ml/h</div>
+      <div class="rate-btns">
+        <button type="button" onclick="stepRate('v_morfina',-0.1)">−</button>
+        <button type="button" onclick="stepRate('v_morfina',0.1)">+</button>
+      </div>
+    </div>
+  </td>
+  <td data-label="Dosis"><span class="resultado" id="d_morfina">—</span> <span class="unidad">mg/h</span></td>
   <td>Liberación de histamina (hipotensión, prurito, broncoespasmo), íleo, acumulación de M6G en IRC</td>
 </tr>
 
@@ -335,8 +455,8 @@
   <th style="width:14%">Presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
   <th style="width:32%">Efecto según dosis</th>
+  <th style="width:12%">Velocidad (ml/h)</th>
   <th style="width:10%">Dosis</th>
-  <th style="width:8%">Velocidad</th>
   <th style="width:14%">Efectos adversos clave</th>
 </tr>
 </thead>
@@ -358,8 +478,18 @@
       <div class="axis"><span>0</span><span>0,4</span><span>0,7</span><span>1,2</span><span>1,4+</span></div>
     </div>
   </td>
-  <td><input type="number" class="dosis-input" id="d_dexme" value="0.5" min="0" step="0.1" oninput="recalcular()"> <span class="unidad">µg/kg/h</span></td>
-  <td><span class="resultado" id="v_dexme">—</span> <span class="unidad">ml/h</span></td>
+  <td data-label="Velocidad">
+    <div class="rate-wheel" data-drug="dexme">
+      <div class="rate-face" data-input="v_dexme"><div class="rate-pointer" id="ptr_dexme"></div></div>
+      <input type="range" class="rate-range" id="v_dexme" min="0" max="30" step="0.1" value="8.8" aria-label="ml/h Dexmedetomidina" oninput="recalcular()">
+      <div class="rate-readout"><span id="v_dexme_txt">8.8</span> ml/h</div>
+      <div class="rate-btns">
+        <button type="button" onclick="stepRate('v_dexme',-0.1)">−</button>
+        <button type="button" onclick="stepRate('v_dexme',0.1)">+</button>
+      </div>
+    </div>
+  </td>
+  <td data-label="Dosis"><span class="resultado" id="d_dexme">—</span> <span class="unidad">µg/kg/h</span></td>
   <td>Bradicardia (~13%), hipotensión (~25%), hipertensión transitoria, sequedad bucal, bloqueo AV</td>
 </tr>
 
@@ -397,8 +527,8 @@
   <th style="width:14%">Presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
   <th style="width:32%">Efecto según dosis</th>
+  <th style="width:12%">Velocidad (ml/h)</th>
   <th style="width:10%">Dosis</th>
-  <th style="width:8%">Velocidad</th>
   <th style="width:14%">Efectos adversos clave</th>
 </tr>
 </thead>
@@ -420,8 +550,18 @@
       <div class="axis"><span>0</span><span>1</span><span>3</span><span>6</span><span>10+</span></div>
     </div>
   </td>
-  <td><input type="number" class="dosis-input" id="d_cisatracurio" value="2" min="0" step="0.5" oninput="recalcular()"> <span class="unidad">µg/kg/min</span></td>
-  <td><span class="resultado" id="v_cisatracurio">—</span> <span class="unidad">ml/h</span></td>
+  <td data-label="Velocidad">
+    <div class="rate-wheel" data-drug="cisatracurio">
+      <div class="rate-face" data-input="v_cisatracurio"><div class="rate-pointer" id="ptr_cisatracurio"></div></div>
+      <input type="range" class="rate-range" id="v_cisatracurio" min="0" max="20" step="0.1" value="2.8" aria-label="ml/h Cisatracurio" oninput="recalcular()">
+      <div class="rate-readout"><span id="v_cisatracurio_txt">2.8</span> ml/h</div>
+      <div class="rate-btns">
+        <button type="button" onclick="stepRate('v_cisatracurio',-0.1)">−</button>
+        <button type="button" onclick="stepRate('v_cisatracurio',0.1)">+</button>
+      </div>
+    </div>
+  </td>
+  <td data-label="Dosis"><span class="resultado" id="d_cisatracurio">—</span> <span class="unidad">µg/kg/min</span></td>
   <td>Independiente de función hepatorrenal (eliminación de Hofmann). Sin liberación de histamina relevante. Riesgo de <b>miopatía del paciente crítico</b> en infusión prolongada, sobre todo con corticoides. Sin efectos hemodinámicos directos</td>
 </tr>
 
@@ -441,8 +581,18 @@
       <div class="axis"><span>0</span><span>5</span><span>10</span><span>15</span><span>20+</span></div>
     </div>
   </td>
-  <td><input type="number" class="dosis-input" id="d_rocuronio" value="8" min="0" step="0.5" oninput="recalcular()"> <span class="unidad">µg/kg/min</span></td>
-  <td><span class="resultado" id="v_rocuronio">—</span> <span class="unidad">ml/h</span></td>
+  <td data-label="Velocidad">
+    <div class="rate-wheel" data-drug="rocuronio">
+      <div class="rate-face" data-input="v_rocuronio"><div class="rate-pointer" id="ptr_rocuronio"></div></div>
+      <input type="range" class="rate-range" id="v_rocuronio" min="0" max="30" step="0.1" value="6.7" aria-label="ml/h Rocuronio" oninput="recalcular()">
+      <div class="rate-readout"><span id="v_rocuronio_txt">6.7</span> ml/h</div>
+      <div class="rate-btns">
+        <button type="button" onclick="stepRate('v_rocuronio',-0.1)">−</button>
+        <button type="button" onclick="stepRate('v_rocuronio',0.1)">+</button>
+      </div>
+    </div>
+  </td>
+  <td data-label="Dosis"><span class="resultado" id="d_rocuronio">—</span> <span class="unidad">µg/kg/min</span></td>
   <td>Acumulación en hepatopatía e IRC. Posible taquicardia leve. Reversible con <b>sugammadex</b> (2–4 mg/kg, o 16 mg/kg para reversión inmediata). Riesgo de miopatía del crítico con uso prolongado</td>
 </tr>
 
@@ -474,7 +624,7 @@
   <li>Cisatracurio: <span class="formula">3 mg/ml</span> (300 mg en 100 ml SSF)</li>
   <li>Rocuronio: <span class="formula">5 mg/ml</span> (500 mg en 100 ml SSF)</li>
 </ul>
-<p><b>Fórmula general:</b> <span class="formula">ml/h = (dosis × peso) / concentración</span> (ajustando unidades y tiempo)</p>
+<p><b>Fórmula general:</b> <span class="formula">dosis = (ml/h × concentración) / peso</span> (ajustando unidades y tiempo). La rueda controla ml/h; la dosis se calcula automáticamente.</p>
 </div>
 </details>
 </div>
@@ -483,420 +633,200 @@
 
 <script>
 const drugs = {
-  propofol:  { max: 8,    zones: [{lim:1, name:'Sedación ligera', color:'#5fb55f'}, {lim:2, name:'Sedación moderada', color:'#f5c542'}, {lim:3, name:'Sedación profunda', color:'#f08a3c'}, {lim:4, name:'Dosis altas', color:'#e8806e'}, {lim:6, name:'⚠️ PRIS', color:'#d94c4c'}, {lim:8, name:'⚠️ Dosis excesivas', color:'#8b1a1a'}] },
-  midazolam: { max: 0.15, zones: [{lim:0.04, name:'Ansiolisis', color:'#5fb55f'}, {lim:0.07, name:'Sedación ligera', color:'#f5c542'}, {lim:0.1, name:'Sedación profunda', color:'#f08a3c'}, {lim:0.15, name:'Acumulación / delirium', color:'#d94c4c'}] },
-  ketamina:  { max: 4,    zones: [{lim:0.5, name:'Analgesia subanestésica', color:'#5fb55f'}, {lim:1.5, name:'Sedación ligera', color:'#f5c542'}, {lim:3, name:'Sedación disociativa', color:'#f08a3c'}, {lim:4, name:'Emergencia / HTA', color:'#d94c4c'}] },
-  fentanilo: { max: 4,    zones: [{lim:1, name:'Analgesia', color:'#5fb55f'}, {lim:1.7, name:'Analgesia alta', color:'#f08a3c'}, {lim:4, name:'⚠️ Riesgo: sedación profunda / rigidez torácica', color:'#d94c4c'}] },
-  remi:      { max: 0.3,  zones: [{lim:0.05, name:'Analgesia sin apnea', color:'#5fb55f'}, {lim:0.1, name:'Analgosedación', color:'#f5c542'}, {lim:0.2, name:'Apnea / bradicardia', color:'#f08a3c'}, {lim:0.3, name:'Rigidez / hipotensión severa', color:'#d94c4c'}] },
-  morfina:   { max: 12,   zones: [{lim:3, name:'Analgesia', color:'#5fb55f'}, {lim:6, name:'Analgesia + sedación', color:'#f5c542'}, {lim:10, name:'Sedación profunda', color:'#f08a3c'}, {lim:12, name:'Depresión respiratoria', color:'#d94c4c'}] },
-  dexme:     { max: 1.4,  zones: [{lim:0.4, name:'Sedación ligera cooperativa', color:'#5fb55f'}, {lim:0.7, name:'Sedación moderada', color:'#f5c542'}, {lim:1.2, name:'Sedación profunda', color:'#f08a3c'}, {lim:1.4, name:'↑ bradicardia/hipotensión', color:'#d94c4c'}] },
-  cisatracurio: { max: 10, zones: [{lim:1, name:'Bloqueo parcial', color:'#5fb55f'}, {lim:3, name:'Bloqueo eficaz', color:'#f5c542'}, {lim:6, name:'Bloqueo profundo', color:'#f08a3c'}, {lim:10, name:'Sobre-bloqueo', color:'#d94c4c'}] },
-  rocuronio:    { max: 20, zones: [{lim:5, name:'Bloqueo parcial', color:'#5fb55f'}, {lim:10, name:'Bloqueo eficaz', color:'#f5c542'}, {lim:15, name:'Bloqueo profundo', color:'#f08a3c'}, {lim:20, name:'Acumulación', color:'#d94c4c'}] }
+  propofol: {
+    max: 8, unit: 'mg/kg/h', decimals: 2,
+    doseFromRate: (mlh, peso) => (mlh * 20) / peso,
+    rateFromDose: (d, peso) => (d * peso) / 20,
+    zones: [{lim:1, name:'Sedación ligera', color:'#5fb55f'}, {lim:2, name:'Sedación moderada', color:'#f5c542'}, {lim:3, name:'Sedación profunda', color:'#f08a3c'}, {lim:4, name:'Dosis altas', color:'#e8806e'}, {lim:6, name:'⚠️ PRIS', color:'#d94c4c'}, {lim:8, name:'⚠️ Dosis excesivas', color:'#8b1a1a'}]
+  },
+  midazolam: {
+    max: 0.15, unit: 'mg/kg/h', decimals: 3,
+    doseFromRate: (mlh, peso) => mlh / peso,
+    rateFromDose: (d, peso) => d * peso,
+    zones: [{lim:0.04, name:'Ansiolisis', color:'#5fb55f'}, {lim:0.07, name:'Sedación ligera', color:'#f5c542'}, {lim:0.1, name:'Sedación profunda', color:'#f08a3c'}, {lim:0.15, name:'Acumulación / delirium', color:'#d94c4c'}]
+  },
+  ketamina: {
+    max: 4, unit: 'mg/kg/h', decimals: 2,
+    doseFromRate: (mlh, peso) => (mlh * 5) / peso,
+    rateFromDose: (d, peso) => (d * peso) / 5,
+    zones: [{lim:0.5, name:'Analgesia subanestésica', color:'#5fb55f'}, {lim:1.5, name:'Sedación ligera', color:'#f5c542'}, {lim:3, name:'Sedación disociativa', color:'#f08a3c'}, {lim:4, name:'Emergencia / HTA', color:'#d94c4c'}]
+  },
+  fentanilo: {
+    max: 4, unit: 'µg/kg/h', decimals: 2,
+    doseFromRate: (mlh, peso) => (mlh * 9) / peso,
+    rateFromDose: (d, peso) => (d * peso) / 9,
+    zones: [{lim:1, name:'Analgesia', color:'#5fb55f'}, {lim:1.7, name:'Analgesia alta', color:'#f08a3c'}, {lim:4, name:'⚠️ Riesgo: sedación profunda / rigidez torácica', color:'#d94c4c'}]
+  },
+  remi: {
+    max: 0.3, unit: 'µg/kg/min', decimals: 3,
+    doseFromRate: (mlh, peso) => (mlh * 50) / (peso * 60),
+    rateFromDose: (d, peso) => (d * peso * 60) / 50,
+    zones: [{lim:0.05, name:'Analgesia sin apnea', color:'#5fb55f'}, {lim:0.1, name:'Analgosedación', color:'#f5c542'}, {lim:0.2, name:'Apnea / bradicardia', color:'#f08a3c'}, {lim:0.3, name:'Rigidez / hipotensión severa', color:'#d94c4c'}]
+  },
+  morfina: {
+    max: 12, unit: 'mg/h', decimals: 1,
+    doseFromRate: (mlh) => mlh,
+    rateFromDose: (d) => d,
+    zones: [{lim:3, name:'Analgesia', color:'#5fb55f'}, {lim:6, name:'Analgesia + sedación', color:'#f5c542'}, {lim:10, name:'Sedación profunda', color:'#f08a3c'}, {lim:12, name:'Depresión respiratoria', color:'#d94c4c'}]
+  },
+  dexme: {
+    max: 1.4, unit: 'µg/kg/h', decimals: 2,
+    doseFromRate: (mlh, peso) => (mlh * 4) / peso,
+    rateFromDose: (d, peso) => (d * peso) / 4,
+    zones: [{lim:0.4, name:'Sedación ligera cooperativa', color:'#5fb55f'}, {lim:0.7, name:'Sedación moderada', color:'#f5c542'}, {lim:1.2, name:'Sedación profunda', color:'#f08a3c'}, {lim:1.4, name:'↑ bradicardia/hipotensión', color:'#d94c4c'}]
+  },
+  cisatracurio: {
+    max: 10, unit: 'µg/kg/min', decimals: 2,
+    doseFromRate: (mlh, peso) => (mlh * 3000) / (peso * 60),
+    rateFromDose: (d, peso) => (d * peso * 60) / 3000,
+    zones: [{lim:1, name:'Bloqueo parcial', color:'#5fb55f'}, {lim:3, name:'Bloqueo eficaz', color:'#f5c542'}, {lim:6, name:'Bloqueo profundo', color:'#f08a3c'}, {lim:10, name:'Sobre-bloqueo', color:'#d94c4c'}]
+  },
+  rocuronio: {
+    max: 20, unit: 'µg/kg/min', decimals: 2,
+    doseFromRate: (mlh, peso) => (mlh * 5000) / (peso * 60),
+    rateFromDose: (d, peso) => (d * peso * 60) / 5000,
+    zones: [{lim:5, name:'Bloqueo parcial', color:'#5fb55f'}, {lim:10, name:'Bloqueo eficaz', color:'#f5c542'}, {lim:15, name:'Bloqueo profundo', color:'#f08a3c'}, {lim:20, name:'Acumulación', color:'#d94c4c'}]
+  }
 };
 
 function updateMarker(id, dose, cfg) {
-  const max = cfg.max;
-  const pct = Math.min(100, Math.max(0, (dose / max) * 100));
+  const pct = Math.min(100, Math.max(0, (dose / cfg.max) * 100));
   const mk = document.getElementById('mk_' + id);
   if (mk) mk.style.left = pct + '%';
+}
 
+function updatePointer(id, input) {
+  const ptr = document.getElementById('ptr_' + id);
+  if (!ptr || !input) return;
+  const min = parseFloat(input.min) || 0;
+  const max = parseFloat(input.max) || 1;
+  const val = parseFloat(input.value) || 0;
+  const pct = Math.min(1, Math.max(0, (val - min) / (max - min || 1)));
+  const angle = -135 + pct * 270;
+  ptr.style.transform = 'rotate(' + angle + 'deg)';
+}
+
+function stepRate(id, delta) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const min = parseFloat(el.min) || 0;
+  const max = parseFloat(el.max) || 100;
+  const step = parseFloat(el.step) || 0.1;
+  let next = (parseFloat(el.value) || 0) + delta;
+  next = Math.round(next / step) * step;
+  next = Math.min(max, Math.max(min, next));
+  el.value = next.toFixed(1);
+  recalcular();
 }
 
 function recalcular() {
   const peso = parseFloat(document.getElementById('peso').value) || 0;
+  const pesoTxt = document.getElementById('peso_txt');
+  if (pesoTxt) pesoTxt.innerHTML = peso + '<span>kg</span>';
   guardarEstado();
 
-  // Sedantes
-  const d_prop = parseFloat(document.getElementById('d_propofol').value) || 0;
-  document.getElementById('v_propofol').textContent = ((d_prop * peso) / 20).toFixed(1);
-  updateMarker('propofol', d_prop, drugs.propofol);
-
-  const d_mid = parseFloat(document.getElementById('d_midazolam').value) || 0;
-  document.getElementById('v_midazolam').textContent = ((d_mid * peso) / 1).toFixed(2);
-  updateMarker('midazolam', d_mid, drugs.midazolam);
-
-  const d_ket = parseFloat(document.getElementById('d_ketamina').value) || 0;
-  document.getElementById('v_ketamina').textContent = ((d_ket * peso) / 5).toFixed(2);
-  updateMarker('ketamina', d_ket, drugs.ketamina);
-
-  // Analgésicos
-  const d_fent = parseFloat(document.getElementById('d_fentanilo').value) || 0;
-  document.getElementById('v_fentanilo').textContent = ((d_fent * peso) / 9).toFixed(2);
-  updateMarker('fentanilo', d_fent, drugs.fentanilo);
-
-  const d_rem = parseFloat(document.getElementById('d_remi').value) || 0;
-  document.getElementById('v_remi').textContent = ((d_rem * peso * 60) / 50).toFixed(2);
-  updateMarker('remi', d_rem, drugs.remi);
-
-  const d_mor = parseFloat(document.getElementById('d_morfina').value) || 0;
-  document.getElementById('v_morfina').textContent = (d_mor / 1).toFixed(1);
-  updateMarker('morfina', d_mor, drugs.morfina);
-
-  // Agitación
-  const d_dex = parseFloat(document.getElementById('d_dexme').value) || 0;
-  document.getElementById('v_dexme').textContent = ((d_dex * peso) / 4).toFixed(2);
-  updateMarker('dexme', d_dex, drugs.dexme);
-
-  // Relajantes neuromusculares
-  // Cisatracurio 3 mg/ml = 3000 µg/ml. Dosis en µg/kg/min → ml/h = (dosis × peso × 60) / 3000
-  const d_cis = parseFloat(document.getElementById('d_cisatracurio').value) || 0;
-  document.getElementById('v_cisatracurio').textContent = ((d_cis * peso * 60) / 3000).toFixed(2);
-  updateMarker('cisatracurio', d_cis, drugs.cisatracurio);
-
-  // Rocuronio 5 mg/ml = 5000 µg/ml. Dosis en µg/kg/min → ml/h = (dosis × peso × 60) / 5000
-  const d_roc = parseFloat(document.getElementById('d_rocuronio').value) || 0;
-  document.getElementById('v_rocuronio').textContent = ((d_roc * peso * 60) / 5000).toFixed(2);
-  updateMarker('rocuronio', d_roc, drugs.rocuronio);
+  Object.keys(drugs).forEach(id => {
+    const cfg = drugs[id];
+    const rateEl = document.getElementById('v_' + id);
+    const doseEl = document.getElementById('d_' + id);
+    const rateTxt = document.getElementById('v_' + id + '_txt');
+    if (!rateEl || !doseEl) return;
+    const mlh = parseFloat(rateEl.value) || 0;
+    if (rateTxt) rateTxt.textContent = mlh.toFixed(1);
+    updatePointer(id, rateEl);
+    if (!peso && id !== 'morfina') {
+      doseEl.textContent = '—';
+      updateMarker(id, 0, cfg);
+      return;
+    }
+    const dose = cfg.doseFromRate(mlh, peso);
+    doseEl.textContent = dose.toFixed(cfg.decimals);
+    updateMarker(id, dose, cfg);
+  });
 }
 
-// Persistencia local de los valores
-const CAMPOS = ['peso','d_propofol','d_midazolam','d_ketamina','d_fentanilo','d_remi','d_morfina','d_dexme','d_cisatracurio','d_rocuronio'];
+const CAMPOS = ['peso','v_propofol','v_midazolam','v_ketamina','v_fentanilo','v_remi','v_morfina','v_dexme','v_cisatracurio','v_rocuronio'];
+const LEGACY_DOSE = {
+  d_propofol: 'propofol', d_midazolam: 'midazolam', d_ketamina: 'ketamina',
+  d_fentanilo: 'fentanilo', d_remi: 'remi', d_morfina: 'morfina',
+  d_dexme: 'dexme', d_cisatracurio: 'cisatracurio', d_rocuronio: 'rocuronio'
+};
+
 function guardarEstado() {
   try {
     const estado = {};
     CAMPOS.forEach(id => { const el = document.getElementById(id); if (el) estado[id] = el.value; });
-    localStorage.setItem('calc_sedacion_uci', JSON.stringify(estado));
+    localStorage.setItem('calc_sedacion_uci_v2', JSON.stringify(estado));
   } catch(e) {}
 }
+
 function cargarEstado() {
   try {
-    const raw = localStorage.getItem('calc_sedacion_uci');
+    let raw = localStorage.getItem('calc_sedacion_uci_v2');
+    if (raw) {
+      const estado = JSON.parse(raw);
+      CAMPOS.forEach(id => { if (estado[id] !== undefined) { const el = document.getElementById(id); if (el) el.value = estado[id]; } });
+      return;
+    }
+    raw = localStorage.getItem('calc_sedacion_uci');
     if (!raw) return;
-    const estado = JSON.parse(raw);
-    CAMPOS.forEach(id => { if (estado[id] !== undefined) { const el = document.getElementById(id); if (el) el.value = estado[id]; } });
+    const old = JSON.parse(raw);
+    const peso = parseFloat(old.peso) || 70;
+    const pesoEl = document.getElementById('peso');
+    if (pesoEl && old.peso !== undefined) pesoEl.value = Math.min(200, Math.max(30, Math.round(peso)));
+    Object.keys(LEGACY_DOSE).forEach(doseId => {
+      const drugId = LEGACY_DOSE[doseId];
+      if (old[doseId] === undefined) return;
+      const rateEl = document.getElementById('v_' + drugId);
+      if (!rateEl) return;
+      const dose = parseFloat(old[doseId]) || 0;
+      const rate = drugs[drugId].rateFromDose(dose, peso);
+      const max = parseFloat(rateEl.max) || rate;
+      rateEl.value = Math.min(max, Math.max(0, rate)).toFixed(1);
+    });
   } catch(e) {}
 }
+
+function bindWheels() {
+  document.querySelectorAll('.rate-face').forEach(face => {
+    const inputId = face.getAttribute('data-input');
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    let dragging = false;
+
+    function setFromPoint(clientX, clientY) {
+      const rect = face.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      let a = Math.atan2(clientX - cx, cy - clientY) * 180 / Math.PI;
+      a = Math.max(-135, Math.min(135, a));
+      const pct = (a + 135) / 270;
+      const min = parseFloat(input.min) || 0;
+      const max = parseFloat(input.max) || 1;
+      const step = parseFloat(input.step) || 0.1;
+      let val = min + pct * (max - min);
+      val = Math.round(val / step) * step;
+      input.value = val.toFixed(1);
+      recalcular();
+    }
+
+    face.addEventListener('pointerdown', e => {
+      dragging = true;
+      face.setPointerCapture(e.pointerId);
+      setFromPoint(e.clientX, e.clientY);
+    });
+    face.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      setFromPoint(e.clientX, e.clientY);
+    });
+    face.addEventListener('pointerup', () => { dragging = false; });
+    face.addEventListener('pointercancel', () => { dragging = false; });
+  });
+}
+
 cargarEstado();
+bindWheels();
 recalcular();
 </script>
-
-<script data-pplx-inline-edit>
-(function () {
-  if (window === window.top) return;
-
-  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
-  const MAX_FONT_BYTES = 500 * 1024;
-  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
-  let scrollForwarding = false;
-  let scrollRaf = 0;
-  let trustedTopOrigin = null;
-
-  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
-  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
-  // across multiple labels.
-  function matchesAllowedOrigin(origin) {
-    if (!origin) return false;
-    for (const entry of allowedParentOrigins) {
-      if (!entry.includes("*")) {
-        if (entry === origin) return true;
-        continue;
-      }
-      const pattern = new RegExp(
-        "^" +
-          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
-          "$",
-      );
-      if (pattern.test(origin)) return true;
-    }
-    return false;
-  }
-
-  // Trust decision: when the sender is same-origin-visible (event.origin is a
-  // real origin like https://www.perplexity.ai) we trust event.origin directly.
-  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
-  // broker's stamped `parentOrigin` to identify the top window. The fallback
-  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
-  // on the response path (see postToTrustedTop) to ensure replies can't be
-  // delivered to anyone but the actual top window of that claimed origin.
-  function getTrustedParentOrigin(event) {
-    const forwardedParentOrigin =
-      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
-    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
-    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
-  }
-
-  // All responses go to window.top with targetOrigin = the allowlisted origin.
-  // An attacker that iframes us inside their own null-origin broker can claim
-  // any parentOrigin they like, but the browser will drop the reply whenever
-  // the real top's origin doesn't match — so the screenshot never leaves.
-  function postToTrustedTop(message) {
-    if (!trustedTopOrigin) return;
-    try {
-      window.top.postMessage(message, trustedTopOrigin);
-    } catch (_error) {}
-  }
-
-  function inlineAll(original, clone) {
-    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
-
-    try {
-      const computedStyle = getComputedStyle(original);
-      // cssText on a computed style is the serialized declaration in modern
-      // Chromium/Safari — a single read beats enumerating ~400 longhand
-      // properties. Firefox returns "" here, so we fall back on empty.
-      const serialized = computedStyle.cssText;
-      if (serialized) {
-        clone.style.cssText = serialized;
-      } else {
-        const parts = new Array(computedStyle.length);
-        for (let index = 0; index < computedStyle.length; index += 1) {
-          const property = computedStyle[index];
-          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
-        }
-        clone.style.cssText = parts.join("");
-      }
-    } catch (_error) {}
-
-    const originalChildren = original.children;
-    const clonedChildren = clone.children;
-    for (
-      let index = 0;
-      index < originalChildren.length && index < clonedChildren.length;
-      index += 1
-    ) {
-      inlineAll(originalChildren[index], clonedChildren[index]);
-    }
-  }
-
-  function extractFontUrl(srcValue) {
-    const matches = [
-      ...srcValue.matchAll(
-        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
-      ),
-    ];
-    if (matches.length === 0) return null;
-    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
-    if (woff2) return woff2[1];
-    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
-    if (woff) return woff[1];
-    return matches[0][1];
-  }
-
-  // Cache resolved font URL -> data URI across captures. Fonts on a page
-  // essentially never change, and a batch run emits multiple captures back to
-  // back — without this we'd refetch + re-base64 every time.
-  const fontDataUriCache = new Map();
-  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
-
-  async function fetchAsDataUri(url) {
-    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
-    let dataUri = null;
-    try {
-      const response = await fetch(url, { mode: "cors", credentials: "omit" });
-      if (response.ok) {
-        const blob = await response.blob();
-        if (blob.size <= MAX_FONT_BYTES) {
-          dataUri = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () =>
-              resolve(typeof reader.result === "string" ? reader.result : null);
-            reader.onerror = () => resolve(null);
-            reader.readAsDataURL(blob);
-          });
-        }
-      }
-    } catch (_error) {
-      dataUri = null;
-    }
-    fontDataUriCache.set(url, dataUri);
-    return dataUri;
-  }
-
-  function collectFontFaceRuleTexts() {
-    const rules = [];
-    for (const sheet of document.styleSheets) {
-      let cssRules;
-      try {
-        cssRules = sheet.cssRules;
-      } catch (_error) {
-        continue;
-      }
-      if (!cssRules) continue;
-      for (const rule of cssRules) {
-        const cssText = rule.cssText || "";
-        if (cssText.startsWith("@font-face")) rules.push(cssText);
-      }
-    }
-    return rules;
-  }
-
-  async function buildInlinedFontCss() {
-    const ruleTexts = collectFontFaceRuleTexts();
-    if (ruleTexts.length === 0) return null;
-
-    const resolved = ruleTexts.map((cssText) => {
-      if (!SRC_DECLARATION_RE.test(cssText)) return null;
-      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
-      if (!srcMatch) return null;
-      const url = extractFontUrl(srcMatch[1]);
-      if (!url) return null;
-      try {
-        return { cssText, url: new URL(url, document.baseURI).href };
-      } catch (_error) {
-        return null;
-      }
-    });
-
-    const dataUris = await Promise.all(
-      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
-    );
-
-    const inlined = [];
-    let totalBytes = 0;
-    for (let index = 0; index < resolved.length; index += 1) {
-      const entry = resolved[index];
-      const dataUri = dataUris[index];
-      if (!entry || !dataUri) continue;
-      const approxBytes = dataUri.length * 0.75;
-      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
-      totalBytes += approxBytes;
-      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
-    }
-    return inlined.length > 0 ? inlined.join("\n") : null;
-  }
-
-  function stripExternal(clone) {
-    const images = clone.querySelectorAll("img");
-    for (let index = 0; index < images.length; index += 1) {
-      const src = images[index].getAttribute("src");
-      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
-    }
-
-    const elements = clone.querySelectorAll("*");
-    for (let index = 0; index < elements.length; index += 1) {
-      const style = elements[index].style.cssText;
-      if (style && style.includes("url(")) {
-        elements[index].style.cssText = style.replace(
-          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
-          "none",
-        );
-      }
-    }
-  }
-
-  function emitScroll() {
-    scrollRaf = 0;
-    if (!scrollForwarding) return;
-    postToTrustedTop({
-      type: "INLINE_EDIT_SCROLL",
-      scrollX: window.scrollX,
-      scrollY: window.scrollY,
-    });
-  }
-
-  window.addEventListener(
-    "scroll",
-    function () {
-      if (!scrollForwarding || scrollRaf) return;
-      scrollRaf = requestAnimationFrame(emitScroll);
-    },
-    { passive: true, capture: true },
-  );
-
-  async function handleCaptureRequest(event) {
-    const requestId = event.data.requestId;
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    function postResult(dataUrl) {
-      postToTrustedTop({
-        type: "INLINE_EDIT_SCREENSHOT_RESULT",
-        requestId,
-        dataUrl,
-        scrollX,
-        scrollY,
-      });
-    }
-
-    try {
-      // Wait for any pending web fonts to resolve so both inline metrics and
-      // the @font-face inlining below see the same loaded faces.
-      if (document.fonts && document.fonts.ready) {
-        try {
-          await document.fonts.ready;
-        } catch (_error) {}
-      }
-
-      const clone = document.documentElement.cloneNode(true);
-      inlineAll(document.documentElement, clone);
-
-      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
-      for (let index = 0; index < removedNodes.length; index += 1) {
-        removedNodes[index].remove();
-      }
-
-      stripExternal(clone);
-
-      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
-      // can resolve them — external font URLs aren't fetched during
-      // foreignObject rendering, which would otherwise force a fallback face
-      // and change text metrics.
-      const inlinedFontCss = await buildInlinedFontCss();
-      if (inlinedFontCss) {
-        const styleEl = document.createElement("style");
-        styleEl.textContent = inlinedFontCss;
-        const head = clone.querySelector("head");
-        if (head) head.appendChild(styleEl);
-        else clone.insertBefore(styleEl, clone.firstChild);
-      }
-
-      const html = new XMLSerializer().serializeToString(clone);
-      const svg =
-        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
-        '<foreignObject width="100%" height="100%">' +
-        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
-        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
-        html +
-        "</div></div></foreignObject></svg>";
-      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-      const image = new Image();
-      image.onload = function () {
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        canvas.getContext("2d").drawImage(image, 0, 0);
-        postResult(canvas.toDataURL("image/png"));
-      };
-      image.onerror = function () {
-        postResult(null);
-      };
-      image.src = svgUrl;
-    } catch (_error) {
-      postResult(null);
-    }
-  }
-
-  window.addEventListener("message", function (event) {
-    if (!event.data) return;
-    // Only accept messages from the direct parent frame. Blocks sibling /
-    // unrelated-window postMessage senders that could otherwise reach us.
-    if (event.source !== window.parent) return;
-
-    const trustedParentOrigin = getTrustedParentOrigin(event);
-    if (!trustedParentOrigin) return;
-    trustedTopOrigin = trustedParentOrigin;
-
-    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
-      scrollForwarding = true;
-      emitScroll();
-      return;
-    }
-
-    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
-      scrollForwarding = false;
-      if (scrollRaf) cancelAnimationFrame(scrollRaf);
-      scrollRaf = 0;
-      return;
-    }
-
-    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
-
-    handleCaptureRequest(event);
-  });
-})();
-
-
-</script></body>
+</body>
 </html>
