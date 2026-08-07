@@ -596,7 +596,7 @@ function showFile(file) {
   openParentsByFilePath(file.path || file.id);
 }
 
-function prepareHtmlDocument(doc, forMeasure) {
+function prepareHtmlDocument(doc, forMeasure, mode = 'poster') {
   if (!doc || !doc.documentElement) return;
   let style = doc.getElementById('dashboard-html-viewer-fix');
   if (!style) {
@@ -605,15 +605,35 @@ function prepareHtmlDocument(doc, forMeasure) {
     (doc.head || doc.documentElement).appendChild(style);
   }
   const overflow = forMeasure ? 'visible' : 'hidden';
-  style.textContent = [
-    'html, body { margin: 0 !important; padding: 0 !important; overflow: ' + overflow + ' !important; height: auto !important; max-width: none !important; }',
-    '.wrap, .table-wrap, main, section { overflow: visible !important; max-width: none !important; }',
-    'table { width: max-content !important; max-width: none !important; }'
-  ].join('\n');
+  if (mode === 'table') {
+    style.textContent = [
+      'html, body { margin: 0 !important; padding: 0 !important; overflow: ' + overflow + ' !important; height: auto !important; max-width: none !important; }',
+      '.wrap, .table-wrap, main, section { overflow: visible !important; max-width: none !important; }',
+      'table { width: max-content !important; max-width: none !important; }'
+    ].join('\n');
+  } else {
+    // Pósteres HTML: conservar padding y max-width para medir el tamaño real (legible)
+    style.textContent = [
+      'html, body { overflow: ' + overflow + ' !important; height: auto !important; }',
+      '.wrap, .table-wrap, main, section { overflow: visible !important; }'
+    ].join('\n');
+  }
   try {
     doc.documentElement.style.overflow = overflow;
     if (doc.body) doc.body.style.overflow = overflow;
   } catch (e) {}
+}
+
+function detectHtmlLayoutMode(doc) {
+  if (!doc || !doc.body) return 'poster';
+  if (doc.querySelector('.wrap')) return 'poster';
+  const table = doc.querySelector('table');
+  if (!table) return 'poster';
+  const bodyKids = Array.from(doc.body.children).filter(el => el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE');
+  if (bodyKids.some(el => el.tagName === 'TABLE' || el.classList.contains('post-tabla') || el.classList.contains('table-wrap'))) {
+    return 'table';
+  }
+  return 'poster';
 }
 
 function readHtmlContentSize(iframe) {
@@ -622,32 +642,64 @@ function readHtmlContentSize(iframe) {
   try {
     const doc = iframe.contentDocument || iframe.contentWindow?.document;
     if (!doc || !doc.documentElement) return { w, h };
-    prepareHtmlDocument(doc, true);
+    const mode = detectHtmlLayoutMode(doc);
+    prepareHtmlDocument(doc, true, mode);
     const body = doc.body;
     const root = doc.documentElement;
-    // Lienzo grande para que la tabla no se comprima al medir
     iframe.style.zoom = '1';
     iframe.style.transform = 'none';
-    iframe.style.width = '5000px';
-    iframe.style.height = '20000px';
-    void root.offsetHeight;
-    const table = doc.querySelector('table');
-    const tableRect = table ? table.getBoundingClientRect() : null;
-    w = Math.max(
-      root.scrollWidth || 0,
-      body ? body.scrollWidth : 0,
-      body ? body.offsetWidth : 0,
-      tableRect ? Math.ceil(tableRect.width) : 0,
-      900
-    );
-    h = Math.max(
-      root.scrollHeight || 0,
-      body ? body.scrollHeight : 0,
-      body ? body.offsetHeight : 0,
-      tableRect && body ? Math.ceil(tableRect.bottom - body.getBoundingClientRect().top + 40) : 0,
-      700
-    );
-    prepareHtmlDocument(doc, false);
+    if (mode === 'table') {
+      // Lienzo grande para que la tabla no se comprima al medir
+      iframe.style.width = '5000px';
+      iframe.style.height = '20000px';
+      void root.offsetHeight;
+      const table = doc.querySelector('table');
+      const tableRect = table ? table.getBoundingClientRect() : null;
+      w = Math.max(
+        root.scrollWidth || 0,
+        body ? body.scrollWidth : 0,
+        body ? body.offsetWidth : 0,
+        tableRect ? Math.ceil(tableRect.width) : 0,
+        900
+      );
+      h = Math.max(
+        root.scrollHeight || 0,
+        body ? body.scrollHeight : 0,
+        body ? body.offsetHeight : 0,
+        tableRect && body ? Math.ceil(tableRect.bottom - body.getBoundingClientRect().top + 40) : 0,
+        700
+      );
+    } else {
+      // Medir el póster a su ancho natural, sin expandirlo a 5000px
+      iframe.style.width = '1400px';
+      iframe.style.height = '12000px';
+      void root.offsetHeight;
+      const wrap = doc.querySelector('.wrap');
+      const target = wrap || body || root;
+      const rect = target.getBoundingClientRect();
+      w = Math.max(
+        Math.ceil(rect.width),
+        wrap ? wrap.scrollWidth : 0,
+        body ? Math.min(body.scrollWidth, 1400) : 0,
+        900
+      );
+      h = Math.max(
+        Math.ceil(rect.height),
+        wrap ? wrap.scrollHeight : 0,
+        body ? body.scrollHeight : 0,
+        root.scrollHeight || 0,
+        700
+      );
+      // Incluir padding del body
+      if (body) {
+        const cs = doc.defaultView.getComputedStyle(body);
+        const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+        const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+        w = Math.ceil(w + padX);
+        h = Math.ceil(h + padY);
+      }
+    }
+    prepareHtmlDocument(doc, false, mode);
   } catch (e) {}
   return { w: Math.ceil(w), h: Math.ceil(h) };
 }
@@ -664,8 +716,9 @@ function fitHtmlPreview() {
   board.style.height = size.h + 'px';
   board.style.transform = 'none';
   const pad = 8;
-  // Ajuste al ancho: letra más legible; scroll vertical para el resto
-  const scale = Math.max(80, stage.clientWidth - pad) / size.w;
+  // Preferir legibilidad: no achicar por debajo de ~95%; scroll horizontal si hace falta
+  const raw = Math.max(80, stage.clientWidth - pad) / size.w;
+  const scale = Math.min(1, Math.max(raw, 0.95));
   board.style.zoom = String(scale);
   stage.scrollLeft = 0;
   stage.scrollTop = 0;
@@ -692,8 +745,8 @@ function fitHtmlLightbox() {
   const stage = els.htmlLbStage;
   const pad = 16;
   const availW = Math.max(200, stage.clientWidth - pad);
-  // Ajuste al ancho de la pantalla (no a toda la página): texto más grande
-  const scale = availW / size.w;
+  const raw = availW / size.w;
+  const scale = Math.min(1, Math.max(raw, 0.95));
   state.htmlLbFitScale = scale;
   state.htmlLbScale = scale;
   applyHtmlLbTransform();
