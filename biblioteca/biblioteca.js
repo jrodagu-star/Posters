@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "exportedAt": "2026-08-07T10:03:56.146Z",
+  "exportedAt": "2026-08-13T12:00:41.819Z",
   "tree": {
     "id": "f-1",
     "type": "folder",
@@ -369,9 +369,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Infecciones / PROA 2025 Antibioticos nuevos para BGNMR",
             "specialty": "Infecciones",
             "path": "../biblioteca/assets/infecciones/proa-2025-antibioticos-nuevos-para-bgnmr.png"
+          },
+          {
+            "id": "p-germenes",
+            "type": "file",
+            "title": "Gérmenes",
+            "path": "../biblioteca/assets/infecciones/germenes.html",
+            "ext": ".html",
+            "specialty": "Infecciones",
+            "breadcrumb": "Infecciones / Gérmenes",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 5
+        "file_count": 6
       },
       {
         "id": "f-32",
@@ -760,6 +771,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 4
       }
     ],
-    "file_count": 55
+    "file_count": 56
   }
 };

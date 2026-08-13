@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CLASIFICACION GERMENES</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f172a;
+    }
+    * { box-sizing: border-box; }
+    @page { size: A4 portrait; margin: 6mm; }
+
+    body {
+      margin: 0;
+      background: #cbd5e1;
+      font-family: "Outfit", "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .sheet {
+      width: 210mm;
+      max-width: 100%;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: linear-gradient(180deg, #f8fafc 0%, #e0f2fe 55%, #f0f9ff 100%);
+      padding: 3.5mm 4.5mm 4mm;
+      border-radius: 0;
+    }
+
+    .headline {
+      display: block;
+      margin-bottom: 2mm;
+      padding-bottom: 2mm;
+      border-bottom: 1px solid #bae6fd;
+    }
+    h1 {
+      font-size: 11pt;
+      font-weight: 800;
+      margin: 0;
+      line-height: 1.15;
+      color: #0e7490;
+    }
+    .legend-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px 8px;
+      font-size: 5.1pt;
+      font-weight: 600;
+      margin-bottom: 2.5mm;
+    }
+    .lx { display: inline-flex; align-items: center; gap: 2px; padding: 1px 4px; border-radius: 3px; }
+    .lx-c { background: #fce7f3; color: #9d174d; }
+    .lx-b { background: #d1fae5; color: #047857; }
+    .lx-a { background: #e9d5ff; color: #5b21b6; }
+    .lx-s { background: #c7d2fe; color: #312e81; }
+    .lx-p { background: #fed7aa; color: #9a3412; }
+
+    /* Una columna, orden: cocos → bacilos aerobios → anaerobios → espiroquetas → bacterias atípicas */
+    .cascade { display: flex; flex-direction: column; gap: 2.5mm; }
+    .cascade .box-coco, .cascade .box-bac, .cascade .box-ana, .cascade .box-spi, .cascade .box-esp { width: 100%; }
+
+    /* Tablas: ancho ~198 mm; prioridad a columna clínica */
+    table.germen {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 5.65pt;
+      line-height: 1.18;
+    }
+    col.c-forma { width: 4.2%; }
+    col.c-gram { width: 6.2%; }
+    col.c-sub { width: 18.5%; }
+    col.c-crit { width: 15.5%; }
+    col.c-sp { width: 13.5%; }
+    col.c-clin { width: 42.1%; }
+
+    table.germen th, table.germen td {
+      border: 0.5px solid #1e293b;
+      padding: 1px 2px 2px 2px;
+      vertical-align: top;
+      text-align: left;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+    }
+    table.germen .th-top {
+      font-weight: 800;
+      font-size: 5.8pt;
+      text-align: center;
+      padding: 2px 2px 3px;
+      line-height: 1.12;
+    }
+    .v-head {
+      font-weight: 800;
+      text-align: center;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      width: 100%;
+      font-size: 6.2pt;
+      padding: 1px 0;
+    }
+    .g-head { font-weight: 700; text-align: center; font-size: 5.5pt; }
+    .grp { font-weight: 600; font-size: 5.4pt; }
+    .crit { font-size: 5.2pt; color: #1e293b; }
+    .sp { font-weight: 600; font-size: 5.3pt; }
+    .sp em { font-style: normal; font-weight: 700; }
+    .clin { font-size: 5.2pt; color: #334155; }
+    strong { font-weight: 800; }
+    .arrow { font-weight: 500; }
+
+    /* Bloques cromáticos (estudiantes) */
+    .box-coco {
+      background: #fff;
+      border: 1.5px solid #f472b6;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(244, 114, 182, 0.2);
+    }
+    .box-coco .th-top { background: linear-gradient(180deg, #fbcfe8, #f9a8d4); color: #831843; }
+    .box-coco .v-head { background: #fce7f3; color: #9d174d; }
+    .box-coco .g-head { background: #fdf2f8; color: #9d174d; }
+    .box-coco .grp { background: #fff1f2; }
+
+    .box-bac {
+      background: #fff;
+      border: 1.5px solid #34d399;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(52, 211, 153, 0.25);
+    }
+    .box-bac .th-top { background: linear-gradient(180deg, #6ee7b7, #34d399); color: #064e3b; }
+    .box-bac .v-head { background: #d1fae5; color: #065f46; }
+    .box-bac .g-head { background: #ecfdf5; color: #047857; }
+    .box-bac .grp { background: #f0fdf4; }
+
+    .box-ana {
+      background: #fff;
+      border: 1.5px solid #a78bfa;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(124, 58, 237, 0.18);
+    }
+    .box-ana .th-top, .box-ana caption.lcap { background: linear-gradient(180deg, #c4b5fd, #a78bfa); color: #1e1b4b; }
+    .box-ana .v-head { background: #ede9fe; color: #4c1d95; }
+    .box-ana .g-head { background: #f5f3ff; color: #5b21b6; }
+    .box-ana .grp { background: #faf5ff; }
+
+    .box-spi {
+      background: #fff;
+      border: 1.5px solid #6366f1;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(99, 102, 241, 0.2);
+    }
+    .box-spi .th-top, .box-spi caption.lcap { background: linear-gradient(180deg, #a5b4fc, #818cf8); color: #1e1b4b; }
+    .box-spi .v-head { background: #e0e7ff; color: #312e81; }
+    .box-spi .grp { background: #eef2ff; }
+
+    .box-esp {
+      background: #fff;
+      border: 1.5px solid #fb923c;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(251, 146, 60, 0.25);
+    }
+    .box-esp .th-top, .box-esp caption.lcap { background: linear-gradient(180deg, #fdba74, #fb923c); color: #431407; }
+    .box-esp .v-head { background: #ffedd5; color: #9a3412; }
+    .box-esp .grp { background: #fff7ed; }
+
+    caption.lcap {
+      caption-side: top;
+      text-align: left;
+      font-weight: 800;
+      font-size: 5.9pt;
+      padding: 3px 5px 3px;
+      margin: 0;
+      border-radius: 4px 4px 0 0;
+      line-height: 1.2;
+    }
+    table.captioned { margin-top: 0; }
+
+    footer {
+      font-size: 5.2pt;
+      color: #64748b;
+      margin-top: 2.5mm;
+      padding-top: 1.5mm;
+      border-top: 1px dashed #cbd5e1;
+      line-height: 1.2;
+    }
+
+    .block-illu {
+      display: flex;
+      align-items: center;
+      gap: 3mm;
+      padding: 1.5mm 2mm 0.5mm;
+      border-bottom: 1px dashed rgba(0,0,0,0.08);
+    }
+    .block-illu span.txt {
+      font-size: 4.8pt;
+      font-weight: 700;
+      color: #64748b;
+      flex: 0 0 auto;
+    }
+    .block-illu .svg-ico { flex: 0 0 auto; }
+
+    @media print {
+      body { background: #fff; }
+      .sheet { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="headline">
+      <h1>CLASIFICACION GERMENES</h1>
+    </div>
+    <div class="legend-strip" aria-label="Leyenda de colores">
+      <span class="lx lx-c">Cocos</span>
+      <span class="lx lx-b">Bacilos (aerobios)</span>
+      <span class="lx lx-a">Anaerobios</span>
+      <span class="lx lx-s">Espiroquetas</span>
+      <span class="lx lx-p">Bacterias atípicas / especiales</span>
+    </div>
+
+    <div class="cascade">
+
+    <!-- COCOS -->
+    <div class="box-coco">
+      <div class="block-illu" style="border-color: rgba(244,114,182,0.35)">
+        <span class="txt">Cocos (disposición)</span>
+        <svg class="svg-ico" viewBox="0 0 80 24" width="80" height="24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <g fill="#fff1f2" stroke="#be185d" stroke-width="0.9" transform="translate(4,4)">
+            <circle cx="6" cy="6" r="3.5"/><circle cx="10" cy="6" r="3.5"/>
+            <g transform="translate(22,0)"><circle cx="0" cy="6" r="2.5"/><circle cx="5" cy="6" r="2.5"/><circle cx="10" cy="6" r="2.5"/></g>
+            <g transform="translate(40,0)"><circle cx="4" cy="2" r="2"/><circle cx="0" cy="6" r="2"/><circle cx="8" cy="6" r="2"/><circle cx="4" cy="9" r="2"/></g>
+          </g>
+        </svg>
+      </div>
+      <table class="germen" role="table">
+        <colgroup>
+          <col class="c-forma" /><col class="c-gram" /><col class="c-sub" /><col class="c-crit" /><col class="c-sp" /><col class="c-clin" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="th-top" scope="col">Forma</th>
+            <th class="th-top" scope="col">Gram</th>
+            <th class="th-top" scope="col">Subgrupo / disposición</th>
+            <th class="th-top" scope="col">Criterio</th>
+            <th class="th-top" scope="col">Organismo</th>
+            <th class="th-top" scope="col">Infecciones frecuentes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="v-head" rowspan="11">COCOS</td>
+            <td class="g-head" rowspan="8">G+</td>
+            <td class="grp" rowspan="3">Estafilococos (racimos)</td>
+            <td class="crit">Cat. <strong>+</strong> / coag. <strong>+</strong></td>
+            <td class="sp"><em>S. aureus</em></td>
+            <td class="clin">Piel, focos profundos, <strong>nosocomial</strong>, <strong>catéter</strong>, SARM.</td>
+          </tr>
+          <tr>
+            <td class="crit">Cat. <strong>+</strong> / coag. <strong>−</strong></td>
+            <td class="sp"><em>S. epidermidis</em></td>
+            <td class="clin">Prótesis, <strong>catéter</strong>, bact. asociada a catéter.</td>
+          </tr>
+          <tr>
+            <td class="crit">Cat. <strong>+</strong> / coag. <strong>−</strong> (ureasa +)</td>
+            <td class="sp"><em>S. saprophyticus</em></td>
+            <td class="clin"><strong>ITU</strong> en la mujer joven.</td>
+          </tr>
+          <tr>
+            <td class="grp" rowspan="5">Estreptoc. (cadenas)</td>
+            <td class="crit" rowspan="5">Cat. <strong>−</strong></td>
+            <td class="sp">β-hem. A <span class="arrow">→</span> <em>S. pyogenes</em></td>
+            <td class="clin">Faringitis, <strong>escarlatina</strong>, fiebre reumática, GN, fascitis.</td>
+          </tr>
+          <tr>
+            <td class="sp">β-hem. B <span class="arrow">→</span> <em>S. agalactiae</em></td>
+            <td class="clin"><strong>Sepsis neonatal</strong>, puerperio, inmunos.</td>
+          </tr>
+          <tr>
+            <td class="sp">Enterococo <em>E. faecium / E. faecalis</em></td>
+            <td class="clin"><strong>ITU, endocarditis</strong>; a menudo <strong>no cubiertos</strong> por 3.ª cefalosporina.</td>
+          </tr>
+          <tr>
+            <td class="sp">Viridans</td>
+            <td class="clin"><strong>Endocarditis</strong> válvula nativa, foco bucal.</td>
+          </tr>
+          <tr>
+            <td class="sp">Diploc. lanceol. <em>S. pneumoniae</em></td>
+            <td class="clin">Neumonía, otitis, <strong>meningitis</strong>, EPOC.</td>
+          </tr>
+          <tr>
+            <td class="g-head" rowspan="3">G−</td>
+            <td class="grp" rowspan="2">Neisseria</td>
+            <td class="crit" rowspan="2">Diploc., oxid. <strong>+</strong></td>
+            <td class="sp"><em>N. meningitidis</em></td>
+            <td class="clin"><strong>Meningitis / sepsis</strong> meningocócica.</td>
+          </tr>
+          <tr>
+            <td class="sp"><em>N. gonorrhoeae</em></td>
+            <td class="clin"><strong>Gonorrea</strong>, infecciones descendentes.</td>
+          </tr>
+          <tr>
+            <td class="grp">Moraxella (cocobac.)</td>
+            <td class="crit">—</td>
+            <td class="sp"><em>M. catarrhalis</em></td>
+            <td class="clin">EPOC, neumonía, otitis niños.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- BACILOS (aerobios, sin clostridios) -->
+    <div class="box-bac">
+      <div class="block-illu" style="border-color: rgba(52,211,153,0.4)">
+        <span class="txt">Bacilos (forma)</span>
+        <svg class="svg-ico" viewBox="0 0 90 24" width="90" height="24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <g fill="#ecfdf5" stroke="#047857" stroke-width="0.9" transform="translate(4,5)">
+            <rect x="0" y="2" width="18" height="7" rx="2"/><rect x="22" y="1" width="12" height="9" rx="2" transform="rotate(-6 28 5.5)"/>
+            <rect x="38" y="2" width="22" height="7" rx="1.5"/><rect x="64" y="0" width="8" height="12" rx="2"/>
+          </g>
+        </svg>
+      </div>
+      <table class="germen" role="table">
+        <colgroup>
+          <col class="c-forma" /><col class="c-gram" /><col class="c-sub" /><col class="c-crit" /><col class="c-sp" /><col class="c-clin" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="th-top" scope="col">Forma</th>
+            <th class="th-top" scope="col">Gram</th>
+            <th class="th-top" scope="col">Subgrupo</th>
+            <th class="th-top" scope="col">Criterio</th>
+            <th class="th-top" scope="col">Organismo</th>
+            <th class="th-top" scope="col">Infecciones frecuentes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="v-head" rowspan="7">BACILOS <span style="font-size:3.5pt;font-weight:700;display:block">(aerobios o facult.)</span></td>
+            <td class="g-head" rowspan="5">G+</td>
+            <td class="grp">Pleomórfico, toxina</td>
+            <td class="crit">Tox. diftérica</td>
+            <td class="sp"><em>C. diphtheriae</em></td>
+            <td class="clin"><strong>Difteria</strong>.</td>
+          </tr>
+          <tr>
+            <td class="grp">Ramificados, AAR parcial</td>
+            <td class="crit">—</td>
+            <td class="sp"><em>Nocardia</em></td>
+            <td class="clin">Pulmón, piel, SNC inmunosup.</td>
+          </tr>
+          <tr>
+            <td class="grp">Bac. corto, móvil</td>
+            <td class="crit">Listeria</td>
+            <td class="sp"><em>L. monocytogenes</em></td>
+            <td class="clin">Gastro; <strong>meningitis / meningoencefalitis</strong>, maternoinfantil.</td>
+          </tr>
+          <tr>
+            <td class="grp" rowspan="2">Bac. esporulado aerobio</td>
+            <td class="crit" rowspan="2">Esporas, aerob.</td>
+            <td class="sp"><em>B. anthracis</em></td>
+            <td class="clin"><strong>Ántrax</strong> (cut./inal./GI).</td>
+          </tr>
+          <tr>
+            <td class="sp"><em>B. cereus</em></td>
+            <td class="clin">Tox. alim. (arroz), ojo, herida.</td>
+          </tr>
+          <tr>
+            <td class="g-head" rowspan="2">G−</td>
+            <td class="grp">Cocobac. hospitalario</td>
+            <td class="crit">MDR</td>
+            <td class="sp"><em>Acinetobacter</em></td>
+            <td class="clin">UCI, neumonía, dispositivos.</td>
+          </tr>
+          <tr>
+            <td class="grp">Bac. recto (enterobacteria)</td>
+            <td class="crit">Ferment. glucosa</td>
+            <td class="sp"><em>Enterobacter</em>, otras (E. coli, <em>Klebsiella</em>…)</td>
+            <td class="clin">ITU, neumonía, abdomen, bactermia.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ANAEROBIO (ancho completo) -->
+    <div class="box-ana">
+      <div class="block-illu" style="border-color: rgba(139,92,246,0.4)">
+        <span class="txt">Anaerob. / esporas</span>
+        <svg class="svg-ico" viewBox="0 0 88 24" width="88" height="24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(4,3)">
+            <rect x="0" y="4" width="28" height="8" rx="1" fill="#faf5ff" stroke="#5b21b6" stroke-width="0.8"/>
+            <circle cx="28" cy="5" r="3.5" fill="#ede9fe" stroke="#5b21b6" stroke-width="0.6"/>
+            <g transform="translate(38,0)">
+              <ellipse cx="8" cy="8" rx="3" ry="2.2" fill="#f5f3ff" stroke="#5b21b6" stroke-width="0.5"/>
+              <ellipse cx="14" cy="8" rx="3" ry="2.2" fill="#f5f3ff" stroke="#5b21b6" stroke-width="0.5"/>
+              <ellipse cx="11" cy="12" rx="2.5" ry="1.8" fill="#f5f3ff" stroke="#5b21b6" stroke-width="0.5"/>
+            </g>
+            <g transform="translate(58,2)" fill="none" stroke="#7c3aed" stroke-width="0.6">
+              <path d="M0 6 Q3 0 6 6 T 12 6" stroke-linecap="round"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <table class="germen captioned" role="table">
+        <caption class="lcap">▣ Anaerobios (bloque separado) — O<sub>2</sub> tóxico o cultivo sin aire; muchos con esporas o absesos</caption>
+        <colgroup>
+          <col class="c-forma" /><col class="c-gram" /><col class="c-sub" /><col class="c-crit" /><col class="c-sp" /><col class="c-clin" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="th-top" scope="col">Bloq.</th>
+            <th class="th-top" scope="col">Gram / forma</th>
+            <th class="th-top" scope="col">Hábitat / criterio</th>
+            <th class="th-top" scope="col">Físiol.</th>
+            <th class="th-top" scope="col">Géneros (ej.)</th>
+            <th class="th-top" scope="col">Infecciones frecuentes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="v-head" rowspan="7" style="font-size:5.7pt">Anaerobios</td>
+            <td class="g-head" rowspan="4">G+ <span style="font-size:3.8pt">bac.</span></td>
+            <td class="grp" rowspan="4">Esporas · sustrato anaer. estricto</td>
+            <td class="crit" rowspan="4">Tox. / gas</td>
+            <td class="sp"><em>C. perfringens</em></td>
+            <td class="clin">Mionecrosis, <strong>gas</strong>, toxi alim.</td>
+          </tr>
+          <tr>
+            <td class="sp"><em>C. difficile</em></td>
+            <td class="clin">Colitis <strong>post-antibiótico</strong> (AAD).</td>
+          </tr>
+          <tr>
+            <td class="sp"><em>C. tetani</em></td>
+            <td class="clin"><strong>Tétanos</strong>.</td>
+          </tr>
+          <tr>
+            <td class="sp"><em>C. botulinum</em></td>
+            <td class="clin"><strong>Botulismo</strong> (flácida).</td>
+          </tr>
+          <tr>
+            <td class="g-head" rowspan="2">G− <span style="font-size:3.5pt">bac</span></td>
+            <td class="grp" rowspan="2">Intestinal / boca</td>
+            <td class="crit" rowspan="2">Bile resistente</td>
+            <td class="sp"><em>Bacteroides</em> · <em>Prevotella</em> · <em>Porphyromonas</em></td>
+            <td class="clin">Intraabdominal, abseso, oral.</td>
+          </tr>
+          <tr>
+            <td class="sp"><em>Fusobacterium</em> (p. <em>necrophorum</em>)</td>
+            <td class="clin">Angina / faringoamigdalitis <span class="arrow">→</span> <strong>Lemierre</strong> (trombosis yugular).</td>
+          </tr>
+          <tr>
+            <td class="g-head">G+ cocos <span style="font-size:3.5pt">(ana.)</span></td>
+            <td class="grp">Cadenas en abseso; variación catalasa</td>
+            <td class="crit">Cultivo anaer.</td>
+            <td class="sp">Peptostreptococcus / Finegoldia (grupo, ej.)</td>
+            <td class="clin">Absesos, tejido blando, escasa O<sub>2</sub>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box-spi">
+      <div class="block-illu" style="border-color: rgba(99,102,241,0.4)">
+        <span class="txt">Espir. (hélice)</span>
+        <svg class="svg-ico" viewBox="0 0 100 24" width="100" height="24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 14 C12 2 20 2 28 14 S44 26 52 14 S68 2 76 14 S90 6 96 14" fill="none" stroke="#4f46e5" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M4 20 C10 8 30 8 50 20 S84 8 98 20" fill="none" stroke="#6366f1" stroke-width="0.7" stroke-dasharray="1.2 0.8" opacity="0.5"/>
+        </svg>
+      </div>
+      <table class="germen captioned" role="table">
+        <caption class="lcap">〰 Espiroquetas — hélice, Gram a menudo inútil; tinc. argéntica, osc. oscura, FTA-ABS, sero/PCR</caption>
+        <colgroup>
+          <col class="c-forma" /><col class="c-gram" /><col class="c-sub" /><col class="c-crit" /><col class="c-sp" /><col class="c-clin" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="th-top" scope="col">Bloq.</th>
+            <th class="th-top" scope="col">Tinc./lab.</th>
+            <th class="th-top" scope="col">Morf.</th>
+            <th class="th-top" scope="col">Contexto</th>
+            <th class="th-top" scope="col">Especie / género</th>
+            <th class="th-top" scope="col">Infecciones frecuentes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="v-head" rowspan="3" style="font-size:5.6pt">Espiroquetas</td>
+            <td class="g-head" rowspan="3">No G clás.</td>
+            <td class="grp" rowspan="3">Hélice delg., móviles (flag. internos/externos según sp.)</td>
+            <td class="crit" rowspan="3">Geografía, exposición</td>
+            <td class="sp"><em>Treponema pallidum</em></td>
+            <td class="clin"><strong>Sífilis</strong> (evolutiva).</td>
+          </tr>
+          <tr>
+            <td class="sp"><em>Borrelia</em> (p. <em>burgdorferi</em>…)</td>
+            <td class="clin"><strong>Lyme</strong>, fiebres rec., garrapata.</td>
+          </tr>
+          <tr>
+            <td class="sp"><em>Leptospira</em></td>
+            <td class="clin">Orina de roedores/agua ( <strong>leptospirosis</strong> ).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box-esp">
+      <div class="block-illu" style="border-color: rgba(251,146,60,0.45)">
+        <span class="txt">Atípicas (intracel. / sin pared)</span>
+        <svg class="svg-ico" viewBox="0 0 84 22" width="84" height="22" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(1,0)">
+            <rect x="0" y="1" width="28" height="14" rx="1.5" fill="#fff7ed" stroke="#c2410c" stroke-width="0.65"/>
+            <circle cx="9" cy="7" r="1" fill="#ea580c"/><circle cx="16" cy="7" r="1" fill="#ea580c"/>
+            <rect x="32" y="2" width="4.5" height="12" rx="0.8" fill="#ffedd5" stroke="#9a3412" stroke-width="0.4"/>
+            <circle cx="47" cy="7" r="4" fill="none" stroke="#c2410c" stroke-width="0.45" stroke-dasharray="1 0.6"/>
+            <g transform="translate(54,0)">
+              <ellipse cx="0" cy="6" rx="2.2" ry="1.3" fill="none" stroke="#9a3412" stroke-width="0.4"/>
+              <ellipse cx="3.5" cy="8" rx="2" ry="1.2" fill="none" stroke="#9a3412" stroke-width="0.4"/>
+            </g>
+            <g transform="translate(64,0)">
+              <path d="M0 3 Q2 0 4 3 T8 3" fill="none" stroke="#9a3412" stroke-width="0.4"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <table class="germen captioned" role="table">
+        <caption class="lcap">★ Bacterias atípicas y especiales — Rickettsia, Chlamydia, Mycoplasma (Rickettsia = obligada intracelular; Chlamydia = ciclos de desarrollo; Mycoplasma = <strong>sin pared</strong> → no Gram clásico)</caption>
+        <colgroup>
+          <col class="c-forma" /><col class="c-gram" /><col class="c-sub" /><col class="c-crit" /><col class="c-sp" /><col class="c-clin" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="th-top" scope="col">Grupo</th>
+            <th class="th-top" scope="col">Cribado Gram</th>
+            <th class="th-top" scope="col">Cómo se identifican</th>
+            <th class="th-top" scope="col">Cultivo / prueba</th>
+            <th class="th-top" scope="col">Especies de examen</th>
+            <th class="th-top" scope="col">Síndromes frecuentes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="v-head" rowspan="4" style="font-size:5.5pt">Bacterias atípicas</td>
+            <td class="g-head" rowspan="1">Cocobac. G− <span style="font-size:3.5pt">(delg. pared)</span></td>
+            <td class="grp">Obl. intracelular, vector o aerosol (según sp.)</td>
+            <td class="crit">Inmunofluorescencia, serología, tinc. Giemsa (algunas)</td>
+            <td class="sp"><em>Rickettsia rickettsii</em> · p. ex. <em>R. prowazekii</em> (grupo)</td>
+            <td class="clin">Fiebre <strong>manchada de las Montañas Rocosas</strong>, tifus epidémico, <span style="font-size:4.8pt">otras fiebres tifoideas</span>.</td>
+          </tr>
+          <tr>
+            <td class="g-head">(no G) «gram negativo de hecho» (PEP)</td>
+            <td class="grp">2 formas, ciclo bivalente, exclusión aérea</td>
+            <td class="crit">PCR, cultivo tisular, Ag en orina (genital)</td>
+            <td class="sp"><em>Chlamydia trachomatis</em> · <em>C. pneumoniae</em> · <em>C. psittaci</em> (grupo)</td>
+            <td class="clin">Urogenital, LGV, <strong>tracoma</strong>; neumonía atípica; fiebre psitacosis.</td>
+          </tr>
+          <tr>
+            <td class="g-head" rowspan="2">— <span style="font-size:3.3pt">(sin pared)</span></td>
+            <td class="grp" rowspan="2">Células mín., pleomorfas; colesterol membrana</td>
+            <td class="crit" rowspan="2">Cultivo específico, PCR</td>
+            <td class="sp"><em>Mycoplasma pneumoniae</em> · <em>genitalium</em></td>
+            <td class="clin">Neumonía <strong>atípica</strong> (escolar), bronquitis; genital (M. <em>genitalium</em>).</td>
+          </tr>
+          <tr>
+            <td class="sp"><em>Ureaplasma</em> · otros micoplasmas (grupo «uro»)</td>
+            <td class="clin">Nongonocócica, ITU, embarazo (según sp.).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    </div>
+
+    <footer>
+      <strong>A4 vertical</strong> — márgenes ~6 mm. Si el navegador parte en dos hojas, reduce la escala de impresión (p. ej. 92–96 %). Los <em>clostridios</em> y el resto de anaerobios van en su bloque aparte. Referencia de estudio; no guía terapéutica.
+    </footer>
+  </div>
+</body>
+</html>
