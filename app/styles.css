@@ -317,6 +317,7 @@ button { cursor: pointer; }
 .tree > .folder:nth-child(12) > .folder-label { background: rgba(255,165,50,.22);  border-left: 4px solid #ffa532; }
 .tree > .folder:nth-child(13) > .folder-label { background: rgba(120,220,170,.22); border-left: 4px solid #78dcaa; }
 .tree > .folder:nth-child(14) > .folder-label { background: rgba(200,120,255,.22); border-left: 4px solid #c878ff; }
+.tree > .folder:nth-child(15) > .folder-label { background: rgba(255,110,80,.22); border-left: 4px solid #ff6e50; }
 
 /* Etiquetas comunes */
 .folder-label, .file-label, .result-item {

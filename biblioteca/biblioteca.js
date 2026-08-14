@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "exportedAt": "2026-08-13T12:00:41.819Z",
+  "exportedAt": "2026-08-14T07:20:21.228Z",
   "tree": {
     "id": "f-1",
     "type": "folder",
@@ -28,16 +28,6 @@ window.BIBLIOTECA_DATA = {
                 "source": "asset"
               },
               {
-                "id": "p-5",
-                "type": "file",
-                "title": "QRS complejos",
-                "path": "../biblioteca/assets/cardiologia/arritmias/qrs-complejos.png",
-                "ext": ".png",
-                "specialty": "Cardiologia",
-                "breadcrumb": "Cardiologia / Arritmias / QRS complejos",
-                "source": "asset"
-              },
-              {
                 "id": "p-brugada",
                 "type": "file",
                 "title": "Brugada",
@@ -48,7 +38,7 @@ window.BIBLIOTECA_DATA = {
                 "source": "asset"
               }
             ],
-            "file_count": 3
+            "file_count": 2
           },
           {
             "id": "f-6",
@@ -151,9 +141,49 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Cardiologia",
             "breadcrumb": "Cardiologia / Ciclo cardiaco",
             "source": "asset"
+          },
+          {
+            "id": "f-ecg",
+            "type": "folder",
+            "title": "ECG",
+            "children": [
+              {
+                "id": "p-5",
+                "type": "file",
+                "title": "QRS complejos",
+                "path": "../biblioteca/assets/cardiologia/ecg/qrs-complejos.png",
+                "ext": ".png",
+                "specialty": "Cardiologia",
+                "breadcrumb": "Cardiologia / ECG / QRS complejos",
+                "source": "asset"
+              },
+              {
+                "id": "p-10-reglas-ecg-normal",
+                "type": "file",
+                "title": "10 reglas del ECG normal",
+                "path": "../biblioteca/assets/cardiologia/ecg/10-reglas-ecg-normal.png",
+                "ext": ".png",
+                "specialty": "Cardiologia",
+                "breadcrumb": "Cardiologia / ECG / 10 reglas del ECG normal",
+                "source": "asset",
+                "audience": "medicina"
+              },
+              {
+                "id": "p-patrones-ecg",
+                "type": "file",
+                "title": "Patrones ECG",
+                "path": "../biblioteca/assets/cardiologia/ecg/patrones-ecg.png",
+                "ext": ".png",
+                "specialty": "Cardiologia",
+                "breadcrumb": "Cardiologia / ECG / Patrones ECG",
+                "source": "asset",
+                "audience": "medicina"
+              }
+            ],
+            "file_count": 3
           }
         ],
-        "file_count": 10
+        "file_count": 12
       },
       {
         "id": "f-15",
@@ -229,11 +259,11 @@ window.BIBLIOTECA_DATA = {
           {
             "id": "p-22",
             "type": "file",
-            "title": "CAD definitivo",
+            "title": "Cetoacidosis protocolo",
             "path": "../biblioteca/assets/endocrino/cad-definitivo.pdf",
             "ext": ".pdf",
             "specialty": "Endocrino",
-            "breadcrumb": "Endocrino / CAD definitivo",
+            "breadcrumb": "Endocrino / Cetoacidosis protocolo",
             "source": "asset"
           },
           {
@@ -249,11 +279,11 @@ window.BIBLIOTECA_DATA = {
           {
             "id": "p-24",
             "type": "file",
-            "title": "Tyr",
+            "title": "Interpretacion tiroides",
             "path": "../biblioteca/assets/endocrino/tyr.png",
             "ext": ".png",
             "specialty": "Endocrino",
-            "breadcrumb": "Endocrino / Tyr",
+            "breadcrumb": "Endocrino / Interpretacion tiroides",
             "source": "asset"
           },
           {
@@ -717,9 +747,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Nutrición / Protocolo estreñimiento 2",
             "specialty": "Nutrición",
             "path": "../biblioteca/assets/nutricion/protocolo-estrenimiento-2.png"
+          },
+          {
+            "id": "p-fases-nutricion",
+            "type": "file",
+            "title": "Fases nutrición",
+            "path": "../biblioteca/assets/nutricion/fases-nutricion.png",
+            "ext": ".png",
+            "specialty": "Nutrición",
+            "breadcrumb": "Nutrición / Fases nutrición",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 2
+        "file_count": 3
       },
       {
         "id": "f-wr3a6ayl-mrxd5alw",
@@ -769,8 +810,38 @@ window.BIBLIOTECA_DATA = {
           }
         ],
         "file_count": 4
+      },
+      {
+        "id": "f-intoxicaciones",
+        "type": "folder",
+        "title": "Intoxicaciones",
+        "children": [
+          {
+            "id": "p-sindromes-hipertermicos",
+            "type": "file",
+            "title": "Síndromes hipertérmicos",
+            "path": "../biblioteca/assets/intoxicaciones/sindromes-hipertermicos.png",
+            "ext": ".png",
+            "specialty": "Intoxicaciones",
+            "breadcrumb": "Intoxicaciones / Síndromes hipertérmicos",
+            "source": "asset",
+            "audience": "medicina"
+          },
+          {
+            "id": "p-terapia-emulsion-lipidica",
+            "type": "file",
+            "title": "Terapia con emulsión lipídica",
+            "path": "../biblioteca/assets/intoxicaciones/terapia-emulsion-lipidica.png",
+            "ext": ".png",
+            "specialty": "Intoxicaciones",
+            "breadcrumb": "Intoxicaciones / Terapia con emulsión lipídica",
+            "source": "asset",
+            "audience": "medicina"
+          }
+        ],
+        "file_count": 2
       }
     ],
-    "file_count": 56
+    "file_count": 61
   }
 };
