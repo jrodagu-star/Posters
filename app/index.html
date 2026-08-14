@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dashboard médico persistente</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260814m">
 </head>
 <body>
   <div class="layout">
@@ -22,10 +22,25 @@
       <div class="tree" id="tree"></div>
       <div class="results" id="results"></div>
       <div class="sidebar-footer">
-        <button type="button" class="sidebar-calc-btn" id="calculadorasBtn" title="Calculadoras y dashboards de cálculo">Calculadoras</button>
-        <button type="button" class="sidebar-protocolos-btn" id="protocolosBtn" title="Protocolos de UCI">PROTOCOLOS UCI</button>
+        <button type="button" class="sidebar-nav-btn sidebar-nav-calc" id="calculadorasBtn" title="Calculadoras y dashboards de cálculo">
+          <span class="sidebar-nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><rect x="7" y="6" width="10" height="3.2" rx="0.6"/><path d="M8 13h0M12 13h0M16 13h0M8 17h0M12 17h0M16 17h0"/></svg>
+          </span>
+          <span>Calculadoras</span>
+        </button>
+        <button type="button" class="sidebar-nav-btn sidebar-nav-protocolos" id="protocolosBtn" title="Protocolos de UCI">
+          <span class="sidebar-nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8"/><path d="M9 2h6v4H9z"/><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 12h6M9 16h4"/></svg>
+          </span>
+          <span>Protocolos UCI</span>
+        </button>
         <details class="sidebar-edit">
-          <summary>✏️ Edición</summary>
+          <summary class="sidebar-nav-btn sidebar-nav-edit">
+            <span class="sidebar-nav-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5z"/></svg>
+            </span>
+            <span>Edición</span>
+          </summary>
           <div class="sidebar-edit-body">
             <details class="menu-tree">
               <summary><span>📁 Carpetas</span><span class="summary-right">expandir</span></summary>
@@ -181,7 +196,7 @@
     <div class="pdf-lightbox-hint">Usa la rueda o las barras del visor PDF para desplazarte · Ctrl + rueda para zoom</div>
   </div>
 
-  <script src="../biblioteca/biblioteca.js?v=20260814l"></script>
-  <script src="app.js?v=20260814l"></script>
+  <script src="../biblioteca/biblioteca.js?v=20260814m"></script>
+  <script src="app.js?v=20260814m"></script>
 </body>
 </html>
