@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protocolo DDS en UCI</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b26;
+      --line: #2a3550;
+      --text: #e8f0fc;
+      --muted: #8899bb;
+      --accent: #4fb3e8;
+      --accent2: #52d6b5;
+      --warn: #f5a623;
+      --danger: #f06060;
+      --paper: #f6f8fc;
+      --ink: #152033;
+      --ink-muted: #4a5c78;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      height: 100%;
+      min-height: 0;
+    }
+    .toc {
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    .toc-head {
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .toc-kicker {
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .toc-head h1 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.25;
+      color: #e8f7ff;
+    }
+    .toc-select {
+      width: 100%;
+      margin-top: 10px;
+      background: #0a1220;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font: inherit;
+      font-size: 12.5px;
+    }
+    .toc-nav {
+      overflow: auto;
+      padding: 8px 8px 16px;
+      flex: 1;
+    }
+    .toc-nav a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12.5px;
+      line-height: 1.35;
+      padding: 7px 10px;
+      border-radius: 7px;
+      border-left: 3px solid transparent;
+    }
+    .toc-nav a:hover { background: #1c2638; color: var(--text); }
+    .toc-nav a.active {
+      background: rgba(79,179,232,.14);
+      color: #dff4ff;
+      border-left-color: var(--accent);
+      font-weight: 650;
+    }
+    .toc-nav a.sub { padding-left: 20px; font-size: 11.5px; }
+    .doc {
+      overflow: auto;
+      background: var(--paper);
+      min-height: 0;
+    }
+    .doc-inner {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 28px 32px 72px;
+    }
+    .doc-banner {
+      background: linear-gradient(135deg, #12324a, #1a4a63);
+      color: #eef8ff;
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 22px;
+    }
+    .doc-banner .unit {
+      font-size: 11px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: #9ad8f5;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+    .doc-banner h2 {
+      margin: 0 0 6px;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+    .doc-banner p {
+      margin: 0;
+      color: #c9e6f5;
+      font-size: 13.5px;
+    }
+    section {
+      scroll-margin-top: 16px;
+      margin: 0 0 28px;
+      padding-top: 4px;
+    }
+    h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      color: #0f3d57;
+      border-bottom: 2px solid #cfe8f5;
+      padding-bottom: 6px;
+    }
+    h4 {
+      margin: 16px 0 8px;
+      font-size: 15.5px;
+      color: #164e6b;
+    }
+    p, li { font-size: 14.5px; line-height: 1.55; color: var(--ink); }
+    p { margin: 0 0 10px; }
+    ul, ol { margin: 0 0 12px; padding-left: 22px; }
+    li { margin: 0 0 5px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 14px;
+      font-size: 13.5px;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 0 #d7e3ee;
+    }
+    th, td {
+      border: 1px solid #d5e3ee;
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #e7f4fb;
+      color: #0f3d57;
+      font-weight: 700;
+    }
+    .callout {
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin: 12px 0;
+      border: 1px solid;
+    }
+    .callout strong { display: block; margin-bottom: 6px; }
+    .callout.warn { background: #fff7e8; border-color: #f0c56a; }
+    .callout.info { background: #eaf7ff; border-color: #8ec8e6; }
+    .callout.ok { background: #eafaf3; border-color: #7dd3b0; }
+    .callout.rx { background: #eef2ff; border-color: #a5b4fc; }
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #d5e3ee;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .card h5 { margin: 0 0 6px; font-size: 13.5px; color: #0f3d57; }
+    .card p { margin: 0; font-size: 13px; }
+    .rx-line {
+      font-family: ui-monospace, Consolas, monospace;
+      background: #fff;
+      border: 1px dashed #9aa9c7;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin: 6px 0;
+      font-size: 13.5px;
+    }
+    .note { font-size: 13px; color: var(--ink-muted); }
+    .refs { font-size: 13px; }
+    .refs li { margin-bottom: 8px; }
+    footer {
+      margin-top: 28px;
+      padding-top: 14px;
+      border-top: 1px solid #d5e3ee;
+      font-size: 12.5px;
+      color: var(--ink-muted);
+    }
+    @media (max-width: 720px) {
+      .layout { grid-template-columns: 210px minmax(0, 1fr); }
+      .toc-head h1 { font-size: 14px; }
+      .toc-nav a { font-size: 12px; padding: 6px 8px; }
+      .cards { grid-template-columns: 1fr; }
+      .doc-inner { padding: 18px 16px 56px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="toc">
+      <div class="toc-head">
+        <p class="toc-kicker">Protocolo UCI</p>
+        <h1>DDS · Índice</h1>
+        <select class="toc-select" id="tocSelect" aria-label="Seleccionar apartado del índice">
+          <option value="s1">1. Objetivo</option>
+          <option value="s2">2. Alcance</option>
+          <option value="s3">3. Fundamento clínico</option>
+          <option value="s4">4. Indicaciones</option>
+          <option value="s5">5. Clasificación de infecciones</option>
+          <option value="s6">6. Componentes</option>
+          <option value="s7">7. Pautas terapéuticas</option>
+          <option value="s8">8. Procedimientos</option>
+          <option value="s9">9. Vigilancia microbiológica</option>
+          <option value="s10">10. Aislamiento preventivo</option>
+          <option value="s11">11. Suspensión y cambio</option>
+          <option value="s12">12. Prescripción tipo</option>
+          <option value="s13">13. Bibliografía</option>
+        </select>
+      </div>
+      <nav class="toc-nav" id="tocNav">
+        <a href="#s1">1. Objetivo</a>
+        <a href="#s2">2. Alcance</a>
+        <a href="#s3">3. Fundamento clínico</a>
+        <a class="sub" href="#s3-1">3.1 Riesgo de infección</a>
+        <a class="sub" href="#s3-2">3.2 Definición de DDS</a>
+        <a class="sub" href="#s3-4">3.4 MPP</a>
+        <a href="#s4">4. Indicaciones de inicio</a>
+        <a href="#s5">5. Clasificación de infecciones</a>
+        <a href="#s6">6. Componentes del protocolo</a>
+        <a href="#s7">7. Pautas terapéuticas</a>
+        <a class="sub" href="#s7-3">7.3 Pasta oral</a>
+        <a class="sub" href="#s7-4">7.4 Solución digestiva</a>
+        <a class="sub" href="#s7-5">7.5 Antibiótico parenteral</a>
+        <a href="#s8">8. Procedimientos</a>
+        <a href="#s9">9. Vigilancia microbiológica</a>
+        <a href="#s10">10. Aislamiento preventivo</a>
+        <a href="#s11">11. Suspensión y cambio</a>
+        <a href="#s12">12. Prescripción tipo</a>
+        <a href="#s13">13. Bibliografía</a>
+      </nav>
+    </aside>
+
+    <main class="doc" id="doc">
+      <div class="doc-inner">
+        <header class="doc-banner">
+          <p class="unit">Unidad de Cuidados Intensivos · HM Puerta del Sur</p>
+          <h2>Protocolo de Descontaminación Digestiva Selectiva (DDS) en UCI</h2>
+          <p>Documento clínico interno para medicina y enfermería. Elige un apartado del índice para consultar.</p>
+        </header>
+
+        <section id="s1">
+          <h3>1. Objetivo</h3>
+          <p>Definir las actuaciones necesarias para el control de infecciones y la aplicación de la descontaminación digestiva selectiva (DDS) en la Unidad de Cuidados Intensivos (UCI), con el fin de reducir de forma protocolizada y homogénea la carga de infecciones endógenas y exógenas en los pacientes críticos atendidos en la unidad.</p>
+        </section>
+
+        <section id="s2">
+          <h3>2. Alcance</h3>
+          <p>El presente protocolo es de aplicación a todo el personal y los recursos involucrados en las actuaciones de control de infección y descontaminación digestiva selectiva en la UCI de HM Puerta del Sur, incluyendo:</p>
+          <ul>
+            <li>Personal médico (intensivistas, residentes y facultativos de guardia).</li>
+            <li>Personal de enfermería (enfermeras y Técnicas en Cuidados Auxiliares de Enfermería — TCAE).</li>
+            <li>Servicio de Microbiología (procesamiento de muestras de vigilancia).</li>
+            <li>Servicio de Farmacia (preparación y dispensación de pasta oral y solución digestiva).</li>
+            <li>Servicio de Medicina Preventiva (vigilancia de la infección nosocomial y multirresistencias).</li>
+          </ul>
+        </section>
+
+        <section id="s3">
+          <h3>3. Fundamento clínico y definiciones</h3>
+          <h4 id="s3-1">3.1. Riesgo de infección en el paciente crítico</h4>
+          <p>Los pacientes ingresados en la UCI presentan un riesgo elevado de desarrollar infecciones debido a la coexistencia de tres factores principales:</p>
+          <ol>
+            <li><strong>Gravedad de la enfermedad de base:</strong> la patología que motiva el ingreso puede alterar los mecanismos de defensa del organismo y facilitar la infección.</li>
+            <li><strong>Uso prolongado de dispositivos invasivos:</strong> necesarios para aplicar los tratamientos, rompen las barreras naturales frente a la infección.</li>
+            <li><strong>Presencia de microorganismos potencialmente patógenos (MPP)</strong> en el ambiente hospitalario y en la propia flora del paciente.</li>
+          </ol>
+          <p>En España, el Estudio Nacional de Vigilancia de la Infección Nosocomial en UCI (ENVIN-UCI) constituye la herramienta de referencia para conocer las tasas de infección por unidad, la flora causante y la emergencia de microorganismos multirresistentes.</p>
+
+          <h4 id="s3-2">3.2. Definición de Descontaminación Digestiva Selectiva (DDS)</h4>
+          <p>La DDS es una estrategia profiláctica diseñada para prevenir las infecciones endógenas producidas por microorganismos potencialmente patógenos (MPP) en pacientes que requieren cuidados intensivos, incluidos los sometidos a ventilación mecánica.</p>
+
+          <h4>3.3. Objetivos de la DDS</h4>
+          <ul>
+            <li>Prevenir o erradicar el estado de portador orofaríngeo y gastrointestinal de MPP, especialmente bacilos Gram negativos aerobios (BGNA), Gram positivos y hongos, dejando intacta la flora endógena.</li>
+            <li>Reducir la morbilidad y la mortalidad en pacientes críticos, sin inducir resistencias antimicrobianas.</li>
+            <li>Reducir la incidencia de neumonías y la mortalidad en los pacientes bajo ventilación mecánica.</li>
+            <li>Reducir las complicaciones infecciosas en pancreatitis necrohemorrágica, gastrectomía total y esofaguectomía.</li>
+            <li>Contribuir al control de la multirresistencia en la unidad frente a Gram negativos y <em>Staphylococcus aureus</em> meticilín-resistente (SAMR).</li>
+          </ul>
+
+          <h4 id="s3-4">3.4. Microorganismos Potencialmente Patógenos (MPP)</h4>
+          <p>Existen 15 MPP que causan prácticamente todas las infecciones en UCI, y se dividen en dos grupos:</p>
+          <table>
+            <thead>
+              <tr><th>Tipo de MPP</th><th>Especies</th><th>Población portadora habitual</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MPP «normales»</td>
+                <td><em>Streptococcus pneumoniae</em>, <em>Haemophilus influenzae</em>, <em>Moraxella catarrhalis</em>, <em>Escherichia coli</em>, <em>Candida albicans</em>, SAMS</td>
+                <td>Individuos sanos previamente (tasas variables, &lt; 1 % – 99 % según especie).</td>
+              </tr>
+              <tr>
+                <td>MPP «anormales»</td>
+                <td><em>Klebsiella</em> spp., <em>Enterobacter</em> spp., <em>Citrobacter</em> spp., <em>Proteus</em> spp., <em>Morganella</em> spp., <em>Serratia</em> spp., <em>Acinetobacter</em> spp., <em>Pseudomonas</em> spp., SAMR</td>
+                <td>Individuos con patología de base; aproximadamente un tercio cuando APACHE II ≥ 20.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="note">La gravedad de la enfermedad es el factor más importante para el paso de portador de flora normal a flora anormal. El estado de portador de flora anormal aparece de forma precoz durante la primera semana de ingreso. La DDS está diseñada para reconvertir a los portadores de flora anormal en portadores de flora normal.</p>
+        </section>
+
+        <section id="s4">
+          <h3>4. Indicaciones de inicio de la DDS</h3>
+          <p>Se administrará DDS a todo paciente que cumpla al menos uno de los siguientes criterios:</p>
+          <h4>4.1. Criterio microbiológico</h4>
+          <p>Crecimiento positivo en alguna muestra clínica o de vigilancia de un germen multirresistente:</p>
+          <ul>
+            <li>Gram positivos: SAMR, <em>Enterococcus</em> spp. resistente (EVR).</li>
+            <li>Gram negativos: <em>Pseudomonas aeruginosa</em>, <em>Burkholderia cepacia</em>, <em>Stenotrophomonas maltophilia</em>, <em>Acinetobacter</em> spp. o Enterobacteriaceae resistentes a una o más familias de antibióticos (β-lactámicos, quinolonas, carbapenémicos, tobramicina o amikacina).</li>
+          </ul>
+          <h4>4.2. Criterio de vía aérea artificial</h4>
+          <p>Todo paciente en el que se estime intubación traqueal o traqueostomía con una duración prevista superior a 72 horas.</p>
+          <h4>4.3. Criterio de alto riesgo de neumonía en paciente no intubado</h4>
+          <ul>
+            <li>Bajo nivel de conciencia: GCS ≤ 11/15 o GCS ≤ 8T/11 (verbal intubado).</li>
+            <li>Esofagogastrectomía radical.</li>
+            <li>Pancreatitis necrotizante.</li>
+            <li>Neutropenia.</li>
+          </ul>
+          <div class="callout warn">
+            <strong>Cuándo iniciar la DDS — resumen operativo</strong>
+            Cultivo positivo (clínico o de vigilancia) para SAMR, EVR o BGN multirresistente.<br>
+            IOT o traqueostomía prevista &gt; 72 h.<br>
+            Paciente no intubado con GCS ≤ 11/15, esofagogastrectomía, pancreatitis necrotizante o neutropenia.
+          </div>
+        </section>
+
+        <section id="s5">
+          <h3>5. Clasificación de infecciones en UCI</h3>
+          <p>El estado de portador del paciente solo puede conocerse mediante la toma de muestras de vigilancia (orofaringe y recto), lo que permite clasificar las infecciones como endógenas o exógenas y orientar la estrategia de la DDS.</p>
+          <table>
+            <thead>
+              <tr><th>Tipo de infección</th><th>Origen de los gérmenes</th><th>Momento característico</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Primarias endógenas</td>
+                <td>Gérmenes que el enfermo ya porta en su aparato digestivo en el momento del ingreso en UCI.</td>
+                <td>Más frecuentes en la primera semana de estancia.</td>
+              </tr>
+              <tr>
+                <td>Secundarias endógenas</td>
+                <td>Gérmenes ausentes en su flora al ingreso, adquiridos en su aparato digestivo durante la estancia en UCI a través de las manos del personal sanitario.</td>
+                <td>Suelen aparecer tras la primera semana.</td>
+              </tr>
+              <tr>
+                <td>Exógenas</td>
+                <td>Gérmenes anormales no presentes previamente en las muestras de vigilancia. Frecuentes en pacientes con traqueostomía y alto riesgo de infección de vías aéreas bajas.</td>
+                <td>Estancias prolongadas; las menos frecuentes.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="s6">
+          <h3>6. Componentes del protocolo</h3>
+          <p>El protocolo de DDS integra cuatro componentes que deben aplicarse de forma simultánea:</p>
+          <ol>
+            <li><strong>Antimicrobianos enterales</strong> — preparados tópicos para orofaringe (pasta) e intestino (solución digestiva).</li>
+            <li><strong>Antibiótico parenteral de inicio</strong>, durante los primeros días de ingreso.</li>
+            <li><strong>Medidas higiénicas</strong> para prevenir la colonización cruzada (higiene de manos, uso adecuado de guantes y batas, limpieza del entorno).</li>
+            <li><strong>Muestras de vigilancia microbiológica</strong> de orofaringe, nasal y recto al ingreso y con cadencia semanal.</li>
+          </ol>
+        </section>
+
+        <section id="s7">
+          <h3>7. Pautas terapéuticas</h3>
+          <p>Se distinguen dos modalidades de DDS en función del riesgo de colonización por SAMR y del origen del paciente:</p>
+          <h4>7.1. Descontaminación estándar (sin vancomicina)</h4>
+          <p>Se administra al resto de pacientes con indicación de DDS que no cumplan los criterios de la pauta mixta.</p>
+          <h4>7.2. Descontaminación mixta / con vancomicina</h4>
+          <ul>
+            <li>Todos los pacientes que procedan de otro hospital (incluido el paso por urgencias) y los que, procediendo de este hospital, lleven más de 48 horas ingresados, hasta obtener muestras de vigilancia negativas para SAMR.</li>
+            <li>Todos los portadores de SAMR o con antecedente de portador en un ingreso previo, hasta el alta de UCI.</li>
+          </ul>
+
+          <h4 id="s7-3">7.3. Composición de la pasta oral (excipiente pasta c.s.p. 1,2 g)</h4>
+          <table>
+            <thead>
+              <tr><th>Componente</th><th>DDS estándar</th><th>DDS con vancomicina (mixta)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nistatina</td><td>20 mg/g</td><td>20 mg/g</td></tr>
+              <tr><td>Tobramicina</td><td>30 mg/g</td><td>30 mg/g</td></tr>
+              <tr><td>Colistina</td><td>20 mg/g</td><td>20 mg/g</td></tr>
+              <tr><td>Vancomicina HCl</td><td>—</td><td>40 mg/g</td></tr>
+              <tr><td>Excipiente pasta c.s.p.</td><td>1,2 g</td><td>1,2 g</td></tr>
+            </tbody>
+          </table>
+
+          <h4 id="s7-4">7.4. Composición de la solución digestiva (por 10 mL)</h4>
+          <table>
+            <thead>
+              <tr><th>Componente</th><th>DDS estándar</th><th>DDS con vancomicina (mixta)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nistatina</td><td>2,6 MUI</td><td>2,6 MUI</td></tr>
+              <tr><td>Tobramicina</td><td>156 mg</td><td>156 mg</td></tr>
+              <tr><td>Colistina</td><td>130 mg</td><td>130 mg</td></tr>
+              <tr><td>Vancomicina HCl</td><td>—</td><td>500 mg</td></tr>
+              <tr><td>Excipiente suspensión c.s.p.</td><td>10 mL</td><td>10 mL</td></tr>
+            </tbody>
+          </table>
+
+          <h4 id="s7-5">7.5. Antibiótico parenteral (solo durante los primeros 4 días)</h4>
+          <table>
+            <thead>
+              <tr><th>Fármaco</th><th>Dosis / vía / frecuencia</th><th>Duración</th><th>Observaciones</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Cefotaxima</td>
+                <td>1 g / 8 h — IV</td>
+                <td>4 días desde el ingreso</td>
+                <td>Fármaco de primera elección.</td>
+              </tr>
+              <tr>
+                <td>Levofloxacino</td>
+                <td>Dosis terapéuticas — IV</td>
+                <td>4 días desde el ingreso</td>
+                <td>Alternativa en caso de alergia a β-lactámicos.</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="note">Ajustar la dosis al aclaramiento de creatinina estimado en caso de insuficiencia renal. Si por sospecha de infección o infección comprobada se prescribiera un tratamiento antibiótico, se suspenderá el antibiótico parenteral de la DDS. El antibiótico parenteral debe administrarse de forma inmediata y urgente tras el ingreso.</p>
+
+          <h4>7.6. Dosis, vía, frecuencia y duración</h4>
+          <table>
+            <thead>
+              <tr><th>Producto</th><th>Vía</th><th>Frecuencia</th><th>Duración</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>DDS pasta orofaríngea (estándar o mixta)</td>
+                <td>Tópica orofaríngea; también estoma traqueal y úlceras de decúbito si procede</td>
+                <td>1 aplicación cada 8 h</td>
+                <td>Hasta el alta de UCI</td>
+              </tr>
+              <tr>
+                <td>DDS suspensión digestiva (estándar o mixta)</td>
+                <td>Oral o por SNG / sonda digestiva</td>
+                <td>10 mL cada 24 h</td>
+                <td>Hasta el alta de UCI</td>
+              </tr>
+              <tr>
+                <td>Antibiótico parenteral (cefotaxima o levofloxacino)</td>
+                <td>Intravenosa</td>
+                <td>Cefotaxima 1 g / 8 h o levofloxacino a dosis terapéuticas</td>
+                <td>4 días desde el ingreso (suspender si se inicia otro ATB por sospecha o infección confirmada)</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="cards">
+            <div class="card">
+              <h5>Pauta DDS estándar</h5>
+              <p>Pasta: nistatina 20 mg/g + tobramicina 30 mg/g + colistina 20 mg/g. Solución: nistatina 2,6 MUI + tobramicina 156 mg + colistina 130 mg. Para pacientes con indicación que no cumplan supuestos de pauta mixta.</p>
+            </div>
+            <div class="card">
+              <h5>Pauta DDS mixta (vancomicina)</h5>
+              <p>Añade vancomicina HCl 40 mg/g a la pasta y 500 mg / 10 mL a la solución. Mantener hasta cultivos negativos para SAMR, o hasta el alta si es portador o tiene antecedente.</p>
+            </div>
+            <div class="card">
+              <h5>Antibiótico parenteral</h5>
+              <p>Inicio inmediato al ingreso. 4 días. Cefotaxima 1 g / 8 h IV o levofloxacino si alergia a β-lactámicos. Suspender si se pauta otro ATB.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="s8">
+          <h3>8. Procedimientos de administración</h3>
+          <p>La DDS debe firmarse todos los días en las órdenes de tratamiento de cada paciente, indicando expresamente si se trata de pauta estándar o con vancomicina (mixta). Los antimicrobianos tópicos se aplican tres veces al día hasta el alta.</p>
+          <h4>8.1. Aplicación de la pasta orofaríngea CON IOT</h4>
+          <ol>
+            <li>Retirar el sistema de fijación del tubo orotraqueal.</li>
+            <li>Lavar la boca con clorhexidina 0,12% (los sobres disponibles en la unidad no requieren dilución).</li>
+            <li>Aplicar la crema DDS por las encías, parte interna de las mejillas y paladar con una torunda o con los dedos enguantados.</li>
+            <li>Fijar de nuevo el tubo orotraqueal.</li>
+            <li>Procedimiento realizado por la enfermera y la auxiliar responsables del paciente.</li>
+          </ol>
+          <h4>8.2. Aplicación de la pasta orofaríngea SIN IOT</h4>
+          <ol>
+            <li>Lavar la boca con clorhexidina 0,12% (sin diluir).</li>
+            <li>Aplicar la crema igual que en el caso anterior.</li>
+            <li>Procedimiento realizado por la auxiliar de enfermería.</li>
+          </ol>
+          <h4>8.3. Aplicación de la pasta en traqueostomías</h4>
+          <ol>
+            <li>Limpiar el estoma con clorhexidina 0,12%.</li>
+            <li>Secar con gasas estériles.</li>
+            <li>Aplicar la pasta DDS correspondiente, también alrededor del estoma traqueal.</li>
+            <li>Técnica estéril; procedimiento realizado por la enfermera y la auxiliar responsables del paciente.</li>
+            <li>Se aplicará la pasta salvo prescripción específica que deberá figurar en el apartado de tratamiento.</li>
+          </ol>
+          <h4>8.4. Aplicación de la pasta en úlceras de decúbito</h4>
+          <ol>
+            <li>Realizar durante la cura habitual de la úlcera.</li>
+            <li>Limpiar la úlcera con solución salina isotónica.</li>
+            <li>Secar con gasas estériles.</li>
+            <li>Aplicar la pasta o la crema según corresponda.</li>
+            <li>Técnica estéril; realizado por la enfermera y la auxiliar responsables del paciente.</li>
+          </ol>
+          <h4>8.5. Solución digestiva con SNG en absoluta, bolsa o aspiración</h4>
+          <ol>
+            <li>Administrar la solución por la SNG.</li>
+            <li>Lavar la sonda con 20 cc de agua.</li>
+            <li>Pinzar la sonda durante 30 minutos.</li>
+            <li>Conectar la SNG a bolsa o a aspiración.</li>
+          </ol>
+          <h4>8.6. Solución digestiva con sonda de una luz y nutrición enteral en curso</h4>
+          <p>Se aprovecha la parada de la mañana para administrar la dosis:</p>
+          <ol>
+            <li>Parar la infusión de la nutrición enteral y lavar la sonda con 20 cc de agua.</li>
+            <li>Administrar la solución por la SNG y lavar después con otros 20 cc de agua.</li>
+            <li>Interrumpir la dieta durante 30 minutos y reiniciar si procede.</li>
+          </ol>
+        </section>
+
+        <section id="s9">
+          <h3>9. Vigilancia microbiológica y peticiones</h3>
+          <h4>9.1. Localización de las muestras</h4>
+          <ul>
+            <li>Torunda faríngea.</li>
+            <li>Torunda nasal.</li>
+            <li>Torunda rectal.</li>
+            <li>Si el paciente presenta úlcera por presión o lesión cutánea con signos de infección local, se tomará también muestra de dichas localizaciones.</li>
+          </ul>
+          <h4>9.2. Tipo de torundas y envío</h4>
+          <ul>
+            <li>Utilizar torundas con gel.</li>
+            <li>Enviar las muestras a Microbiología lo antes posible tras su extracción.</li>
+            <li>Cada volante debe incluir: identificación del paciente, tipo y localización de la muestra, y la solicitud de control de portadores de BMR (bacterias Gram productoras de BLEE, carbapenemasas y SAMR).</li>
+          </ul>
+          <h4>9.3. Peticiones microbiológicas de vigilancia</h4>
+          <table>
+            <thead>
+              <tr><th>Concepto</th><th>Detalle</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Tipo de muestra</td><td>Exudados de vigilancia: faríngeo, nasal y rectal.</td></tr>
+              <tr><td>Gérmenes a investigar</td><td>SAMR, BLEE, CBPM (carbapenemasas).</td></tr>
+              <tr><td>Pruebas a solicitar</td><td>Tinción de Gram y cultivo bacteriano.</td></tr>
+              <tr><td>Cadencia</td><td>Al ingreso y/o tras intubación, y cada lunes en todos los pacientes que reciban DDS.</td></tr>
+            </tbody>
+          </table>
+          <h4>9.4. Momento de la toma</h4>
+          <ul>
+            <li>Tras la intubación, o tras el ingreso en los pacientes no intubados con criterios de aislamiento preventivo.</li>
+            <li>Todos los lunes en los pacientes que estén recibiendo DDS.</li>
+            <li>Si se extrajeron el día anterior por ingreso o intubación, no es necesario repetirlas.</li>
+            <li>Si el paciente ingresó el día previo sin muestras por previsión de extubación y pasó la noche intubado, se tomarán a la mañana siguiente, salvo que se prevea extubación inminente.</li>
+          </ul>
+          <div class="callout info">
+            <strong>Vigilancia microbiológica — orden para Microbiología</strong>
+            Exudados de vigilancia: faríngeo, nasal y rectal. Gérmenes: SAMR, BLEE, CBPM. Pruebas: Gram + cultivo bacteriano. Frecuencia: ingreso / intubación y cada lunes mientras el paciente esté con DDS.
+          </div>
+        </section>
+
+        <section id="s10">
+          <h3>10. Aislamiento preventivo</h3>
+          <p>Se procederá a aislamiento preventivo en pacientes de <strong>alto riesgo</strong>, definidos por la presencia de al menos una de las siguientes condiciones:</p>
+          <table>
+            <thead>
+              <tr><th>Criterio de alto riesgo</th><th>Descripción</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Historia previa de colonización / infección</td><td>Colonización o infección conocida por BMR.</td></tr>
+              <tr><td>Ingreso hospitalario prolongado reciente</td><td>Ingreso hospitalario de más de 5 días en los 3 meses previos.</td></tr>
+              <tr><td>Institucionalización</td><td>Residencias de ancianos, centros sociosanitarios, prisión u otras instituciones cerradas.</td></tr>
+              <tr><td>Antibioterapia reciente</td><td>Antibióticos durante ≥ 7 días en el mes previo, especialmente cefalosporinas de 3.ª–4.ª generación, quinolonas y carbapenémicos.</td></tr>
+              <tr><td>Patología crónica con alta colonización por BMR</td><td>Fibrosis quística, bronquiectasias, úlceras crónicas.</td></tr>
+            </tbody>
+          </table>
+          <p>Los pacientes con microorganismos multirresistentes precisarán medidas de aislamiento en box siempre que sea posible, y se aplicarán las normas higiénicas específicas para cada caso (higiene de manos, uso de EPI, limpieza y desinfección del entorno y del material).</p>
+        </section>
+
+        <section id="s11">
+          <h3>11. Criterios de suspensión y cambio de pauta</h3>
+          <div class="callout warn">
+            <strong>Criterios de suspensión y cambio de pauta</strong>
+            <ul>
+              <li><strong>Suspensión del antibiótico parenteral de la DDS:</strong> si se pauta tratamiento antibiótico por sospecha o infección confirmada.</li>
+              <li><strong>Cambio de DDS con vancomicina a DDS estándar:</strong> cuando los cultivos de vigilancia resulten negativos para SAMR según el presente protocolo.</li>
+              <li><strong>Mantenimiento de la pauta DDS (pasta + solución digestiva):</strong> se mantiene hasta el alta de UCI mientras persista la indicación clínica que motivó su inicio.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section id="s12">
+          <h3>12. Resumen operativo — Prescripción tipo</h3>
+          <p>Este recuadro recoge, en formato apto para anotar en las órdenes de tratamiento de UCI, el conjunto mínimo de instrucciones para iniciar y mantener la DDS.</p>
+          <div class="callout rx">
+            <strong>Indicación</strong>
+            Paciente crítico con IOT/VM prevista &gt; 72 h, o con alto riesgo de neumonía (GCS ≤ 11/15, esofagogastrectomía, pancreatitis necrotizante, neutropenia), o portador/sospecha de BMR.
+            <p style="margin-top:10px"><strong>Tipo de DDS</strong></p>
+            Elegir DDS estándar o DDS con vancomicina (mixta) según protocolo (procedencia, días de ingreso, portador o antecedente de SAMR). Pasar a DDS sin vancomicina si los cultivos son negativos.
+            <p style="margin-top:10px"><strong>Órdenes de tratamiento — pauta tópica y enteral</strong></p>
+            <div class="rx-line">DDS pasta orofaríngea 1 aplic top / 8 h</div>
+            <div class="rx-line">DDS suspensión digestiva 10 mL x SNG / 24 h</div>
+            <p style="margin-top:10px"><strong>Órdenes de tratamiento — antibiótico parenteral (4 días)</strong></p>
+            <div class="rx-line">Cefotaxima 1 g / 8 h IV (o levofloxacino a dosis terapéuticas IV si alergia a β-lactámicos). Ajustar al aclaramiento de creatinina. Suspender si se inicia ATB por sospecha o infección confirmada.</div>
+            <p style="margin-top:10px"><strong>Higiene previa y técnica</strong></p>
+            Clorhexidina 0,12% oral antes de la pasta (sobres sin diluir). Técnica estéril en traqueostomías y úlceras.
+            <p style="margin-top:10px"><strong>Vigilancia microbiológica</strong></p>
+            Exudados de vigilancia en faringe, nasal y rectal → Gram + cultivo bacteriano con búsqueda de SAMR, BLEE y CBPM. Al ingreso / tras intubación y cada lunes.
+            <p style="margin-top:10px"><strong>Aislamiento</strong></p>
+            Aislamiento preventivo en box si el paciente cumple criterios de alto riesgo. Aislamiento estricto si se confirma BMR.
+            <p style="margin-top:10px"><strong>Duración</strong></p>
+            Tópicos (pasta + solución digestiva) hasta el alta de UCI mientras persista la indicación. Parenteral durante 4 días.
+          </div>
+        </section>
+
+        <section id="s13">
+          <h3>13. Bibliografía</h3>
+          <ol class="refs">
+            <li>Van Saene HKF, Stoutenbeek CP, Hart CA. Selective decontamination of the digestive tract (SDD) in intensive care patients: a critical evaluation of the clinical, bacteriological and epidemiological benefits. J Hosp Infect. 1991; 18: 261-277.</li>
+            <li>Liberati A, D'Amico R, Pifferi S, Leonetti C, Torri V, Brazzi L, Tinazzi A. Antibiotics for preventing respiratory tract infections in adults receiving intensive care. In: The Cochrane Library, issue 4, 2000. Oxford: Update Software.</li>
+            <li>Baxby D, Van Saene HKF, Stoutenbeek CP, Zandstra DF. Selective decontamination of the digestive tract: 13 years on, what it is and what it is not. Intensive Care Medicine. 1996; 22: 1-8.</li>
+            <li>Luiten EJ, Hop WC, Lange JF, Bruining HA. Controlled clinical trial of selective decontamination for the treatment of severe acute pancreatitis. Ann Surg. 1995; 222: 57-65.</li>
+            <li>Schardey HM, Joosten U, Finke U, Stanbach KH, Schauer R, Heiss A, et al. Decontamination in the prevention of anastomotic insufficiency following gastrectomy: a prospective double-blind, randomized and placebo-controlled clinical multicenter trial. British J Surg. Berlin, 1994.</li>
+            <li>Tetteroo GWM, Wagenvoort JHT, Castelein A, Tilanus HW, Ince C, Bruining HA. Selective decontamination to reduce gram-negative colonisation and infections after oesophageal resection. Lancet. 1990; 335: 704-707.</li>
+            <li>Sirvent JM, Torres A, El-Biary M, Castro P, de Batlle J, Bonet A. Protective effect of intravenously administered cefuroxime against nosocomial pneumonia in patients with structural coma. Am J Respir Crit Care Med. 1997; 155: 1729-1734.</li>
+            <li>Krueger WA, Lenhart FP, Neeser G, et al. Influence of combined intravenous and topical antibiotic prophylaxis on the incidence of infections, organ dysfunctions, and mortality in critically ill surgical patients. Am J Respir Crit Care Med. 2002; 166: 1029-1037.</li>
+            <li>De Jonge E, Schultz MJ, Spanjaard L, et al. Effects of selective decontamination of digestive tract on mortality and acquisition of resistant bacteria in intensive care: a randomized controlled trial. Lancet. 2003; 362: 1011-1016.</li>
+          </ol>
+        </section>
+
+        <footer>
+          Documento clínico interno de la Unidad de Cuidados Intensivos de HM Puerta del Sur. Basado en el protocolo institucional de Descontaminación Digestiva Selectiva y en la bibliografía referenciada.
+        </footer>
+      </div>
+    </main>
+  </div>
+  <script>
+    const doc = document.getElementById('doc');
+    const select = document.getElementById('tocSelect');
+    const links = [...document.querySelectorAll('#tocNav a')];
+    const sections = [...document.querySelectorAll('section[id], h4[id]')];
+
+    function goTo(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    select.addEventListener('change', () => goTo(select.value));
+    links.forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = a.getAttribute('href').slice(1);
+        goTo(id);
+        const top = id.replace(/-.*/, '');
+        if ([...select.options].some(o => o.value === top)) select.value = top;
+      });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter(e => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      const id = visible.target.id;
+      links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      const top = id.replace(/-.*/, '');
+      if ([...select.options].some(o => o.value === top)) select.value = top;
+    }, { root: doc, rootMargin: '0px 0px -62% 0px', threshold: [0.1, 0.25, 0.5] });
+
+    sections.forEach(sec => observer.observe(sec));
+  </script>
+</body>
+</html>

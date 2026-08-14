@@ -125,6 +125,28 @@ button { cursor: pointer; }
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.22);
   background: rgba(82,214,181,.32);
 }
+.sidebar-protocolos-btn {
+  width: 100%;
+  border: 1px solid rgba(255,190,77,.5);
+  background: rgba(255,190,77,.16);
+  color: #ffe7b0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  transition: background .15s, border-color .15s, filter .15s;
+}
+.sidebar-protocolos-btn:hover {
+  background: rgba(255,190,77,.28);
+  border-color: rgba(255,190,77,.75);
+  filter: brightness(1.05);
+}
+.sidebar-protocolos-btn.active {
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.22);
+  background: rgba(255,190,77,.34);
+}
 .sidebar-edit {
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -292,6 +314,17 @@ button { cursor: pointer; }
   border-radius: 8px;
   background: #fff;
   box-shadow: 0 8px 32px var(--shadow);
+}
+.calculadora-view img.fit-poster {
+  flex: 1;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  align-self: center;
+  cursor: zoom-in;
 }
 
 /* Carpeta raíz = separador visual entre especialidades */

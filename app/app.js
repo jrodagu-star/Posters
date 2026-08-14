@@ -25,6 +25,30 @@ const CALCULADORAS = [
     url: 'https://icuconnect-nutricion.web.app'
   }
 ];
+const PROTOCOLOS = [
+  {
+    id: 'dds',
+    title: 'DDS (Descontaminación Digestiva)',
+    description: 'Guía rápida y protocolo detallado de descontaminación digestiva selectiva en UCI.',
+    audiences: ['medicina', 'enfermeria'],
+    parts: [
+      {
+        id: 'folleto',
+        title: 'Folleto general',
+        description: 'Guía rápida de pared para enfermería y medicina.',
+        path: '../biblioteca/assets/protocolos/dds/folleto-general.png',
+        ext: '.png'
+      },
+      {
+        id: 'detallado',
+        title: 'Protocolo detallado',
+        description: 'Documento completo con índice navegable.',
+        path: '../biblioteca/assets/protocolos/dds/protocolo-detallado.html?v=20260814l',
+        ext: '.html'
+      }
+    ]
+  }
+];
 const HOME_IMAGE = '../biblioteca/assets/inicio-uci.png';
 
 const els = {
@@ -35,6 +59,7 @@ const els = {
   expandAllBtn: document.getElementById('expandAllBtn'),
   collapseAllBtn: document.getElementById('collapseAllBtn'),
   calculadorasBtn: document.getElementById('calculadorasBtn'),
+  protocolosBtn: document.getElementById('protocolosBtn'),
   title: document.getElementById('title'),
   meta: document.getElementById('meta'),
   crumbs: document.getElementById('crumbs'),
@@ -366,7 +391,7 @@ function firstFile(node = state.tree) {
 function setSelection(id, type) {
   state.selectedId = id;
   state.selectedType = type;
-  if (els.calculadorasBtn) els.calculadorasBtn.classList.remove('active');
+  clearSectionButtons();
   const found = findNodeAndParentById(id);
   if (!found.node) {
     els.selectedInfo.textContent = 'Selección actual: ninguna';
@@ -499,6 +524,11 @@ function lightboxShowAt(index) {
   applyLightboxTransform();
 }
 
+function clearSectionButtons() {
+  if (els.calculadorasBtn) els.calculadorasBtn.classList.remove('active');
+  if (els.protocolosBtn) els.protocolosBtn.classList.remove('active');
+}
+
 function showHome() {
   closeLightbox().catch(() => {});
   closeHtmlLightbox().catch(() => {});
@@ -509,7 +539,7 @@ function showHome() {
   state.selectedId = null;
   state.selectedType = null;
   document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
-  if (els.calculadorasBtn) els.calculadorasBtn.classList.remove('active');
+  clearSectionButtons();
   els.selectedInfo.textContent = 'Selección actual: ninguna';
   els.title.textContent = 'Cuidados intensivos';
   els.meta.textContent = 'Inicio';
@@ -530,6 +560,7 @@ function showCalculadoras() {
   state.selectedId = null;
   state.selectedType = null;
   document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
+  clearSectionButtons();
   if (els.calculadorasBtn) els.calculadorasBtn.classList.add('active');
   els.selectedInfo.textContent = 'Selección actual: Calculadoras';
   els.title.textContent = 'Calculadoras';
@@ -568,6 +599,7 @@ function openCalculadora(calc) {
   closeLightbox().catch(() => {});
   closeHtmlLightbox().catch(() => {});
   closePdfLightbox().catch(() => {});
+  clearSectionButtons();
   if (els.calculadorasBtn) els.calculadorasBtn.classList.add('active');
   els.title.textContent = calc.title;
   els.meta.textContent = calc.url ? 'Enlace externo' : 'Calculadora';
@@ -590,6 +622,160 @@ function openCalculadora(calc) {
     '</div>';
   const closeBtn = document.getElementById('closeCalculadoraBtn');
   if (closeBtn) closeBtn.addEventListener('click', () => showCalculadoras());
+}
+
+function visibleProtocolos() {
+  return PROTOCOLOS.filter(item => getAudiences(item).includes(state.audienceFilter));
+}
+
+function showProtocolos() {
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  state.currentFile = null;
+  state.currentFileParentId = null;
+  state.currentPath = null;
+  state.selectedId = null;
+  state.selectedType = null;
+  document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
+  clearSectionButtons();
+  if (els.protocolosBtn) els.protocolosBtn.classList.add('active');
+  els.selectedInfo.textContent = 'Selección actual: Protocolos UCI';
+  els.title.textContent = 'Protocolos UCI';
+  els.meta.textContent = 'Protocolos clínicos';
+  els.crumbs.textContent = 'Protocolos UCI';
+  const list = visibleProtocolos();
+  const cards = list.length
+    ? list.map(item =>
+      '<button type="button" class="calculadora-card" data-protocolo-id="' + escapeHtml(item.id) + '">' +
+        '<span class="calculadora-card-title">' + escapeHtml(item.title) + '</span>' +
+        '<span class="calculadora-card-desc">' + escapeHtml(item.description) + '</span>' +
+        '<span class="calculadora-card-cta">Abrir</span>' +
+      '</button>'
+    ).join('')
+    : '<div class="empty"><strong>Protocolos UCI</strong>No hay protocolos para ' + escapeHtml(audienceLabel(state.audienceFilter)) + '.</div>';
+  els.viewer.innerHTML =
+    '<div class="calculadoras-panel">' +
+      '<div class="calculadoras-panel-head">' +
+        '<div>' +
+          '<h2 class="calculadoras-title">Protocolos UCI</h2>' +
+          '<p class="calculadoras-lead">Elige un protocolo para visualizarlo.</p>' +
+        '</div>' +
+        '<button type="button" class="btn" id="closeProtocolosSectionBtn">Cerrar</button>' +
+      '</div>' +
+      '<div class="calculadoras-grid" id="protocolosGrid">' + cards + '</div>' +
+    '</div>';
+  const closeSectionBtn = document.getElementById('closeProtocolosSectionBtn');
+  if (closeSectionBtn) closeSectionBtn.addEventListener('click', () => showHome());
+  els.viewer.querySelectorAll('[data-protocolo-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = PROTOCOLOS.find(p => p.id === btn.dataset.protocoloId);
+      if (item) openProtocolo(item);
+    });
+  });
+}
+
+function openProtocolo(item) {
+  if (!item) return;
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  clearSectionButtons();
+  if (els.protocolosBtn) els.protocolosBtn.classList.add('active');
+  const parts = item.parts || [];
+  if (parts.length === 1) {
+    openProtocoloPart(item, parts[0]);
+    return;
+  }
+  if (!parts.length && (item.path || item.url)) {
+    openProtocoloPart(item, item);
+    return;
+  }
+  els.title.textContent = item.title;
+  els.meta.textContent = fileAudienceLabel(item);
+  els.crumbs.textContent = 'Protocolos UCI / ' + item.title;
+  els.selectedInfo.textContent = 'Selección actual: ' + item.title;
+  const cards = parts.map(part =>
+    '<button type="button" class="calculadora-card" data-part-id="' + escapeHtml(part.id) + '">' +
+      '<span class="calculadora-card-title">' + escapeHtml(part.title) + '</span>' +
+      '<span class="calculadora-card-desc">' + escapeHtml(part.description || '') + '</span>' +
+      '<span class="calculadora-card-cta">Abrir</span>' +
+    '</button>'
+  ).join('');
+  els.viewer.innerHTML =
+    '<div class="calculadoras-panel">' +
+      '<div class="calculadoras-panel-head">' +
+        '<div>' +
+          '<h2 class="calculadoras-title">' + escapeHtml(item.title) + '</h2>' +
+          '<p class="calculadoras-lead">Elige la parte que quieres visualizar.</p>' +
+        '</div>' +
+        '<button type="button" class="btn" id="backProtocolosBtn">Volver</button>' +
+      '</div>' +
+      '<div class="calculadoras-grid">' + cards + '</div>' +
+    '</div>';
+  const backBtn = document.getElementById('backProtocolosBtn');
+  if (backBtn) backBtn.addEventListener('click', () => showProtocolos());
+  els.viewer.querySelectorAll('[data-part-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const part = parts.find(p => p.id === btn.dataset.partId);
+      if (part) openProtocoloPart(item, part);
+    });
+  });
+}
+
+function openProtocoloPart(protocolo, part) {
+  if (!protocolo || !part) return;
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  clearSectionButtons();
+  if (els.protocolosBtn) els.protocolosBtn.classList.add('active');
+  const ext = part.ext || extFromName(part.path || '') || '.pdf';
+  const src = part.url || normalizeAssetPath(part.path);
+  const fileLike = { id: protocolo.id + '-' + (part.id || 'doc'), title: part.title, ext, path: src, source: 'asset' };
+  els.title.textContent = part.title;
+  els.meta.textContent = kindLabel(ext) + ' · ' + protocolo.title;
+  els.crumbs.textContent = 'Protocolos UCI / ' + protocolo.title + ' / ' + part.title;
+  els.selectedInfo.textContent = 'Selección actual: ' + part.title;
+  const backBtn = '<button type="button" class="btn" id="closeProtocoloBtn">Volver</button>';
+  if (ext === '.pdf') {
+    const pdfSrc = src + (src.includes('#') ? '' : '#view=FitH&toolbar=1&navpanes=0');
+    els.viewer.innerHTML =
+      '<div class="calculadora-view">' +
+        '<div class="calculadora-toolbar">' +
+          '<div class="calculadora-toolbar-title">' + escapeHtml(part.title) + '</div>' +
+          '<div class="calculadora-toolbar-actions">' + backBtn + '</div>' +
+        '</div>' +
+        '<div class="viewer-pdf-wrap">' +
+          '<iframe class="viewer-pdf-frame" id="viewerPdfFrame" title="' + escapeHtml(part.title) + '" src="' + escapeHtml(pdfSrc) + '"></iframe>' +
+          '<button type="button" class="viewer-html-open" id="openPdfLbBtn">Ampliar a pantalla completa</button>' +
+        '</div>' +
+      '</div>';
+    const openPdfBtn = document.getElementById('openPdfLbBtn');
+    if (openPdfBtn) openPdfBtn.addEventListener('click', () => openPdfLightbox(fileLike));
+  } else if (isImageExt(ext)) {
+    els.viewer.innerHTML =
+      '<div class="calculadora-view">' +
+        '<div class="calculadora-toolbar">' +
+          '<div class="calculadora-toolbar-title">' + escapeHtml(part.title) + '</div>' +
+          '<div class="calculadora-toolbar-actions">' + backBtn + '</div>' +
+        '</div>' +
+        '<img class="fit-poster" src="' + escapeHtml(src) + '" alt="' + escapeHtml(part.title) + '">' +
+      '</div>';
+    const img = els.viewer.querySelector('img');
+    if (img) img.addEventListener('click', () => openLightboxFromFile(fileLike));
+  } else {
+    els.viewer.innerHTML =
+      '<div class="calculadora-view">' +
+        '<div class="calculadora-toolbar">' +
+          '<div class="calculadora-toolbar-title">' + escapeHtml(part.title) + '</div>' +
+          '<div class="calculadora-toolbar-actions">' + backBtn + '</div>' +
+        '</div>' +
+        '<iframe class="calculadora-frame" id="protocoloFrame" title="' + escapeHtml(part.title) + '" src="' + escapeHtml(src) + '"></iframe>' +
+      '</div>';
+  }
+  const closeBtn = document.getElementById('closeProtocoloBtn');
+  if (closeBtn) closeBtn.addEventListener('click', () => openProtocolo(protocolo));
 }
 
 function showFile(file) {
@@ -1070,6 +1256,10 @@ function setAudienceFilter(audience) {
   updateAudienceButtons();
   renderTree();
   renderSearch(els.search.value);
+  if (els.protocolosBtn && els.protocolosBtn.classList.contains('active')) {
+    showProtocolos();
+    return;
+  }
   if (state.currentFile && !matchesAudienceFilter(state.currentFile)) {
     showHome();
   }
@@ -1409,6 +1599,7 @@ function initEvents() {
   els.expandAllBtn.addEventListener('click', expandAllFolders);
   els.collapseAllBtn.addEventListener('click', collapseAllFolders);
   if (els.calculadorasBtn) els.calculadorasBtn.addEventListener('click', showCalculadoras);
+  if (els.protocolosBtn) els.protocolosBtn.addEventListener('click', showProtocolos);
   document.querySelectorAll('.audience-btn').forEach(btn => {
     btn.addEventListener('click', () => setAudienceFilter(btn.dataset.audience));
   });
