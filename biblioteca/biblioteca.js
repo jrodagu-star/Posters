@@ -729,26 +729,6 @@ window.BIBLIOTECA_DATA = {
         "title": "Nutrición",
         "children": [
           {
-            "id": "u-oar4bycc-mrvx26fh",
-            "type": "file",
-            "title": "Protocolo estreñimiento 1",
-            "ext": ".png",
-            "source": "asset",
-            "breadcrumb": "Nutrición / Protocolo estreñimiento 1",
-            "specialty": "Nutrición",
-            "path": "../biblioteca/assets/nutricion/protocolo-estrenimiento-1.png"
-          },
-          {
-            "id": "u-nu9ik9wz-mrvx2bi4",
-            "type": "file",
-            "title": "Protocolo estreñimiento 2",
-            "ext": ".png",
-            "source": "asset",
-            "breadcrumb": "Nutrición / Protocolo estreñimiento 2",
-            "specialty": "Nutrición",
-            "path": "../biblioteca/assets/nutricion/protocolo-estrenimiento-2.png"
-          },
-          {
             "id": "p-fases-nutricion",
             "type": "file",
             "title": "Fases nutrición",
@@ -760,7 +740,7 @@ window.BIBLIOTECA_DATA = {
             "audience": "medicina"
           }
         ],
-        "file_count": 3
+        "file_count": 1
       },
       {
         "id": "f-wr3a6ayl-mrxd5alw",
@@ -842,6 +822,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 2
       }
     ],
-    "file_count": 61
+    "file_count": 59
   }
 };

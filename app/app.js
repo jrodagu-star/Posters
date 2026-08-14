@@ -47,6 +47,28 @@ const PROTOCOLOS = [
         ext: '.html'
       }
     ]
+  },
+  {
+    id: 'estrenimiento',
+    title: 'Estreñimiento en UCI',
+    description: 'Guía clínica y tabla de fármacos para el manejo del estreñimiento en UCI.',
+    audiences: ['medicina', 'enfermeria'],
+    parts: [
+      {
+        id: 'guia',
+        title: 'Guía clínica',
+        description: 'Protocolo de estreñimiento en UCI.',
+        path: '../biblioteca/assets/protocolos/estrenimiento/guia-clinica.pdf',
+        ext: '.pdf'
+      },
+      {
+        id: 'tabla',
+        title: 'Tabla de fármacos',
+        description: 'Fármacos para el estreñimiento en UCI.',
+        path: '../biblioteca/assets/protocolos/estrenimiento/tabla-farmacos.pdf',
+        ext: '.pdf'
+      }
+    ]
   }
 ];
 const HOME_IMAGE = '../biblioteca/assets/inicio-uci.png';
