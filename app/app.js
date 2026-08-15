@@ -69,6 +69,21 @@ const PROTOCOLOS = [
         ext: '.pdf'
       }
     ]
+  },
+  {
+    id: 'diarrea-ne',
+    title: 'Diarrea en paciente en UCI con NE',
+    description: 'Manejo de la diarrea en nutrición enteral en UCI.',
+    audiences: ['medicina'],
+    parts: [
+      {
+        id: 'poster',
+        title: 'Diarrea en paciente en UCI con NE',
+        description: 'Póster clínico de manejo de diarrea con nutrición enteral.',
+        path: '../biblioteca/assets/protocolos/diarrea/diarrea-uci-ne.html?v=20260815a',
+        ext: '.html'
+      }
+    ]
   }
 ];
 const HOME_IMAGE = '../biblioteca/assets/inicio-uci.png';
@@ -786,6 +801,29 @@ function openProtocoloPart(protocolo, part) {
       '</div>';
     const img = els.viewer.querySelector('img');
     if (img) img.addEventListener('click', () => openLightboxFromFile(fileLike));
+  } else if (isHtmlExt(ext)) {
+    els.viewer.innerHTML =
+      '<div class="calculadora-view">' +
+        '<div class="calculadora-toolbar">' +
+          '<div class="calculadora-toolbar-title">' + escapeHtml(part.title) + '</div>' +
+          '<div class="calculadora-toolbar-actions">' + backBtn + '</div>' +
+        '</div>' +
+        '<div class="viewer-html-wrap">' +
+          '<div class="viewer-html-stage" id="viewerHtmlStage">' +
+            '<div class="viewer-html-board" id="viewerHtmlBoard">' +
+              '<iframe class="html-poster" id="viewerHtmlFrame" title="' + escapeHtml(part.title) + '" scrolling="no" src="' + escapeHtml(src) + '" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>' +
+            '</div>' +
+          '</div>' +
+          '<button type="button" class="viewer-html-open" id="openHtmlLbBtn">Ampliar a pantalla completa</button>' +
+        '</div>' +
+      '</div>';
+    const openBtn = document.getElementById('openHtmlLbBtn');
+    if (openBtn) openBtn.addEventListener('click', () => openHtmlLightbox(fileLike));
+    const previewFrame = document.getElementById('viewerHtmlFrame');
+    if (previewFrame) {
+      previewFrame.addEventListener('load', () => fitHtmlPreview());
+      if (previewFrame.contentDocument?.readyState === 'complete') fitHtmlPreview();
+    }
   } else {
     els.viewer.innerHTML =
       '<div class="calculadora-view">' +
@@ -797,7 +835,12 @@ function openProtocoloPart(protocolo, part) {
       '</div>';
   }
   const closeBtn = document.getElementById('closeProtocoloBtn');
-  if (closeBtn) closeBtn.addEventListener('click', () => openProtocolo(protocolo));
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      if ((protocolo.parts || []).length <= 1) showProtocolos();
+      else openProtocolo(protocolo);
+    });
+  }
 }
 
 function showFile(file) {

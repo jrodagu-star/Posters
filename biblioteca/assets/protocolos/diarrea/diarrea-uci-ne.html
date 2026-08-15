@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Manejo de la diarrea en NE — UCI</title>
+<style>
+  @page { size: A4 portrait; margin: 8mm; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #1a2332;
+    background: #f4f6fa;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 6mm 7mm;
+    margin: 0 auto;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 3mm;
+  }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #0b3d5c 0%, #1668a1 100%);
+    color: white;
+    padding: 5mm 6mm;
+    border-radius: 3mm;
+    display: flex;
+    align-items: center;
+    gap: 5mm;
+  }
+  header .icon {
+    width: 16mm; height: 16mm;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9mm;
+    flex-shrink: 0;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 18pt;
+    letter-spacing: 0.2mm;
+    line-height: 1.1;
+  }
+  header .sub {
+    font-size: 10pt;
+    opacity: 0.9;
+    margin-top: 1mm;
+  }
+
+  /* Section titles */
+  h2 {
+    font-size: 11pt;
+    margin: 0 0 2mm 0;
+    color: #0b3d5c;
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+    text-transform: uppercase;
+    letter-spacing: 0.3mm;
+    border-bottom: 0.6mm solid #1668a1;
+    padding-bottom: 1mm;
+  }
+  h2 .num {
+    background: #1668a1;
+    color: white;
+    width: 6mm; height: 6mm;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    font-size: 9pt;
+    font-weight: bold;
+  }
+
+  /* Six-step grid */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5mm;
+  }
+  .step {
+    background: #ffffff;
+    border: 0.4mm solid #d0dae5;
+    border-left: 1.4mm solid #1668a1;
+    border-radius: 2mm;
+    padding: 2.5mm 3mm;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2mm;
+  }
+  .step .top {
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+  }
+  .step .n {
+    background: #1668a1;
+    color: white;
+    width: 7mm; height: 7mm;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold;
+    font-size: 10pt;
+    flex-shrink: 0;
+  }
+  .step .ico {
+    font-size: 8mm;
+    line-height: 1;
+  }
+  .step h3 {
+    margin: 0;
+    font-size: 9.5pt;
+    color: #0b3d5c;
+    line-height: 1.15;
+    flex: 1;
+  }
+  .step p {
+    margin: 0;
+    font-size: 7.8pt;
+    line-height: 1.3;
+    color: #33475b;
+  }
+  .step .dose {
+    background: #eaf3fb;
+    border-radius: 1.2mm;
+    padding: 1.2mm 2mm;
+    font-size: 7.5pt;
+    color: #0b3d5c;
+    font-weight: 600;
+    margin-top: 0.5mm;
+  }
+  .step.warn { border-left-color: #d9534f; }
+  .step.warn .n { background: #d9534f; }
+
+  /* Drug alert box */
+  .drugs {
+    background: #fff4e6;
+    border: 0.4mm solid #f0a04b;
+    border-radius: 2mm;
+    padding: 2.5mm 3mm;
+  }
+  .drugs h2 {
+    color: #a35c00;
+    border-bottom-color: #f0a04b;
+  }
+  .drugs h2 .num { background: #f0a04b; }
+  .drug-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2mm;
+    font-size: 7.7pt;
+  }
+  .drug-grid > div {
+    background: white;
+    border-radius: 1.2mm;
+    padding: 1.5mm 2mm;
+    line-height: 1.25;
+  }
+  .drug-grid strong {
+    display: block;
+    color: #a35c00;
+    font-size: 8pt;
+    margin-bottom: 0.5mm;
+  }
+
+  /* Algorithm */
+  .algo {
+    background: #f0f6fc;
+    border: 0.4mm solid #b8d1e6;
+    border-radius: 2mm;
+    padding: 3mm;
+  }
+  .algo h2 {
+    border-bottom-color: #1668a1;
+  }
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5mm;
+  }
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+  }
+  .flow-box {
+    background: white;
+    border: 0.4mm solid #1668a1;
+    border-radius: 1.5mm;
+    padding: 1.8mm 2.5mm;
+    font-size: 7.8pt;
+    line-height: 1.25;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+  }
+  .flow-box .fnum {
+    background: #1668a1;
+    color: white;
+    width: 5.5mm; height: 5.5mm;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold;
+    font-size: 8pt;
+    flex-shrink: 0;
+  }
+  .flow-box.decision {
+    background: #fff9e6;
+    border-color: #e0b84a;
+  }
+  .flow-box.decision .fnum { background: #e0b84a; }
+  .flow-box.stop {
+    background: #fdecea;
+    border-color: #d9534f;
+  }
+  .flow-box.stop .fnum { background: #d9534f; }
+  .arrow {
+    text-align: center;
+    color: #1668a1;
+    font-size: 10pt;
+    line-height: 0.5;
+    margin: -0.5mm 0;
+  }
+  .branch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2mm;
+  }
+
+  /* Red-flag / exclude */
+  .exclude {
+    background: #fdecea;
+    border: 0.4mm solid #d9534f;
+    border-radius: 2mm;
+    padding: 2.5mm 3mm;
+  }
+  .exclude h2 {
+    color: #a12722;
+    border-bottom-color: #d9534f;
+  }
+  .exclude h2 .num { background: #d9534f; }
+  .excl-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2mm;
+    font-size: 7.8pt;
+  }
+  .excl-grid > div {
+    background: white;
+    border-radius: 1.2mm;
+    padding: 1.5mm 2mm;
+    line-height: 1.25;
+  }
+  .excl-grid strong {
+    display: block;
+    color: #a12722;
+    font-size: 8pt;
+    margin-bottom: 0.5mm;
+  }
+
+  /* Footer key points */
+  .key {
+    background: #0b3d5c;
+    color: white;
+    border-radius: 2mm;
+    padding: 2.5mm 3mm;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 3mm;
+    font-size: 8pt;
+  }
+  .key .item {
+    text-align: center;
+    line-height: 1.2;
+  }
+  .key .item .big {
+    display: block;
+    font-size: 12pt;
+    font-weight: bold;
+    color: #7dd3fc;
+    margin-bottom: 0.5mm;
+  }
+
+  .footnote {
+    font-size: 6.5pt;
+    color: #7a869a;
+    text-align: center;
+    margin-top: 1mm;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="icon">💧</div>
+    <div>
+      <h1>DIARREA EN PACIENTE UCI CON NUTRICIÓN ENTERAL</h1>
+      <div class="sub">Actuación estructurada · No suspender la NE de forma automática</div>
+    </div>
+  </header>
+
+  <!-- 6 STEPS -->
+  <section>
+    <h2><span class="num">✓</span>ACTUACIÓN EN 6 PASOS</h2>
+    <div class="steps">
+
+      <div class="step">
+        <div class="top">
+          <div class="n">1</div>
+          <div class="ico">💊</div>
+          <h3>Revisar fármacos diarreogénicos</h3>
+        </div>
+        <p>Antibióticos, laxantes, procinéticos, IBP, antiácidos con Mg, elixires con sorbitol/manitol, KCl líquido, lactulosa.</p>
+        <div class="dose">Suspender o cambiar a vía IV / tableta</div>
+      </div>
+
+      <div class="step">
+        <div class="top">
+          <div class="n">2</div>
+          <div class="ico">⏱️</div>
+          <h3>No suspender la NE</h3>
+        </div>
+        <p>Mantener la NE mientras se evalúa la causa. Preferir infusión continua sobre bolo. Reducir velocidad si precisa.</p>
+        <div class="dose">↓ velocidad 25–50% · reevaluar en 8–12 h</div>
+      </div>
+
+      <div class="step">
+        <div class="top">
+          <div class="n">3</div>
+          <div class="ico">🌾</div>
+          <h3>Fibra soluble fermentable</h3>
+        </div>
+        <p>Fórmula con FOS/inulina/goma guar, o suplementar con fibra soluble. Solo si estable hemodinámicamente.</p>
+        <div class="dose">10–20 g/día de fibra soluble</div>
+      </div>
+
+      <div class="step">
+        <div class="top">
+          <div class="n">4</div>
+          <div class="ico">🧬</div>
+          <h3>Fórmula oligomérica / peptídica</h3>
+        </div>
+        <p>Si persiste tras fibra o hay sospecha de malabsorción, atrofia intestinal o intolerancia. Segunda línea.</p>
+        <div class="dose">Cambio si diarrea persistente &gt;48 h</div>
+      </div>
+
+      <div class="step">
+        <div class="top">
+          <div class="n">5</div>
+          <div class="ico">🥣</div>
+          <h3>Pectina en la NE</h3>
+        </div>
+        <p>Solidifica el bolo gástrico y reduce eventos de diarrea. Útil como alternativa o complemento a la fibra.</p>
+        <div class="dose">Iniciar 10 mL/h · ↑ 10 mL/h cada 8 h</div>
+      </div>
+
+      <div class="step warn">
+        <div class="top">
+          <div class="n">6</div>
+          <div class="ico">🛑</div>
+          <h3>Antidiarreico solo si excluidas causas</h3>
+        </div>
+        <p>Loperamida tras descartar C. difficile, obstrucción/impactación e isquemia mesentérica.</p>
+        <div class="dose">Loperamida 4 mg → 2 mg tras cada deposición (máx 16 mg/día)</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DRUGS -->
+  <section class="drugs">
+    <h2><span class="num">💊</span>FÁRMACOS FRECUENTEMENTE IMPLICADOS</h2>
+    <div class="drug-grid">
+      <div><strong>Antibióticos</strong>Alteran microbiota · riesgo C. difficile</div>
+      <div><strong>Laxantes / lactulosa</strong>Revisar prescripción activa y pautas «si precisa»</div>
+      <div><strong>Procinéticos</strong>Metoclopramida, eritromicina, neostigmina</div>
+      <div><strong>Antiácidos con Mg</strong>Almax, hidróxido de magnesio</div>
+      <div><strong>IBP y anti-H2</strong>Hipoclorhidria · sobrecrecimiento</div>
+      <div><strong>Elixires con sorbitol</strong>Paracetamol, KCl, vitaminas líquidas</div>
+      <div><strong>Suplementos electrolíticos orales</strong>Alta osmolaridad</div>
+      <div><strong>Quimioterápicos / colchicina</strong>Toxicidad enteral directa</div>
+    </div>
+  </section>
+
+  <!-- ALGORITHM -->
+  <section class="algo">
+    <h2><span class="num">🧭</span>ALGORITMO DE DECISIÓN</h2>
+    <div class="flow">
+
+      <div class="flow-box">
+        <div class="fnum">1</div>
+        <div><b>Diarrea en paciente con NE</b> — Confirmar &gt;3 deposiciones líquidas/día o &gt;250 mL/día. Valorar estabilidad hemodinámica.</div>
+      </div>
+      <div class="arrow">▼</div>
+
+      <div class="flow-box stop">
+        <div class="fnum">!</div>
+        <div><b>Descartar causas graves:</b> C. difficile (toxina), obstrucción/impactación fecal, isquemia mesentérica. Si presentes → tratar causa y NO iniciar antidiarreico.</div>
+      </div>
+      <div class="arrow">▼</div>
+
+      <div class="flow-box">
+        <div class="fnum">2</div>
+        <div><b>Revisar medicación</b> y retirar/sustituir agentes diarreogénicos. Cambiar elixires con sorbitol a tableta o IV.</div>
+      </div>
+      <div class="arrow">▼</div>
+
+      <div class="flow-box decision">
+        <div class="fnum">?</div>
+        <div><b>Mantener NE</b> (no suspender). Preferir infusión continua · reducir velocidad si intolerancia.</div>
+      </div>
+      <div class="arrow">▼</div>
+
+      <div class="branch">
+        <div class="flow-box">
+          <div class="fnum">3</div>
+          <div><b>Paciente estable:</b> añadir <b>fibra soluble fermentable 10–20 g/día</b> (FOS/inulina/goma guar) o cambiar a fórmula con fibra.</div>
+        </div>
+        <div class="flow-box">
+          <div class="fnum">5</div>
+          <div><b>Alternativa:</b> añadir <b>pectina</b> a la NE para solidificar. Útil si intolerancia gástrica asociada.</div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+
+      <div class="flow-box decision">
+        <div class="fnum">?</div>
+        <div><b>¿Persiste diarrea &gt;48 h pese a medidas previas?</b></div>
+      </div>
+      <div class="arrow">▼</div>
+
+      <div class="branch">
+        <div class="flow-box">
+          <div class="fnum">4</div>
+          <div><b>Cambiar a fórmula oligomérica/peptídica</b> (sospecha de malabsorción, atrofia vellositaria).</div>
+        </div>
+        <div class="flow-box">
+          <div class="fnum">6</div>
+          <div><b>Añadir loperamida</b> (4 mg → 2 mg tras cada deposición, máx 16 mg/día) SOLO tras excluir infección, obstrucción e isquemia.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- EXCLUDE BOX -->
+  <section class="exclude">
+    <h2><span class="num">⚠</span>ANTES DEL ANTIDIARREICO: DESCARTAR</h2>
+    <div class="excl-grid">
+      <div><strong>🦠 Infecciosa</strong>C. difficile (toxina + PCR), toxinas alimentarias, virus. No dar loperamida si sospecha.</div>
+      <div><strong>🚫 Obstructiva</strong>Impactación fecal, íleo, pseudobstrucción. Tacto rectal y RX abdomen.</div>
+      <div><strong>🩸 Isquémica</strong>Shock, vasopresores altos, lactato ↑, dolor abdominal. Evitar fibra y antidiarreicos.</div>
+    </div>
+  </section>
+
+  <!-- KEY POINTS -->
+  <div class="key">
+    <div class="item"><span class="big">✗</span>NO suspender NE</div>
+    <div class="item"><span class="big">↓</span>Bajar velocidad antes que parar</div>
+    <div class="item"><span class="big">10–20 g</span>Fibra soluble/día</div>
+    <div class="item"><span class="big">48 h</span>Reevaluar y escalar</div>
+    <div class="item"><span class="big">3</span>Excluir antes de loperamida</div>
+  </div>
+
+  <div class="footnote">Documento de consulta clínica · UCI · Uso interno · Verificar contra protocolo local antes de aplicar</div>
+
+</div>
+</body>
+</html>
