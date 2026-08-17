@@ -410,9 +410,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Infecciones / Gérmenes",
             "source": "asset",
             "audience": "medicina"
+          },
+          {
+            "id": "p-sepsis-bundle",
+            "type": "file",
+            "title": "Sepsis bundle",
+            "path": "../biblioteca/assets/infecciones/sepsis-bundle.png",
+            "ext": ".png",
+            "specialty": "Infecciones",
+            "breadcrumb": "Infecciones / Sepsis bundle",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 6
+        "file_count": 7
       },
       {
         "id": "f-32",
@@ -833,6 +844,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 2
       }
     ],
-    "file_count": 60
+    "file_count": 61
   }
 };
