@@ -681,9 +681,20 @@ window.BIBLIOTECA_DATA = {
               }
             ],
             "file_count": 1
+          },
+          {
+            "id": "p-tubo-toracico",
+            "type": "file",
+            "title": "Tubo torácico",
+            "path": "../biblioteca/assets/respiratorio/tubo-toracico.png",
+            "ext": ".png",
+            "specialty": "Respiratorio",
+            "breadcrumb": "Respiratorio / Tubo torácico",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 11
+        "file_count": 12
       },
       {
         "id": "f-6hyg0pre-mrtm320x",
@@ -822,6 +833,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 2
       }
     ],
-    "file_count": 59
+    "file_count": 60
   }
 };
