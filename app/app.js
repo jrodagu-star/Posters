@@ -104,6 +104,11 @@ const PROTOCOLOS = [
   }
 ];
 const HOME_IMAGE = '../biblioteca/assets/inicio-uci.png';
+const DUTYDOCTOR = {
+  title: 'DutyDoctor',
+  description: 'Gestión de guardias médicas.',
+  url: 'https://studio-4278811655-e6d72.web.app'
+};
 
 const els = {
   tree: document.getElementById('tree'),
@@ -114,6 +119,7 @@ const els = {
   collapseAllBtn: document.getElementById('collapseAllBtn'),
   calculadorasBtn: document.getElementById('calculadorasBtn'),
   protocolosBtn: document.getElementById('protocolosBtn'),
+  dutydoctorBtn: document.getElementById('dutydoctorBtn'),
   title: document.getElementById('title'),
   meta: document.getElementById('meta'),
   crumbs: document.getElementById('crumbs'),
@@ -581,6 +587,7 @@ function lightboxShowAt(index) {
 function clearSectionButtons() {
   if (els.calculadorasBtn) els.calculadorasBtn.classList.remove('active');
   if (els.protocolosBtn) els.protocolosBtn.classList.remove('active');
+  if (els.dutydoctorBtn) els.dutydoctorBtn.classList.remove('active');
 }
 
 function showHome() {
@@ -676,6 +683,37 @@ function openCalculadora(calc) {
     '</div>';
   const closeBtn = document.getElementById('closeCalculadoraBtn');
   if (closeBtn) closeBtn.addEventListener('click', () => showCalculadoras());
+}
+
+function openDutyDoctor() {
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  state.currentFile = null;
+  state.currentFileParentId = null;
+  state.currentPath = null;
+  state.selectedId = null;
+  state.selectedType = null;
+  document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
+  clearSectionButtons();
+  if (els.dutydoctorBtn) els.dutydoctorBtn.classList.add('active');
+  els.title.textContent = DUTYDOCTOR.title;
+  els.meta.textContent = 'Enlace externo';
+  els.crumbs.textContent = DUTYDOCTOR.title;
+  els.selectedInfo.textContent = 'Selección actual: ' + DUTYDOCTOR.title;
+  els.viewer.innerHTML =
+    '<div class="calculadora-view">' +
+      '<div class="calculadora-toolbar">' +
+        '<div class="calculadora-toolbar-title">' + escapeHtml(DUTYDOCTOR.title) + '</div>' +
+        '<div class="calculadora-toolbar-actions">' +
+          '<a class="btn" href="' + escapeHtml(DUTYDOCTOR.url) + '" target="_blank" rel="noopener noreferrer">Abrir en pestaña</a>' +
+          '<button type="button" class="btn btn-accent" id="closeDutyDoctorBtn">Cerrar</button>' +
+        '</div>' +
+      '</div>' +
+      '<iframe class="calculadora-frame" id="dutydoctorFrame" title="' + escapeHtml(DUTYDOCTOR.title) + '" src="' + escapeHtml(DUTYDOCTOR.url) + '"></iframe>' +
+    '</div>';
+  const closeBtn = document.getElementById('closeDutyDoctorBtn');
+  if (closeBtn) closeBtn.addEventListener('click', () => showHome());
 }
 
 function visibleProtocolos() {
@@ -1682,6 +1720,7 @@ function initEvents() {
   els.collapseAllBtn.addEventListener('click', collapseAllFolders);
   if (els.calculadorasBtn) els.calculadorasBtn.addEventListener('click', showCalculadoras);
   if (els.protocolosBtn) els.protocolosBtn.addEventListener('click', showProtocolos);
+  if (els.dutydoctorBtn) els.dutydoctorBtn.addEventListener('click', openDutyDoctor);
   document.querySelectorAll('.audience-btn').forEach(btn => {
     btn.addEventListener('click', () => setAudienceFilter(btn.dataset.audience));
   });
