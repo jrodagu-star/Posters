@@ -1,0 +1,4427 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Protocolo TEP - Guía Rápida de Bolsillo</title>
+    <style>
+      /* Estilos base y tipografía */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 8.5pt;
+        line-height: 1.3;
+        color: #000;
+        background-color: #0d1117;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        height: 100%;
+        min-height: 0;
+      }
+      .doc {
+        overflow: auto;
+        height: 100%;
+        min-height: 0;
+        background: #e0e0e0;
+        padding: 16px 12px 32px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .doc > .page {
+        flex: 0 0 auto;
+      }
+
+      /* Índice lateral interactivo (solo pantalla) */
+      .indice-lateral {
+        position: relative;
+        width: auto;
+        height: 100%;
+        overflow-y: auto;
+        background: #161b26;
+        border-right: 1px solid #2a3550;
+        box-shadow: none;
+        padding: 14px 12px 16px;
+        z-index: 1;
+        color: #e8f0fc;
+      }
+      .indice-lateral .toc-kicker {
+        font-size: 10px;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: #4fb3e8;
+        font-weight: 700;
+        margin: 0 0 4px;
+      }
+
+      .indice-lateral h2 {
+        margin: 0 0 10px 0;
+        font-size: 15px;
+        color: #e8f7ff;
+        text-transform: none;
+        letter-spacing: 0.01em;
+      }
+
+      .indice-lateral ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .indice-lateral li + li {
+        margin-top: 4px;
+      }
+
+      .indice-lateral a {
+        display: block;
+        text-decoration: none;
+        font-size: 12.5px;
+        line-height: 1.35;
+        color: #8899bb;
+        border: 1px solid transparent;
+        border-left: 3px solid transparent;
+        border-radius: 7px;
+        padding: 7px 10px;
+      }
+
+      .indice-lateral a:hover {
+        background: #1c2638;
+        border-color: transparent;
+        color: #e8f0fc;
+      }
+
+      .indice-lateral a.activo {
+        background: rgba(79,179,232,.14);
+        border-color: transparent;
+        border-left-color: #4fb3e8;
+        color: #dff4ff;
+        font-weight: 650;
+      }
+
+      .indice-lateral .indice-grupo {
+        border: 1px solid #2a3550;
+        border-radius: 7px;
+        background: #111720;
+        padding: 2px 2px 4px;
+      }
+
+      .indice-lateral .indice-grupo > summary {
+        cursor: pointer;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #d7e6ff;
+        padding: 7px 10px;
+        list-style: none;
+        border-radius: 5px;
+      }
+
+      .indice-lateral .indice-grupo > summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .indice-lateral .indice-grupo > summary::before {
+        content: '▸ ';
+        font-size: 8pt;
+      }
+
+      .indice-lateral .indice-grupo[open] > summary::before {
+        content: '▾ ';
+      }
+
+      .indice-lateral .indice-grupo > summary:hover {
+        background: #1c2638;
+      }
+
+      .indice-lateral .indice-grupo[open] > summary {
+        background: rgba(79,179,232,.14);
+      }
+
+      .indice-lateral .indice-grupo ul {
+        margin: 2px 0 0;
+        padding: 0 4px 2px 8px;
+      }
+
+      .indice-lateral .indice-grupo li + li {
+        margin-top: 2px;
+      }
+
+      .indice-lateral .indice-grupo a {
+        font-size: 11.5px;
+        padding: 5px 8px 5px 16px;
+      }
+
+      @media (max-width: 720px) {
+        .layout { grid-template-columns: 210px minmax(0, 1fr); }
+      }
+
+      @media print {
+        .indice-lateral {
+          display: none !important;
+        }
+      }
+
+      /* Configuración de página A5 (148mm x 210mm) */
+      .page {
+        width: 148mm;
+        height: 210mm;
+        background-color: #fff;
+        margin-bottom: 20px;
+        padding: 8mm;
+        box-sizing: border-box;
+        position: relative;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      /* Salto solo entre páginas (no en la última). Solo page-break-after: el estándar break-after:page + altura=tamaño hoja suele duplicar saltos en PDF. */
+      .page:not(:last-of-type) {
+        page-break-after: always;
+      }
+
+      .page:last-of-type {
+        page-break-after: auto;
+      }
+
+      /* Anexo: hojas con altura según contenido (no recortar) */
+      .page.page-anexo {
+        height: auto;
+        min-height: 210mm;
+        overflow: visible;
+      }
+
+      /* Página índice: TEAM PERT al pie, sobre la franja del footer */
+      .page.page-indice {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .page-indice-cuerpo {
+        flex: 1 1 auto;
+        min-height: 0;
+      }
+
+      .team-pert-bloque {
+        flex: 0 0 auto;
+        margin-top: auto;
+        margin-bottom: 8.5mm;
+        padding: 4px 6px;
+        background-color: #fafafa;
+        border: 1px solid #e8e8e8;
+      }
+
+      .team-pert-titulo {
+        font-size: 6.8pt;
+        font-weight: 600;
+        color: #5c6b7a;
+        margin: 0 0 3px 0;
+        padding-bottom: 2px;
+        border-bottom: 1px solid #dde4ea;
+        text-transform: none;
+        letter-spacing: 0.02em;
+        line-height: 1.2;
+      }
+
+      .team-pert-bloque p {
+        font-size: 6.5pt;
+        line-height: 1.22;
+        color: #333;
+        margin: 0;
+      }
+
+      /* Encabezados principales */
+      .header-main {
+        background-color: #1a3a5c;
+        color: #fff;
+        padding: 6px 10px;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      .header-main h1 {
+        font-size: 13pt;
+        margin: 0;
+        text-transform: uppercase;
+        font-weight: bold;
+      }
+      .header-main p {
+        font-size: 9pt;
+        margin: 2px 0 0 0;
+      }
+
+      .section-header {
+        font-size: 10pt;
+        color: #1a3a5c;
+        border-bottom: 1px solid #1a3a5c;
+        margin: 10px 0 5px 0;
+        padding-bottom: 2px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+
+      .sub-header {
+        font-size: 9pt;
+        font-weight: bold;
+        margin: 6px 0 2px 0;
+      }
+
+      /* Títulos de bloque en Terapias de reperfusión */
+      .reperfusion-title {
+        font-size: 9pt;
+        font-weight: bold;
+        margin: 18px 0 8px 0;
+        padding: 6px 10px;
+        background-color: #e3ebf4;
+        color: #1a3a5c;
+        border: 1px solid #b8c9db;
+        text-transform: uppercase;
+        letter-spacing: 0.45px;
+      }
+      .reperfusion-title--first {
+        margin-top: 4px;
+      }
+
+      /* Tablas */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 8px;
+        font-size: 8pt;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 3px 4px;
+        vertical-align: top;
+      }
+      th {
+        background-color: #1a3a5c;
+        color: #fff;
+        font-weight: bold;
+        text-align: left;
+      }
+
+      /* Columnas */
+      .row {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        margin-bottom: 8px;
+      }
+      .col-50 {
+        display: table-cell;
+        width: 50%;
+        padding-right: 5px;
+        vertical-align: top;
+      }
+      .col-50 + .col-50 {
+        padding-right: 0;
+        padding-left: 5px;
+      }
+
+      /* Cajas de texto */
+      .gray-box {
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        padding: 6px;
+        margin-top: 10px;
+      }
+
+      ul {
+        margin: 2px 0 6px 0;
+        padding-left: 15px;
+      }
+      li {
+        margin-bottom: 2px;
+      }
+      p {
+        margin: 2px 0 6px 0;
+      }
+
+      /* Pie de página */
+      .footer {
+        position: absolute;
+        bottom: 8mm;
+        left: 8mm;
+        right: 8mm;
+        text-align: center;
+        font-size: 7.5pt;
+        color: #555;
+        border-top: 1px solid #ccc;
+        padding-top: 4px;
+      }
+
+      /* Colores de Categoría */
+      .cat-a {
+        background-color: #2e7d32;
+        color: #fff;
+        text-align: center;
+        font-weight: bold;
+        width: 15px;
+      }
+      .cat-b {
+        background-color: #f9a825;
+        color: #000;
+        text-align: center;
+        font-weight: bold;
+        width: 15px;
+      }
+      .cat-c {
+        background-color: #e65100;
+        color: #fff;
+        text-align: center;
+        font-weight: bold;
+        width: 15px;
+      }
+      .cat-d {
+        background-color: #b71c1c;
+        color: #fff;
+        text-align: center;
+        font-weight: bold;
+        width: 15px;
+      }
+      .cat-e {
+        background-color: #7f0000;
+        color: #fff;
+        text-align: center;
+        font-weight: bold;
+        width: 15px;
+      }
+
+      .text-red {
+        color: #b71c1c;
+        font-weight: bold;
+      }
+      .bg-dark-red {
+        background-color: #b71c1c;
+        color: #fff;
+        padding: 3px;
+        font-weight: bold;
+        font-size: 9pt;
+      }
+      .bg-orange {
+        background-color: #e65100;
+        color: #fff;
+        padding: 3px;
+        font-weight: bold;
+        font-size: 9pt;
+      }
+
+      /* Contador de páginas */
+      body {
+        counter-reset: pagina;
+      }
+      .page {
+        counter-increment: pagina;
+      }
+      .footer::after {
+        content: " · Pág. " counter(pagina);
+      }
+      .page-cover {
+        counter-increment: none;
+      }
+
+      /* Ajustes tipográficos para la tabla principal para que quepa en A5 */
+      .table-main {
+        font-size: 7.5pt;
+      }
+      .table-main th,
+      .table-main td {
+        padding: 2px 3px;
+      }
+
+      /* Anexo: guía clínica — índice + páginas por familia / fármaco */
+      .page-anexo-cuerpo {
+        font-size: 6.55pt;
+        line-height: 1.18;
+        color: #000;
+      }
+      .anexo-indice-intro {
+        font-size: 7pt;
+        margin: 0 0 8px 0;
+        line-height: 1.25;
+      }
+      .anexo-indice-cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+      }
+      .anexo-indice-grupo {
+        border: 1px solid #b8c9db;
+        border-radius: 8px;
+        padding: 8px 10px;
+        background: #fafbfd;
+      }
+      .anexo-indice-grupo--acod {
+        border-top: 5px solid #1565c0;
+      }
+      .anexo-indice-grupo--hbpm {
+        border-top: 5px solid #e65100;
+      }
+      .anexo-indice-grupo--fib {
+        border-top: 5px solid #b71c1c;
+      }
+      .anexo-indice-grupo-titulo {
+        font-weight: bold;
+        font-size: 9pt;
+        color: #1a3a5c;
+        letter-spacing: 0.03em;
+      }
+      .anexo-indice-grupo-sub {
+        font-size: 6.4pt;
+        color: #555;
+        margin: 2px 0 6px 0;
+        line-height: 1.2;
+      }
+      .anexo-indice-grupo ul {
+        margin: 0;
+        padding-left: 14px;
+        font-size: 6.8pt;
+      }
+      .anexo-indice-grupo li {
+        margin-bottom: 2px;
+      }
+      .anexo-indice-pie {
+        font-size: 6.5pt;
+        color: #666;
+        margin: 10px 0 0 0;
+        font-style: italic;
+      }
+      .anexo-page-family {
+        font-size: 6.9pt;
+        font-weight: bold;
+        padding: 5px 10px;
+        margin: 0 0 8px 0;
+        border-radius: 5px;
+        letter-spacing: 0.02em;
+      }
+      .anexo-page-family--acod {
+        background: #e3f2fd;
+        color: #0d47a1;
+        border: 1px solid #64b5f6;
+      }
+      .anexo-page-family--hbpm {
+        background: #fff3e0;
+        color: #bf360c;
+        border: 1px solid #ffb74d;
+      }
+      .anexo-page-family--fib {
+        background: #ffebee;
+        color: #b71c1c;
+        border: 1px solid #ef9a9a;
+      }
+      .page-anexo-cuerpo p {
+        margin: 0 0 3px 0;
+        font-size: inherit;
+      }
+      .page-anexo-cuerpo ul,
+      .page-anexo-cuerpo ol {
+        margin: 2px 0 4px 0;
+        padding-left: 12px;
+      }
+      .page-anexo-cuerpo li {
+        margin-bottom: 1px;
+      }
+      .page-anexo-cuerpo .anexo-section-title {
+        font-size: 8pt;
+        font-weight: bold;
+        color: #1a3a5c;
+        border-bottom: 1px solid #1a3a5c;
+        margin: 6px 0 4px 0;
+        padding-bottom: 2px;
+        text-transform: uppercase;
+      }
+      .page-anexo-cuerpo .anexo-section-title:first-child {
+        margin-top: 0;
+      }
+      .page-anexo-cuerpo .anexo-subtitle {
+        font-size: 6.8pt;
+        font-weight: bold;
+        color: #1a3a5c;
+        background: #e8eef5;
+        padding: 2px 5px;
+        margin: 5px 0 2px 0;
+        border-left: 3px solid #1a3a5c;
+      }
+      .page-anexo-cuerpo .anexo-drug-h {
+        background: #1a3a5c;
+        color: #fff;
+        font-size: 7.2pt;
+        font-weight: bold;
+        padding: 5px 8px;
+        margin: 0;
+        letter-spacing: 0.02em;
+      }
+      .page-anexo-cuerpo .anexo-drug-box {
+        border: none;
+        padding: 6px 8px 8px 8px;
+        margin-bottom: 0;
+        background: transparent;
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap {
+        margin-bottom: 12px;
+        border-radius: 8px;
+        border: 1px solid #cfd8e3;
+        border-left: 6px solid #1a3a5c;
+        box-shadow: 0 2px 6px rgba(26, 58, 92, 0.12);
+        overflow: hidden;
+        background: #fff;
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-acod-0 {
+        border-left-color: #1565c0;
+        background: linear-gradient(165deg, #e8f4fc 0%, #ffffff 22%);
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-acod-0 .anexo-drug-h {
+        background: #1565c0;
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-acod-1 {
+        border-left-color: #6a1b9a;
+        background: linear-gradient(165deg, #f6e9fa 0%, #ffffff 22%);
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-acod-1 .anexo-drug-h {
+        background: #6a1b9a;
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-acod-2 {
+        border-left-color: #00695c;
+        background: linear-gradient(165deg, #e4f3f1 0%, #ffffff 22%);
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-acod-2 .anexo-drug-h {
+        background: #00695c;
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-acod-3 {
+        border-left-color: #283593;
+        background: linear-gradient(165deg, #e8eaf6 0%, #ffffff 22%);
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-acod-3 .anexo-drug-h {
+        background: #283593;
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-hbpm-0 {
+        border-left-color: #e65100;
+        background: linear-gradient(165deg, #fff5eb 0%, #ffffff 22%);
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-hbpm-0 .anexo-drug-h {
+        background: #e65100;
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-hbpm-1 {
+        border-left-color: #ef6c00;
+        background: linear-gradient(165deg, #fff8e6 0%, #ffffff 22%);
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-hbpm-1 .anexo-drug-h {
+        background: #c2410c;
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-hbpm-2 {
+        border-left-color: #f57c00;
+        background: linear-gradient(165deg, #fff3e0 0%, #ffffff 22%);
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-hbpm-2 .anexo-drug-h {
+        background: #e65100;
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-fib-0 {
+        border-left-color: #b71c1c;
+        background: linear-gradient(165deg, #fdeeee 0%, #ffffff 22%);
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-fib-0 .anexo-drug-h {
+        background: #b71c1c;
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-fib-1 {
+        border-left-color: #c62828;
+        background: linear-gradient(165deg, #fce8e8 0%, #ffffff 22%);
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-fib-1 .anexo-drug-h {
+        background: #8e0000;
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-fib-2 {
+        border-left-color: #ad1457;
+        background: linear-gradient(165deg, #fce4ec 0%, #ffffff 22%);
+      }
+      .page-anexo-cuerpo .anexo-drug-wrap.t-fib-2 .anexo-drug-h {
+        background: #880e4f;
+      }
+      .page-anexo-cuerpo .anexo-subblock {
+        margin-bottom: 4px;
+      }
+      .page-anexo-cuerpo .anexo-note {
+        background: #fff8e6;
+        border: 1px solid #e6c766;
+        padding: 3px 5px;
+        margin: 3px 0;
+        font-size: 6.35pt;
+      }
+      .page-anexo-cuerpo .anexo-note--info {
+        background: #e8f2fa;
+        border-color: #8ab4d8;
+      }
+      .page-anexo-cuerpo .anexo-note--danger {
+        background: #fdeaea;
+        border-color: #e08080;
+      }
+      .page-anexo-cuerpo .anexo-note--ok {
+        background: #eef8f0;
+        border-color: #8bc49a;
+      }
+      .page-anexo-cuerpo .anexo-muted {
+        font-size: 6.1pt;
+        color: #444;
+      }
+      .page-anexo-cuerpo .anexo-refs {
+        margin-top: 5px;
+        padding-top: 4px;
+        border-top: 1px solid #ccc;
+      }
+      .page-anexo-cuerpo .alias {
+        font-size: 6pt;
+        font-weight: normal;
+        opacity: 0.9;
+      }
+      .page-anexo-cuerpo .etiq {
+        display: inline-block;
+        font-size: 5.5pt;
+        font-weight: bold;
+        padding: 0 3px;
+        border-radius: 2px;
+        margin-right: 2px;
+        vertical-align: middle;
+      }
+      .page-anexo-cuerpo .etiq-abs {
+        background: #fecaca;
+        color: #7f1d1d;
+      }
+      .page-anexo-cuerpo .etiq-rel {
+        background: #fef3c7;
+        color: #78350f;
+      }
+      .page-anexo-cuerpo .etiq-nota {
+        background: #dbeafe;
+        color: #1e3a8a;
+      }
+      .page-anexo-cuerpo .anexo-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+        margin-top: 4px;
+        font-size: 6.2pt;
+      }
+      .page-anexo-cuerpo .anexo-grid-2 .col-pos {
+        background: #f0faf2;
+        border: 1px solid #bbf7d0;
+        padding: 3px 4px;
+        border-radius: 3px;
+      }
+      .page-anexo-cuerpo .anexo-grid-2 .col-neg {
+        background: #fff5f5;
+        border: 1px solid #fecaca;
+        padding: 3px 4px;
+        border-radius: 3px;
+      }
+      .page-anexo-cuerpo .anexo-grid-2 h4 {
+        font-size: 6.3pt;
+        margin: 0 0 2px 0;
+      }
+      .page-anexo-cuerpo section.anexo-seccion {
+        margin: 0;
+      }
+      .page-anexo-cuerpo .table-main {
+        font-size: 6.2pt;
+      }
+      .page-anexo-cuerpo .table-main th,
+      .page-anexo-cuerpo .table-main td {
+        padding: 1px 2px;
+      }
+      @media print {
+        .page-anexo-cuerpo {
+          font-size: 6.35pt;
+          line-height: 1.14;
+        }
+        .page-anexo-cuerpo .table-main {
+          font-size: 6pt;
+        }
+      }
+
+      /* Media print — una hoja A5 por cada .page (PDF / impresora) */
+      @media print {
+        @page {
+          size: A5 portrait;
+          margin: 0;
+        }
+
+        html {
+          margin: 0;
+          padding: 0;
+        }
+
+        body {
+          background-color: #fff;
+          margin: 0 !important;
+          padding: 0 !important;
+          display: block !important;
+          width: 100%;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        .no-print {
+          display: none !important;
+        }
+
+        .page {
+          box-sizing: border-box;
+          box-shadow: none !important;
+          margin: 0 !important;
+          margin-bottom: 0 !important;
+          padding: 8mm;
+          width: 148mm;
+          /* Ligeramente menor que A5 para evitar que el motor PDF “desplace” el bloque a la siguiente hoja (hoja en blanco). */
+          height: 206mm;
+          max-height: 206mm;
+          min-height: 206mm;
+          position: relative;
+          overflow: hidden !important;
+          page-break-before: auto;
+          page-break-after: auto;
+          break-after: auto;
+          /* No forzar avoid en el contenedor: con altura ≈ hoja + redondeos provoca páginas en blanco. */
+          page-break-inside: auto;
+          break-inside: auto;
+        }
+
+        /*
+         * Un único salto entre bloques .page: break-before en la hoja siguiente.
+         * page-break-after:always en cada .page + un .page-anexo de varias hojas físicas
+         * duplicaba saltos en algunos navegadores (hoja en blanco, p. ej. alrededor de Pág. 14).
+         */
+        .page + .page {
+          page-break-before: always;
+          break-before: page;
+        }
+
+        .footer {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        .page.page-arbol-c--html,
+        .page.page-arbol-c--mermaid,
+        .page.page-arbol-c--mermaid-alto {
+          display: flex !important;
+          flex-direction: column !important;
+          padding-left: 5mm !important;
+          padding-right: 5mm !important;
+        }
+
+        .page.page-arbol-c--mermaid .mermaid-catc-wrap,
+        .page.page-arbol-c--mermaid-alto .mermaid-alto-wrap {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        .page.page-anexo {
+          height: auto !important;
+          min-height: 206mm;
+          max-height: none !important;
+          overflow: visible !important;
+          page-break-inside: auto;
+        }
+
+        /*
+         * Anexo guía clínica: el overflow:hidden de .anexo-drug-wrap recortaba el texto
+         * al fragmentar en varias hojas A5 (PDF / impresión). Se fuerza visible al imprimir
+         * y se piden saltos más respetuosos con párrafos y filas (huecos en blanco OK).
+         */
+        .page.page-anexo .page-anexo-cuerpo .anexo-drug-wrap,
+        .page.page-anexo .page-anexo-cuerpo .anexo-drug-box {
+          overflow: visible !important;
+        }
+
+        .page.page-anexo .page-anexo-cuerpo {
+          orphans: 3;
+          widows: 3;
+        }
+
+        .page.page-anexo .page-anexo-cuerpo p,
+        .page.page-anexo .page-anexo-cuerpo .anexo-muted,
+        .page.page-anexo .page-anexo-cuerpo .anexo-note {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+
+        .page.page-anexo .page-anexo-cuerpo .anexo-page-family,
+        .page.page-anexo .page-anexo-cuerpo .anexo-subtitle,
+        .page.page-anexo .page-anexo-cuerpo .anexo-drug-h {
+          break-after: avoid;
+          page-break-after: avoid;
+        }
+
+        .page.page-anexo .page-anexo-cuerpo .table-main thead {
+          display: table-header-group;
+        }
+
+        .page.page-anexo .page-anexo-cuerpo .table-main tr {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+
+        .page.page-anexo .page-anexo-cuerpo li {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+
+        .page.page-anexo .page-anexo-cuerpo .anexo-grid-2 {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+      }
+
+      /* Página árbol decisión Categoría C (riesgo intermedio) */
+      .page.page-arbol-c {
+        overflow: visible;
+      }
+
+      /* Hojas con diagrama Mermaid (Categoría C · Alto riesgo D–E2): flex para SVG entre cabecera y pie */
+      .page.page-arbol-c--mermaid,
+      .page.page-arbol-c--mermaid-alto {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding-left: 5mm;
+        padding-right: 5mm;
+      }
+
+      .page.page-arbol-c--html,
+      .page.page-arbol-c--mermaid,
+      .page.page-arbol-c--mermaid-alto {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding-left: 5mm;
+        padding-right: 5mm;
+      }
+
+      .page.page-arbol-c--html .header-main,
+      .page.page-arbol-c--html .footer,
+      .page.page-arbol-c--mermaid .header-main,
+      .page.page-arbol-c--mermaid-alto .header-main {
+        flex: 0 0 auto;
+      }
+
+      /* Organigrama Categoría C: HTML compacto, texto legible */
+      .algo-c {
+        flex: 0 0 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 8.5pt;
+        line-height: 1.22;
+        color: #111;
+      }
+
+      .algo-c .ac-eval {
+        background: #e8eef6;
+        border: 1.5px solid #1a3a5c;
+        border-radius: 6px;
+        padding: 5px 8px 6px;
+      }
+
+      .algo-c .ac-eval strong {
+        display: block;
+        font-size: 8.5pt;
+        color: #1a3a5c;
+        margin-bottom: 2px;
+      }
+
+      .algo-c .ac-eval ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 4px;
+        font-size: 8pt;
+      }
+
+      .algo-c .ac-eval li {
+        margin: 0;
+        background: #fff;
+        border: 1px solid #c5d0de;
+        border-radius: 4px;
+        padding: 3px 5px;
+        text-align: center;
+        line-height: 1.2;
+      }
+
+      .algo-c .ac-v {
+        align-self: center;
+        width: 2px;
+        height: 8px;
+        background: #1a3a5c;
+        flex: 0 0 auto;
+      }
+
+      .algo-c .ac-dec {
+        align-self: center;
+        background: #1a3a5c;
+        color: #fff;
+        font-weight: 800;
+        font-size: 8.5pt;
+        padding: 5px 14px;
+        border-radius: 6px;
+        text-align: center;
+        max-width: 92%;
+      }
+
+      .algo-c .ac-t {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 0 0 auto;
+      }
+
+      .algo-c .ac-t__h {
+        width: 68%;
+        height: 2px;
+        background: #1a3a5c;
+      }
+
+      .algo-c .ac-split {
+        display: grid;
+        grid-template-columns: 31% 1fr;
+        gap: 7px;
+        flex: 0 0 auto;
+        align-items: start;
+      }
+
+      .algo-c .ac-col {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        min-height: 0;
+      }
+
+      .algo-c .ac-lab {
+        text-align: center;
+        font-weight: 800;
+        font-size: 8pt;
+        padding: 1px 0 3px;
+      }
+
+      .algo-c .ac-lab--n { color: #1565c0; }
+      .algo-c .ac-lab--s { color: #c62828; }
+
+      .algo-c .ac-panel {
+        flex: 0 0 auto;
+        border: 1.5px solid #1a3a5c;
+        border-radius: 7px;
+        padding: 6px 7px 7px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        background: #fafcfe;
+      }
+
+      .algo-c .ac-panel--bajo {
+        background: #f3eefc;
+        border-color: #5e35b1;
+      }
+
+      .algo-c .ac-hex {
+        text-align: center;
+        font-weight: 800;
+        font-size: 9pt;
+        line-height: 1.15;
+        padding: 6px 6px;
+        border-radius: 6px;
+      }
+
+      .algo-c .ac-hex--bajo {
+        background: #6d28d9;
+        color: #fff;
+      }
+
+      .algo-c .ac-hex--alto {
+        background: #dc2626;
+        color: #fff;
+      }
+
+      .algo-c .ac-pill {
+        text-align: center;
+        font-weight: 700;
+        font-size: 8pt;
+        padding: 5px 6px;
+        border-radius: 6px;
+        line-height: 1.2;
+      }
+
+      .algo-c .ac-pill--fin {
+        background: #1a3a5c;
+        color: #fff;
+      }
+
+      .algo-c .ac-pill--uci {
+        background: #15803d;
+        color: #fff;
+      }
+
+      .algo-c .ac-pill--fib {
+        background: #c8e6c9;
+        border: 1px solid #2e7d32;
+        color: #1b5e20;
+      }
+
+      .algo-c .ac-pill--trom {
+        background: #b3e5fc;
+        border: 1px solid #0288d1;
+        color: #01579b;
+      }
+
+      .algo-c .ac-head-alto {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+      }
+
+      .algo-c .ac-head-alto .ac-hex {
+        flex: 1 1 auto;
+        padding: 5px 6px;
+        font-size: 8.5pt;
+      }
+
+      .algo-c .ac-pert {
+        display: inline-block;
+        flex: 0 0 auto;
+        background: #2e7d32;
+        color: #fff;
+        font-size: 7.5pt;
+        font-weight: 800;
+        padding: 4px 8px;
+        border-radius: 3px 10px 10px 3px;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+      }
+
+      .algo-c .ac-q {
+        text-align: center;
+        font-weight: 800;
+        font-size: 8pt;
+        background: #1a3a5c;
+        color: #fff;
+        padding: 3px 6px;
+        border-radius: 4px;
+      }
+
+      .algo-c .ac-hd {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .algo-c .ac-hd-row {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 4px;
+      }
+
+      .algo-c .ac-hd-cell {
+        background: #fff;
+        border: 1px solid #cfd8e3;
+        border-radius: 5px;
+        padding: 4px 5px;
+        font-size: 7.8pt;
+        line-height: 1.2;
+        text-align: center;
+      }
+
+      .algo-c .ac-hd-cell .ac-pill {
+        margin: 2px 0;
+        padding: 3px 5px;
+        font-size: 7.5pt;
+      }
+
+      .algo-c .ac-hd-to {
+        display: block;
+        margin-top: 2px;
+        font-weight: 800;
+        font-size: 7.4pt;
+        color: #b45309;
+      }
+
+      .algo-c .ac-to-rep {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin: 1px 0 0;
+        padding: 5px 8px;
+        background: #dc2626;
+        color: #fff;
+        font-weight: 800;
+        font-size: 8.5pt;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        border-radius: 5px;
+        text-align: center;
+        box-shadow: 0 1px 0 #7f1d1d;
+      }
+
+      .algo-c .ac-to-rep span {
+        font-size: 10pt;
+        line-height: 1;
+      }
+
+      .algo-c .ac-fork2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        flex: 0 0 auto;
+      }
+
+      .algo-c .ac-lane {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+        padding: 6px 6px 7px;
+        background: #fff;
+        border: 1px solid #90caf9;
+        border-radius: 5px;
+      }
+
+      .algo-c .ac-mini {
+        font-size: 8pt;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .algo-c .ac-mini--n { color: #1565c0; }
+      .algo-c .ac-mini--s { color: #c62828; }
+
+      .algo-c .ac-step {
+        font-size: 8pt;
+        text-align: center;
+        line-height: 1.25;
+      }
+
+      .algo-c .ac-arrow {
+        text-align: center;
+        color: #1a3a5c;
+        font-weight: 800;
+        font-size: 9pt;
+        line-height: 1;
+      }
+
+      .algo-c .ac-rep {
+        flex: 0 0 auto;
+        margin-top: 0;
+        padding: 8px 8px 9px;
+        border: 2px solid #0288d1;
+        border-radius: 7px;
+        background: #e8f6ff;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .algo-c .ac-rep__h {
+        font-size: 8.8pt;
+        font-weight: 800;
+        color: #0c4a6e;
+        text-align: center;
+        line-height: 1.2;
+      }
+
+      .algo-c .ac-note {
+        font-size: 7pt;
+        color: #455a64;
+        text-align: center;
+        font-style: italic;
+        margin: 0;
+      }
+
+      .algo-c--alto .ac-split {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .algo-c--alto .ac-cat {
+        text-align: center;
+        font-weight: 800;
+        font-size: 8.5pt;
+        padding: 5px 6px;
+        border-radius: 6px;
+        background: #fff3e0;
+        border: 1.5px solid #ef6c00;
+        color: #bf360c;
+      }
+
+      .algo-c--alto .ac-pill--act {
+        background: #eef2f7;
+        border: 1px solid #1a3a5c;
+        color: #1a3a5c;
+      }
+
+      .algo-c--alto .ac-pill--uci {
+        background: #15803d;
+        color: #fff;
+      }
+
+      .algo-c--alto .ac-to-rep {
+        margin-top: 4px;
+      }
+
+      .algo-c--alto .ac-rep .ac-pill--trom {
+        font-size: 8.5pt;
+        padding: 7px 8px;
+      }
+
+      .algo-c--alto .ac-dest {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-top: 2px;
+      }
+
+      @media print {
+        .page.page-arbol-c--html {
+          display: flex !important;
+          flex-direction: column !important;
+          padding-left: 5mm !important;
+          padding-right: 5mm !important;
+        }
+        .algo-c {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+
+      .page.page-arbol-c--mermaid .mermaid-catc-wrap,
+      .page.page-arbol-c--mermaid-alto .mermaid-alto-wrap {
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        max-width: none;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 2px;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        background: linear-gradient(165deg, #f4f6f9 0%, #e6eaef 45%, #dde3ea 100%);
+        border: 1px solid #cfd8e3;
+        border-radius: 6px;
+        padding: 5px 6px;
+        box-sizing: border-box;
+      }
+
+      .page.page-arbol-c--mermaid .mermaid-catc-wrap svg,
+      .page.page-arbol-c--mermaid-alto .mermaid-alto-wrap svg {
+        display: block;
+        max-width: 100%;
+        width: auto !important;
+        height: auto !important;
+        max-height: 100%;
+        margin: 0 auto;
+      }
+
+      .page-arbol-c .header-main h1 {
+        font-size: 11pt;
+        line-height: 1.2;
+      }
+
+      .flow-catc {
+        font-size: 6.1pt;
+        line-height: 1.2;
+        margin-top: 2px;
+        max-width: 132mm;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .flow-catc .fc-box {
+        border: 1.2px solid #1a3a5c;
+        border-radius: 4px;
+        padding: 3px 5px;
+        text-align: center;
+        background: #fff;
+        box-sizing: border-box;
+      }
+
+      .flow-catc .fc-box--orange {
+        background: #fff3e0;
+        border-color: #ef6c00;
+        font-weight: bold;
+        color: #bf360c;
+        font-size: 7pt;
+        padding: 4px 6px;
+      }
+
+      .flow-catc .fc-box--navy {
+        background: #1a3a5c;
+        color: #fff;
+        font-weight: bold;
+        padding: 3px 6px;
+      }
+
+      .flow-catc .fc-box--navy-light {
+        background: #e8eef5;
+        border-color: #1a3a5c;
+        color: #0f172a;
+      }
+
+      .flow-catc .fc-crit {
+        margin: 2px 0 0;
+        padding: 2px 4px;
+        font-size: 5.6pt;
+        font-weight: normal;
+        text-align: left;
+        background: #fff;
+        border: 1px solid #cfd8e4;
+        border-radius: 3px;
+        list-style: none;
+        color: #111;
+      }
+
+      .flow-catc .fc-crit li {
+        margin: 0;
+        padding: 0 0 0 0.5em;
+        text-indent: -0.45em;
+      }
+
+      .flow-catc .fc-fr-block {
+        width: 100%;
+        max-width: 132mm;
+        margin: 0 auto;
+        overflow: visible;
+        box-sizing: border-box;
+      }
+
+      /* Solo el primer FR (criterios): más estrecho y centrado */
+      .flow-catc .fc-fr-block.fc-fr-narrow {
+        width: fit-content;
+        max-width: 90mm;
+        min-width: 0;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .flow-catc .fc-fr-block .fc-crit {
+        overflow: visible;
+        white-space: normal;
+        word-wrap: break-word;
+        hyphens: auto;
+        padding: 4px 8px 5px;
+        min-width: 0;
+      }
+
+      .flow-catc .fc-split-from-fr {
+        width: 100%;
+        max-width: 132mm;
+        margin: 0 auto;
+      }
+
+      .flow-catc .fc-split-from-fr > .fc-arrow {
+        margin-bottom: 0;
+      }
+
+      /* Conector FR → bifurcación (forma de T invertida, sin flechas diagonales) */
+      .flow-catc .fc-t-join {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 auto 3px;
+        width: 100%;
+      }
+
+      .flow-catc .fc-t-join__v {
+        width: 2px;
+        height: 7px;
+        background: #1a3a5c;
+        border-radius: 1px;
+      }
+
+      .flow-catc .fc-t-join__h {
+        width: 72%;
+        max-width: 98mm;
+        height: 2px;
+        background: #1a3a5c;
+        border-radius: 1px;
+      }
+
+      /* Intermedio bajo y alto: dos cuadros separados */
+      .flow-catc .fc-classif-pair {
+        display: grid;
+        grid-template-columns: minmax(0, 18%) minmax(0, 82%);
+        gap: 8px;
+        border: none;
+        background: transparent;
+        overflow: visible;
+        align-items: stretch;
+      }
+
+      .flow-catc .fc-classif-cell {
+        padding: 6px 7px 7px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+        border: 1.5px solid #1a3a5c;
+        border-radius: 8px;
+        background: #fafcfe;
+        box-sizing: border-box;
+      }
+
+      .flow-catc .fc-classif-cell-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 4px 6px;
+        width: 100%;
+      }
+
+      .flow-catc .fc-classif-ans {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.5rem;
+        height: 1.35rem;
+        padding: 0 6px;
+        border-radius: 999px;
+        font-weight: bold;
+        font-size: 6.5pt;
+      }
+
+      .flow-catc .fc-classif-ans--n {
+        background: #e3f2fd;
+        color: #0d47a1;
+        border: 1px solid #90caf9;
+      }
+
+      .flow-catc .fc-classif-ans--s {
+        background: #ffebee;
+        color: #b71c1c;
+        border: 1px solid #ef9a9a;
+      }
+
+      .flow-catc .fc-classif-pair .fc-hex {
+        width: 100%;
+        min-height: 3em;
+        box-sizing: border-box;
+      }
+
+      .flow-catc .fc-arrow {
+        text-align: center;
+        color: #1a3a5c;
+        font-weight: bold;
+        font-size: 9pt;
+        line-height: 1;
+        padding: 1px 0;
+      }
+
+      .flow-catc .fc-fork {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 3px 5px;
+        align-items: start;
+        margin-top: 2px;
+        min-width: 0;
+        width: 100%;
+      }
+
+      .flow-catc .fc-fork--bajo-alto {
+        grid-template-columns: minmax(0, 18%) minmax(0, 82%);
+        gap: 4px 10px;
+      }
+
+      .flow-catc .fc-fork-label {
+        text-align: center;
+        font-weight: bold;
+        font-size: 7pt;
+        padding: 1px 0;
+      }
+
+      .flow-catc .fc-fork-label--n { color: #1565c0; }
+      .flow-catc .fc-fork-label--s { color: #c62828; }
+
+      .flow-catc .fc-hex {
+        background: linear-gradient(145deg, #ede7f6 0%, #d1c4e9 100%);
+        border: 1.5px solid #5e35b1;
+        color: #311b92;
+        font-weight: bold;
+        padding: 4px 5px;
+        text-align: center;
+        border-radius: 8px;
+        min-height: 2em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 5.8pt;
+        line-height: 1.15;
+      }
+
+      .flow-catc .fc-team {
+        display: inline-block;
+        background: #2e7d32;
+        color: #fff;
+        font-size: 5.2pt;
+        font-weight: bold;
+        padding: 2px 5px;
+        border-radius: 2px 10px 10px 2px;
+        margin-top: 2px;
+        letter-spacing: 0.02em;
+      }
+
+      .flow-catc .fc-pill-act {
+        background: #1a3a5c;
+        color: #fff;
+        border-radius: 10px;
+        padding: 3px 6px;
+        font-weight: bold;
+        text-align: center;
+        font-size: 6pt;
+      }
+
+      .flow-catc .fc-pill-act--soft {
+        background: #c8e6c9;
+        border: 1px solid #2e7d32;
+        color: #1b5e20;
+      }
+
+      .flow-catc .fc-pill-thromb {
+        background: #b3e5fc;
+        border: 1.2px solid #0288d1;
+        color: #01579b;
+        border-radius: 8px;
+        padding: 4px 3px;
+        font-weight: bold;
+        text-align: center;
+        font-size: 5.3pt;
+        line-height: 1.15;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        hyphens: manual;
+      }
+
+      .flow-catc .fc-diamond {
+        background: #e8f5e9;
+        border: 1.5px solid #2e7d32;
+        color: #1b5e20;
+        font-weight: bold;
+        transform: rotate(0deg);
+        padding: 3px 6px;
+        text-align: center;
+        font-size: 6pt;
+        border-radius: 4px;
+      }
+
+      /* Manejo TEP alto riesgo: paneles paralelos + síntesis (sin cruces de flechas) */
+      .flow-catc.flow-ar-alto {
+        max-width: 132mm;
+        margin: 4px auto 0;
+        font-size: 6pt;
+        line-height: 1.35;
+      }
+
+      .flow-ar-alto .far-cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        align-items: stretch;
+      }
+
+      .flow-ar-alto .far-card {
+        border: 1px solid #b0bec5;
+        border-radius: 6px;
+        background: #fafcfd;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .flow-ar-alto .far-card__head {
+        margin: 0;
+        padding: 4px 8px;
+        font-size: 6.1pt;
+        font-weight: bold;
+        letter-spacing: 0.02em;
+        text-align: center;
+        text-transform: uppercase;
+        background: #ef6c00;
+        border-bottom: 1px solid #e65100;
+        color: #fff;
+      }
+
+      .flow-ar-alto .far-card__body {
+        padding: 6px 7px 8px;
+        flex: 1;
+      }
+
+      .flow-ar-alto .far-lead {
+        font-size: 5.7pt;
+        color: #37474f;
+        margin: 0 0 5px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #eceff1;
+      }
+
+      .flow-ar-alto .far-flow {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .flow-ar-alto .far-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 6px;
+      }
+
+      .flow-ar-alto .far-row__label {
+        flex: 0 0 100%;
+        font-weight: bold;
+        font-size: 5.65pt;
+        color: #1a3a5c;
+        margin: 0;
+      }
+
+      .flow-ar-alto .far-badge {
+        display: inline-block;
+        padding: 2px 7px;
+        border-radius: 3px;
+        font-weight: bold;
+        font-size: 5.85pt;
+        border: 1px solid transparent;
+      }
+
+      .flow-ar-alto .far-badge--navy {
+        background: #1a3a5c;
+        color: #fff;
+        border-color: #102a40;
+      }
+
+      .flow-ar-alto .far-badge--green {
+        background: #e8f5e9;
+        border-color: #43a047;
+        color: #1b5e20;
+      }
+
+      .flow-ar-alto .far-badge--teal {
+        background: #e0f2f1;
+        border-color: #00897b;
+        color: #004d40;
+      }
+
+      .flow-ar-alto .far-badge--hex {
+        background: linear-gradient(145deg, #ede7f6 0%, #d1c4e9 100%);
+        border: 1px solid #5e35b1;
+        color: #311b92;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+
+      .flow-ar-alto .far-badge--ice {
+        background: #e1f5fe;
+        border-color: #0288d1;
+        color: #01579b;
+      }
+
+      .flow-ar-alto .far-list {
+        margin: 0;
+        padding: 0 0 0 11px;
+        list-style: disc;
+      }
+
+      .flow-ar-alto .far-list li {
+        margin: 0 0 3px;
+        padding-left: 1px;
+      }
+
+      .flow-ar-alto .far-list li:last-child {
+        margin-bottom: 0;
+      }
+
+      .flow-ar-alto .far-n {
+        font-weight: bold;
+        color: #1565c0;
+      }
+
+      .flow-ar-alto .far-s {
+        font-weight: bold;
+        color: #c62828;
+      }
+
+      .flow-ar-alto .far-note {
+        margin-top: 7px;
+        padding: 5px 8px;
+        font-size: 5.65pt;
+        color: #37474f;
+        background: #f5f5f5;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        line-height: 1.3;
+      }
+
+      .flow-ar-alto .far-note strong {
+        color: #01579b;
+      }
+
+      .flow-ar-alto .far-footer {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1.5px solid #1a3a5c;
+        text-align: center;
+      }
+
+      .flow-ar-alto .far-footer__pill {
+        display: inline-block;
+        padding: 4px 18px;
+        background: #1a3a5c;
+        color: #fff;
+        font-weight: bold;
+        font-size: 6.3pt;
+        border-radius: 14px;
+        letter-spacing: 0.03em;
+      }
+
+      .flow-ar-alto .far-footer__hint {
+        display: block;
+        margin-top: 4px;
+        font-size: 5.5pt;
+        color: #546e7a;
+        font-style: italic;
+      }
+
+      .flow-catc .fc-sn {
+        font-size: 5.5pt;
+        font-weight: bold;
+        margin: 1px 0;
+        text-align: center;
+      }
+
+      .flow-catc .fc-sn span.n { color: #1565c0; }
+      .flow-catc .fc-sn span.s { color: #c62828; }
+
+      .flow-catc .fc-col {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+        min-width: 0;
+        max-width: 100%;
+      }
+
+      .flow-catc .fc-note {
+        font-size: 5.3pt;
+        color: #455a64;
+        font-style: italic;
+        text-align: center;
+        margin-top: 3px;
+        line-height: 1.25;
+      }
+
+      .flow-catc .fc-stable-h-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 3px 6px;
+        margin: 2px 0 2px;
+      }
+
+      .flow-catc .fc-stable-h-row .fc-arrow {
+        padding: 0;
+        font-size: 11pt;
+      }
+
+      /* Tras contraindicaciones: fila FIBRINOLISIS iv | TROMBECTOMÍA; debajo solo continúa la vía bajo FIBRINOLISIS iv */
+      .flow-catc .fc-ci-labels {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 4px 18px;
+        margin-bottom: 2px;
+      }
+
+      .flow-catc .fc-ci-labels .fc-sn {
+        margin: 0;
+      }
+
+      .flow-catc .fc-ci-pills {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 6px 18px;
+        align-items: stretch;
+        margin-bottom: 4px;
+        min-width: 0;
+        width: 100%;
+      }
+
+      .flow-catc .fc-ci-pills > * {
+        min-width: 0;
+        max-width: 100%;
+      }
+
+      .flow-catc .fc-ci-pills .fc-pill-act--soft,
+      .flow-catc .fc-ci-pills .fc-pill-thromb {
+        min-height: 0;
+        max-width: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        text-align: center;
+        font-size: 4.65pt;
+        line-height: 1.12;
+        padding: 4px 4px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        hyphens: manual;
+      }
+
+      .flow-catc .fc-ci-pills .fc-pill-thromb {
+        overflow: hidden;
+      }
+
+      .flow-catc .fc-ci-block {
+        min-width: 0;
+        max-width: none;
+        width: calc(100% + 20px);
+        margin-left: -10px;
+        margin-right: -10px;
+        box-sizing: border-box;
+      }
+
+      .flow-catc .fc-fork--bajo-alto > .fc-col {
+        min-width: 0;
+      }
+
+      /* Solo bajo FIBRINOLISIS iv; columna bajo TROMBECTOMÍA superior vacía (otra vía) */
+      .flow-catc .fc-ci-post {
+        display: grid;
+        grid-template-columns: minmax(0, 1.48fr) minmax(0, 0.52fr);
+        gap: 6px 12px;
+        align-items: start;
+        width: 100%;
+      }
+
+      .flow-catc .fc-ci-post-fibr {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .flow-catc .fc-ci-post-tromb-placeholder {
+        min-width: 0;
+        min-height: 0;
+      }
+
+      .flow-catc .fc-ci-below-inner {
+        width: 100%;
+        max-width: none;
+        box-sizing: border-box;
+      }
+
+      .flow-catc .fc-post-fibr-est {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 6px 18px;
+        width: 100%;
+        margin-top: 2px;
+        align-items: stretch;
+      }
+
+      .flow-catc .fc-post-fibr-est__lane {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .flow-catc .fc-post-fibr-est__to {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 4px 6px;
+        width: 100%;
+      }
+
+      .flow-catc .fc-post-fibr-est__to .fc-pill-act,
+      .flow-catc .fc-post-fibr-est__to .fc-pill-thromb--inline {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .flow-catc .fc-post-fibr-est__to .fc-arrow {
+        padding: 0;
+        font-size: 10pt;
+      }
+
+      .flow-catc .fc-post-fibr-est__to .fc-pill-thromb--inline {
+        white-space: normal;
+        font-size: 4.85pt;
+        padding: 4px 6px;
+        line-height: 1.15;
+        max-width: 100%;
+        overflow: hidden;
+        overflow-wrap: anywhere;
+        box-sizing: border-box;
+        text-align: center;
+      }
+
+      .flow-catc .fc-box-contraindic {
+        width: calc(100% + 24px);
+        max-width: none;
+        margin-left: -12px;
+        margin-right: -12px;
+        box-sizing: border-box;
+        padding: 6px 14px;
+      }
+
+      .flow-catc .fc-box-estable-compact {
+        width: fit-content;
+        max-width: 62%;
+        min-width: 2.8rem;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 3px 8px;
+        box-sizing: border-box;
+      }
+
+      .flow-catc .fc-ci-post-fibr .fc-ci-below-inner .fc-box-estable-compact {
+        max-width: min(100%, 60mm);
+        width: 100%;
+      }
+
+    </style>
+  </head>
+  <body>
+    <!-- PORTADA -->
+    <div class="page page-cover" style="background:#1a3a5c; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:10mm 8mm;">
+      <div style="font-size:52pt; margin-bottom:6px; color:#a8c8e8;">⚕</div>
+      <div style="color:#a8c8e8; font-size:9pt; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Servicio de Medicina Intensiva</div>
+      <div style="border-top:2px solid #a8c8e8; width:60%; margin-bottom:12px;"></div>
+      <div style="color:#ffffff; font-size:34pt; font-weight:bold; letter-spacing:6px; margin-bottom:4px;">TEP</div>
+      <div style="color:#ffffff; font-size:11pt; font-weight:bold; letter-spacing:2px; margin-bottom:10px;">GUÍA RÁPIDA DE BOLSILLO</div>
+      <div style="border-top:1px solid #4a7aac; width:80%; margin-bottom:12px;"></div>
+      <div style="color:#cde0f5; font-size:9pt; margin-bottom:4px;">Tromboembolismo Pulmonar Agudo</div>
+      <div style="color:#cde0f5; font-size:8.5pt; margin-bottom:30px;">Protocolo de Actuación · UCI</div>
+      <div style="border-top:1px solid #4a7aac; width:80%; margin-bottom:16px;"></div>
+      <div style="color:#a8c8e8; font-size:8pt;">Versión 1.0 &nbsp;·&nbsp; Marzo 2026</div>
+      <div style="color:#6a9abf; font-size:7.5pt; margin-top:4px;">Para uso interno exclusivo</div>
+    </div>
+
+    <!-- ÍNDICE -->
+    <div class="page page-indice">
+      <div class="page-indice-cuerpo">
+      <div class="header-main">
+        <h1>ÍNDICE DE CONTENIDOS</h1>
+        <p>TEP · Guía Rápida de Bolsillo</p>
+      </div>
+      <table style="margin-top:8px;">
+        <thead>
+          <tr>
+            <th style="width:12%; text-align:center;">PÁG.</th>
+            <th>SECCIÓN</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:center; font-weight:bold;">3</td>
+            <td>📊 Clasificación de Riesgo y Manejo del TEP (Tabla A–E)</td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:bold;">4</td>
+            <td>💊 Tratamiento Anticoagulante · Fibrinólisis Dosis Reducidas</td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:bold;">5</td>
+            <td>🔬 Terapias de Reperfusión · <span style="font-weight:normal;">CI fibrinolisis (resumen): anexo 1 §3</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:bold;">6</td>
+            <td>🩺 Escalas (VTE-BLEED) · Factores de Mal Pronóstico · Ecocardiografía VD</td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:bold;">7</td>
+            <td>📝 Escala PESI · sPESI · Estratificación de Riesgo a 30 días</td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:bold;">8</td>
+            <td>🌳 Manejo a partir de Categoría C · Árbol de decisiones</td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:bold;">9</td>
+            <td>⚡ Manejo TEP alto riesgo · Categorías D, E1 · E2</td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:bold;">10</td>
+            <td>💊 Fármacos para tratamiento TEP · Referencia rápida</td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:bold;">11</td>
+            <td>ℹ️ Algoritmo Clínico TEP · Proceso Diagnóstico y Terapéutico</td>
+          </tr>
+          <tr>
+            <td style="text-align:center; font-weight:bold;">12–24</td>
+            <td>📚 Anexo 1 · Guía clínica: índice de fármacos + ACOD, HBPM y fibrinolíticos (páginas por sección)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="gray-box" style="margin-top:10px;">
+        <div class="section-header" style="margin-top:0;">CÓMO USAR ESTA GUÍA</div>
+        <ul style="margin-bottom:0;">
+          <li>Ante sospecha de TEP, ir directamente a <strong>pág. 3</strong> para clasificar el riesgo</li>
+          <li>Para elegir anticoagulante, consultar <strong>pág. 4</strong></li>
+          <li>Si se valora reperfusión, ver <strong>pág. 5</strong> (indicaciones y regímenes); <strong>contraindicaciones</strong> resumidas a fibrinolisis: <strong>anexo 1 · §3</strong> (inicio)</li>
+          <li>Para calcular riesgo de sangrado: <strong>VTE-BLEED en pág. 6</strong></li>
+          <li>Para cálculo de PESI / sPESI, ver <strong>pág. 7</strong></li>
+          <li>Manejo en Categoría C (árbol de decisiones): <strong>pág. 8</strong>; alto riesgo (D, E1 · E2): <strong>pág. 9</strong></li>
+          <li>Fármacos (resumen): <strong>pág. 10</strong>; algoritmo clínico: <strong>pág. 11</strong></li>
+          <li>Detalle ampliado (dosis, IRC, CI, fibrinolisis): <strong>anexo 1 pág. 12–24</strong> (índice + fármacos por hoja)</li>
+        </ul>
+      </div>
+      </div>
+
+      <div class="gray-box team-pert-bloque">
+        <div class="team-pert-titulo">TEAM PERT (Pulmonary Embolism Response Team)</div>
+        <p>
+          Es un grupo multidisciplinar diseñado para proporcionar una atención rápida y sistematizada a pacientes con tromboembolismo pulmonar (TEP) grave. De acuerdo con las guías AHA/ACC 2026, la utilización de un grupo PERT estructurado es fundamental en pacientes de Categoría C (riesgo intermedio) que muestran progresión clínica, asegurando que las decisiones terapéuticas no se basen únicamente en la carga anatómica del trombo.
+        </p>
+      </div>
+
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <!-- PÁGINA 1 (vertical) -->
+    <div class="page">
+      <div class="header-main">
+        <h1>TEP · GUÍA RÁPIDA DE BOLSILLO</h1>
+        <p>Tromboembolismo Pulmonar Agudo · Protocolo UCI</p>
+      </div>
+
+      <div class="section-header" style="border: none; margin-top: 0">CLASIFICACIÓN, RIESGO Y MANEJO DEL TEP</div>
+
+      <table class="table-main">
+        <thead>
+          <tr>
+            <th style="width:5%; text-align:center;">CAT.</th>
+            <th style="width:9%;">RIESGO</th>
+            <th style="width:24%;">CLÍNICA</th>
+            <th style="width:11%;">ESCALAS</th>
+            <th style="width:36%;">TRATAMIENTO</th>
+            <th style="width:15%;">DESTINO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- A -->
+          <tr>
+            <td class="cat-a">A</td>
+            <td>BAJO</td>
+            <td>Estable sin oxígeno</td>
+            <td>PESI bajo riesgo</td>
+            <td><strong>ACOD</strong></td>
+            <td>Domicilio</td>
+          </tr>
+          <!-- B -->
+          <tr>
+            <td class="cat-b">B</td>
+            <td>BAJO</td>
+            <td>Estable con mínimo soporte O₂</td>
+            <td>PESI bajo riesgo</td>
+            <td><strong>ACOD</strong></td>
+            <td>Ingreso planta</td>
+          </tr>
+          <!-- C -->
+          <tr>
+            <td class="cat-c">C</td>
+            <td>INTER-<br>MEDIO</td>
+            <td>
+              Estable con disfunción cardiopulmonar sin precisar SVA:
+              <ul style="margin:2px 0 0 0; padding-left:10px">
+                <li>O₂ a dosis bajas</li>
+                <li>ETT: deterioro VD</li>
+                <li>Troponinas positivas</li>
+              </ul>
+            </td>
+            <td>PESI&gt;3<br>sPESI&gt;1<br>Hestia&gt;1</td>
+            <td>
+              <strong>HBPM</strong> de entrada<br>
+              <strong>Trombolisis iv</strong> si acumulación de FdR y RH bajo o deterioro progresivo:
+              <ul style="margin:2px 0 0 0; padding-left:10px">
+                <li>Escala V-BLEED &lt;2</li>
+                <li>Sin contraindicaciones</li>
+                <li>Mitad dosis si: CI relativas / jóvenes con alta carga trombótica</li>
+              </ul>
+              <strong>Trombectomía mecánica</strong>: Cat. C con disfVD marcada (consultar)
+            </td>
+            <td>UCI 48-72h vigilar datos deterioro<br><em>Sin fibrinólisis:</em><br>Planta + telemetría 48h</td>
+          </tr>
+          <!-- D -->
+          <tr>
+            <td class="cat-d">D</td>
+            <td>ALTO</td>
+            <td>
+              Deterioro HD-Resp. SVA y/o O₂ altas. TQ tras AC.
+              <ul style="margin:2px 0 0 0; padding-left:10px">
+                <li><strong>D1:</strong> HipoTA transitoria, responde a fluidos</li>
+                <li><strong>D2:</strong> Shock normotensivo + disfVD progresiva</li>
+              </ul>
+            </td>
+            <td>—</td>
+            <td>
+              <strong>Trombólisis iv</strong><br>
+              <strong>Trombectomía mecánica</strong> si:
+              <ul style="margin:2px 0 0 0; padding-left:10px">
+                <li>CI fibrinólisis iv</li>
+                <li>Fracaso fibrinólisis iv</li>
+              </ul>
+            </td>
+            <td>UCI</td>
+          </tr>
+          <!-- E -->
+          <tr>
+            <td class="cat-e">E</td>
+            <td>MUY<br>ALTO</td>
+            <td>
+              Shock cardiogénico, PCR, hipotensión severa
+              <ul style="margin:2px 0 0 0; padding-left:10px">
+                <li><strong>E1:</strong> Disfunción VD significativa</li>
+                <li><strong>E2:</strong> PCR / colapso refractario</li>
+              </ul>
+            </td>
+            <td>—</td>
+            <td><strong>Trombectomía mecánica</strong> 1ª elección (consultar)</td>
+            <td>UCI<br>Unidad con ECMO</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <!-- PÁGINA 2 -->
+    <div class="page">
+      <div class="header-main">
+        <h1>TRATAMIENTO ANTICOAGULANTE</h1>
+      </div>
+
+      <div class="row">
+        <div class="col-50">
+          <div class="section-header">ACOD</div>
+          <p><strong>ACOD (Anticoagulantes Orales de Acción Directa)</strong></p>
+          <p><strong>Indicaciones:</strong> Riesgo bajo-intermedio bajo (Categorías A, B, C). Obesos IMC &gt;30.</p>
+          <p><strong>Contraindicados:</strong> Sd antifosfolípido (preferible AVK), embarazo, lactancia.</p>
+          <p><strong>Ajustes:</strong> Precisan ajuste si Insuficiencia Renal.</p>
+
+          <div class="sub-header">Sin necesidad de puente con heparina:</div>
+          <ul>
+            <li><strong>Apixabán:</strong> 10 mg/12h 7 días → 5 mg/12h</li>
+            <li><strong>Rivaroxabán:</strong> 15 mg/12h 3 sem → 20 mg/24h</li>
+          </ul>
+
+          <div class="sub-header">Con necesidad de puente con heparina:</div>
+          <ul>
+            <li><strong>Dabigatrán:</strong> 150 mg/12h</li>
+            <li><strong>Edoxabán:</strong> 60 mg/24h</li>
+          </ul>
+
+          <div class="sub-header">AVK</div>
+          <p>Cuando ACOD contraindicados o síndrome antifosfolípido.</p>
+        </div>
+
+        <div class="col-50">
+          <div class="section-header">HEPARINAS</div>
+
+          <div class="sub-header">HBPM</div>
+          <p><strong>Indicaciones:</strong> De elección en pacientes estables pero categoría riesgo intermedio-alto.</p>
+          <ul>
+            <li><strong>Enoxaparina:</strong> 1 mg/kg/12h sc</li>
+            <li><strong>Bemiparina:</strong> 7.500 UI/24h sc</li>
+          </ul>
+
+          <div class="sub-header">HNF</div>
+          <p>
+            <strong>Indicaciones:</strong> Riesgo alto o inestables, Iª renal grave o posibles candidatos a reperfusión.
+          </p>
+        </div>
+      </div>
+
+      <div class="gray-box" style="margin-top: 10px;">
+        <div class="section-header" style="margin-top: 0">INDICACIONES FIBRINÓLISIS DOSIS REDUCIDAS (HALF-DOSE)</div>
+        <p style="margin: 0 0 6px 0; font-size: 8pt;">Alteplasa (rTPA) — Dosis 0,6 mg/kg (máx. 50 mg)</p>
+        <ul style="margin-bottom: 0">
+          <li>Presencia de contraindicaciones relativas</li>
+          <li>Pacientes estables pero con signos de sobrecarga ventricular</li>
+          <li>Mejoría hemodinámica a largo plazo. Datos de HTP significativa</li>
+          <li>Buscar riesgo-beneficio. Especialmente pacientes jóvenes con bajo RH pero alta probabilidad de deterioro</li>
+          <li>En general pacientes de riesgo intermedio-alto (submasivo) con acumulación de factores de mal pronóstico</li>
+          <li>El manejo de primera línea sigue siendo anticoagulación con vigilancia estrecha, reservando la fibrinólisis para casos de deterioro clínico evidente</li>
+        </ul>
+      </div>
+
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <!-- PÁGINA 3 -->
+    <div class="page">
+      <div class="header-main">
+        <h1>TERAPIAS DE REPERFUSIÓN</h1>
+      </div>
+
+      <div class="reperfusion-title reperfusion-title--first">FIBRINÓLISIS SISTÉMICA</div>
+      <p><strong>Indicaciones:</strong> TEP riesgo alto o intermedio-alto como terapia de rescate.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>RÉGIMEN</th>
+            <th>DOSIS</th>
+            <th>OBSERVACIONES</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Estándar</td>
+            <td>Alteplasa (rtPA) 100 mg en 2h</td>
+            <td>Uso general</td>
+          </tr>
+          <tr>
+            <td>Dosis intermedia</td>
+            <td>Alteplasa 50 mg en 1h</td>
+            <td>Según indicación clínica</td>
+          </tr>
+          <tr>
+            <td>Tenecteplasa (TNK)</td>
+            <td>Según peso</td>
+            <td>Mayor riesgo hemorragia IC en ancianos</td>
+          </tr>
+          <tr>
+            <td>PCR / RCP — <strong>Alteplasa</strong> (TEP masivo probable)</td>
+            <td>
+              <strong>Alteplasa (rtPA) 50 mg IV en bolus</strong> lo antes posible durante RCP de calidad. Valorar
+              <strong>2.º bolo 50 mg IV</strong> tras ~15 min sin ROSC (máx. acumulado habitual <strong>100 mg</strong> según protocolo de unidad).
+            </td>
+            <td>
+              Reconstituir y diluir según <strong>ficha técnica</strong>; administrar en <strong>bolo IV</strong> por vía periférica o central;
+              no mezclar en la misma línea con otros fármacos; minimizar interrupción de compresiones (administrar preferiblemente en pausa breve o con compresiones en curso si procede).
+            </td>
+          </tr>
+          <tr>
+            <td>PCR / RCP — <strong>Tenecteplasa</strong> (TNK)</td>
+            <td>
+              <strong>Bolo IV único</strong> según peso (pauta tipo IAM): &lt;60 kg <strong>30 mg</strong> · 60–70 kg <strong>35 mg</strong> · 70–80 kg <strong>40 mg</strong> · 80–90 kg <strong>45 mg</strong> · ≥90 kg <strong>50 mg</strong>.
+              Segunda administración en PCR <strong>no</strong> estandarizada; solo si lo indica <strong>protocolo local</strong> / criterio experto.
+            </td>
+            <td>
+              Reconstituir según <strong>ficha técnica</strong>; <strong>bolo IV</strong> en ~5–10 s (vía periférica o central); no mezclar en la misma línea con otros fármacos; minimizar interrupción de compresiones.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="reperfusion-title">TROMBECTOMÍA (T. CATÉTER / T. MECÁNICA)</div>
+      <p><strong>Indicaciones:</strong></p>
+      <ul style="margin-top: 0">
+        <li>Categoría D y E</li>
+        <li>Categoría C con deterioro progresivo a pesar de AC adecuada</li>
+        <li>Contraindicación para fibrinólisis iv</li>
+        <li>Fracaso de fibrinólisis iv</li>
+        <li>Alto riesgo de sangrado para fibrinólisis iv</li>
+        <li>Varios factores de mal pronóstico</li>
+      </ul>
+
+      <div class="reperfusion-title">EMBOLECTOMÍA QUIRÚRGICA</div>
+      <p>
+        <strong>Indicaciones:</strong> Rescate crítico · Fracaso o contraindicación de otras terapias. TEP alto riesgo con inestabilidad HD. TEP riesgo intermedio-alto con deterioro progresivo.
+      </p>
+      <p style="margin-top:2px;">
+        <strong>Casos específicos:</strong> Trombo en cavidades derechas · Foramen oval permeable.
+      </p>
+
+      <p style="margin-top:10px; font-size:7.5pt; line-height:1.25; padding:6px 8px; background:#f5f5f5; border:1px solid #ddd; border-radius:4px;">
+        <strong>Contraindicaciones a la fibrinolisis sistémica (absolutas y relativas):</strong> tabla resumida en el <strong>anexo 1</strong>, sección <strong>3. Tratamiento fibrinolítico</strong> (inicio de la monografía), para evitar desbordamiento en esta hoja.
+      </p>
+
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <!-- PÁGINA 4 -->
+    <div class="page">
+      <div class="header-main">
+        <h1>ESCALAS Y ECOCARDIOGRAFÍA</h1>
+      </div>
+
+      <div class="section-header">ESCALA VTE-BLEED</div>
+      <p>Riesgo de sangrado mayor. <span class="text-red">ALTO RIESGO DE SANGRADO: PUNTUACIÓN &gt; 2</span></p>
+      <table>
+        <thead>
+          <tr>
+            <th>FACTOR DE RIESGO</th>
+            <th style="width: 55px; text-align: center">PUNTOS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Cáncer activo</td>
+            <td style="text-align: center">+2</td>
+          </tr>
+          <tr>
+            <td>&gt;60 años</td>
+            <td style="text-align: center">+1,5</td>
+          </tr>
+          <tr>
+            <td>Anemia</td>
+            <td style="text-align: center">+1,5</td>
+          </tr>
+          <tr>
+            <td>Historia de ingresos por sangrado</td>
+            <td style="text-align: center">+1,5</td>
+          </tr>
+          <tr>
+            <td>IRC</td>
+            <td style="text-align: center">+1,5</td>
+          </tr>
+          <tr>
+            <td>Hombre + HTA mal controlada</td>
+            <td style="text-align: center">+1</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="gray-box" style="margin-bottom: 10px">
+        <div class="section-header" style="margin-top: 0">FACTORES DE MAL PRONÓSTICO</div>
+        <ul style="margin-bottom: 0">
+          <li>Hipotensión límite (TAS: 90-100 mmHg)</li>
+          <li>Taquicardia mantenida &gt;110 lpm</li>
+          <li>Hipoxemia con necesidad de alto flujo</li>
+          <li>VD/VI &gt;1 · TAPSE &lt;16 · PSAP &gt;30 mmHg</li>
+          <li>Troponina elevada · BNP/NT-proBNP elevado</li>
+          <li>Lactato &gt;2 mmol/L · Síncope o PCR</li>
+          <li>PESI alto riesgo · sPESI &gt;1</li>
+        </ul>
+      </div>
+
+      <div class="section-header">DATOS ECOCARDIOGRÁFICOS DE DETERIORO VD</div>
+      <table>
+        <thead>
+          <tr>
+            <th>PARÁMETRO</th>
+            <th>HALLAZGO SUGESTIVO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Relación VD/VI</td>
+            <td>&gt;1 (vista apical 4C)</td>
+          </tr>
+          <tr>
+            <td>TAPSE</td>
+            <td>&lt;16 mm</td>
+          </tr>
+          <tr>
+            <td>Onda S' tricuspídea</td>
+            <td>&lt;9,5 cm/s</td>
+          </tr>
+          <tr>
+            <td>VCI</td>
+            <td>Dilatada, colapso &lt;50%</td>
+          </tr>
+          <tr>
+            <td>Septum interventricular</td>
+            <td>Aplanamiento / movimiento paradójico</td>
+          </tr>
+          <tr>
+            <td>Signo de McConnell</td>
+            <td>Hipocinesia pared libre, ápex conservado</td>
+          </tr>
+          <tr>
+            <td>PSAP</td>
+            <td>&gt;30-40 mmHg</td>
+          </tr>
+          <tr>
+            <td>Tiempo aceleración AP</td>
+            <td>&lt;60 ms</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <!-- PÁGINA 5 -->
+    <div class="page">
+      <div class="header-main">
+        <h1>ESCALA PESI</h1>
+        <p>Pulmonary Embolism Severity Index · Estratificación de riesgo a 30 días</p>
+      </div>
+
+      <div class="section-header" style="margin-top: 0">PESI ORIGINAL</div>
+      <table class="table-main">
+        <thead>
+          <tr>
+            <th>VARIABLE</th>
+            <th style="width: 60px; text-align: center">PUNTOS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Edad</td>
+            <td style="text-align: center">+ edad (años)</td>
+          </tr>
+          <tr>
+            <td>Sexo masculino</td>
+            <td style="text-align: center">+10</td>
+          </tr>
+          <tr>
+            <td>Cáncer</td>
+            <td style="text-align: center">+30</td>
+          </tr>
+          <tr>
+            <td>Insuficiencia cardíaca crónica</td>
+            <td style="text-align: center">+10</td>
+          </tr>
+          <tr>
+            <td>Enfermedad pulmonar crónica</td>
+            <td style="text-align: center">+10</td>
+          </tr>
+          <tr>
+            <td>FC ≥110 lpm</td>
+            <td style="text-align: center">+20</td>
+          </tr>
+          <tr>
+            <td>TAS &lt;100 mmHg</td>
+            <td style="text-align: center">+30</td>
+          </tr>
+          <tr>
+            <td>FR ≥30 rpm</td>
+            <td style="text-align: center">+20</td>
+          </tr>
+          <tr>
+            <td>Temperatura &lt;36°C</td>
+            <td style="text-align: center">+20</td>
+          </tr>
+          <tr>
+            <td>Estado mental alterado (desorientación, letargia, estupor, coma)</td>
+            <td style="text-align: center">+60</td>
+          </tr>
+          <tr>
+            <td>SaO₂ &lt;90%</td>
+            <td style="text-align: center">+20</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-header">ESTRATIFICACIÓN PESI</div>
+      <table class="table-main">
+        <thead>
+          <tr>
+            <th style="width: 55px; text-align: center">CLASE</th>
+            <th style="width: 80px; text-align: center">PUNTUACIÓN</th>
+            <th>RIESGO</th>
+            <th style="width: 90px; text-align: center">MORTALIDAD 30d</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align: center; background-color: #e8f5e9; font-weight: bold">I</td>
+            <td style="text-align: center">≤65</td>
+            <td style="background-color: #e8f5e9">Muy bajo</td>
+            <td style="text-align: center">0 – 1,6%</td>
+          </tr>
+          <tr>
+            <td style="text-align: center; background-color: #f9fbe7; font-weight: bold">II</td>
+            <td style="text-align: center">66 – 85</td>
+            <td style="background-color: #f9fbe7">Bajo</td>
+            <td style="text-align: center">1,7 – 3,5%</td>
+          </tr>
+          <tr>
+            <td style="text-align: center; background-color: #fff8e1; font-weight: bold">III</td>
+            <td style="text-align: center">86 – 105</td>
+            <td style="background-color: #fff8e1">Moderado</td>
+            <td style="text-align: center">3,2 – 7,1%</td>
+          </tr>
+          <tr>
+            <td style="text-align: center; background-color: #fbe9e7; font-weight: bold">IV</td>
+            <td style="text-align: center">106 – 125</td>
+            <td style="background-color: #fbe9e7">Alto</td>
+            <td style="text-align: center">4 – 11,4%</td>
+          </tr>
+          <tr>
+            <td style="text-align: center; background-color: #ffcdd2; font-weight: bold">V</td>
+            <td style="text-align: center">&gt;125</td>
+            <td style="background-color: #ffcdd2">Muy alto</td>
+            <td style="text-align: center">10 – 24,5%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-header">sPESI (VERSIÓN SIMPLIFICADA)</div>
+      <p style="margin-bottom: 4px"><span class="text-red">ALTO RIESGO si puntuación ≥1 · BAJO RIESGO si puntuación = 0</span></p>
+      <table class="table-main">
+        <thead>
+          <tr>
+            <th>VARIABLE</th>
+            <th style="width: 55px; text-align: center">PUNTOS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Edad &gt;80 años</td>
+            <td style="text-align: center">+1</td>
+          </tr>
+          <tr>
+            <td>Cáncer</td>
+            <td style="text-align: center">+1</td>
+          </tr>
+          <tr>
+            <td>Enfermedad cardiopulmonar crónica (ICC o EPOC)</td>
+            <td style="text-align: center">+1</td>
+          </tr>
+          <tr>
+            <td>FC ≥110 lpm</td>
+            <td style="text-align: center">+1</td>
+          </tr>
+          <tr>
+            <td>TAS &lt;100 mmHg</td>
+            <td style="text-align: center">+1</td>
+          </tr>
+          <tr>
+            <td>SaO₂ &lt;90%</td>
+            <td style="text-align: center">+1</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <!-- Riesgo intermedio · Categoría C · organigrama HTML compacto -->
+    <div class="page page-arbol-c page-arbol-c--html">
+      <div class="header-main" style="padding:5px 10px; margin-bottom:4px;">
+        <h1 style="font-size:11pt;">MANEJO RIESGO INTERMEDIO (CATG. C)</h1>
+        <p style="font-size:7.5pt; margin-top:3px;">Riesgo intermedio · esquema de decisión · <span lang="en">TEAM PERT</span></p>
+      </div>
+
+      <div class="algo-c" role="img" aria-label="Algoritmo de manejo categoría C, riesgo intermedio">
+        <div class="ac-eval">
+          <strong>Evaluación inicial — criterios de riesgo</strong>
+          <ul>
+            <li>Disfunción VD / VD &gt; VI</li>
+            <li>Troponina+ / NT-proBNP+</li>
+            <li>Trombo proximal / APD / API</li>
+          </ul>
+        </div>
+
+        <span class="ac-v" aria-hidden="true"></span>
+        <div class="ac-dec">¿≥ 2 criterios positivos?</div>
+        <div class="ac-t" aria-hidden="true">
+          <span class="ac-v"></span>
+          <span class="ac-t__h"></span>
+        </div>
+
+        <div class="ac-split">
+          <div class="ac-col">
+            <div class="ac-lab ac-lab--n">No (0–1)</div>
+            <div class="ac-panel ac-panel--bajo">
+              <div class="ac-hex ac-hex--bajo">INTERMEDIO BAJO</div>
+              <div class="ac-arrow">↓</div>
+              <div class="ac-pill ac-pill--fin">HBPM + Planta</div>
+            </div>
+          </div>
+
+          <div class="ac-col">
+            <div class="ac-lab ac-lab--s">Sí (≥ 2)</div>
+            <div class="ac-panel">
+              <div class="ac-head-alto">
+                <div class="ac-hex ac-hex--alto">INTERMEDIO ALTO</div>
+                <div class="ac-pert">TEAM PERT</div>
+              </div>
+
+              <div class="ac-hd">
+                <div class="ac-q">¿Estabilidad hemodinámica?</div>
+                <div class="ac-hd-row">
+                  <div class="ac-hd-cell">
+                    <div class="ac-mini ac-mini--n">Sí — estable</div>
+                    <div class="ac-pill ac-pill--uci">HBPM + UCI 24–48 h</div>
+                    <div class="ac-step"><span class="ac-mini ac-mini--n">Sigue estable</span> → HBPM + Planta</div>
+                    <span class="ac-hd-to">Si se inestabiliza ↓</span>
+                  </div>
+                  <div class="ac-hd-cell">
+                    <div class="ac-mini ac-mini--s">No — inestable</div>
+                    <span class="ac-hd-to">Inestable desde el inicio ↓</span>
+                    <p class="ac-note">Decisión conjunta TEAM PERT</p>
+                  </div>
+                </div>
+                <div class="ac-to-rep"><span>▼</span> Paso a reperfusión <span>▼</span></div>
+              </div>
+
+              <div class="ac-rep">
+                <div class="ac-rep__h">Reperfusión · ¿contraindicación a fibrinólisis?</div>
+                <div class="ac-fork2">
+                  <div class="ac-lane">
+                    <div class="ac-mini ac-mini--n">No — puede fibrinolisar</div>
+                    <div class="ac-pill ac-pill--fib">Fibrinólisis sistémica IV</div>
+                    <div class="ac-step"><span class="ac-mini ac-mini--n">Estable</span> → HBPM + Planta</div>
+                    <div class="ac-step"><span class="ac-mini ac-mini--s">Fracaso / shock</span> → trombectomía →</div>
+                  </div>
+                  <div class="ac-lane">
+                    <div class="ac-mini ac-mini--s">Sí — contraindicada</div>
+                    <div class="ac-pill ac-pill--trom">Trombectomía quirúrgica o por catéter</div>
+                    <div class="ac-step">Tras procedimiento → HBPM + Planta</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <!-- PÁGINA 8 – Manejo TEP alto riesgo (D, E1 · E2) -->
+    <div class="page page-arbol-c page-arbol-c--html">
+      <div class="header-main" style="padding:5px 10px; margin-bottom:4px;">
+        <h1 style="font-size:11pt;">MANEJO TEP ALTO RIESGO</h1>
+        <p style="font-size:7.5pt; margin-top:3px;">Categorías D, E1 · E2 · esquema de decisión</p>
+      </div>
+
+      <div class="algo-c algo-c--alto" role="img" aria-label="Algoritmo manejo TEP alto riesgo, categorías D E1 y E2">
+        <div class="ac-split">
+          <div class="ac-col">
+            <div class="ac-lab ac-lab--s">Shock / inestabilidad (sin PCR)</div>
+            <div class="ac-panel">
+              <div class="ac-cat">Categoría D · E1</div>
+              <div class="ac-pill ac-pill--act">Anticoagulación inicial · HBPM / HNF</div>
+              <div class="ac-q">¿Fibrinólisis indicada y aplicada?</div>
+              <div class="ac-hd-row">
+                <div class="ac-hd-cell">
+                  <div class="ac-mini ac-mini--n">Sí — aplicada</div>
+                  <div class="ac-step"><strong>¿Estable tras fibrinólisis?</strong></div>
+                  <div class="ac-step"><span class="ac-mini ac-mini--n">Sí</span> → HBPM + Planta</div>
+                  <span class="ac-hd-to">No / shock persistente ↓</span>
+                </div>
+                <div class="ac-hd-cell">
+                  <div class="ac-mini ac-mini--s">No — no indicada o no aplicada</div>
+                  <span class="ac-hd-to">Directo a trombectomía ↓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ac-col">
+            <div class="ac-lab ac-lab--s">PCR / soporte extremo</div>
+            <div class="ac-panel">
+              <div class="ac-cat">Categoría E2</div>
+              <div class="ac-pill ac-pill--act">ECMO / soporte avanzado<br><span style="font-weight:600;font-size:7.4pt;">si procede · según protocolo</span></div>
+              <div class="ac-q">¿Estable hemodinámicamente?<br><span style="font-weight:600;font-size:7.4pt;">con soporte</span></div>
+              <div class="ac-hd-row">
+                <div class="ac-hd-cell">
+                  <div class="ac-mini ac-mini--n">Sí — estable</div>
+                  <div class="ac-pill ac-pill--uci">Cuidados en UCI</div>
+                  <div class="ac-step">→ HBPM + Planta</div>
+                </div>
+                <div class="ac-hd-cell">
+                  <div class="ac-mini ac-mini--s">No — inestable</div>
+                  <span class="ac-hd-to">Directo a trombectomía ↓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ac-to-rep"><span>▼</span> Paso a trombectomía <span>▼</span></div>
+
+        <div class="ac-rep">
+          <div class="ac-rep__h">Trombectomía mecánica</div>
+          <div class="ac-pill ac-pill--trom">Si no procede / falla la estrategia farmacológica o persiste inestabilidad relevante</div>
+          <div class="ac-dest">
+            <div class="ac-step">Estabilización y seguimiento en UCI</div>
+            <div class="ac-arrow">↓</div>
+            <div class="ac-pill ac-pill--fin">HBPM + Planta</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <!-- PÁGINA 10 – Fármacos TEP (índice pág. 10) -->
+    <div class="page" style="overflow:hidden;">
+      <div class="header-main" style="padding:5px 10px; margin-bottom:6px;">
+        <h1 style="font-size:11pt;">FARMACOS PARA TRATAMIENTO TEP</h1>
+        <p style="font-size:7.5pt; margin-top:3px;">Referencia rápida · anticoagulación y reperfusión · ver pág. 4–5 para detalle</p>
+      </div>
+
+      <div class="section-header" style="margin-top:0;">ACOD (ANTICOAGULACIÓN ORAL)</div>
+      <table class="table-main" style="font-size:7.5pt;">
+        <thead>
+          <tr>
+            <th style="width:22%;">FÁRMACO</th>
+            <th style="width:38%;">DOSIS INICIAL / MANTENIMIENTO</th>
+            <th>NOTAS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Apixabán</strong></td>
+            <td>10 mg /12 h × 7 d → 5 mg /12 h</td>
+            <td>Sin puente con heparina</td>
+          </tr>
+          <tr>
+            <td><strong>Rivaroxabán</strong></td>
+            <td>15 mg /12 h × 3 sem → 20 mg /24 h</td>
+            <td>Sin puente con heparina</td>
+          </tr>
+          <tr>
+            <td><strong>Dabigatrán</strong></td>
+            <td>150 mg /12 h</td>
+            <td>Con puente con heparina</td>
+          </tr>
+          <tr>
+            <td><strong>Edoxabán</strong></td>
+            <td>60 mg /24 h</td>
+            <td>Con puente con heparina</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:7pt; margin:4px 0 8px 0;"><strong>CI relativas habituales:</strong> síndrome antifosfolípido (preferir AVK), embarazo, lactancia. Ajustar si IRC.</p>
+
+      <div class="section-header">HEPARINAS</div>
+      <table class="table-main" style="font-size:7.5pt;">
+        <thead>
+          <tr>
+            <th style="width:22%;">FÁRMACO</th>
+            <th style="width:38%;">DOSIS</th>
+            <th>USO TÍPICO EN TEP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Enoxaparina</strong></td>
+            <td>1 mg/kg /12 h sc</td>
+            <td>Estable / intermedio (HBPM de elección según categoría)</td>
+          </tr>
+          <tr>
+            <td><strong>Bemiparina</strong></td>
+            <td>7.500 UI /24 h sc</td>
+            <td>Alternativa HBPM</td>
+          </tr>
+          <tr>
+            <td><strong>HNF</strong></td>
+            <td>Según protocolo de unidad (bolo + perfusión, APTT/anti-Xa)</td>
+            <td>Alto riesgo, inestable, IRC grave, candidato a reperfusión</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-header">FIBRINÓLISIS (ALTEPLASA / RÉGIMENES)</div>
+      <table class="table-main" style="font-size:7.5pt;">
+        <thead>
+          <tr>
+            <th style="width:28%;">RÉGIMEN</th>
+            <th style="width:36%;">DOSIS</th>
+            <th>CONTEXTO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Estándar</td>
+            <td>Alteplasa (rtPA) <strong>100 mg en 2 h</strong></td>
+            <td>Reperfusión sistémica según indicación</td>
+          </tr>
+          <tr>
+            <td>Intermedia</td>
+            <td>Alteplasa <strong>50 mg en 1 h</strong></td>
+            <td>Según criterio clínico</td>
+          </tr>
+          <tr>
+            <td>Half-dose</td>
+            <td>Alteplasa <strong>0,6 mg/kg</strong> (máx. 50 mg)</td>
+            <td>CI relativas, submasivo, riesgo-beneficio (ver pág. 4)</td>
+          </tr>
+          <tr>
+            <td>Tenecteplasa</td>
+            <td>Según peso</td>
+            <td>Valorar perfil hemorrágico (ancianos)</td>
+          </tr>
+          <tr>
+            <td><strong>PCR / RCP</strong> — rtPA<br><span style="font-weight:normal;">(TEP masivo probable)</span></td>
+            <td>
+              <strong>Alteplasa (rtPA) 50 mg IV en bolus</strong> durante RCP; valorar <strong>2.º bolo 50 mg IV</strong> ~15 min sin ROSC (máx. <strong>100 mg</strong> acumulados según protocolo).
+            </td>
+            <td>
+              Reconstituir/diluir según <strong>ficha</strong>; <strong>bolo IV</strong> (periférica o central); no en Y con otros fármacos; priorizar RCP de calidad.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>PCR / RCP</strong> — TNK</td>
+            <td>
+              <strong>Tenecteplasa</strong> bolo IV único según peso: &lt;60 kg <strong>30 mg</strong> · 60–70 <strong>35 mg</strong> · 70–80 <strong>40 mg</strong> · 80–90 <strong>45 mg</strong> · ≥90 <strong>50 mg</strong>.
+            </td>
+            <td>
+              Reconstituir según <strong>ficha</strong>; <strong>bolo IV</strong> ~5–10 s; misma precaución de vía y compresiones; repetir solo si <strong>protocolo local</strong>.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="font-size:6.8pt; color:#444; margin:6px 0 0 0; line-height:1.25;">
+        <strong>Transición / mantenimiento:</strong> según evolución, valorar paso a ACOD o AVK según guía interna.
+        Para <strong>trombectomía</strong> y secuencias, ver <strong>pág. 5</strong> y algoritmo <strong>pág. 11</strong>. <strong>Contraindicaciones</strong> a fibrinolisis sistémica (resumen): <strong>anexo 1 · §3</strong>.
+      </p>
+
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <!-- PÁGINA 11 – ALGORITMO CLÍNICO TEP -->
+    <div class="page" style="overflow:hidden;">
+      <div class="header-main">
+        <h1>ALGORITMO CLÍNICO TEP</h1>
+        <p>Resumen del proceso diagnóstico y terapéutico</p>
+      </div>
+
+      <!-- ESTILOS INLINE PARA INFOGRAFÍA -->
+      <div style="font-size:7.5pt; line-height:1.3;">
+
+        <!-- PASO 1: SOSPECHA -->
+        <div style="background:#e3f0fb; border:1.5px solid #1a3a5c; border-radius:5px; padding:4px 8px; text-align:center; margin-bottom:3px;">
+          <span style="font-weight:bold; font-size:8.5pt; color:#1a3a5c;">① SOSPECHA DE TEP</span><br>
+          Disnea · Dolor pleurítico · Taquicardia · Síncope · Hipoxemia inexplicada
+        </div>
+
+        <div style="text-align:center; font-size:11pt; color:#1a3a5c; margin:1px 0;">↓</div>
+
+        <!-- PASO 2: ESTABILIDAD -->
+        <div style="background:#d0e8f7; border:1.5px solid #1a6496; border-radius:5px; padding:4px 8px; text-align:center; margin-bottom:3px;">
+          <span style="font-weight:bold; font-size:8.5pt; color:#1a3a5c;">② EVALUAR ESTABILIDAD HEMODINÁMICA</span>
+        </div>
+
+        <!-- DOS RAMAS -->
+        <div style="display:flex; gap:6px; margin-bottom:3px;">
+
+          <!-- RAMA ESTABLE -->
+          <div style="flex:1; border:1.5px solid #2e7d32; border-radius:5px; padding:4px 6px; background:#f1f8f1;">
+            <div style="font-weight:bold; color:#2e7d32; font-size:8pt; border-bottom:1px solid #2e7d32; margin-bottom:3px; padding-bottom:2px;">✔ ESTABLE</div>
+            <div style="font-weight:bold; color:#1a3a5c; margin-bottom:2px;">Probabilidad clínica:</div>
+            <div>Escala Wells / Geneva revisada</div>
+            <div style="margin-top:3px; font-weight:bold; color:#1a3a5c;">Pruebas diagnósticas:</div>
+            <ul style="margin:1px 0 0 0; padding-left:11px;">
+              <li>Dímero D (si prob. baja)</li>
+              <li>AngioTC pulmonar</li>
+              <li>ETT: disfunción VD</li>
+              <li>Biomarcadores (Trop, BNP)</li>
+              <li>Gasometría · ECG · Rx tórax</li>
+            </ul>
+          </div>
+
+          <!-- RAMA INESTABLE -->
+          <div style="flex:1; border:1.5px solid #b71c1c; border-radius:5px; padding:4px 6px; background:#fdf3f3;">
+            <div style="font-weight:bold; color:#b71c1c; font-size:8pt; border-bottom:1px solid #b71c1c; margin-bottom:3px; padding-bottom:2px;">✘ INESTABLE</div>
+            <div style="font-weight:bold; color:#1a3a5c; margin-bottom:2px;">Actuación urgente:</div>
+            <ul style="margin:1px 0 0 0; padding-left:11px;">
+              <li>AngioTC urgente (si posible)</li>
+              <li>ETT urgente a pie de cama</li>
+              <li>Soporte hemodinámico</li>
+              <li>Considerar reperfusión inmediata</li>
+            </ul>
+            <div style="margin-top:3px; font-weight:bold; color:#b71c1c;">→ Activar vía de reperfusión</div>
+          </div>
+        </div>
+
+        <div style="text-align:center; font-size:11pt; color:#1a3a5c; margin:1px 0;">↓</div>
+
+        <!-- PASO 3: ESTRATIFICACIÓN -->
+        <div style="background:#fff8e1; border:1.5px solid #f9a825; border-radius:5px; padding:4px 8px; margin-bottom:3px;">
+          <div style="font-weight:bold; font-size:8.5pt; color:#1a3a5c; margin-bottom:2px;">③ ESTRATIFICACIÓN DEL RIESGO</div>
+          <div style="display:flex; gap:8px;">
+            <div style="flex:1;"><strong>Escalas:</strong> PESI / sPESI · Hestia</div>
+            <div style="flex:1;"><strong>Biomarcadores:</strong> Troponina · BNP / NT-proBNP</div>
+            <div style="flex:1;"><strong>ETT-VD:</strong> VD/VI &gt;1 · TAPSE &lt;16 · PSAP &gt;30</div>
+          </div>
+        </div>
+
+        <div style="text-align:center; font-size:11pt; color:#1a3a5c; margin:1px 0;">↓</div>
+
+        <!-- PASO 4: TRATAMIENTO POR CATEGORÍA -->
+        <div style="font-weight:bold; font-size:8.5pt; color:#1a3a5c; margin-bottom:2px;">④ TRATAMIENTO SEGÚN CATEGORÍA</div>
+        <table style="font-size:7.5pt; margin-bottom:0;">
+          <thead>
+            <tr>
+              <th style="width:10%; text-align:center;">CAT.</th>
+              <th style="width:14%;">RIESGO</th>
+              <th style="width:32%;">TRATAMIENTO</th>
+              <th style="width:22%;">REPERFUSIÓN</th>
+              <th style="width:22%;">DESTINO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="cat-a">A</td>
+              <td>Bajo</td>
+              <td>ACOD</td>
+              <td style="color:#777;">No indicada</td>
+              <td>Domicilio</td>
+            </tr>
+            <tr>
+              <td class="cat-b">B</td>
+              <td>Bajo</td>
+              <td>ACOD</td>
+              <td style="color:#777;">No indicada</td>
+              <td>Ingreso planta</td>
+            </tr>
+            <tr>
+              <td class="cat-c">C</td>
+              <td>Intermedio</td>
+              <td>HBPM · Monitorización estrecha</td>
+              <td>Valorar fibrinólisis half-dose si deterioro / FdR acumulados</td>
+              <td>UCI 48-72h → Planta</td>
+            </tr>
+            <tr>
+              <td class="cat-d">D</td>
+              <td>Alto</td>
+              <td>HBPM / HNF</td>
+              <td>Trombólisis iv · Trombectomía mecánica si CI o fracaso</td>
+              <td>UCI</td>
+            </tr>
+            <tr>
+              <td class="cat-e">E</td>
+              <td>Muy alto</td>
+              <td>Soporte vital avanzado</td>
+              <td>Trombectomía mecánica 1ª elección · Valorar ECMO</td>
+              <td>UCI con ECMO</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div><!-- fin infografía -->
+
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <!-- ANEXO 1: Guía clínica (índice + páginas por sección/fármaco). -->
+    <div class="page page-anexo">
+      <div class="page-anexo-cuerpo">
+        <div class="header-main" style="padding:5px 8px;margin-bottom:8px;">
+          <h1 style="font-size:11pt;">ANEXO · ÍNDICE DE FÁRMACOS</h1>
+          <p style="font-size:7pt;margin:2px 0 0 0;">Guía clínica extendida · esquema por tipo terapéutico</p>
+        </div>
+        <div class="anexo-indice">
+          <p class="anexo-indice-intro">Localización por familias. Cada fármaco tiene marca de color en las páginas siguientes.</p>
+          <div class="anexo-indice-cols">
+            <div class="anexo-indice-grupo anexo-indice-grupo--acod">
+              <div class="anexo-indice-grupo-titulo">ACOD</div>
+              <div class="anexo-indice-grupo-sub">Anticoagulantes orales directos</div>
+              <ul>
+                <li>Rivaroxabán</li>
+                <li>Apixabán</li>
+                <li>Edoxabán</li>
+                <li>Dabigatrán</li>
+                <li><em>Tabla resumen comparativa</em></li>
+              </ul>
+            </div>
+            <div class="anexo-indice-grupo anexo-indice-grupo--hbpm">
+              <div class="anexo-indice-grupo-titulo">HBPM</div>
+              <div class="anexo-indice-grupo-sub">Heparina de bajo peso molecular</div>
+              <ul>
+                <li>Enoxaparina</li>
+                <li>Tinzaparina · Dalteparina · Nadroparina · Bemiparina</li>
+              </ul>
+            </div>
+            <div class="anexo-indice-grupo anexo-indice-grupo--fib">
+              <div class="anexo-indice-grupo-titulo">Fibrinolíticos</div>
+              <div class="anexo-indice-grupo-sub">Fibrinoespecíficos</div>
+              <ul>
+                <li>Alteplasa (rt-PA)</li>
+                <li>Tenecteplasa (TNK-tPA)</li>
+                <li><em>Contraindicaciones sistémicas (referencia resumida)</em></li>
+                <li><em>Comparativa · Manejo post-fibrinolisis</em></li>
+              </ul>
+            </div>
+          </div>
+          <p class="anexo-indice-pie">Referencias bibliográficas (ESC, AHA, ensayos citados) y aviso legal: pie de página en cada hoja.</p>
+        </div>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo" data-nav="Rivaroxabán" data-nav-group="ACOD">
+      <div class="page-anexo-cuerpo">
+        <div class="header-main anexo-doc-header"><h1 style="font-size:11pt;">Tratamiento antitrombótico y fibrinolítico del TEP</h1><p style="font-size:7pt;margin:2px 0 0 0;">Anticoagulantes orales directos · Heparinas de bajo peso molecular · Fibrinolíticos fibrinoespecíficos<br>
+              Basado en guías ESC 2019 · AHA 2023 · HI-PEITHO (NEJM 2024)</p></div>
+        <section class="anexo-seccion">
+        <h2 class="anexo-section-title">1. Anticoagulantes orales directos (ACOD) en el TEP</h2>
+        
+            <p>Los ACOD son el tratamiento de primera línea en el TEP agudo no masivo en la mayoría de los pacientes (ESC 2019, Clase I-A; AHA 2023, Clase I). Ofrecen eficacia no inferior a la anticoagulación clásica con AVK con menor tasa de hemorragia mayor y sin necesidad de monitorización de rutina.</p>
+        
+            <div class="anexo-note" style="margin-bottom:18px;">
+              <strong>Elección del agente:</strong> Los inhibidores directos del factor Xa (rivaroxabán, apixabán, edoxabán, betrixabán) son preferibles al inhibidor de la trombina dabigatrán en la mayoría de los escenarios clínicos del TEP, dado su perfil de seguridad gastrointestinal y la disponibilidad de antídoto específico (andexanet alfa).
+            </div>
+        <div class="anexo-drug-wrap t-acod-0">
+              <div class="anexo-drug-h">
+                Rivaroxabán <span class="alias">(inhibidor directo factor Xa · oral)</span>
+              </div>
+              <div class="anexo-drug-box">
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Indicaciones en TEP</div>
+                  <ul>
+                    <li>TEP agudo sintomático no masivo (hemodinámicamente estable), sin contraindicación a anticoagulación oral.</li>
+                    <li>Prevención de recurrencia tras TEP agudo (segunda línea si apixabán no disponible o no tolerado).</li>
+                    <li><strong>No indicado</strong> en TEP de alto riesgo (masivo) como monoterapia inicial si el paciente recibe fibrinolisis o embolectomía — iniciar tras estabilización.</li>
+                  </ul>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Dosis y forma de administración</div>
+                  <table class="table-main">
+                    <thead>
+                      <tr>
+                        <th>Fase</th>
+                        <th>Dosis</th>
+                        <th>Duración</th>
+                        <th>Administración</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Tratamiento inicial</strong></td>
+                        <td><strong>15 mg/12 h</strong></td>
+                        <td>Primeros 21 días</td>
+                        <td>Con alimentos (mejora absorción)</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Mantenimiento</strong></td>
+                        <td><strong>20 mg/24 h</strong></td>
+                        <td>Desde día 22 en adelante</td>
+                        <td>Con la comida principal del día</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Dosis reducida (profilaxis extendida)</strong></td>
+                        <td><strong>10 mg/24 h</strong></td>
+                        <td>Tras ≥ 6 meses de tratamiento</td>
+                        <td>Con o sin alimentos</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="anexo-note anexo-note--info" style="margin-top:10px;">
+                    <strong>Punto clave:</strong> Rivaroxabán NO requiere heparina puente previa. Se inicia en monoterapia desde el diagnóstico. Los primeros 21 días a dosis de 15 mg/12 h son esenciales para alcanzar exposición anticoagulante equivalente a HBPM + AVK.
+                  </div>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Ajuste en insuficiencia renal</div>
+                  <table class="table-main">
+                    <thead>
+                      <tr>
+                        <th>FGe (mL/min/1,73 m²)</th>
+                        <th>Recomendación</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>≥ 30</strong></td>
+                        <td>Sin ajuste de dosis</td>
+                      </tr>
+                      <tr>
+                        <td><strong>15 – 29</strong></td>
+                        <td>Usar con precaución. Datos limitados. Valorar riesgo-beneficio individualmente.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>&lt; 15 / Diálisis</strong></td>
+                        <td><span class="etiq etiq-abs">CI</span> Contraindicado. Usar heparina + AVK o HBPM.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Contraindicaciones</div>
+                  <ul>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> FGe &lt; 15 mL/min o insuficiencia renal grave según ficha técnica</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Hemorragia activa clínicamente significativa</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Lesión o enfermedad con riesgo significativo de sangrado mayor</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Insuficiencia hepática con coagulopatía asociada y riesgo hemorrágico clínicamente relevante (Child-Pugh B o C)</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Embarazo y lactancia</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Uso concomitante de inhibidores fuertes de CYP3A4 y gP (azoles sistémicos, ritonavir)</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Uso concomitante de inductores de CYP3A4 (rifampicina, fenitoína, carbamazepina): reducen niveles plasmáticos significativamente</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Trombocitopenia &lt; 50.000/µL</li>
+                  </ul>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Factores a tener en cuenta</div>
+                  <table class="table-main">
+                    <thead><tr><th>Factor</th><th>Consideración clínica</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Insuficiencia hepática</strong></td>
+                        <td>Child-Pugh A: permitido con precaución. Child-Pugh B/C: contraindicado. Metabolismo hepático mayoritario (CYP3A4).</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Peso extremo</strong></td>
+                        <td>Datos limitados en peso &gt; 120 kg o IMC &gt; 40 kg/m². Considerar monitorización de actividad anti-Xa o pasar a HBPM + AVK.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Antídoto</strong></td>
+                        <td>Andexanet alfa (aprobado). Concentrado de complejo protrombínico (CCP 4F) como alternativa si no disponible. Carbón activado si ingesta reciente.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Interacciones farmacológicas</strong></td>
+                        <td>Evitar uso conjunto con otros anticoagulantes/AINEs. Amiodarona, verapamilo, claritromicina aumentan concentraciones.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Duración del tratamiento</strong></td>
+                        <td>Mínimo 3 meses. Extender según factor precipitante (idiopático = mínimo 6-12 meses; neoplasia = indefinido con HBPM o ACOD).</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Cáncer activo</strong></td>
+                        <td>Rivaroxabán validado en ensayo EINSTEIN-Cancer. Mayor riesgo hemorrágico en tumores GI y GU. Valorar HBPM en estos casos.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo" data-nav="Apixabán" data-nav-group="ACOD">
+      <div class="page-anexo-cuerpo">
+        <div class="anexo-page-family anexo-page-family--acod">ACOD · anticoagulantes orales directos</div><section class="anexo-seccion">
+        <div class="anexo-drug-wrap t-acod-1">
+              <div class="anexo-drug-h">
+                Apixabán <span class="alias">(inhibidor directo factor Xa · oral · doble excreción)</span>
+              </div>
+              <div class="anexo-drug-box">
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Indicaciones en TEP</div>
+                  <ul>
+                    <li>TEP agudo sintomático no masivo. Alternativa de elección junto a rivaroxabán por perfil de seguridad.</li>
+                    <li>Prevención de recurrencia a largo plazo (dosis reducida 2,5 mg/12 h validada en AMPLIFY-EXT).</li>
+                    <li>Preferible a rivaroxabán en insuficiencia renal moderada (FGe 15–29) por menor dependencia renal.</li>
+                  </ul>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Dosis y forma de administración</div>
+                  <table class="table-main">
+                    <thead>
+                      <tr>
+                        <th>Fase</th>
+                        <th>Dosis</th>
+                        <th>Duración</th>
+                        <th>Administración</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Tratamiento inicial</strong></td>
+                        <td><strong>10 mg/12 h</strong></td>
+                        <td>Primeros 7 días</td>
+                        <td>Con o sin alimentos. El comprimido puede triturarse.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Mantenimiento</strong></td>
+                        <td><strong>5 mg/12 h</strong></td>
+                        <td>Desde día 8 hasta ≥ 6 meses</td>
+                        <td>Con o sin alimentos</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Profilaxis extendida</strong></td>
+                        <td><strong>2,5 mg/12 h</strong></td>
+                        <td>Tras ≥ 6 meses de tratamiento</td>
+                        <td>Con o sin alimentos</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="anexo-note anexo-note--info" style="margin-top:10px;">
+                    <strong>Punto clave:</strong> Apixabán tampoco requiere heparina puente previa. El régimen inicial de 7 días a 10 mg/12 h es crítico — no reducir precozmente.
+                  </div>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Ajuste en insuficiencia renal</div>
+                  <table class="table-main">
+                    <thead>
+                      <tr>
+                        <th>FGe (mL/min/1,73 m²)</th>
+                        <th>Recomendación</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>≥ 30</strong></td>
+                        <td>Sin ajuste de dosis</td>
+                      </tr>
+                      <tr>
+                        <td><strong>15 – 29</strong></td>
+                        <td>Permitido con precaución. No requiere ajuste formal, pero vigilar. Es el ACOD preferido en este rango.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>&lt; 15 / Diálisis</strong></td>
+                        <td><span class="etiq etiq-abs">CI</span> Contraindicado en ficha técnica (datos insuficientes). En diálisis, algunos protocolos lo usan off-label —sólo con valoración experta.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="anexo-note">
+                    <strong>Regla de los tres criterios (reducción de dosis en FANV — no validada formalmente en TEP):</strong> reducir a 2,5 mg/12 h si ≥ 2 de: creatinina ≥ 1,5 mg/dL, peso ≤ 60 kg, edad ≥ 80 años. En TEP agudo, no aplicar esta reducción en la fase inicial (10 mg/12 h × 7 días). Consultar ficha técnica.
+                  </div>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Contraindicaciones</div>
+                  <ul>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Hemorragia activa clínicamente significativa</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Hepatopatía con coagulopatía (Child-Pugh B/C)</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Embarazo y lactancia</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Uso concomitante de inhibidores combinados fuertes de CYP3A4 y gP</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Inductores fuertes (rifampicina, carbamazepina, fenitoína, hierba de San Juan): reducen en ~50% la exposición</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Trombocitopenia &lt; 50.000/µL</li>
+                  </ul>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Factores a tener en cuenta</div>
+                  <table class="table-main">
+                    <thead><tr><th>Factor</th><th>Consideración clínica</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Insuficiencia hepática</strong></td>
+                        <td>Child-Pugh A: permitido. B/C: contraindicado. Excreción biliar importante (~27% renal), mayor margen en disfunción renal.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Antídoto</strong></td>
+                        <td>Andexanet alfa (aprobado). CCP 4F como alternativa. Carbón activado en ingesta reciente.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Cáncer activo</strong></td>
+                        <td>Apixabán validado en ensayo CARAVAGGIO (no inferior a dalteparina). Ventajoso frente a HBPM en tumores no GI/GU por menor riesgo hemorrágico.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Forma farmacéutica</strong></td>
+                        <td>Comprimidos de 2,5 mg y 5 mg. Puede triturarse y mezclarse con agua o puré para pacientes con disfagia.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo" data-nav="Edoxabán y Dabigatrán" data-nav-group="ACOD">
+      <div class="page-anexo-cuerpo">
+        <div class="anexo-page-family anexo-page-family--acod">ACOD · anticoagulantes orales directos</div><section class="anexo-seccion">
+        <div class="anexo-drug-wrap t-acod-2">
+              <div class="anexo-drug-h">
+                Edoxabán <span class="alias">(inhibidor directo factor Xa · oral · requiere heparina puente)</span>
+              </div>
+              <div class="anexo-drug-box">
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Indicaciones en TEP</div>
+                  <ul>
+                    <li>TEP agudo sintomático no masivo tras anticoagulación parenteral inicial mínima de 5–10 días (HBPM o HNF).</li>
+                    <li>TEP en pacientes con cáncer (ensayo Hokusai-VTE Cancer).</li>
+                  </ul>
+                  <div class="anexo-note">
+                    <strong>Importante:</strong> A diferencia de rivaroxabán y apixabán, edoxabán requiere anticoagulación parenteral previa (HBPM mínimo 5 días) antes de iniciar. No se usa en monoterapia desde el diagnóstico.
+                  </div>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Dosis y forma de administración</div>
+                  <table class="table-main">
+                    <thead>
+                      <tr>
+                        <th>Situación</th>
+                        <th>Dosis</th>
+                        <th>Frecuencia</th>
+                        <th>Notas</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Tratamiento estándar</strong></td>
+                        <td><strong>60 mg</strong></td>
+                        <td>1 vez al día</td>
+                        <td>Tras ≥ 5 días de HBPM. Con o sin alimentos.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Dosis reducida</strong></td>
+                        <td><strong>30 mg</strong></td>
+                        <td>1 vez al día</td>
+                        <td>Si: FGe 15–50 mL/min, peso ≤ 60 kg, o uso de verapamilo/quinidina/dronedarona.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Ajuste en insuficiencia renal</div>
+                  <table class="table-main">
+                    <thead><tr><th>FGe (mL/min/1,73 m²)</th><th>Dosis</th></tr></thead>
+                    <tbody>
+                      <tr><td><strong>&gt; 50</strong></td><td>60 mg/día (dosis estándar)</td></tr>
+                      <tr><td><strong>15 – 50</strong></td><td><strong>30 mg/día</strong> (reducción de dosis obligatoria)</td></tr>
+                      <tr><td><strong>&lt; 15 / Diálisis</strong></td><td><span class="etiq etiq-abs">CI</span> Contraindicado</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Contraindicaciones y factores clave</div>
+                  <ul>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> FGe &lt; 15 mL/min</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Hepatopatía con coagulopatía significativa</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Hemorragia activa, embarazo, lactancia</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Inhibidores de la gP (ciclosporina, dronedarona, eritromicina, ketoconazol oral): aumentan exposición → reducir a 30 mg</li>
+                    <li><span class="etiq etiq-nota">NOTA</span> Paradoja de edoxabán a FGe muy alto (&gt; 95 mL/min): menor eficacia documentada en FANV — en TEP usar con precaución si FGe muy elevado</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </section>
+
+        <section class="anexo-seccion">
+        <div class="anexo-drug-wrap t-acod-3">
+              <div class="anexo-drug-h">
+                Dabigatrán <span class="alias">(inhibidor directo de la trombina · oral · requiere heparina puente)</span>
+              </div>
+              <div class="anexo-drug-box">
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Dosis y forma de administración</div>
+                  <table class="table-main">
+                    <thead>
+                      <tr><th>Fase</th><th>Dosis</th><th>Notas</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Tratamiento y mantenimiento</strong></td>
+                        <td><strong>150 mg/12 h</strong></td>
+                        <td>Tras ≥ 5 días de HBPM o HNF. Con o sin alimentos. No abrir cápsula.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Pacientes ≥ 80 años o alto riesgo GI</strong></td>
+                        <td><strong>110 mg/12 h</strong></td>
+                        <td>Reducción validada en FANV; en TEP, datos limitados.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Ajuste en insuficiencia renal</div>
+                  <table class="table-main">
+                    <thead><tr><th>FGe (mL/min/1,73 m²)</th><th>Conducta</th></tr></thead>
+                    <tbody>
+                      <tr><td><strong>≥ 30</strong></td><td>Sin ajuste necesario. Monitorizar función renal anualmente o ante cualquier evento que la comprometa.</td></tr>
+                      <tr><td><strong>15 – 29</strong></td><td><span class="etiq etiq-abs">CI</span> Contraindicado (excreción renal ~80%).</td></tr>
+                      <tr><td><strong>&lt; 15 / Diálisis</strong></td><td><span class="etiq etiq-abs">CI</span> Contraindicado.</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="anexo-note anexo-note--danger">
+                    <strong>Atención especial:</strong> Dabigatrán es el ACOD con mayor dependencia renal (~80% excreción renal). Cualquier deterioro agudo de la función renal (deshidratación, contraste yodado, AINE, infección) puede provocar acumulación y sangrado grave. Controlar creatinina cada 3-6 meses o ante cambio clínico.
+                  </div>
+                </div>
+        
+                <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Contraindicaciones</div>
+                  <ul>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> FGe &lt; 30 mL/min</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Hemorragia activa</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Inhibidores de la gP (itraconazol, ciclosporina, tacrolimús): aumentan ~150% la exposición</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Hepatopatía con elevación de transaminasas &gt; 2 × LSN</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Embarazo y lactancia</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Inductores de gP (rifampicina, hierba de San Juan): reducen eficacia</li>
+                    <li><span class="etiq etiq-nota">ANTÍDOTO</span> Idarucizumab (Praxbind®) — antídoto específico aprobado. Dosis: 5 g IV (2 viales × 2,5 g).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo" data-nav="Tabla resumen comparativa" data-nav-group="ACOD">
+      <div class="page-anexo-cuerpo">
+        <div class="anexo-page-family anexo-page-family--acod">ACOD · tabla resumen</div><section class="anexo-seccion">
+        <div class="anexo-subblock" style="margin-top:24px;">
+              <div class="anexo-subtitle">Tabla resumen comparativa — ACOD en TEP</div>
+              <table class="table-main">
+                <thead>
+                  <tr>
+                    <th>ACOD</th>
+                    <th>Heparina puente</th>
+                    <th>Dosis inicial (TEP)</th>
+                    <th>FGe mínimo</th>
+                    <th>Antídoto</th>
+                    <th>Tomas/día</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Rivaroxabán</strong></td>
+                    <td>No</td>
+                    <td>15 mg/12 h × 21 días</td>
+                    <td>≥ 30 mL/min</td>
+                    <td>Andexanet alfa</td>
+                    <td>2 (inicial) → 1</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Apixabán</strong></td>
+                    <td>No</td>
+                    <td>10 mg/12 h × 7 días</td>
+                    <td>≥ 15 mL/min (con precaución)</td>
+                    <td>Andexanet alfa</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Edoxabán</strong></td>
+                    <td>Sí (≥ 5 días)</td>
+                    <td>60 mg/24 h (30 mg si factores)</td>
+                    <td>≥ 15 mL/min</td>
+                    <td>Andexanet alfa</td>
+                    <td>1</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Dabigatrán</strong></td>
+                    <td>Sí (≥ 5 días)</td>
+                    <td>150 mg/12 h</td>
+                    <td>≥ 30 mL/min</td>
+                    <td>Idarucizumab</td>
+                    <td>2</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo" data-nav="HBPM" data-nav-group="HBPM">
+      <div class="page-anexo-cuerpo">
+        <div class="anexo-page-family anexo-page-family--hbpm">HBPM · heparinas de bajo peso molecular</div><section class="anexo-seccion">
+        <h2 class="anexo-section-title">2. Heparina de bajo peso molecular (HBPM)</h2>
+        
+            <p>Las HBPM son el anticoagulante parenteral de elección en el TEP agudo cuando se requiere anticoagulación parenteral: como puente hacia ACOD (edoxabán, dabigatrán) o AVK, como tratamiento definitivo en cáncer activo, insuficiencia renal grave o embarazo, y en los primeros días del TEP masivo tras fibrinolisis.</p>
+        
+            <div class="anexo-note anexo-note--info" style="margin-bottom:18px;">
+              <strong>Mecanismo:</strong> Las HBPM inhiben preferentemente el factor Xa (relación anti-Xa/anti-IIa de 2:1 a 4:1 según el agente), con respuesta anticoagulante predecible y escasa necesidad de monitorización en pacientes con función renal y peso normales.
+            </div>
+        <div class="anexo-drug-wrap t-hbpm-0">
+              <div class="anexo-drug-h">
+                Enoxaparina <span class="alias">(HBPM de referencia · subcutánea)</span>
+              </div>
+              <div class="anexo-drug-box">
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Dosis terapéutica en TEP</div>
+                  <table class="table-main">
+                    <thead>
+                      <tr>
+                        <th>Pauta</th>
+                        <th>Dosis</th>
+                        <th>Vía</th>
+                        <th>Notas</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Cada 12 horas (preferida)</strong></td>
+                        <td><strong>1 mg/kg/12 h</strong></td>
+                        <td>SC</td>
+                        <td>Dosis terapéutica estándar. Pauta de 12h preferida por mayor estabilidad de niveles.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Cada 24 horas (alternativa)</strong></td>
+                        <td><strong>1,5 mg/kg/24 h</strong></td>
+                        <td>SC</td>
+                        <td>Dosis única diaria. Puede usarse en TEP no masivo cuando el cumplimiento de dos inyecciones sea problemático.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Tabla de dosificación por peso real</div>
+                  <table class="table-main">
+                    <thead class="">
+                      <tr>
+                        <th>Peso (kg)</th>
+                        <th>1 mg/kg/12 h</th>
+                        <th>Presentación habitual</th>
+                        <th>1,5 mg/kg/24 h</th>
+                        <th>Presentación habitual</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>40–50</td><td>40–50 mg/12 h</td><td>40 mg + 40 mg o 60 mg - 40 mg</td><td>60–75 mg/24 h</td><td>60 mg o 80 mg</td></tr>
+                      <tr><td>50–60</td><td>50–60 mg/12 h</td><td>60 mg/12 h</td><td>75–90 mg/24 h</td><td>80 mg o 100 mg</td></tr>
+                      <tr><td>60–70</td><td>60–70 mg/12 h</td><td>60 mg o 80 mg/12 h</td><td>90–105 mg/24 h</td><td>100 mg</td></tr>
+                      <tr><td>70–80</td><td>70–80 mg/12 h</td><td>80 mg/12 h</td><td>105–120 mg/24 h</td><td>120 mg</td></tr>
+                      <tr><td>80–90</td><td>80–90 mg/12 h</td><td>80–100 mg/12 h</td><td>120–135 mg/24 h</td><td>120–150 mg</td></tr>
+                      <tr><td>90–100</td><td>90–100 mg/12 h</td><td>100 mg/12 h</td><td>135–150 mg/24 h</td><td>150 mg</td></tr>
+                      <tr><td>&gt; 100</td><td>100 mg/12 h (máximo habitual 100 mg/dosis)</td><td>100 mg/12 h</td><td>150 mg/24 h (techo)</td><td>150 mg</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="anexo-note" style="margin-top:10px;">
+                    <strong>Peso a utilizar:</strong> Usar el peso real del paciente. En obesidad mórbida (peso real &gt; 150 kg o IMC &gt; 40 kg/m²), calcular con peso ajustado [peso ideal + 0,4 × (peso real – peso ideal)] y monitorizar con niveles anti-Xa (objetivo: 0,6–1,0 UI/mL a las 4 h para pauta /12 h).
+                  </div>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Ajuste en insuficiencia renal</div>
+                  <table class="table-main">
+                    <thead><tr><th>FGe (mL/min/1,73 m²)</th><th>Conducta</th><th>Monitorización anti-Xa</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>≥ 30</strong></td>
+                        <td>Dosis estándar (1 mg/kg/12 h)</td>
+                        <td>No rutinaria. Valorar en extremos de peso.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>15 – 29</strong></td>
+                        <td>Reducir a <strong>1 mg/kg/24 h</strong> (una sola dosis diaria)</td>
+                        <td><strong>Obligatoria.</strong> Objetivo anti-Xa: 0,6–1,0 UI/mL (4 h postdosis)</td>
+                      </tr>
+                      <tr>
+                        <td><strong>&lt; 15 / Diálisis</strong></td>
+                        <td>Preferir <strong>HNF IV</strong> ajustada por TTPa. Si se usa enoxaparina, reducción extrema con monitorización estricta de anti-Xa (valorar 0,5 mg/kg/24 h).</td>
+                        <td>Obligatoria en cada administración inicialmente</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Contraindicaciones y precauciones</div>
+                  <ul>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Trombocitopenia inducida por heparina (TIH) tipo II documentada o sospechada</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Hemorragia activa clínicamente significativa</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Hipersensibilidad a heparina o derivados porcinos</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Endocarditis bacteriana activa (valorar riesgo-beneficio)</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Insuficiencia renal grave (FGe &lt; 30) — ajuste y monitorización</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Trombocitopenia &lt; 50.000/µL</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Anestesia neuroaxial o punción lumbar: respetar ventana de tiempo (12 h tras última dosis terapéutica antes de punción)</li>
+                    <li><span class="etiq etiq-nota">ANTÍDOTO</span> Sulfato de protamina neutraliza parcialmente (~60%) la actividad anti-Xa. Dosis: 1 mg por cada 100 UI anti-Xa de enoxaparina administrada en las últimas 8 h.</li>
+                  </ul>
+                </div>
+        
+                
+        </div>
+        </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo" data-nav="Factores especiales" data-nav-group="HBPM">
+      <div class="page-anexo-cuerpo">
+        <div class="anexo-page-family anexo-page-family--hbpm">HBPM · heparinas de bajo peso molecular</div><section class="anexo-seccion">
+        <div class="anexo-drug-wrap t-hbpm-1">
+              <div class="anexo-drug-h">
+                Enoxaparina <span class="alias">(HBPM de referencia · subcutánea)</span>
+              </div>
+              <div class="anexo-drug-box">
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Factores especiales</div>
+                  <table class="table-main">
+                    <thead><tr><th>Situación</th><th>Conducta</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Embarazo</strong></td>
+                        <td>HBPM es el anticoagulante de elección durante toda la gestación (ACOD y AVK contraindicados). Ajustar dosis por trimestre (el volumen de distribución aumenta). Monitorizar anti-Xa en segundo y tercer trimestre.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Cáncer activo</strong></td>
+                        <td>HBPM sigue siendo opción válida (guías avalan HBPM = ACOD en tumores no GI/GU). En tumores GI/GU con alto riesgo hemorrágico, HBPM preferida sobre ACOD.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>TEP masivo post-fibrinolisis</strong></td>
+                        <td>Reanudar anticoagulación con HBPM o HNF a dosis terapéutica a las 2-3 h tras finalizar la infusión de fibrinolítico y siempre que TTPa &lt; 80 s (si se usó HNF) o aPTT &lt; 2× normal.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Monitorización anti-Xa</strong></td>
+                        <td>Indicada en: IR moderada-grave, obesidad, bajo peso (&lt; 45 kg), embarazo, respuesta clínica inadecuada. Extraer muestra 4 h post-dosis (pauta /12 h). Objetivo: 0,6–1,0 UI/mL.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>TIH (trombocitopenia inducida por heparina)</strong></td>
+                        <td>Si descenso &gt; 50% de plaquetas entre día 4-14, solicitar anticuerpos anti-PF4. Si TIH confirmada: suspender TODA heparina e iniciar anticoagulación alternativa (argatrobán, danaparoide, bivalirudina).</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+        
+              </div>
+            </div>
+        </div>
+        </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo" data-nav="Fibrinólisis · rtPA" data-nav-group="Fibrinólisis · rtPA">
+      <div class="page-anexo-cuerpo">
+        <div class="anexo-page-family anexo-page-family--hbpm">HBPM · otras formulaciones</div><section class="anexo-seccion">
+        <div class="anexo-subblock" style="margin-top:6px;">
+              <div class="anexo-subtitle">Otras HBPM disponibles en TEP — dosis terapéuticas</div>
+              <table class="table-main">
+                <thead>
+                  <tr>
+                    <th>HBPM</th>
+                    <th>Dosis terapéutica (TEP)</th>
+                    <th>Frecuencia</th>
+                    <th>Comentario</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Tinzaparina</strong></td>
+                    <td>175 UI/kg/día</td>
+                    <td>1 vez al día (SC)</td>
+                    <td>Relación anti-Xa/anti-IIa 1,9:1. Menor acumulación en IR moderada que enoxaparina (catabolismo endotelial).</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Dalteparina</strong></td>
+                    <td>100 UI/kg/12 h o 200 UI/kg/24 h</td>
+                    <td>2 veces/día o 1 vez/día (SC)</td>
+                    <td>Validada en TEP asociado a cáncer (estudio CLOT). Máximo 18.000 UI/día en pauta única.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Nadroparina</strong></td>
+                    <td>86 UI/kg/12 h o 171 UI/kg/24 h</td>
+                    <td>2 veces/día o 1 vez/día (SC)</td>
+                    <td>Dosis máxima habitual 17.100 UI/12 h. Ajustar en IR (FGe &lt; 30: reducción del 25-33%).</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Bemiparina</strong></td>
+                    <td>115 UI/kg/día</td>
+                    <td>1 vez al día (SC)</td>
+                    <td>Vida media más larga (~5,3 h anti-Xa). Mínima acumulación renal. Datos limitados en TEP vs enoxaparina.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+        </section>
+
+        <div class="anexo-page-family anexo-page-family--fib">Fibrinolíticos · alteplasa (rt-PA)</div><section class="anexo-seccion">
+        <h2 class="anexo-section-title">3. Tratamiento fibrinolítico — Agentes fibrinoespecíficos</h2>
+        
+            <p>Los fibrinolíticos fibrinoespecíficos activan preferentemente el plasminógeno unido a la fibrina del trombo (a diferencia de los no específicos como estreptocinasa y uroquinasa, que generan fibrinólisis sistémica difusa). Se incluyen en esta sección únicamente los agentes fibrinoespecíficos con indicación validada en TEP: <strong>alteplasa</strong> y <strong>tenecteplasa</strong>.</p>
+
+            <div class="anexo-subblock" style="margin-bottom:12px;">
+              <div class="anexo-subtitle">Contraindicaciones a la fibrinolisis sistémica — referencia resumida</div>
+              <p class="anexo-muted" style="margin:0 0 5px 0;">Contenido trasladado desde la hoja de <strong>Terapias de reperfusión</strong> de la guía principal. Las monografías de alteplasa y tenecteplasa más abajo amplían el detalle clínico.</p>
+              <div class="anexo-grid-2">
+                <div class="col-neg">
+                  <h4>Absolutas</h4>
+                  <ol style="margin:0; padding-left:14px;">
+                    <li>Hemorragia intracraneal previa</li>
+                    <li>ACV isquémico reciente (&lt;3 meses)</li>
+                    <li>Cirugía o trauma SNC reciente (&lt;3 meses)</li>
+                    <li>Tumor intracraneal o MAV</li>
+                    <li>Diátesis hemorrágica conocida</li>
+                    <li>Sangrado GI reciente (&lt;1 mes)</li>
+                  </ol>
+                </div>
+                <div style="background:#fffbeb; border:1px solid #fcd34d; padding:3px 4px; border-radius:3px;">
+                  <h4 style="font-size:6.3pt; margin:0 0 2px 0;">Relativas</h4>
+                  <ol style="margin:0; padding-left:14px;">
+                    <li>AIT &lt;6 meses</li>
+                    <li>Anticoagulantes orales en curso</li>
+                    <li>Embarazo o 1ª semana posparto</li>
+                    <li>Punciones vasculares no compresibles</li>
+                    <li>Cirugía mayor o trauma &lt;3 semanas</li>
+                    <li>RCP prolongada</li>
+                    <li>Hepatopatía grave</li>
+                    <li>Endocarditis infecciosa</li>
+                    <li>Úlcera péptica activa</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+        
+            <div class="anexo-note anexo-note--danger" style="margin-bottom:20px;">
+              <strong>Indicación general:</strong> Los fibrinolíticos sistémicos están recomendados en TEP de <strong>alto riesgo (masivo)</strong> con inestabilidad hemodinámica (PA sistólica &lt; 90 mmHg durante ≥ 15 min, shock obstructivo) sin contraindicaciones absolutas (ESC 2019, Clase I-A; AHA 2023, Clase I). En TEP de <strong>riesgo intermedio-alto</strong> (submasivo), la decisión debe individualizarse y tomarse en equipo multidisciplinar (PERT). La fibrinolisis sistémica NO está indicada en TEP de bajo riesgo.
+            </div><div class="anexo-drug-wrap t-fib-0">
+              <div class="anexo-drug-h">
+                Alteplasa (rt-PA) <span class="alias">(activador tisular del plasminógeno recombinante · IV)</span>
+              </div>
+              <div class="anexo-drug-box">
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Mecanismo de acción</div>
+                  <p>Activador del plasminógeno de segunda generación producido por tecnología de ADN recombinante. Se une con alta afinidad al plasminógeno asociado a la fibrina del trombo y lo convierte en plasmina de forma localizada. Vida media plasmática muy corta (4–8 minutos). Fibrinoespecífico a dosis terapéuticas, aunque a dosis altas puede existir cierta activación sistémica del plasminógeno libre.</p>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Pautas de administración y dosis</div>
+        
+                  <table class="table-main">
+                    <thead>
+                      <tr>
+                        <th>Pauta</th>
+                        <th>Dosis total</th>
+                        <th>Administración</th>
+                        <th>Indicación preferente</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Pauta estándar (TEP masivo)</strong></td>
+                        <td><strong>100 mg</strong></td>
+                        <td>10 mg IV en bolo lento (1–2 min) + 90 mg en infusión IV durante <strong>2 horas</strong></td>
+                        <td>TEP masivo hemodinámicamente inestable. Primera línea. Independiente del peso.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Pauta acelerada / urgencia extrema</strong></td>
+                        <td><strong>0,6 mg/kg</strong> (máx. 50 mg)</td>
+                        <td>Infusión IV durante <strong>15 minutos</strong>. Administrar la dosis total sin bolo separado.</td>
+                        <td>Parada cardiorrespiratoria por TEP, inestabilidad extrema, no tiempo para pauta estándar.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+        
+                  <div class="anexo-note" style="margin-top:12px;">
+                    <strong>Anticoagulación concomitante:</strong> Suspender la infusión de HNF (si estaba en curso) durante la administración de alteplasa. Reiniciar anticoagulación con HNF sin bolo de carga cuando el TTPa sea &lt; 80 s (típicamente 2–3 h tras finalizar la infusión). No administrar HBPM durante la infusión.
+                  </div>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Dosis acelerada (0,6 mg/kg) por peso del paciente</div>
+                  <table class="table-main">
+                    <thead class="">
+                      <tr>
+                        <th>Peso (kg)</th>
+                        <th>Dosis calculada (0,6 mg/kg)</th>
+                        <th>Dosis a administrar</th>
+                        <th>Observación</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>&lt; 40</td><td>24 mg</td><td>24 mg en 15 min</td><td>Sin ajuste adicional</td></tr>
+                      <tr><td>40–50</td><td>24–30 mg</td><td>24–30 mg en 15 min</td><td>Sin ajuste adicional</td></tr>
+                      <tr><td>50–60</td><td>30–36 mg</td><td>30–36 mg en 15 min</td><td>Sin ajuste adicional</td></tr>
+                      <tr><td>60–70</td><td>36–42 mg</td><td>36–42 mg en 15 min</td><td>Sin ajuste adicional</td></tr>
+                      <tr><td>70–80</td><td>42–48 mg</td><td>42–48 mg en 15 min</td><td>Sin ajuste adicional</td></tr>
+                      <tr><td>80–83</td><td>48–50 mg</td><td>48–50 mg en 15 min</td><td>Aproximar a 50 mg si &gt; 83 kg</td></tr>
+                      <tr><td><strong>≥ 83 kg</strong></td><td>&gt; 50 mg</td><td><strong>50 mg (dosis máxima)</strong></td><td>El cálculo supera el techo. Máximo 50 mg.</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="anexo-note anexo-note--info" style="margin-top:10px;">
+                    <strong>Nota:</strong> En la pauta estándar (100 mg/2h), la dosis NO se ajusta por peso. Se administran siempre 100 mg independientemente del peso del paciente.
+                  </div>
+                </div>
+        
+                
+        </div>
+        </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo" data-nav="Alteplasa (rt-PA)" data-nav-group="Fibrinólisis · rtPA">
+      <div class="page-anexo-cuerpo">
+        <div class="anexo-page-family anexo-page-family--fib">Fibrinolíticos · alteplasa (rt-PA) · continuación</div><section class="anexo-seccion">
+        <div class="anexo-drug-wrap t-fib-1">
+              <div class="anexo-drug-h">
+                Alteplasa (rt-PA) <span class="alias">(activador tisular del plasminógeno recombinante · IV)</span>
+              </div>
+              <div class="anexo-drug-box">
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Riesgo hemorrágico</div>
+                  <table class="table-main">
+                    <thead><tr><th>Tipo de hemorragia</th><th>Incidencia</th><th>Contexto</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Intracraneal (ICH)</strong></td>
+                        <td><strong>1,8 – 2,1%</strong></td>
+                        <td>Principal causa de mortalidad por complicación hemorrágica. Riesgo mayor con edad &gt; 65 años, HTA no controlada, ACV previo, anticoagulación previa. PEITHO trial: ICH 2,4% alteplasa vs 0,2% placebo.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Hemorragia mayor no intracraneal</strong></td>
+                        <td><strong>13 – 21%</strong></td>
+                        <td>Incluye hemorragia GI, retroperitoneal, en zonas de punción, hemoptisis.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Mortalidad hemorrágica</strong></td>
+                        <td><strong>&lt; 1%</strong></td>
+                        <td>Globalmente baja, pero riesgo real si ICH grave.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+        
+                  <div class="anexo-subblock" style="margin-top:14px;">
+                    <div class="anexo-subtitle">Factores de riesgo hemorrágico individual</div>
+                    <ul>
+                      <li>Edad &gt; 75 años (riesgo ICH considerablemente mayor)</li>
+                      <li>HTA sistólica &gt; 160 mmHg en el momento de la administración</li>
+                      <li>ACV isquémico previo (especialmente &lt; 3 meses)</li>
+                      <li>Cirugía mayor o traumatismo en los últimos 10 días</li>
+                      <li>Anticoagulación oral activa (INR &gt; 1,5 o uso de ACOD)</li>
+                      <li>Trombocitopenia (&lt; 100.000/µL)</li>
+                      <li>Sexo femenino (mayor riesgo relativo documentado)</li>
+                    </ul>
+                  </div>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Contraindicaciones</div>
+                  <p><strong>En TEP de alto riesgo (masivo) con parada cardiaca o shock grave, las contraindicaciones relativas pueden no aplicarse dado que el beneficio supera claramente el riesgo.</strong></p>
+                  <table class="table-main">
+                    <thead><tr><th>Tipo</th><th>Contraindicación</th></tr></thead>
+                    <tbody>
+                      <tr><td><span class="etiq etiq-abs">ABSOLUTA</span></td><td>ACV hemorrágico previo (en cualquier momento)</td></tr>
+                      <tr><td><span class="etiq etiq-abs">ABSOLUTA</span></td><td>ACV isquémico o AIT en los últimos 3 meses</td></tr>
+                      <tr><td><span class="etiq etiq-abs">ABSOLUTA</span></td><td>Neoplasia intracraneal, malformación arteriovenosa o aneurisma conocidos</td></tr>
+                      <tr><td><span class="etiq etiq-abs">ABSOLUTA</span></td><td>Hemorragia interna activa (excluye menstruación)</td></tr>
+                      <tr><td><span class="etiq etiq-abs">ABSOLUTA</span></td><td>TCE grave o neurocirugía en los últimos 3 meses</td></tr>
+                      <tr><td><span class="etiq etiq-rel">RELATIVA</span></td><td>HTA grave no controlada (sistólica &gt; 180 mmHg o diastólica &gt; 110 mmHg)</td></tr>
+                      <tr><td><span class="etiq etiq-rel">RELATIVA</span></td><td>Cirugía mayor, biopsia, trauma significativo en los últimos 10 días</td></tr>
+                      <tr><td><span class="etiq etiq-rel">RELATIVA</span></td><td>RCP prolongada (&gt; 10 min) o traumática</td></tr>
+                      <tr><td><span class="etiq etiq-rel">RELATIVA</span></td><td>Punción vascular en lugar no compresible reciente</td></tr>
+                      <tr><td><span class="etiq etiq-rel">RELATIVA</span></td><td>Anticoagulación oral activa (INR &gt; 1,7)</td></tr>
+                      <tr><td><span class="etiq etiq-rel">RELATIVA</span></td><td>Trombocitopenia &lt; 100.000/µL o diátesis hemorrágica conocida</td></tr>
+                      <tr><td><span class="etiq etiq-rel">RELATIVA</span></td><td>Embarazo o menos de 1 semana postparto</td></tr>
+                      <tr><td><span class="etiq etiq-rel">RELATIVA</span></td><td>Úlcera péptica activa</td></tr>
+                      <tr><td><span class="etiq etiq-rel">RELATIVA</span></td><td>Endocarditis infecciosa</td></tr>
+                      <tr><td><span class="etiq etiq-rel">RELATIVA</span></td><td>Edad &gt; 75 años (riesgo ICH aumentado: valorar riesgo-beneficio individual)</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Manejo de complicaciones hemorrágicas</div>
+                  <ul>
+                    <li><strong>Hemorragia grave / ICH:</strong> Suspender alteplasa inmediatamente. Ácido tranexámico 1 g IV (o ácido aminocaproico). Si coagulopatía: plasma fresco congelado (PFC) o crioprecipitado (fibrinógeno &lt; 100 mg/dL). No existe antídoto específico.</li>
+                    <li><strong>Hemorragia en zona de punción:</strong> Compresión manual durante al menos 20 min. Evitar punciones innecesarias durante y hasta 24 h tras la infusión.</li>
+                  </ul>
+                </div>
+        
+                
+        </div>
+        </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo" data-nav="Alteplasa (rt-PA)" data-nav-group="Fibrinólisis · rtPA">
+      <div class="page-anexo-cuerpo">
+        <div class="anexo-page-family anexo-page-family--fib">Fibrinolíticos · alteplasa (rt-PA) · continuación</div><section class="anexo-seccion">
+        <div class="anexo-drug-wrap t-fib-2">
+              <div class="anexo-drug-h">
+                Alteplasa (rt-PA) <span class="alias">(activador tisular del plasminógeno recombinante · IV)</span>
+              </div>
+              <div class="anexo-drug-box">
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Recomendaciones de guías (alteplasa)</div>
+                  <table class="table-main">
+                    <thead><tr><th>Guía</th><th>Nivel de riesgo</th><th>Clase</th><th>Nivel evidencia</th><th>Notas</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td>ESC 2019</td>
+                        <td>Alto (masivo)</td>
+                        <td><strong>I-A</strong></td>
+                        <td>A</td>
+                        <td>Primera línea. Pauta 100 mg/2 h como referencia.</td>
+                      </tr>
+                      <tr>
+                        <td>AHA 2023</td>
+                        <td>Alto (masivo)</td>
+                        <td><strong>I-A</strong></td>
+                        <td>A</td>
+                        <td>Clase I cuando PA sistólica &lt; 90 mmHg.</td>
+                      </tr>
+                      <tr>
+                        <td>ESC 2019</td>
+                        <td>Intermedio-alto</td>
+                        <td><strong>IIa-B</strong></td>
+                        <td>B</td>
+                        <td>Solo si deterioro hemodinámico a pesar de anticoagulación. Equipo multidisciplinar (PERT).</td>
+                      </tr>
+                      <tr>
+                        <td>AHA 2023</td>
+                        <td>Intermedio-alto</td>
+                        <td><strong>IIb-B</strong></td>
+                        <td>B</td>
+                        <td>Seleccionado: PESI III-IV + disfunción VD + troponinas elevadas. Decisión individualizada.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Ventajas y desventajas</div>
+                  <div class="anexo-grid-2">
+                    <div class="col-pos">
+                      <h4>✔ Ventajas</h4>
+                      <ul>
+                        <li>Agente de referencia más estudiado en TEP</li>
+                        <li>Alta especificidad por fibrina a dosis terapéuticas</li>
+                        <li>Dos pautas disponibles: estándar 2h o acelerada 15 min</li>
+                        <li>Pauta 0,6 mg/kg especialmente útil en PCR por TEP</li>
+                        <li>Guías ESC y AHA: recomendación Clase I-A en TEP masivo</li>
+                        <li>Amplia experiencia clínica acumulada</li>
+                      </ul>
+                    </div>
+                    <div class="col-neg">
+                      <h4>✘ Desventajas</h4>
+                      <ul>
+                        <li>ICH ~2%: riesgo real y potencialmente fatal</li>
+                        <li>Sin antídoto específico (sólo medidas de soporte)</li>
+                        <li>Requiere suspensión de anticoagulación durante infusión</li>
+                        <li>Precisa monitorización estrecha durante y tras la infusión</li>
+                        <li>Coste elevado</li>
+                        <li>Contraindicada en gran número de situaciones</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+        
+              </div>
+            </div>
+        </div>
+        </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo" data-nav="Tenecteplasa (TNK-tPA)" data-nav-group="Fibrinólisis · rtPA">
+      <div class="page-anexo-cuerpo">
+        <div class="anexo-page-family anexo-page-family--fib">Fibrinolíticos · tenecteplasa (TNK)</div><section class="anexo-seccion">
+        <div class="anexo-drug-wrap t-fib-0">
+              <div class="anexo-drug-h">
+                Tenecteplasa (TNK-tPA) <span class="alias">(variante mutante del rt-PA · bolo IV único)</span>
+              </div>
+              <div class="anexo-drug-box">
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Mecanismo de acción</div>
+                  <p>Variante del activador tisular del plasminógeno obtenida mediante mutagénesis dirigida en tres posiciones de la proteína (T, N y K, de ahí su nombre). Presenta mayor especificidad por la fibrina, mayor resistencia al inhibidor endógeno PAI-1 (4 veces superior al rt-PA) y vida media más larga (20–24 min), lo que permite la administración en bolo único. Estas características garantizan una fibrinólisis más selectiva y una mayor estabilidad plasmática.</p>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Pauta de administración</div>
+                  <div class="anexo-note anexo-note--ok" style="margin-bottom:10px;">
+                    <strong>Bolo IV único en 5–10 segundos.</strong> No requiere infusión prolongada. Esta es la principal ventaja operacional de tenecteplasa frente a alteplasa: la administración es inmediata, simplificando el tratamiento en urgencias, UCI y parada cardiaca.
+                  </div>
+                  <table class="table-main">
+                    <thead>
+                      <tr>
+                        <th>Pauta</th>
+                        <th>Dosis</th>
+                        <th>Duración</th>
+                        <th>Notas</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Dosis estándar (TEP masivo, validada)</strong></td>
+                        <td><strong>30–50 mg ajustado por peso</strong> (ver tabla)</td>
+                        <td>Bolo único IV en <strong>5–10 segundos</strong></td>
+                        <td>Dosis validada principalmente en IAM. Usada off-label en TEP masivo. Dosis máxima 50 mg.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Mitad de dosis (HI-PEITHO 2024, TEP intermedio-alto)</strong></td>
+                        <td><strong>15–25 mg (mitad de la dosis por peso)</strong></td>
+                        <td>Bolo único IV en 5–10 segundos</td>
+                        <td>Reduce ICH ~75% (0,5% vs 2%) manteniendo eficacia. Pendiente actualización formal de guías.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Dosis ajustada por peso (pauta estándar)</div>
+                  <table class="table-main">
+                    <thead class="">
+                      <tr>
+                        <th>Peso del paciente (kg)</th>
+                        <th>Dosis tenecteplasa</th>
+                        <th>Mitad de dosis (HI-PEITHO)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td><strong>&lt; 60</strong></td><td>30 mg</td><td>15 mg</td></tr>
+                      <tr><td><strong>60 – 69</strong></td><td>35 mg</td><td>17,5 mg</td></tr>
+                      <tr><td><strong>70 – 79</strong></td><td>40 mg</td><td>20 mg</td></tr>
+                      <tr><td><strong>80 – 89</strong></td><td>45 mg</td><td>22,5 mg</td></tr>
+                      <tr><td><strong>≥ 90</strong></td><td>50 mg (máximo)</td><td>25 mg (máximo)</td></tr>
+                    </tbody>
+                  </table>
+                  <div class="anexo-note anexo-note--info" style="margin-top:10px;">
+                    <strong>HI-PEITHO (NEJM 2024):</strong> Estudio multicéntrico europeo en TEP de riesgo intermedio-alto. La mitad de dosis de tenecteplasa redujo el endpoint primario combinado (muerte cardiovascular + deterioro hemodinámico) en un 44% (RR 0,56) frente a placebo, con reducción de ICH de 2% a 0,5%. La dosis reducida no está aún formalmente incluida en las guías ESC, pero está siendo considerada en la revisión 2024/2025.
+                  </div>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Riesgo hemorrágico</div>
+                  <table class="table-main">
+                    <thead><tr><th>Tipo</th><th>Dosis estándar</th><th>Mitad de dosis (HI-PEITHO)</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Hemorragia intracraneal (ICH)</strong></td>
+                        <td><strong>1,4 – 2,0%</strong></td>
+                        <td><strong>~0,5%</strong> (reducción significativa)</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Hemorragia mayor no intracraneal</strong></td>
+                        <td><strong>15 – 20%</strong></td>
+                        <td>Datos en consolidación (≈ 11–15%)</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Mortalidad hemorrágica</strong></td>
+                        <td>&lt; 1%</td>
+                        <td>&lt; 1%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p class="anexo-muted" style="margin-top:8px;">Los factores de riesgo hemorrágico son los mismos que para alteplasa. Edad &gt; 75 años, HTA no controlada y ACV previo son los más relevantes.</p>
+                </div>
+        
+                
+        </div>
+        </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo" data-nav="Tenecteplasa (TNK-tPA)" data-nav-group="Fibrinólisis · rtPA">
+      <div class="page-anexo-cuerpo">
+        <div class="anexo-page-family anexo-page-family--fib">Fibrinolíticos · tenecteplasa (TNK) · continuación</div><section class="anexo-seccion">
+        <div class="anexo-drug-wrap t-fib-1">
+              <div class="anexo-drug-h">
+                Tenecteplasa (TNK-tPA) <span class="alias">(variante mutante del rt-PA · bolo IV único)</span>
+              </div>
+              <div class="anexo-drug-box">
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Contraindicaciones</div>
+                  <p>Las contraindicaciones son equivalentes a las de alteplasa (ver sección anterior). Se añade:</p>
+                  <ul>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> ACV hemorrágico previo</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> ACV isquémico en los últimos 3 meses</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Neoplasia intracraneal o MAV conocida</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> Hemorragia interna activa</li>
+                    <li><span class="etiq etiq-abs">ABSOLUTA</span> TCE grave reciente (&lt; 2 meses)</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> HTA grave no controlada</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Cirugía mayor o punción no compresible reciente (&lt; 10 días)</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Anticoagulación activa (INR &gt; 1,7 o ACOD)</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> RCP traumática o prolongada &gt; 10 min</li>
+                    <li><span class="etiq etiq-rel">RELATIVA</span> Embarazo o &lt; 1 semana postparto</li>
+                  </ul>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Recomendaciones de guías (tenecteplasa)</div>
+                  <table class="table-main">
+                    <thead><tr><th>Guía</th><th>Nivel de riesgo</th><th>Clase</th><th>Nivel evidencia</th><th>Notas</th></tr></thead>
+                    <tbody>
+                      <tr>
+                        <td>ESC 2019</td>
+                        <td>Alto (masivo)</td>
+                        <td><strong>I-A</strong></td>
+                        <td>A</td>
+                        <td>Aceptada como alternativa a alteplasa. El bolo único es ventaja operacional en urgencias.</td>
+                      </tr>
+                      <tr>
+                        <td>AHA 2023</td>
+                        <td>Alto (masivo)</td>
+                        <td><strong>I-A</strong></td>
+                        <td>A</td>
+                        <td>Alternativa válida a alteplasa en TEP masivo. Práctica clínica emergente.</td>
+                      </tr>
+                      <tr>
+                        <td>ESC 2024 (prelim.)</td>
+                        <td>Intermedio-alto</td>
+                        <td><strong>IIa-B</strong></td>
+                        <td>B</td>
+                        <td>HI-PEITHO 2024: mitad de dosis con menor ICH. Incorporación formal esperada en guías ESC 2024/2025.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+        
+                
+        <div class="anexo-subblock">
+                  <div class="anexo-subtitle">Ventajas y desventajas</div>
+                  <div class="anexo-grid-2">
+                    <div class="col-pos">
+                      <h4>✔ Ventajas</h4>
+                      <ul>
+                        <li>Bolo único en 5–10 segundos: máxima simplicidad de administración</li>
+                        <li>Mayor especificidad fibrina que alteplasa</li>
+                        <li>Mayor resistencia al PAI-1 (4 veces superior): mayor estabilidad</li>
+                        <li>Vida media más larga: dosis única sin necesidad de infusión</li>
+                        <li>Ideal en PCR por TEP o inestabilidad extrema</li>
+                        <li>HI-PEITHO 2024: mitad de dosis reduce ICH de 2% a 0,5%</li>
+                        <li>Dosis ajustada por rangos de peso (5 tramos de 10 kg)</li>
+                      </ul>
+                    </div>
+                    <div class="col-neg">
+                      <h4>✘ Desventajas</h4>
+                      <ul>
+                        <li>Menos datos en TEP que en IAM (indicación validada históricamente en IAM)</li>
+                        <li>Uso en TEP: parcialmente off-label en muchos países</li>
+                        <li>Sin antídoto específico (mismas limitaciones que alteplasa)</li>
+                        <li>Evidencia en TEP intermedio aún en consolidación (HI-PEITHO 2024 pendiente de guías)</li>
+                        <li>Coste elevado</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+        
+              </div>
+            </div>
+        </div>
+        </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+    <div class="page page-anexo page-anexo--last" data-nav="Comparativa" data-nav-group="Fibrinólisis · rtPA">
+      <div class="page-anexo-cuerpo">
+        <div class="anexo-page-family anexo-page-family--fib">Fibrinolíticos · comparativa y post-fibrinolisis</div><section class="anexo-seccion">
+        <div class="anexo-subblock" style="margin-top:10px;">
+              <div class="anexo-subtitle">Comparativa rápida — Alteplasa vs Tenecteplasa en TEP</div>
+              <table class="table-main">
+                <thead>
+                  <tr>
+                    <th>Parámetro</th>
+                    <th>Alteplasa (rt-PA)</th>
+                    <th>Tenecteplasa (TNK-tPA)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>Tipo</strong></td><td>rt-PA recombinante</td><td>Variante mutante del rt-PA</td></tr>
+                  <tr><td><strong>Especificidad por fibrina</strong></td><td>Alta</td><td>Muy alta (mayor que alteplasa)</td></tr>
+                  <tr><td><strong>Resistencia al PAI-1</strong></td><td>Moderada</td><td>Alta (4× superior)</td></tr>
+                  <tr><td><strong>Vida media</strong></td><td>4–8 min</td><td>20–24 min</td></tr>
+                  <tr><td><strong>Dosis (TEP masivo)</strong></td><td>100 mg (fija) o 0,6 mg/kg máx 50 mg</td><td>30–50 mg según peso (rangos 10 kg)</td></tr>
+                  <tr><td><strong>Administración</strong></td><td>Infusión 2h (estándar) o 15 min (urgencia)</td><td>Bolo único 5–10 segundos</td></tr>
+                  <tr><td><strong>ICH (dosis estándar)</strong></td><td>1,8–2,1%</td><td>1,4–2,0%</td></tr>
+                  <tr><td><strong>ICH (dosis reducida)</strong></td><td>No validada</td><td>~0,5% (HI-PEITHO 2024)</td></tr>
+                  <tr><td><strong>Recomendación guías TEP masivo</strong></td><td>ESC/AHA Clase I-A</td><td>ESC/AHA Clase I-A</td></tr>
+                  <tr><td><strong>Recomendación TEP intermedio-alto</strong></td><td>ESC IIa-B / AHA IIb-B</td><td>ESC IIa-B (prelim. 2024)</td></tr>
+                  <tr><td><strong>Antídoto</strong></td><td>No específico (ácido tranexámico, PFC)</td><td>No específico (idem)</td></tr>
+                  <tr><td><strong>Coste relativo</strong></td><td>Alto</td><td>Alto</td></tr>
+                </tbody>
+              </table>
+            </div>
+        <div class="anexo-subblock" style="margin-top:16px;">
+              <div class="anexo-subtitle">Manejo anticoagulante tras fibrinolisis</div>
+              <table class="table-main">
+                <thead><tr><th>Momento</th><th>Conducta anticoagulante</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Durante la infusión</strong></td>
+                    <td>Suspender HNF si estaba en marcha. No administrar HBPM.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Inmediatamente tras finalizar</strong></td>
+                    <td>Medir TTPa o TT (tiempo de trombina). Esperar ≥ 2–3 h.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Si TTPa &lt; 80 s (o TT &lt; 2× normal)</strong></td>
+                    <td>Iniciar HNF IV sin bolo de carga a ritmo de 18 UI/kg/h. Ajustar según TTPa (objetivo 60–100 s).</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Si TTPa ≥ 80 s</strong></td>
+                    <td>Esperar y re-controlar hasta que el TTPa sea aceptable antes de iniciar heparina.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Transición a HBPM o ACOD</strong></td>
+                    <td>Una vez estabilizado y sin requerimiento de ajuste continuo de HNF IV, transición a HBPM SC y posteriormente a ACOD oral o a AVK según protocolo del centro y características del paciente.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+        </section>
+      </div>
+      <div class="footer">Servicio de Medicina Intensiva · Protocolo TEP v1.0 · Marzo 2026</div>
+    </div>
+
+  <script>
+    (function () {
+      if (window.matchMedia && window.matchMedia('print').matches) return;
+
+      var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
+      if (!pages.length) return;
+
+      var nav = document.createElement('nav');
+      nav.className = 'indice-lateral no-print';
+      nav.setAttribute('aria-label', 'Índice lateral');
+      nav.innerHTML = '<p class="toc-kicker">Protocolo UCI</p><h2>TEP · Índice</h2><ul></ul>';
+      var list = nav.querySelector('ul');
+
+      function sanitizeId(text) {
+        return text
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+      }
+
+      function pageTitle(page, idx) {
+        if (page.getAttribute('data-nav')) return page.getAttribute('data-nav');
+        var titleEl = page.querySelector('.header-main h1, h1, h2');
+        return titleEl ? titleEl.textContent.trim().replace(/\s+/g, ' ') : 'Sección ' + (idx + 1);
+      }
+
+      function assignId(page, title, idx) {
+        var idBase = sanitizeId(title) || 'seccion-' + (idx + 1);
+        var id = idBase;
+        var suffix = 2;
+        while (document.getElementById(id)) {
+          id = idBase + '-' + suffix;
+          suffix += 1;
+        }
+        page.id = id;
+        return id;
+      }
+
+      function makeLink(page, idx, title) {
+        var a = document.createElement('a');
+        a.href = '#' + page.id;
+        a.textContent = (idx + 1) + '. ' + title;
+        a.dataset.target = page.id;
+        return a;
+      }
+
+      var i = 0;
+      while (i < pages.length) {
+        var page = pages[i];
+        var group = page.getAttribute('data-nav-group');
+        if (group) {
+          var details = document.createElement('details');
+          details.className = 'indice-grupo';
+          var summary = document.createElement('summary');
+          summary.textContent = group;
+          details.appendChild(summary);
+          var sub = document.createElement('ul');
+          var firstInGroup = page;
+          while (i < pages.length && pages[i].getAttribute('data-nav-group') === group) {
+            var gPage = pages[i];
+            var gTitle = pageTitle(gPage, i);
+            assignId(gPage, gTitle, i);
+            var gLi = document.createElement('li');
+            gLi.appendChild(makeLink(gPage, i, gTitle));
+            sub.appendChild(gLi);
+            i += 1;
+          }
+          details.appendChild(sub);
+          details.addEventListener('toggle', function () {
+            if (details.open && firstInGroup && firstInGroup.id) {
+              if (!details.querySelector('a.activo')) {
+                firstInGroup.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }
+          });
+          var wrap = document.createElement('li');
+          wrap.appendChild(details);
+          list.appendChild(wrap);
+        } else {
+          var title = pageTitle(page, i);
+          assignId(page, title, i);
+          var li = document.createElement('li');
+          li.appendChild(makeLink(page, i, title));
+          list.appendChild(li);
+          i += 1;
+        }
+      }
+
+      document.body.classList.add('with-indice-lateral');
+      var layout = document.createElement('div');
+      layout.className = 'layout';
+      var doc = document.createElement('main');
+      doc.className = 'doc';
+      doc.id = 'doc';
+      pages.forEach(function (page) { doc.appendChild(page); });
+      layout.appendChild(nav);
+      layout.appendChild(doc);
+      document.body.appendChild(layout);
+
+      var links = Array.prototype.slice.call(nav.querySelectorAll('a'));
+      var linkById = {};
+      links.forEach(function (link) {
+        linkById[link.dataset.target] = link;
+        link.addEventListener('click', function (e) {
+          e.preventDefault();
+          var target = document.getElementById(link.dataset.target);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+      function markActive(id) {
+        links.forEach(function (l) { l.classList.remove('activo'); });
+        var current = linkById[id];
+        if (current) {
+          current.classList.add('activo');
+          var details = current.closest('details');
+          if (details) details.open = true;
+        }
+      }
+
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                markActive(entry.target.id);
+              }
+            });
+          },
+          { root: doc, rootMargin: '0px 0px -55% 0px', threshold: [0.08, 0.2, 0.35] }
+        );
+        pages.forEach(function (page) { observer.observe(page); });
+      } else if (pages[0]) {
+        markActive(pages[0].id);
+      }
+    })();
+  </script>
+
+</body>
+</html>

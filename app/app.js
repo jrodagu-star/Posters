@@ -44,7 +44,8 @@ const PROTOCOLOS = [
         title: 'Protocolo detallado',
         description: 'Documento completo con índice navegable.',
         path: '../biblioteca/assets/protocolos/dds/protocolo-detallado.html?v=20260814l',
-        ext: '.html'
+        ext: '.html',
+        view: 'document'
       }
     ]
   },
@@ -82,6 +83,22 @@ const PROTOCOLOS = [
         description: 'Póster clínico de manejo de diarrea con nutrición enteral.',
         path: '../biblioteca/assets/protocolos/diarrea/diarrea-uci-ne.html?v=20260815a',
         ext: '.html'
+      }
+    ]
+  },
+  {
+    id: 'tep',
+    title: 'TEP',
+    description: 'Guía rápida de bolsillo de tromboembolismo pulmonar agudo en UCI.',
+    audiences: ['medicina'],
+    parts: [
+      {
+        id: 'guia',
+        title: 'TEP',
+        description: 'Protocolo TEP con índice lateral navegable.',
+        path: '../biblioteca/assets/protocolos/tep/tep-guia.html?v=20260818c',
+        ext: '.html',
+        view: 'document'
       }
     ]
   }
@@ -801,7 +818,7 @@ function openProtocoloPart(protocolo, part) {
       '</div>';
     const img = els.viewer.querySelector('img');
     if (img) img.addEventListener('click', () => openLightboxFromFile(fileLike));
-  } else if (isHtmlExt(ext)) {
+  } else if (isHtmlExt(ext) && part.view !== 'document') {
     els.viewer.innerHTML =
       '<div class="calculadora-view">' +
         '<div class="calculadora-toolbar">' +
