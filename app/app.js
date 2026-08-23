@@ -23,6 +23,12 @@ const CALCULADORAS = [
     title: 'Nutrición Clínica UCI',
     description: 'Dashboard de nutrición clínica en UCI.',
     url: 'https://icuconnect-nutricion.web.app'
+  },
+  {
+    id: 'monitorizacion-hemodinamica',
+    title: 'Monitorización hemodinámica',
+    description: 'Dashboard, atlas, técnicas y soporte (ECMO, PiCCO, shunt…).',
+    url: 'https://jrodagu-star.github.io/hemodinamica/'
   }
 ];
 const PROTOCOLOS = [
