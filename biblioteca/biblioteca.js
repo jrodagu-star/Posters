@@ -259,12 +259,13 @@ window.BIBLIOTECA_DATA = {
           {
             "id": "p-22",
             "type": "file",
-            "title": "Cetoacidosis protocolo",
-            "path": "../biblioteca/assets/endocrino/cad-definitivo.pdf",
-            "ext": ".pdf",
+            "title": "Cetoacidosis Metabólica",
+            "path": "../biblioteca/assets/endocrino/cetoacidosis-metabolica.html",
+            "ext": ".html",
             "specialty": "Endocrino",
-            "breadcrumb": "Endocrino / Cetoacidosis protocolo",
-            "source": "asset"
+            "breadcrumb": "Endocrino / Cetoacidosis Metabólica",
+            "source": "asset",
+            "audiences": ["medicina", "enfermeria"]
           },
           {
             "id": "p-23",
