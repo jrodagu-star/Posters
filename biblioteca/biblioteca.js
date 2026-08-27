@@ -296,9 +296,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Endocrino / Gasometria arterial",
             "specialty": "Endocrino",
             "path": "../biblioteca/assets/endocrino/gasometria-arterial.png"
+          },
+          {
+            "id": "p-control-cad-enfermeria",
+            "type": "file",
+            "title": "Control CAD Enfermería",
+            "path": "../biblioteca/assets/endocrino/control-cad-enfermeria.pdf",
+            "ext": ".pdf",
+            "specialty": "Endocrino",
+            "breadcrumb": "Endocrino / Control CAD Enfermería",
+            "source": "asset",
+            "audience": "enfermeria"
           }
         ],
-        "file_count": 5
+        "file_count": 6
       },
       {
         "id": "f-25",

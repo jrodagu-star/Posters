@@ -107,6 +107,21 @@ const PROTOCOLOS = [
         view: 'document'
       }
     ]
+  },
+  {
+    id: 'balance-nutricion',
+    title: 'Balance Nutrición UCI',
+    description: 'Protocolo de balance nutricional en cuidados intensivos.',
+    audiences: ['medicina'],
+    parts: [
+      {
+        id: 'documento',
+        title: 'Balance Nutrición UCI',
+        description: 'Documento PDF de balance nutricional en UCI.',
+        path: '../biblioteca/assets/protocolos/balance-nutricion/balance-nutricion-uci.pdf',
+        ext: '.pdf'
+      }
+    ]
   }
 ];
 const HOME_IMAGE = '../biblioteca/assets/inicio-uci.png';
