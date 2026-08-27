@@ -111,8 +111,9 @@ const PROTOCOLOS = [
   {
     id: 'balance-nutricion',
     title: 'Balance Nutrición UCI',
-    description: 'Protocolo de balance nutricional en cuidados intensivos.',
+    description: 'Formulario de balance nutricional en cuidados intensivos.',
     audiences: ['medicina'],
+    formulario: true,
     parts: [
       {
         id: 'documento',
@@ -124,6 +125,11 @@ const PROTOCOLOS = [
     ]
   }
 ];
+const FORMULARIO_BADGE_SVG =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/>' +
+  '<path d="M14 3v5h5M9 13h6M9 17h6M9 9h2"/>' +
+  '</svg>';
 const HOME_IMAGE = '../biblioteca/assets/inicio-uci.png';
 const DUTYDOCTOR = {
   title: 'DutyDoctor',
@@ -232,7 +238,8 @@ const state = {
   htmlLbScrollLeft: 0,
   htmlLbScrollTop: 0,
   lastSavedMode: 'base',
-  audienceFilter: DEFAULT_AUDIENCE
+  audienceFilter: DEFAULT_AUDIENCE,
+  formularioFilter: false
 };
 
 function clone(obj) { return JSON.parse(JSON.stringify(obj)); }
@@ -333,7 +340,28 @@ function ensureAudience(node) {
   (node.children || []).forEach(ensureAudience);
 }
 function matchesAudienceFilter(file) {
-  return getAudiences(file).includes(state.audienceFilter);
+  if (!file) return false;
+  if (state.formularioFilter) {
+    if (!isFormulario(file)) return false;
+    if (!state.audienceFilter) return true;
+    return getAudiences(file).includes(state.audienceFilter);
+  }
+  const audience = state.audienceFilter || DEFAULT_AUDIENCE;
+  return getAudiences(file).includes(audience);
+}
+function isFormulario(item) {
+  if (!item) return false;
+  return item.formulario === true || item.kind === 'formulario';
+}
+function formularioBadgeHtml() {
+  return '<span class="formulario-badge" title="Formulario">' + FORMULARIO_BADGE_SVG + '</span>';
+}
+function filterLabel() {
+  if (state.formularioFilter && !state.audienceFilter) return 'Formulario · todos';
+  if (state.formularioFilter && state.audienceFilter) {
+    return 'Formulario · ' + audienceLabel(state.audienceFilter);
+  }
+  return audienceLabel(state.audienceFilter || DEFAULT_AUDIENCE);
 }
 function normalizeTreePaths(node) {
   if (!node) return;
@@ -738,7 +766,16 @@ function openDutyDoctor() {
 }
 
 function visibleProtocolos() {
-  return PROTOCOLOS.filter(item => getAudiences(item).includes(state.audienceFilter));
+  let list = PROTOCOLOS.slice();
+  if (state.formularioFilter) {
+    list = list.filter(isFormulario);
+    if (state.audienceFilter) {
+      list = list.filter(item => getAudiences(item).includes(state.audienceFilter));
+    }
+    return list;
+  }
+  const audience = state.audienceFilter || DEFAULT_AUDIENCE;
+  return list.filter(item => getAudiences(item).includes(audience));
 }
 
 function showProtocolos() {
@@ -755,18 +792,19 @@ function showProtocolos() {
   if (els.protocolosBtn) els.protocolosBtn.classList.add('active');
   els.selectedInfo.textContent = 'Selección actual: Protocolos UCI';
   els.title.textContent = 'Protocolos UCI';
-  els.meta.textContent = 'Protocolos clínicos';
+  els.meta.textContent = 'Protocolos clínicos · ' + filterLabel();
   els.crumbs.textContent = 'Protocolos UCI';
   const list = visibleProtocolos();
   const cards = list.length
     ? list.map(item =>
       '<button type="button" class="calculadora-card" data-protocolo-id="' + escapeHtml(item.id) + '">' +
+        (isFormulario(item) ? formularioBadgeHtml() : '') +
         '<span class="calculadora-card-title">' + escapeHtml(item.title) + '</span>' +
         '<span class="calculadora-card-desc">' + escapeHtml(item.description) + '</span>' +
         '<span class="calculadora-card-cta">Abrir</span>' +
       '</button>'
     ).join('')
-    : '<div class="empty"><strong>Protocolos UCI</strong>No hay protocolos para ' + escapeHtml(audienceLabel(state.audienceFilter)) + '.</div>';
+    : '<div class="empty"><strong>Protocolos UCI</strong>No hay protocolos para ' + escapeHtml(filterLabel()) + '.</div>';
   els.viewer.innerHTML =
     '<div class="calculadoras-panel">' +
       '<div class="calculadoras-panel-head">' +
@@ -1386,17 +1424,21 @@ function renderSearch(query) {
 }
 
 function updateAudienceButtons() {
-  document.querySelectorAll('.audience-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.audience === state.audienceFilter);
+  document.querySelectorAll('.audience-btn[data-audience]').forEach(btn => {
+    btn.classList.toggle('active', !!state.audienceFilter && btn.dataset.audience === state.audienceFilter);
   });
+  const formBtn = document.getElementById('audienceFormularioBtn');
+  if (formBtn) {
+    formBtn.classList.toggle('active', !!state.formularioFilter);
+    formBtn.setAttribute('aria-pressed', state.formularioFilter ? 'true' : 'false');
+  }
 }
 
-function setAudienceFilter(audience) {
-  if (!isValidAudience(audience) || audience === state.audienceFilter) return;
-  state.audienceFilter = audience;
+function refreshAfterFilterChange() {
   updateAudienceButtons();
   renderTree();
   renderSearch(els.search.value);
+  updateStats();
   if (els.protocolosBtn && els.protocolosBtn.classList.contains('active')) {
     showProtocolos();
     return;
@@ -1406,9 +1448,38 @@ function setAudienceFilter(audience) {
   }
 }
 
+function setAudienceFilter(audience) {
+  if (!isValidAudience(audience)) return;
+  if (state.formularioFilter) {
+    // Con Formulario activo: Medicina/Enfermería/TCAE filtran formularios;
+    // repetir la misma audiencia la desactiva y vuelve a mostrar todos los formularios.
+    if (state.audienceFilter === audience) {
+      state.audienceFilter = null;
+    } else {
+      state.audienceFilter = audience;
+    }
+    refreshAfterFilterChange();
+    return;
+  }
+  if (audience === state.audienceFilter) return;
+  state.audienceFilter = audience;
+  refreshAfterFilterChange();
+}
+
+function toggleFormularioFilter() {
+  state.formularioFilter = !state.formularioFilter;
+  if (state.formularioFilter) {
+    // Por defecto: todos los formularios (sin audiencia activa).
+    state.audienceFilter = null;
+  } else if (!state.audienceFilter) {
+    state.audienceFilter = DEFAULT_AUDIENCE;
+  }
+  refreshAfterFilterChange();
+}
+
 function updateStats() {
   const files = flattenVisible(state.tree);
-  els.statFiles.textContent = files.length + ' pósteres (' + audienceLabel(state.audienceFilter) + ')';
+  els.statFiles.textContent = files.length + ' pósteres (' + filterLabel() + ')';
   els.statAreas.textContent = listRootAreas().length + ' áreas';
   let saveText = 'Biblioteca base';
   if (state.lastSavedMode === 'saved_file') saveText = 'Guardada en archivo';
@@ -1742,9 +1813,11 @@ function initEvents() {
   if (els.calculadorasBtn) els.calculadorasBtn.addEventListener('click', showCalculadoras);
   if (els.protocolosBtn) els.protocolosBtn.addEventListener('click', showProtocolos);
   if (els.dutydoctorBtn) els.dutydoctorBtn.addEventListener('click', openDutyDoctor);
-  document.querySelectorAll('.audience-btn').forEach(btn => {
+  document.querySelectorAll('.audience-btn[data-audience]').forEach(btn => {
     btn.addEventListener('click', () => setAudienceFilter(btn.dataset.audience));
   });
+  const formBtn = document.getElementById('audienceFormularioBtn');
+  if (formBtn) formBtn.addEventListener('click', toggleFormularioFilter);
   els.addRootFolderBtn.addEventListener('click', addRootFolder);
   els.addSubfolderBtn.addEventListener('click', addSubfolder);
   els.moveFolderBtn.addEventListener('click', moveSelectedFolder);

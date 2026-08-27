@@ -270,6 +270,7 @@ button { cursor: pointer; }
   gap: 14px;
 }
 .calculadora-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -491,7 +492,7 @@ button { cursor: pointer; }
 }
 .audience-bar {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
 }
 .audience-btn {
@@ -514,6 +515,35 @@ button { cursor: pointer; }
   border-color: rgba(79,179,232,.65);
   color: #d9f2ff;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+}
+.audience-btn-formulario.active {
+  background: rgba(250, 204, 21, .18);
+  border-color: rgba(250, 204, 21, .7);
+  color: #fff3bf;
+}
+.formulario-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(250, 204, 21, .18);
+  border: 1px solid rgba(250, 204, 21, .45);
+  color: #fde68a;
+  pointer-events: none;
+}
+.formulario-badge svg {
+  width: 14px;
+  height: 14px;
+}
+@media (max-width: 900px) {
+  .audience-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* Cada sección colapsable */
