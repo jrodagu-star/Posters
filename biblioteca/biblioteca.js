@@ -306,7 +306,8 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Endocrino",
             "breadcrumb": "Endocrino / Control CAD Enfermería",
             "source": "asset",
-            "audience": "enfermeria"
+            "audience": "enfermeria",
+            "formulario": true
           }
         ],
         "file_count": 6

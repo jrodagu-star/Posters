@@ -356,6 +356,9 @@ function isFormulario(item) {
 function formularioBadgeHtml() {
   return '<span class="formulario-badge" title="Formulario">' + FORMULARIO_BADGE_SVG + '</span>';
 }
+function formularioMenuMarkHtml() {
+  return '<span class="file-formulario-mark" title="Formulario">F</span>';
+}
 function filterLabel() {
   if (state.formularioFilter && !state.audienceFilter) return 'Formulario · todos';
   if (state.formularioFilter && state.audienceFilter) {
@@ -1273,7 +1276,10 @@ function createNode(node) {
     btn.dataset.id = node.id;
     btn.draggable = true;
     btn.title = 'Arrastra este póster sobre una carpeta para moverlo';
-    btn.innerHTML = thumbMarkup(node) + '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(node.title) + '</span>';
+    btn.innerHTML =
+      thumbMarkup(node) +
+      '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1;">' + escapeHtml(node.title) + '</span>' +
+      (isFormulario(node) ? formularioMenuMarkHtml() : '');
     btn.addEventListener('click', () => showFile(node));
     btn.addEventListener('dragstart', e => {
       state.draggedItem = { id: node.id, type: 'file' };
@@ -1409,7 +1415,13 @@ function renderSearch(query) {
     btn.dataset.id = file.id;
     btn.draggable = true;
     btn.title = 'Arrastra este póster sobre una carpeta para moverlo';
-    btn.innerHTML = thumbMarkup(file) + '<span style="min-width:0;overflow:hidden;"><strong style="display:block;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(file.title) + '</strong><small style="color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(file.breadcrumb) + '</small></span>';
+    btn.innerHTML =
+      thumbMarkup(file) +
+      '<span style="min-width:0;overflow:hidden;flex:1;">' +
+        '<strong style="display:block;font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(file.title) + '</strong>' +
+        '<small style="color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(file.breadcrumb) + '</small>' +
+      '</span>' +
+      (isFormulario(file) ? formularioMenuMarkHtml() : '');
     btn.addEventListener('click', () => showFile(file));
     btn.addEventListener('dragstart', e => {
       state.draggedItem = { id: file.id, type: 'file' };
