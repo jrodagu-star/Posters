@@ -788,19 +788,26 @@ function openICUConnect() {
   clearSectionButtons();
   if (els.icuconnectBtn) els.icuconnectBtn.classList.add('active');
   els.title.textContent = ICUCONNECT.title;
-  els.meta.textContent = 'Enlace externo';
+  els.meta.textContent = 'Pestaña nueva';
   els.crumbs.textContent = ICUCONNECT.title;
   els.selectedInfo.textContent = 'Selección actual: ' + ICUCONNECT.title;
+  window.open(ICUCONNECT.url, '_blank', 'noopener,noreferrer');
   els.viewer.innerHTML =
-    '<div class="calculadora-view">' +
-      '<div class="calculadora-toolbar">' +
-        '<div class="calculadora-toolbar-title">' + escapeHtml(ICUCONNECT.title) + '</div>' +
-        '<div class="calculadora-toolbar-actions">' +
-          '<a class="btn" href="' + escapeHtml(ICUCONNECT.url) + '" target="_blank" rel="noopener noreferrer">Abrir en pestaña</a>' +
-          '<button type="button" class="btn btn-accent" id="closeICUConnectBtn">Cerrar</button>' +
+    '<div class="calculadoras-panel">' +
+      '<div class="calculadoras-panel-head">' +
+        '<div>' +
+          '<h2 class="calculadoras-title">' + escapeHtml(ICUCONNECT.title) + '</h2>' +
+          '<p class="calculadoras-lead">' + escapeHtml(ICUCONNECT.description) + ' Se abre en una pestaña nueva para que la sesión y los datos funcionen igual que siempre.</p>' +
+        '</div>' +
+        '<button type="button" class="btn" id="closeICUConnectBtn">Cerrar</button>' +
+      '</div>' +
+      '<div class="empty">' +
+        '<strong>ICUConnect abierto</strong>' +
+        'Si no ves la pestaña, comprueba que el navegador no la haya bloqueado.' +
+        '<div class="menu-row" style="margin-top:14px;justify-content:center;">' +
+          '<a class="btn btn-accent" href="' + escapeHtml(ICUCONNECT.url) + '" target="_blank" rel="noopener noreferrer">Abrir ICUConnect</a>' +
         '</div>' +
       '</div>' +
-      '<iframe class="calculadora-frame" id="icuconnectFrame" title="' + escapeHtml(ICUCONNECT.title) + '" src="' + escapeHtml(ICUCONNECT.url) + '"></iframe>' +
     '</div>';
   const closeBtn = document.getElementById('closeICUConnectBtn');
   if (closeBtn) closeBtn.addEventListener('click', () => showHome());
