@@ -136,6 +136,11 @@ const DUTYDOCTOR = {
   description: 'Gestión de guardias médicas.',
   url: 'https://studio-4278811655-e6d72.web.app'
 };
+const ICUCONNECT = {
+  title: 'ICUConnect',
+  description: 'Gestión de pacientes en UCI.',
+  url: 'https://icu-connect.web.app'
+};
 
 const els = {
   tree: document.getElementById('tree'),
@@ -147,6 +152,7 @@ const els = {
   calculadorasBtn: document.getElementById('calculadorasBtn'),
   protocolosBtn: document.getElementById('protocolosBtn'),
   dutydoctorBtn: document.getElementById('dutydoctorBtn'),
+  icuconnectBtn: document.getElementById('icuconnectBtn'),
   title: document.getElementById('title'),
   meta: document.getElementById('meta'),
   crumbs: document.getElementById('crumbs'),
@@ -640,6 +646,7 @@ function clearSectionButtons() {
   if (els.calculadorasBtn) els.calculadorasBtn.classList.remove('active');
   if (els.protocolosBtn) els.protocolosBtn.classList.remove('active');
   if (els.dutydoctorBtn) els.dutydoctorBtn.classList.remove('active');
+  if (els.icuconnectBtn) els.icuconnectBtn.classList.remove('active');
 }
 
 function showHome() {
@@ -765,6 +772,37 @@ function openDutyDoctor() {
       '<iframe class="calculadora-frame" id="dutydoctorFrame" title="' + escapeHtml(DUTYDOCTOR.title) + '" src="' + escapeHtml(DUTYDOCTOR.url) + '"></iframe>' +
     '</div>';
   const closeBtn = document.getElementById('closeDutyDoctorBtn');
+  if (closeBtn) closeBtn.addEventListener('click', () => showHome());
+}
+
+function openICUConnect() {
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  state.currentFile = null;
+  state.currentFileParentId = null;
+  state.currentPath = null;
+  state.selectedId = null;
+  state.selectedType = null;
+  document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
+  clearSectionButtons();
+  if (els.icuconnectBtn) els.icuconnectBtn.classList.add('active');
+  els.title.textContent = ICUCONNECT.title;
+  els.meta.textContent = 'Enlace externo';
+  els.crumbs.textContent = ICUCONNECT.title;
+  els.selectedInfo.textContent = 'Selección actual: ' + ICUCONNECT.title;
+  els.viewer.innerHTML =
+    '<div class="calculadora-view">' +
+      '<div class="calculadora-toolbar">' +
+        '<div class="calculadora-toolbar-title">' + escapeHtml(ICUCONNECT.title) + '</div>' +
+        '<div class="calculadora-toolbar-actions">' +
+          '<a class="btn" href="' + escapeHtml(ICUCONNECT.url) + '" target="_blank" rel="noopener noreferrer">Abrir en pestaña</a>' +
+          '<button type="button" class="btn btn-accent" id="closeICUConnectBtn">Cerrar</button>' +
+        '</div>' +
+      '</div>' +
+      '<iframe class="calculadora-frame" id="icuconnectFrame" title="' + escapeHtml(ICUCONNECT.title) + '" src="' + escapeHtml(ICUCONNECT.url) + '"></iframe>' +
+    '</div>';
+  const closeBtn = document.getElementById('closeICUConnectBtn');
   if (closeBtn) closeBtn.addEventListener('click', () => showHome());
 }
 
@@ -1825,6 +1863,7 @@ function initEvents() {
   if (els.calculadorasBtn) els.calculadorasBtn.addEventListener('click', showCalculadoras);
   if (els.protocolosBtn) els.protocolosBtn.addEventListener('click', showProtocolos);
   if (els.dutydoctorBtn) els.dutydoctorBtn.addEventListener('click', openDutyDoctor);
+  if (els.icuconnectBtn) els.icuconnectBtn.addEventListener('click', openICUConnect);
   document.querySelectorAll('.audience-btn[data-audience]').forEach(btn => {
     btn.addEventListener('click', () => setAudienceFilter(btn.dataset.audience));
   });
