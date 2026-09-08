@@ -160,72 +160,48 @@ button { cursor: pointer; }
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.22);
   background: rgba(255,190,77,.34);
 }
-.sidebar-nav-dutydoctor {
-  border: 1px solid rgba(125,211,252,.5);
-  background: rgba(56,189,248,.16);
-  color: #bae6fd;
+.sidebar-nav-herramientas {
+  border: 1px solid rgba(167,139,250,.5);
+  background: rgba(139,92,246,.16);
+  color: #ddd6fe;
 }
-.sidebar-nav-dutydoctor:hover {
-  background: rgba(56,189,248,.28);
-  border-color: rgba(125,211,252,.75);
+.sidebar-nav-herramientas:hover {
+  background: rgba(139,92,246,.28);
+  border-color: rgba(167,139,250,.75);
   filter: brightness(1.05);
 }
-.sidebar-nav-dutydoctor.active {
+.sidebar-nav-herramientas.active {
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.22);
-  background: rgba(56,189,248,.34);
+  background: rgba(139,92,246,.34);
 }
-.sidebar-nav-icuconnect {
-  border: 1px solid rgba(248,113,113,.5);
-  background: rgba(239,68,68,.16);
-  color: #fecaca;
+.edicion-host {
+  display: none;
 }
-.sidebar-nav-icuconnect:hover {
-  background: rgba(239,68,68,.28);
-  border-color: rgba(248,113,113,.75);
-  filter: brightness(1.05);
-}
-.sidebar-nav-icuconnect.active {
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.22);
-  background: rgba(239,68,68,.34);
-}
-.sidebar-nav-edit {
-  border: 1px solid rgba(125,166,232,.45);
-  background: rgba(125,166,232,.14);
-  color: #d7e6ff;
-}
-.sidebar-nav-edit:hover {
-  background: rgba(125,166,232,.26);
-  border-color: rgba(125,166,232,.7);
-  filter: brightness(1.05);
-}
-.sidebar-edit {
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  overflow: hidden;
-}
-.sidebar-edit[open] {
-  border: 1px solid var(--line);
-  background: #0f1624;
-}
-.sidebar-edit[open] > .sidebar-nav-edit {
-  border: 0;
-  border-radius: 0;
-  border-bottom: 1px solid var(--line);
-}
-.sidebar-edit > summary {
-  list-style: none;
-}
-.sidebar-edit > summary::-webkit-details-marker { display: none; }
-.sidebar-edit-body {
+.edicion-mount {
   display: grid;
-  gap: 6px;
-  padding: 8px;
+  gap: 12px;
 }
-.sidebar-edit .menu-tree {
+.edicion-panel-body {
+  display: grid;
+  gap: 12px;
+}
+.edicion-view .menu-tree {
   max-width: none;
   min-width: 0;
   flex: none;
+}
+.edicion-view .menu-body {
+  display: grid;
+  gap: 8px;
+}
+.edicion-view .menu-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.edicion-view .status-box {
+  display: grid;
+  gap: 8px;
 }
 
 .calculadoras-panel {

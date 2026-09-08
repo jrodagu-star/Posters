@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dashboard médico persistente</title>
-  <link rel="stylesheet" href="styles.css?v=20260908b">
+  <link rel="stylesheet" href="styles.css?v=20260908c">
 </head>
 <body>
   <div class="layout">
@@ -34,27 +34,18 @@
           </span>
           <span>Protocolos UCI</span>
         </button>
-        <button type="button" class="sidebar-nav-btn sidebar-nav-dutydoctor" id="dutydoctorBtn" title="DutyDoctor: gestión de guardias">
+        <button type="button" class="sidebar-nav-btn sidebar-nav-herramientas" id="herramientasBtn" title="Herramientas y aplicaciones">
           <span class="sidebar-nav-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/><path d="M8 15h2M12 15h2"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.1-3.1a4.5 4.5 0 0 1-6.4 6.4l-7.1 7.1a2.1 2.1 0 0 1-3-3l7.1-7.1a4.5 4.5 0 0 1 6.4-6.4l-3.1 3.1z"/></svg>
           </span>
-          <span>DutyDoctor</span>
+          <span>Herramientas</span>
         </button>
-        <button type="button" class="sidebar-nav-btn sidebar-nav-icuconnect" id="icuconnectBtn" title="ICUConnect: abre en pestaña nueva">
-          <span class="sidebar-nav-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h5l2 3h11v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><path d="M7 12v4M7 12h3v4"/><path d="M14 12h3v4M14 12v4"/></svg>
-          </span>
-          <span>ICUConnect</span>
-        </button>
-        <details class="sidebar-edit">
-          <summary class="sidebar-nav-btn sidebar-nav-edit">
-            <span class="sidebar-nav-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5z"/></svg>
-            </span>
-            <span>Edición</span>
-          </summary>
-          <div class="sidebar-edit-body">
-            <details class="menu-tree">
+      </div>
+    </aside>
+
+    <div id="edicionHost" class="edicion-host" hidden>
+      <div class="edicion-panel-body" id="edicionPanelBody">
+            <details class="menu-tree" open>
               <summary><span>📁 Carpetas</span><span class="summary-right">expandir</span></summary>
               <div class="menu-body">
                 <div class="menu-row">
@@ -76,7 +67,7 @@
               </div>
             </details>
 
-            <details class="menu-tree">
+            <details class="menu-tree" open>
               <summary><span>🖼️ Pósteres</span><span class="summary-right">expandir</span></summary>
               <div class="menu-body">
                 <div class="menu-field">
@@ -103,7 +94,7 @@
               </div>
             </details>
 
-            <details class="menu-tree">
+            <details class="menu-tree" open>
               <summary><span>💾 Guardado</span><span class="summary-right">expandir</span></summary>
               <div class="menu-body status-box">
                 <div class="menu-row">
@@ -126,10 +117,8 @@
 
             <input class="file-input" type="file" id="filePicker" accept="image/*,.pdf,.htm,.html,text/html" multiple>
             <input class="file-input" type="file" id="importPicker" accept="application/json,.json,.js,text/javascript,text/plain">
-          </div>
-        </details>
       </div>
-    </aside>
+    </div>
 
     <main class="main">
       <div class="manager-wrap audience-bar" role="group" aria-label="Tipo de pósteres">
@@ -209,7 +198,7 @@
     <div class="pdf-lightbox-hint">Usa la rueda o las barras del visor PDF para desplazarte · Ctrl + rueda para zoom</div>
   </div>
 
-  <script src="../biblioteca/biblioteca.js?v=20260908b"></script>
-  <script src="app.js?v=20260908b"></script>
+  <script src="../biblioteca/biblioteca.js?v=20260908c"></script>
+  <script src="app.js?v=20260908c"></script>
 </body>
 </html>

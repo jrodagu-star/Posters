@@ -141,7 +141,28 @@ const ICUCONNECT = {
   description: 'Gestión de pacientes en UCI.',
   url: 'https://icu-connect.web.app'
 };
-
+const HERRAMIENTAS = [
+  {
+    id: 'dutydoctor',
+    title: DUTYDOCTOR.title,
+    description: DUTYDOCTOR.description,
+    url: DUTYDOCTOR.url,
+    action: 'external'
+  },
+  {
+    id: 'icuconnect',
+    title: ICUCONNECT.title,
+    description: ICUCONNECT.description,
+    url: ICUCONNECT.url,
+    action: 'external-tab'
+  },
+  {
+    id: 'edicion',
+    title: 'Edición',
+    description: 'Gestionar carpetas, pósteres y guardar la biblioteca.',
+    action: 'edicion'
+  }
+];
 const els = {
   tree: document.getElementById('tree'),
   results: document.getElementById('results'),
@@ -151,8 +172,9 @@ const els = {
   collapseAllBtn: document.getElementById('collapseAllBtn'),
   calculadorasBtn: document.getElementById('calculadorasBtn'),
   protocolosBtn: document.getElementById('protocolosBtn'),
-  dutydoctorBtn: document.getElementById('dutydoctorBtn'),
-  icuconnectBtn: document.getElementById('icuconnectBtn'),
+  herramientasBtn: document.getElementById('herramientasBtn'),
+  edicionHost: document.getElementById('edicionHost'),
+  edicionPanelBody: document.getElementById('edicionPanelBody'),
   title: document.getElementById('title'),
   meta: document.getElementById('meta'),
   crumbs: document.getElementById('crumbs'),
@@ -645,14 +667,22 @@ function lightboxShowAt(index) {
 function clearSectionButtons() {
   if (els.calculadorasBtn) els.calculadorasBtn.classList.remove('active');
   if (els.protocolosBtn) els.protocolosBtn.classList.remove('active');
-  if (els.dutydoctorBtn) els.dutydoctorBtn.classList.remove('active');
-  if (els.icuconnectBtn) els.icuconnectBtn.classList.remove('active');
+  if (els.herramientasBtn) els.herramientasBtn.classList.remove('active');
+}
+
+function parkEdicionHost() {
+  if (!els.edicionHost || !els.edicionPanelBody) return;
+  if (els.edicionPanelBody.parentElement !== els.edicionHost) {
+    els.edicionHost.appendChild(els.edicionPanelBody);
+  }
+  els.edicionHost.hidden = true;
 }
 
 function showHome() {
   closeLightbox().catch(() => {});
   closeHtmlLightbox().catch(() => {});
   closePdfLightbox().catch(() => {});
+  parkEdicionHost();
   state.currentFile = null;
   state.currentFileParentId = null;
   state.currentPath = null;
@@ -674,6 +704,7 @@ function showCalculadoras() {
   closeLightbox().catch(() => {});
   closeHtmlLightbox().catch(() => {});
   closePdfLightbox().catch(() => {});
+  parkEdicionHost();
   state.currentFile = null;
   state.currentFileParentId = null;
   state.currentPath = null;
@@ -719,6 +750,7 @@ function openCalculadora(calc) {
   closeLightbox().catch(() => {});
   closeHtmlLightbox().catch(() => {});
   closePdfLightbox().catch(() => {});
+  parkEdicionHost();
   clearSectionButtons();
   if (els.calculadorasBtn) els.calculadorasBtn.classList.add('active');
   els.title.textContent = calc.title;
@@ -744,10 +776,11 @@ function openCalculadora(calc) {
   if (closeBtn) closeBtn.addEventListener('click', () => showCalculadoras());
 }
 
-function openDutyDoctor() {
+function showHerramientas() {
   closeLightbox().catch(() => {});
   closeHtmlLightbox().catch(() => {});
   closePdfLightbox().catch(() => {});
+  parkEdicionHost();
   state.currentFile = null;
   state.currentFileParentId = null;
   state.currentPath = null;
@@ -755,62 +788,163 @@ function openDutyDoctor() {
   state.selectedType = null;
   document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
   clearSectionButtons();
-  if (els.dutydoctorBtn) els.dutydoctorBtn.classList.add('active');
-  els.title.textContent = DUTYDOCTOR.title;
-  els.meta.textContent = 'Enlace externo';
-  els.crumbs.textContent = DUTYDOCTOR.title;
-  els.selectedInfo.textContent = 'Selección actual: ' + DUTYDOCTOR.title;
-  els.viewer.innerHTML =
-    '<div class="calculadora-view">' +
-      '<div class="calculadora-toolbar">' +
-        '<div class="calculadora-toolbar-title">' + escapeHtml(DUTYDOCTOR.title) + '</div>' +
-        '<div class="calculadora-toolbar-actions">' +
-          '<a class="btn" href="' + escapeHtml(DUTYDOCTOR.url) + '" target="_blank" rel="noopener noreferrer">Abrir en pestaña</a>' +
-          '<button type="button" class="btn btn-accent" id="closeDutyDoctorBtn">Cerrar</button>' +
-        '</div>' +
-      '</div>' +
-      '<iframe class="calculadora-frame" id="dutydoctorFrame" title="' + escapeHtml(DUTYDOCTOR.title) + '" src="' + escapeHtml(DUTYDOCTOR.url) + '"></iframe>' +
-    '</div>';
-  const closeBtn = document.getElementById('closeDutyDoctorBtn');
-  if (closeBtn) closeBtn.addEventListener('click', () => showHome());
-}
-
-function openICUConnect() {
-  closeLightbox().catch(() => {});
-  closeHtmlLightbox().catch(() => {});
-  closePdfLightbox().catch(() => {});
-  state.currentFile = null;
-  state.currentFileParentId = null;
-  state.currentPath = null;
-  state.selectedId = null;
-  state.selectedType = null;
-  document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
-  clearSectionButtons();
-  if (els.icuconnectBtn) els.icuconnectBtn.classList.add('active');
-  els.title.textContent = ICUCONNECT.title;
-  els.meta.textContent = 'Pestaña nueva';
-  els.crumbs.textContent = ICUCONNECT.title;
-  els.selectedInfo.textContent = 'Selección actual: ' + ICUCONNECT.title;
-  window.open(ICUCONNECT.url, '_blank', 'noopener,noreferrer');
+  if (els.herramientasBtn) els.herramientasBtn.classList.add('active');
+  els.selectedInfo.textContent = 'Selección actual: Herramientas';
+  els.title.textContent = 'Herramientas';
+  els.meta.textContent = 'Aplicaciones y utilidades';
+  els.crumbs.textContent = 'Herramientas';
+  const cards = HERRAMIENTAS.map(item =>
+    '<button type="button" class="calculadora-card" data-herramienta-id="' + escapeHtml(item.id) + '">' +
+      '<span class="calculadora-card-title">' + escapeHtml(item.title) + '</span>' +
+      '<span class="calculadora-card-desc">' + escapeHtml(item.description) + '</span>' +
+      '<span class="calculadora-card-cta">Abrir</span>' +
+    '</button>'
+  ).join('');
   els.viewer.innerHTML =
     '<div class="calculadoras-panel">' +
       '<div class="calculadoras-panel-head">' +
         '<div>' +
-          '<h2 class="calculadoras-title">' + escapeHtml(ICUCONNECT.title) + '</h2>' +
-          '<p class="calculadoras-lead">' + escapeHtml(ICUCONNECT.description) + ' Se abre en una pestaña nueva para que la sesión y los datos funcionen igual que siempre.</p>' +
+          '<h2 class="calculadoras-title">Herramientas</h2>' +
+          '<p class="calculadoras-lead">Elige una herramienta o aplicación.</p>' +
         '</div>' +
-        '<button type="button" class="btn" id="closeICUConnectBtn">Cerrar</button>' +
+        '<button type="button" class="btn" id="closeHerramientasSectionBtn">Cerrar</button>' +
+      '</div>' +
+      '<div class="calculadoras-grid" id="herramientasGrid">' + cards + '</div>' +
+    '</div>';
+  const closeSectionBtn = document.getElementById('closeHerramientasSectionBtn');
+  if (closeSectionBtn) closeSectionBtn.addEventListener('click', () => showHome());
+  els.viewer.querySelectorAll('[data-herramienta-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = HERRAMIENTAS.find(h => h.id === btn.dataset.herramientaId);
+      if (item) openHerramienta(item);
+    });
+  });
+}
+
+function openHerramienta(item) {
+  if (!item) return;
+  if (item.action === 'edicion') {
+    openEdicion();
+    return;
+  }
+  if (item.action === 'external-tab') {
+    openHerramientaExternalTab(item);
+    return;
+  }
+  openHerramientaExternal(item);
+}
+
+function openHerramientaExternalTab(item) {
+  if (!item || !item.url) return;
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  parkEdicionHost();
+  state.currentFile = null;
+  state.currentFileParentId = null;
+  state.currentPath = null;
+  state.selectedId = null;
+  state.selectedType = null;
+  document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
+  clearSectionButtons();
+  if (els.herramientasBtn) els.herramientasBtn.classList.add('active');
+  els.title.textContent = item.title;
+  els.meta.textContent = 'Pestaña nueva';
+  els.crumbs.textContent = 'Herramientas / ' + item.title;
+  els.selectedInfo.textContent = 'Selección actual: ' + item.title;
+  window.open(item.url, '_blank', 'noopener,noreferrer');
+  els.viewer.innerHTML =
+    '<div class="calculadoras-panel">' +
+      '<div class="calculadoras-panel-head">' +
+        '<div>' +
+          '<h2 class="calculadoras-title">' + escapeHtml(item.title) + '</h2>' +
+          '<p class="calculadoras-lead">' + escapeHtml(item.description) + ' Se abre en una pestaña nueva para que la sesión y los datos funcionen igual que siempre.</p>' +
+        '</div>' +
+        '<button type="button" class="btn" id="closeHerramientaBtn">Volver</button>' +
       '</div>' +
       '<div class="empty">' +
-        '<strong>ICUConnect abierto</strong>' +
+        '<strong>' + escapeHtml(item.title) + ' abierto</strong>' +
         'Si no ves la pestaña, comprueba que el navegador no la haya bloqueado.' +
         '<div class="menu-row" style="margin-top:14px;justify-content:center;">' +
-          '<a class="btn btn-accent" href="' + escapeHtml(ICUCONNECT.url) + '" target="_blank" rel="noopener noreferrer">Abrir ICUConnect</a>' +
+          '<a class="btn btn-accent" href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener noreferrer">Abrir ' + escapeHtml(item.title) + '</a>' +
         '</div>' +
       '</div>' +
     '</div>';
-  const closeBtn = document.getElementById('closeICUConnectBtn');
-  if (closeBtn) closeBtn.addEventListener('click', () => showHome());
+  const closeBtn = document.getElementById('closeHerramientaBtn');
+  if (closeBtn) closeBtn.addEventListener('click', () => showHerramientas());
+}
+
+function openHerramientaExternal(item) {
+  if (!item || !item.url) return;
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  parkEdicionHost();
+  state.currentFile = null;
+  state.currentFileParentId = null;
+  state.currentPath = null;
+  state.selectedId = null;
+  state.selectedType = null;
+  document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
+  clearSectionButtons();
+  if (els.herramientasBtn) els.herramientasBtn.classList.add('active');
+  els.title.textContent = item.title;
+  els.meta.textContent = 'Enlace externo';
+  els.crumbs.textContent = 'Herramientas / ' + item.title;
+  els.selectedInfo.textContent = 'Selección actual: ' + item.title;
+  els.viewer.innerHTML =
+    '<div class="calculadora-view">' +
+      '<div class="calculadora-toolbar">' +
+        '<div class="calculadora-toolbar-title">' + escapeHtml(item.title) + '</div>' +
+        '<div class="calculadora-toolbar-actions">' +
+          '<a class="btn" href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener noreferrer">Abrir en pestaña</a>' +
+          '<button type="button" class="btn btn-accent" id="closeHerramientaBtn">Cerrar</button>' +
+        '</div>' +
+      '</div>' +
+      '<iframe class="calculadora-frame" id="herramientaFrame" title="' + escapeHtml(item.title) + '" src="' + escapeHtml(item.url) + '"></iframe>' +
+    '</div>';
+  const closeBtn = document.getElementById('closeHerramientaBtn');
+  if (closeBtn) closeBtn.addEventListener('click', () => showHerramientas());
+}
+
+function openEdicion() {
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  state.currentFile = null;
+  state.currentFileParentId = null;
+  state.currentPath = null;
+  state.selectedId = null;
+  state.selectedType = null;
+  document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
+  clearSectionButtons();
+  if (els.herramientasBtn) els.herramientasBtn.classList.add('active');
+  els.title.textContent = 'Edición';
+  els.meta.textContent = 'Biblioteca';
+  els.crumbs.textContent = 'Herramientas / Edición';
+  els.selectedInfo.textContent = 'Selección actual: Edición';
+  els.viewer.innerHTML =
+    '<div class="calculadoras-panel edicion-view">' +
+      '<div class="calculadoras-panel-head">' +
+        '<div>' +
+          '<h2 class="calculadoras-title">Edición</h2>' +
+          '<p class="calculadoras-lead">Gestiona carpetas, pósteres y el guardado de la biblioteca.</p>' +
+        '</div>' +
+        '<button type="button" class="btn" id="closeEdicionBtn">Volver</button>' +
+      '</div>' +
+      '<div id="edicionMount" class="edicion-mount"></div>' +
+    '</div>';
+  const mount = document.getElementById('edicionMount');
+  if (mount && els.edicionPanelBody) {
+    mount.appendChild(els.edicionPanelBody);
+    if (els.edicionHost) els.edicionHost.hidden = true;
+  }
+  const closeBtn = document.getElementById('closeEdicionBtn');
+  if (closeBtn) closeBtn.addEventListener('click', () => {
+    parkEdicionHost();
+    showHerramientas();
+  });
+  renderMoveTargets();
 }
 
 function visibleProtocolos() {
@@ -830,6 +964,7 @@ function showProtocolos() {
   closeLightbox().catch(() => {});
   closeHtmlLightbox().catch(() => {});
   closePdfLightbox().catch(() => {});
+  parkEdicionHost();
   state.currentFile = null;
   state.currentFileParentId = null;
   state.currentPath = null;
@@ -879,6 +1014,7 @@ function openProtocolo(item) {
   closeLightbox().catch(() => {});
   closeHtmlLightbox().catch(() => {});
   closePdfLightbox().catch(() => {});
+  parkEdicionHost();
   clearSectionButtons();
   if (els.protocolosBtn) els.protocolosBtn.classList.add('active');
   const parts = item.parts || [];
@@ -1869,9 +2005,7 @@ function initEvents() {
   els.collapseAllBtn.addEventListener('click', collapseAllFolders);
   if (els.calculadorasBtn) els.calculadorasBtn.addEventListener('click', showCalculadoras);
   if (els.protocolosBtn) els.protocolosBtn.addEventListener('click', showProtocolos);
-  if (els.dutydoctorBtn) els.dutydoctorBtn.addEventListener('click', openDutyDoctor);
-  if (els.icuconnectBtn) els.icuconnectBtn.addEventListener('click', openICUConnect);
-  document.querySelectorAll('.audience-btn[data-audience]').forEach(btn => {
+  if (els.herramientasBtn) els.herramientasBtn.addEventListener('click', showHerramientas);  document.querySelectorAll('.audience-btn[data-audience]').forEach(btn => {
     btn.addEventListener('click', () => setAudienceFilter(btn.dataset.audience));
   });
   const formBtn = document.getElementById('audienceFormularioBtn');
