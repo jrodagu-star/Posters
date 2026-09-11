@@ -123,6 +123,22 @@ const PROTOCOLOS = [
         ext: '.pdf'
       }
     ]
+  },
+  {
+    id: 'conferencias-cardiologia',
+    title: 'Conferencias de cardiología crítica',
+    description: 'Notas de conferencia: shock cardiogénico, TEP, IAM, ECMO, soporte mecánico y más.',
+    audiences: ['medicina'],
+    parts: [
+      {
+        id: 'notas',
+        title: 'Notas de conferencia · Cardiología crítica',
+        description: 'Documento navegable con resúmenes y mapas mentales.',
+        path: '../biblioteca/assets/protocolos/conferencias-cardiologia/conferencias-cardiologia.html?v=20260910a',
+        ext: '.html',
+        view: 'document'
+      }
+    ]
   }
 ];
 const FORMULARIO_BADGE_SVG =
