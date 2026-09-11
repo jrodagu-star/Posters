@@ -139,6 +139,22 @@ const PROTOCOLOS = [
         view: 'document'
       }
     ]
+  },
+  {
+    id: 'envin-uci',
+    title: 'ENVIN-UCI',
+    description: 'Explorador microbiológico: infecciones, antibióticos y exportación de datos.',
+    audiences: ['medicina', 'enfermeria'],
+    parts: [
+      {
+        id: 'explorador',
+        title: 'ENVIN-UCI',
+        description: 'Explorador microbiológico de infecciones y antibióticos.',
+        url: 'https://jrodagu-star.github.io/envin-uci/envin.html',
+        ext: '.html',
+        view: 'document'
+      }
+    ]
   }
 ];
 const FORMULARIO_BADGE_SVG =
@@ -1088,7 +1104,10 @@ function openProtocoloPart(protocolo, part) {
   els.meta.textContent = kindLabel(ext) + ' · ' + protocolo.title;
   els.crumbs.textContent = 'Protocolos UCI / ' + protocolo.title + ' / ' + part.title;
   els.selectedInfo.textContent = 'Selección actual: ' + part.title;
-  const backBtn = '<button type="button" class="btn" id="closeProtocoloBtn">Volver</button>';
+  const openExternalBtn = part.url
+    ? '<a class="btn" href="' + escapeHtml(part.url) + '" target="_blank" rel="noopener noreferrer">Abrir en pestaña</a>'
+    : '';
+  const backBtn = openExternalBtn + '<button type="button" class="btn" id="closeProtocoloBtn">Volver</button>';
   if (ext === '.pdf') {
     const pdfSrc = src + (src.includes('#') ? '' : '#view=FitH&toolbar=1&navpanes=0');
     els.viewer.innerHTML =
