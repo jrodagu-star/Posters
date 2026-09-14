@@ -237,9 +237,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Ecografia / ETT exploracion",
             "specialty": "Ecografia",
             "path": "../biblioteca/assets/ecografia/ett-exploracion.png"
+          },
+          {
+            "id": "p-ecocardiografia-vd",
+            "type": "file",
+            "title": "Ecocardiografia del VD",
+            "path": "../biblioteca/assets/ecografia/ecocardiografia-vd.jpg",
+            "ext": ".jpg",
+            "specialty": "Ecografia",
+            "breadcrumb": "Ecografia / Ecocardiografia del VD",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 3
+        "file_count": 4
       },
       {
         "id": "f-20",
@@ -336,9 +347,20 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Hematologia",
             "breadcrumb": "Hematologia / Manejo anticoagulante",
             "source": "asset"
+          },
+          {
+            "id": "p-sindrome-lisis-tumoral",
+            "type": "file",
+            "title": "Sindrome de lisis tumoral",
+            "path": "../biblioteca/assets/hematologia/sindrome-lisis-tumoral.jpg",
+            "ext": ".jpg",
+            "specialty": "Hematologia",
+            "breadcrumb": "Hematologia / Sindrome de lisis tumoral",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 2
+        "file_count": 3
       },
       {
         "id": "f-28",
@@ -354,9 +376,20 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Imagen",
             "breadcrumb": "Imagen / Chest imaging",
             "source": "asset"
+          },
+          {
+            "id": "p-radiografia-torax-icc",
+            "type": "file",
+            "title": "Radiografia Torax en ICC",
+            "path": "../biblioteca/assets/imagen/radiografia-torax-icc.jpg",
+            "ext": ".jpg",
+            "specialty": "Imagen",
+            "breadcrumb": "Imagen / Radiografia Torax en ICC",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 1
+        "file_count": 2
       },
       {
         "id": "f-30",
@@ -480,9 +513,53 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Nefrologia",
             "breadcrumb": "Nefrologia / Potasio",
             "source": "asset"
+          },
+          {
+            "id": "p-nefroproteccion",
+            "type": "file",
+            "title": "Nefroproteccion",
+            "path": "../biblioteca/assets/nefrologia/nefroproteccion.jpg",
+            "ext": ".jpg",
+            "specialty": "Nefrologia",
+            "breadcrumb": "Nefrologia / Nefroproteccion",
+            "source": "asset",
+            "audience": "medicina"
+          },
+          {
+            "id": "p-nefropatia-contraste",
+            "type": "file",
+            "title": "Nefropatia por contraste",
+            "path": "../biblioteca/assets/nefrologia/nefropatia-por-contraste.jpg",
+            "ext": ".jpg",
+            "specialty": "Nefrologia",
+            "breadcrumb": "Nefrologia / Nefropatia por contraste",
+            "source": "asset",
+            "audience": "medicina"
+          },
+          {
+            "id": "p-hiperpotasemia",
+            "type": "file",
+            "title": "Hiperpotasemia",
+            "path": "../biblioteca/assets/nefrologia/hiperpotasemia.jpg",
+            "ext": ".jpg",
+            "specialty": "Nefrologia",
+            "breadcrumb": "Nefrologia / Hiperpotasemia",
+            "source": "asset",
+            "audience": "medicina"
+          },
+          {
+            "id": "p-acidosis-tubular-renal",
+            "type": "file",
+            "title": "Acidosis tubular Renal",
+            "path": "../biblioteca/assets/nefrologia/acidosis-tubular-renal.jpg",
+            "ext": ".jpg",
+            "specialty": "Nefrologia",
+            "breadcrumb": "Nefrologia / Acidosis tubular Renal",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 2
+        "file_count": 6
       },
       {
         "id": "f-37",
@@ -546,9 +623,20 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Neurologia",
             "breadcrumb": "Neurologia / Status spileptico",
             "source": "asset"
+          },
+          {
+            "id": "p-algoritmo-hich",
+            "type": "file",
+            "title": "Algoritmo de hemorragia intracraneal",
+            "path": "../biblioteca/assets/neurologia/algoritmo-hemorragia-intracraneal.jpg",
+            "ext": ".jpg",
+            "specialty": "Neurologia",
+            "breadcrumb": "Neurologia / Algoritmo de hemorragia intracraneal",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 5
+        "file_count": 6
       },
       {
         "id": "f-44",
@@ -655,9 +743,20 @@ window.BIBLIOTECA_DATA = {
                 "specialty": "Respiratorio",
                 "breadcrumb": "Respiratorio / Ventilacion mecanica / Presiones ventilador",
                 "source": "asset"
+              },
+              {
+                "id": "p-parametros-vm",
+                "type": "file",
+                "title": "Parametros Ventilacion mecanica",
+                "path": "../biblioteca/assets/respiratorio/ventilacion-mecanica/parametros-ventilacion-mecanica.jpg",
+                "ext": ".jpg",
+                "specialty": "Respiratorio",
+                "breadcrumb": "Respiratorio / Ventilacion mecanica / Parametros Ventilacion mecanica",
+                "source": "asset",
+                "audience": "todos"
               }
             ],
-            "file_count": 6
+            "file_count": 7
           },
           {
             "id": "f-56",
@@ -718,7 +817,7 @@ window.BIBLIOTECA_DATA = {
             "audience": "medicina"
           }
         ],
-        "file_count": 12
+        "file_count": 13
       },
       {
         "id": "f-6hyg0pre-mrtm320x",
@@ -822,9 +921,31 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Fármacos / AmBisome 240 mg — Hospital de Día",
             "source": "asset",
             "audience": "enfermeria"
+          },
+          {
+            "id": "p-inotropos",
+            "type": "file",
+            "title": "Inotropos",
+            "path": "../biblioteca/assets/farmacos/inotropos.jpg",
+            "ext": ".jpg",
+            "specialty": "Fármacos",
+            "breadcrumb": "Fármacos / Inotropos",
+            "source": "asset",
+            "audiences": ["medicina", "enfermeria"]
+          },
+          {
+            "id": "p-farmacologia-sn-autonomo",
+            "type": "file",
+            "title": "Farmacologia del SN autonomo",
+            "path": "../biblioteca/assets/farmacos/farmacologia-sn-autonomo.jpg",
+            "ext": ".jpg",
+            "specialty": "Fármacos",
+            "breadcrumb": "Fármacos / Farmacologia del SN autonomo",
+            "source": "asset",
+            "audiences": ["medicina", "enfermeria"]
           }
         ],
-        "file_count": 4
+        "file_count": 6
       },
       {
         "id": "f-intoxicaciones",
@@ -857,6 +978,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 2
       }
     ],
-    "file_count": 61
+    "file_count": 72
   }
 };
