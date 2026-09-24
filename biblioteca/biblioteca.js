@@ -181,9 +181,20 @@ window.BIBLIOTECA_DATA = {
               }
             ],
             "file_count": 3
+          },
+          {
+            "id": "p-estenosis-aortica",
+            "type": "file",
+            "title": "Estenosis Aortica",
+            "path": "../biblioteca/assets/cardiologia/estenosis-aortica.jpg",
+            "ext": ".jpg",
+            "specialty": "Cardiologia",
+            "breadcrumb": "Cardiologia / Estenosis Aortica",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 12
+        "file_count": 13
       },
       {
         "id": "f-15",
@@ -634,9 +645,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Neurologia / Algoritmo de hemorragia intracraneal",
             "source": "asset",
             "audience": "medicina"
+          },
+          {
+            "id": "p-toff",
+            "type": "file",
+            "title": "TOFF",
+            "path": "../biblioteca/assets/neurologia/toff.jpg",
+            "ext": ".jpg",
+            "specialty": "Neurologia",
+            "breadcrumb": "Neurologia / TOFF",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 6
+        "file_count": 7
       },
       {
         "id": "f-44",
@@ -754,9 +776,31 @@ window.BIBLIOTECA_DATA = {
                 "breadcrumb": "Respiratorio / Ventilacion mecanica / Parametros Ventilacion mecanica",
                 "source": "asset",
                 "audience": "todos"
+              },
+              {
+                "id": "p-complianza",
+                "type": "file",
+                "title": "Complianza",
+                "path": "../biblioteca/assets/respiratorio/ventilacion-mecanica/complianza.jpg",
+                "ext": ".jpg",
+                "specialty": "Respiratorio",
+                "breadcrumb": "Respiratorio / Ventilacion mecanica / Complianza",
+                "source": "asset",
+                "audience": "medicina"
+              },
+              {
+                "id": "p-aprv",
+                "type": "file",
+                "title": "APRV",
+                "path": "../biblioteca/assets/respiratorio/ventilacion-mecanica/aprv.jpg",
+                "ext": ".jpg",
+                "specialty": "Respiratorio",
+                "breadcrumb": "Respiratorio / Ventilacion mecanica / APRV",
+                "source": "asset",
+                "audience": "medicina"
               }
             ],
-            "file_count": 7
+            "file_count": 9
           },
           {
             "id": "f-56",
@@ -817,7 +861,7 @@ window.BIBLIOTECA_DATA = {
             "audience": "medicina"
           }
         ],
-        "file_count": 13
+        "file_count": 15
       },
       {
         "id": "f-6hyg0pre-mrtm320x",
@@ -978,6 +1022,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 2
       }
     ],
-    "file_count": 72
+    "file_count": 76
   }
 };
