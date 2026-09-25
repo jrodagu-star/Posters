@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "revision": "20260925a",
+  "revision": "20260925b",
   "exportedAt": "2026-09-25T08:00:00.000Z",
   "tree": {
     "id": "f-1",
@@ -179,9 +179,20 @@ window.BIBLIOTECA_DATA = {
                 "breadcrumb": "Cardiologia / ECG / Patrones ECG",
                 "source": "asset",
                 "audience": "medicina"
+              },
+              {
+                "id": "p-ecg-tep",
+                "type": "file",
+                "title": "ECG TEP",
+                "path": "../biblioteca/assets/cardiologia/ecg/ecg-tep.jpg",
+                "ext": ".jpg",
+                "specialty": "Cardiologia",
+                "breadcrumb": "Cardiologia / ECG / ECG TEP",
+                "source": "asset",
+                "audience": "medicina"
               }
             ],
-            "file_count": 3
+            "file_count": 4
           },
           {
             "id": "p-estenosis-aortica",
@@ -193,9 +204,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Cardiologia / Estenosis Aortica",
             "source": "asset",
             "audience": "medicina"
+          },
+          {
+            "id": "p-hipertension-pulmonar-cardio",
+            "type": "file",
+            "title": "Hipertension Pulmonar",
+            "path": "../biblioteca/assets/cardiologia/hipertension-pulmonar.jpg",
+            "ext": ".jpg",
+            "specialty": "Cardiologia",
+            "breadcrumb": "Cardiologia / Hipertension Pulmonar",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 13
+        "file_count": 15
       },
       {
         "id": "f-15",
@@ -331,9 +353,31 @@ window.BIBLIOTECA_DATA = {
             "source": "asset",
             "audience": "enfermeria",
             "formulario": true
+          },
+          {
+            "id": "p-hipomagnesemia",
+            "type": "file",
+            "title": "Hipomagnesemia",
+            "path": "../biblioteca/assets/endocrino/hipomagnesemia.jpg",
+            "ext": ".jpg",
+            "specialty": "Endocrino",
+            "breadcrumb": "Endocrino / Hipomagnesemia",
+            "source": "asset",
+            "audience": "medicina"
+          },
+          {
+            "id": "p-hiperpotasemia-tratamiento",
+            "type": "file",
+            "title": "Hiperpotasemia tratamiento",
+            "path": "../biblioteca/assets/endocrino/hiperpotasemia-tratamiento.jpg",
+            "ext": ".jpg",
+            "specialty": "Endocrino",
+            "breadcrumb": "Endocrino / Hiperpotasemia tratamiento",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 6
+        "file_count": 8
       },
       {
         "id": "f-25",
@@ -370,9 +414,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Hematologia / Sindrome de lisis tumoral",
             "source": "asset",
             "audience": "medicina"
+          },
+          {
+            "id": "p-trombocitopenia-purpura",
+            "type": "file",
+            "title": "Trombocitopenia y Purpura",
+            "path": "../biblioteca/assets/hematologia/trombocitopenia-purpura.jpg",
+            "ext": ".jpg",
+            "specialty": "Hematologia",
+            "breadcrumb": "Hematologia / Trombocitopenia y Purpura",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 3
+        "file_count": 4
       },
       {
         "id": "f-28",
@@ -479,9 +534,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Infecciones / Sepsis bundle",
             "source": "asset",
             "audience": "medicina"
+          },
+          {
+            "id": "p-sepsis",
+            "type": "file",
+            "title": "Sepsis",
+            "path": "../biblioteca/assets/infecciones/sepsis.jpg",
+            "ext": ".jpg",
+            "specialty": "Infecciones",
+            "breadcrumb": "Infecciones / Sepsis",
+            "source": "asset",
+            "audiences": ["medicina", "enfermeria"]
           }
         ],
-        "file_count": 7
+        "file_count": 8
       },
       {
         "id": "f-32",
@@ -988,9 +1054,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Fármacos / Farmacologia del SN autonomo",
             "source": "asset",
             "audiences": ["medicina", "enfermeria"]
+          },
+          {
+            "id": "p-medicacion-administracion-lenta",
+            "type": "file",
+            "title": "Medicacion adminsitracion lenta",
+            "path": "../biblioteca/assets/farmacos/medicacion-administracion-lenta.jpg",
+            "ext": ".jpg",
+            "specialty": "Fármacos",
+            "breadcrumb": "Fármacos / Medicacion adminsitracion lenta",
+            "source": "asset",
+            "audience": "enfermeria"
           }
         ],
-        "file_count": 6
+        "file_count": 7
       },
       {
         "id": "f-intoxicaciones",
@@ -1023,6 +1100,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 2
       }
     ],
-    "file_count": 76
+    "file_count": 83
   }
 };
