@@ -1,0 +1,20 @@
+{
+  "name": "Dashboard médico UCI",
+  "short_name": "Posters UCI",
+  "description": "Dashboard de pósteres, protocolos y calculadoras de UCI",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "../biblioteca/assets/inicio-uci.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

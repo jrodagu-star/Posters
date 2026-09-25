@@ -1,7 +1,9 @@
 const STORAGE_KEY = 'dashboard_medicina_persistente_state_v6';
 const DB_NAME = 'dashboard_medicina_persistente_v6_db';
 const DB_STORE = 'state';
+const REVISION_KEY = 'dashboard_medicina_base_revision_v6';
 const LIB = window.BIBLIOTECA_DATA || { tree: { id: 'f-root', type: 'folder', title: 'Temas', children: [] } };
+const BASE_REVISION = (window.BIBLIOTECA_DATA && window.BIBLIOTECA_DATA.revision) || 'base';
 const VALID_EXTS = ['.gif', '.htm', '.html', '.jpeg', '.jpg', '.pdf', '.png', '.webp'];
 const IMAGE_EXTS = ['.gif', '.jpeg', '.jpg', '.png', '.webp'];
 const HTML_EXTS = ['.htm', '.html'];
@@ -491,6 +493,7 @@ async function persistState(payload) {
   return { localSaved, idbSaved, saved: localSaved || idbSaved };
 }
 function saveLocalState() {
+  try { localStorage.setItem(REVISION_KEY, BASE_REVISION); } catch (e) {}
   persistState(state.tree).then(result => {
     if (!result.saved) alert('No se pudo guardar localmente todo el contenido. Usa Guardar biblioteca para no perder cambios.');
   }).catch(() => {
@@ -2022,6 +2025,7 @@ async function restoreBaseLibrary() {
   state.loadedFromSaved = false;
   state.lastSavedMode = 'base';
   await clearPersistedState();
+  try { localStorage.setItem(REVISION_KEY, BASE_REVISION); } catch (e) {}
   renderTree();
   renderSearch('');
   showHome();
@@ -2223,22 +2227,32 @@ function initEvents() {
 
 async function loadState() {
   let saved = null;
+  let savedRevision = null;
+  try { savedRevision = localStorage.getItem(REVISION_KEY); } catch (e) { savedRevision = null; }
   try { saved = await idbGet('treeState'); } catch (e) {}
   if (!saved) {
     try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { saved = null; }
   }
-  if (saved && saved.type === 'folder') {
+
+  const hasFreshBase = !!BASE_REVISION;
+  const revisionMismatch = hasFreshBase && savedRevision !== BASE_REVISION;
+
+  if (saved && saved.type === 'folder' && !revisionMismatch) {
     normalizeTreePaths(saved);
     ensureAudience(saved);
     state.tree = saved;
     state.loadedFromSaved = true;
     state.lastSavedMode = 'autosaved';
   } else {
+    if (revisionMismatch && saved) {
+      try { await clearPersistedState(); } catch (e) {}
+    }
     state.tree = clone((window.BIBLIOTECA_DATA && window.BIBLIOTECA_DATA.tree) || LIB.tree);
     normalizeTreePaths(state.tree);
     ensureAudience(state.tree);
     state.loadedFromSaved = false;
     state.lastSavedMode = 'base';
+    try { localStorage.setItem(REVISION_KEY, BASE_REVISION); } catch (e) {}
   }
   rebuildMetadata(state.tree);
   updateAudienceButtons();

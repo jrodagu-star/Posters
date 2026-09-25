@@ -1,7 +1,8 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "exportedAt": "2026-08-14T07:20:21.228Z",
+  "revision": "20260925a",
+  "exportedAt": "2026-09-25T08:00:00.000Z",
   "tree": {
     "id": "f-1",
     "type": "folder",
