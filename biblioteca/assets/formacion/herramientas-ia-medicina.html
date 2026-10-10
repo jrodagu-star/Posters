@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA Médica 2026 · Aplicación interactiva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F7F8; --card:#FFFFFF; --ink:#12293C; --navy:#0A334D; --navy-deep:#072639;
+    --teal:#0E7C7B; --teal-soft:#E2F0EF; --blue:#1D63A8; --blue-soft:#E3EDF8;
+    --green:#2E7D5B; --green-soft:#E5F1EB; --slate:#5B6FA8; --slate-soft:#ECEEF7;
+    --graphite:#4A5A66; --graphite-soft:#ECF0F2; --amber:#B9791C; --amber-soft:#FBEED8;
+    --line:#D5E1E6; --mut:#5B7386; --mono:#33495B; --red:#C60B1E; --red-soft:#FBEBEC;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:"Inter",system-ui,sans-serif;color:var(--ink);background:var(--paper);
+    -webkit-font-smoothing:antialiased;display:flex;min-height:100vh;
+  }
+  a{color:var(--blue);}
+
+  /* ============ SIDEBAR ============ */
+  aside{
+    width:262px;flex:0 0 262px;background:linear-gradient(180deg,var(--navy-deep),var(--navy) 60%,#0E4E5E);
+    color:#DDEBF0;position:sticky;top:0;height:100vh;overflow-y:auto;
+    display:flex;flex-direction:column;padding:26px 18px 18px;z-index:50;
+  }
+  .brand{display:flex;align-items:center;gap:11px;padding:0 6px 20px;border-bottom:1px solid rgba(255,255,255,.14);}
+  .brand-logo{
+    width:38px;height:38px;border-radius:10px;flex:0 0 38px;
+    background:linear-gradient(135deg,#57C7BE,#1D63A8);display:flex;align-items:center;justify-content:center;
+  }
+  .brand-logo svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .brand b{font-family:"Space Grotesk",sans-serif;font-size:15.5px;color:#fff;line-height:1.2;display:block;}
+  .brand span{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#8FD0CC;}
+  nav{padding-top:16px;display:flex;flex-direction:column;gap:4px;}
+  nav .nav-label{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#6FA6B3;padding:10px 10px 6px;}
+  nav a{
+    display:flex;align-items:center;gap:11px;text-decoration:none;color:#C6DCE4;
+    font-size:13.5px;font-weight:500;padding:9px 10px;border-radius:9px;border-left:3px solid transparent;
+    transition:background .15s ease,color .15s ease,border-color .15s ease;
+  }
+  nav a svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:0 0 16px;}
+  nav a:hover{background:rgba(255,255,255,.08);color:#fff;}
+  nav a.active{background:rgba(87,199,190,.16);color:#7FDDD5;border-left-color:#57C7BE;font-weight:600;}
+  .navgroup .parent{position:relative;cursor:pointer;}
+  .navgroup .chev{margin-left:auto;width:14px;height:14px;flex:0 0 14px;transition:transform .2s ease;}
+  .navgroup.open .chev{transform:rotate(90deg);}
+  .subnav{display:none;flex-direction:column;gap:2px;margin:2px 0 6px;padding-left:12px;margin-left:15px;border-left:1px solid rgba(255,255,255,.14);}
+  .navgroup.open .subnav{display:flex;}
+  .subnav a{font-size:12.2px;padding:6px 10px;color:#A8C9D4;border-left:2px solid transparent;}
+  .subnav a:hover{color:#fff;background:rgba(255,255,255,.06);}
+  .subnav a.active{color:#7FDDD5;background:rgba(87,199,190,.12);font-weight:600;border-left-color:#57C7BE;}
+  .subnav .cbadge{font-family:"IBM Plex Mono",monospace;font-size:9px;color:#F2A3A8;letter-spacing:.03em;margin-left:5px;}
+  .panel[id], .cat-band[id]{scroll-margin-top:22px;}
+  .side-foot{margin-top:auto;padding:18px 10px 2px;border-top:1px solid rgba(255,255,255,.14);}
+  .side-foot p{font-family:"IBM Plex Mono",monospace;font-size:10px;line-height:1.7;color:#7FA8B5;letter-spacing:.04em;}
+  .side-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+  .side-tags span{font-family:"IBM Plex Mono",monospace;font-size:9.5px;color:#8FD0CC;border:1px solid rgba(143,208,204,.35);border-radius:5px;padding:3px 7px;}
+
+  /* ============ MAIN ============ */
+  main{flex:1;min-width:0;}
+  .ekgbar{height:8px;background:
+    linear-gradient(90deg,#57C7BE 0 8px,transparent 8px 10px,#57C7BE 10px 18px,transparent 18px 20px,#57C7BE 20px 40px,transparent 40px 42px);
+    opacity:.35;}
+  section{padding:46px 52px 40px;scroll-margin-top:0;}
+  section:nth-of-type(even){background:#F0F5F6;}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);margin-bottom:12px;}
+  h1{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:40px;line-height:1.08;letter-spacing:-.5px;color:var(--navy);}
+  h1 .hl{color:var(--teal);}
+  h2{font-family:"Space Grotesk",sans-serif;font-size:27px;font-weight:700;color:var(--navy);letter-spacing:-.3px;margin-bottom:6px;}
+  h3{font-family:"Space Grotesk",sans-serif;font-size:18px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+  .sub{font-size:16px;line-height:1.6;color:var(--mono);margin-top:14px;max-width:760px;}
+  .lead{font-size:16.5px;line-height:1.65;color:var(--ink);max-width:820px;margin:10px 0 6px;}
+  .lead b{color:var(--navy);}
+  p,li{font-size:14.5px;line-height:1.6;color:var(--mono);}
+  .grid-stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px;}
+  .stat{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 18px;}
+  .stat b{font-family:"Space Grotesk",sans-serif;font-size:23px;color:var(--teal);font-weight:700;}
+  .stat span{font-size:12.5px;line-height:1.35;color:var(--mut);max-width:160px;}
+  .tagline{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(14,124,123,.4);border-radius:999px;padding:6px 13px;display:inline-block;margin:18px 8px 0 0;background:#fff;}
+  .ekg{display:block;width:100%;height:52px;margin-top:26px;}
+  .ekg path{stroke:#57C7BE;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  .ekg.dark path{stroke:var(--teal);opacity:.7;}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:22px 24px;box-shadow:0 10px 26px -20px rgba(10,51,77,.4);}
+  .card + .card{margin-top:16px;}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 12px 30px -24px rgba(10,51,77,.45);}
+  .panel + .panel{margin-top:22px;}
+  .panel-head{display:flex;align-items:center;gap:12px;padding:16px 24px;background:linear-gradient(90deg,var(--navy-deep),var(--navy) 60%,#0E4E5E);color:#fff;}
+  .panel-head h3{margin:0;color:#fff;font-size:17.5px;}
+  .panel-head .chip{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:11px;color:#8FD0CC;border:1px solid rgba(143,208,204,.4);border-radius:999px;padding:4px 11px;letter-spacing:.06em;white-space:nowrap;}
+  .panel-body{padding:22px 24px;}
+  .panel-body p{margin-bottom:12px;}
+  .panel-body ul{padding-left:20px;margin:8px 0 14px;}
+  .panel-body li{margin-bottom:6px;}
+
+  /* quick table */
+  table.qt{width:100%;border-collapse:collapse;font-size:13px;}
+  table.qt th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;text-align:left;padding:10px 16px;background:#EDF2F4;color:var(--mut);border-bottom:1px solid var(--line);}
+  table.qt td{padding:9px 16px;border-bottom:1px solid #E8EEF1;vertical-align:middle;}
+  table.qt tbody tr:last-child td{border-bottom:none;}
+  tr.q-group td{background:var(--gcol,var(--teal));color:#fff;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:14px;padding:9px 16px;}
+  .qg-n{display:inline-block;min-width:24px;text-align:center;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;background:rgba(255,255,255,.24);border-radius:999px;padding:3px 8px;margin-right:12px;vertical-align:middle;}
+  td.q-app{font-weight:600;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  td.q-app.q-star{color:var(--amber);font-weight:700;}
+  td.q-uso{color:var(--mono);}
+  td.q-price{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;color:var(--navy);white-space:nowrap;text-align:right;}
+  .table-scroll{overflow-x:auto;}
+
+  /* compare tables */
+  .ct{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0 8px;}
+  .ct th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;text-align:left;padding:10px 14px;background:var(--navy);color:#fff;border:1px solid var(--navy);}
+  .ct td{padding:10px 14px;border:1px solid var(--line);vertical-align:top;background:#fff;}
+  .ct td:first-child{font-weight:600;color:var(--navy);background:#F3F7F8;white-space:nowrap;font-size:13px;}
+  .ct tr:nth-child(even) td{background:#FBFDFD;}
+  .win{color:var(--green);font-weight:600;}
+  .coste-tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap;letter-spacing:.03em;}
+
+  /* ---------- DISPONIBILIDAD (tabla maestra) ---------- */
+  table.dt{width:100%;border-collapse:collapse;font-size:12px;}
+  table.dt th{font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:9px 10px;background:#EDF2F4;color:var(--mut);border-bottom:1px solid var(--line);vertical-align:bottom;}
+  table.dt td{padding:7.5px 10px;border-bottom:1px solid #E8EEF1;vertical-align:top;line-height:1.4;}
+  table.dt tbody tr:last-child td{border-bottom:none;}
+  tr.d-group td{background:var(--gcol,var(--teal));color:#fff;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:12.5px;padding:8px 10px;letter-spacing:.02em;}
+  td.d-app{font-weight:600;color:var(--ink);white-space:nowrap;font-size:12.5px;}
+  td.d-country{color:var(--mono);font-size:11.5px;}
+  td.d-price{font-family:"IBM Plex Mono",monospace;font-size:10.8px;color:var(--navy);}
+  td.d-uso{color:var(--mono);font-size:11.5px;}
+  .pill{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;border-radius:999px;padding:2.5px 8px;white-space:nowrap;letter-spacing:.02em;}
+  .p-y{background:var(--green-soft);color:var(--green);border:1px solid #C3E0D1;}
+  .p-n{background:var(--red-soft);color:var(--red);border:1px solid #EFC4C9;}
+  .p-l{background:var(--amber-soft);color:var(--amber);border:1px solid #EBD5AE;}
+  .p-libre{background:var(--blue-soft);color:var(--blue);border:1px solid #C6D9EE;}
+  .p-inst{background:var(--graphite-soft);color:var(--graphite);border:1px solid #D2DADE;}
+  .d-link{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;color:var(--blue);text-decoration:none;white-space:nowrap;}
+  .d-link:hover{color:var(--teal);text-decoration:underline;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0 4px;font-size:12px;color:var(--mut);align-items:center;}
+  .legend .pill{margin-right:5px;}
+
+  .note{border-left:3px solid var(--amber);background:var(--amber-soft);border-radius:0 10px 10px 0;padding:13px 16px;font-size:13.5px;line-height:1.55;color:#6B4A12;margin:14px 0;}
+  .note b{color:#7A5415;}
+  .callout{border:1px dashed #A8C3D9;border-radius:12px;background:#F7FBFD;padding:15px 18px;font-size:13.5px;color:var(--mut);line-height:1.6;margin:14px 0;}
+  .callout b{color:var(--blue);}
+
+  /* app cards grid */
+  .cat-band{margin-top:30px;}
+  .cat-band h3.cat-title{display:flex;align-items:center;gap:11px;font-size:20px;margin-bottom:14px;}
+  .cat-chip{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:13px;color:#fff;background:var(--cat);border-radius:8px;padding:6px 11px;letter-spacing:.05em;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .appcard{background:#fff;border:1px solid var(--line);border-radius:13px;padding:17px 19px 15px;display:flex;flex-direction:column;gap:9px;border-top:3px solid var(--cat,var(--teal));box-shadow:0 8px 22px -18px rgba(10,51,77,.35);}
+  .app-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .app-id{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;color:var(--cat,var(--teal));background:var(--catsoft,#EFF3F5);border-radius:6px;padding:3px 8px;}
+  .app-head h4{font-family:"Space Grotesk",sans-serif;font-size:17px;font-weight:700;color:var(--ink);}
+  .app-head .free{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;color:var(--green);background:var(--green-soft);border-radius:999px;padding:3px 9px;}
+  .app-head .es{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;color:#fff;background:linear-gradient(135deg,#C60B1E,#8F0B1B);border:1px solid #FFC72C;border-radius:999px;padding:3px 9px;white-space:nowrap;}
+  .uso{font-size:13px;line-height:1.5;color:var(--ink);}
+  .uso b{color:var(--navy);font-weight:600;}
+  ul.feats{list-style:none;padding:0;display:flex;flex-direction:column;gap:5px;}
+  ul.feats li{position:relative;padding-left:15px;font-size:12.8px;line-height:1.45;color:var(--mono);}
+  ul.feats li::before{content:"";position:absolute;left:1px;top:7px;width:5px;height:5px;border-radius:50%;background:var(--cat,var(--teal));}
+  .card-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap;}
+  .coste{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;color:var(--mono);background:var(--graphite-soft);border-radius:7px;padding:5px 9px;}
+  .app-link{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600;text-decoration:none;color:#fff;background:var(--navy);border-radius:7px;padding:7px 12px;white-space:nowrap;transition:background .15s ease;}
+  .app-link:hover{background:var(--teal);}
+  .vera-feat{border:1.5px solid #9CC3E8;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 18px 44px -22px rgba(10,51,77,.35);margin-top:30px;}
+  .vera-top{display:flex;align-items:center;gap:10px;padding:13px 24px;background:linear-gradient(90deg,var(--navy),#12508A);color:#fff;flex-wrap:wrap;}
+  .vera-top .flag{font-size:13.5px;}
+  .vera-top .badge{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#FFD9A0;border:1px solid rgba(255,200,120,.55);border-radius:999px;padding:4px 11px;}
+  .vera-body{display:flex;gap:26px;padding:26px 26px 22px;flex-wrap:wrap;}
+  .vera-main{flex:1.2;min-width:280px;}
+  .vera-main h3{font-size:30px;}
+  .vera-checks{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+  .chk{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;color:var(--green);background:var(--green-soft);border:1px solid #C3E0D1;border-radius:999px;padding:5px 11px;}
+  .vera-facts{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:280px;}
+  .fact{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff;}
+  .fact b{font-family:"Space Grotesk",sans-serif;font-size:21px;color:var(--blue);display:block;}
+  .fact span{font-size:12px;line-height:1.4;color:var(--mut);display:block;margin-top:2px;}
+  .cta{display:inline-block;margin-top:12px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;color:#fff;background:var(--blue);text-decoration:none;border-radius:8px;padding:8px 14px;transition:background .15s ease;}
+  .cta:hover{background:var(--navy);}
+
+  .src-list{list-style:none;padding:0;}
+  .src-list li{padding:9px 0;border-bottom:1px solid #E8EEF1;font-size:13.5px;}
+  .src-list li:last-child{border-bottom:none;}
+  .src-list .tag-src{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--teal);background:var(--teal-soft);border-radius:5px;padding:2px 7px;margin-right:8px;letter-spacing:.05em;}
+
+  .toc-chips{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0 8px;}
+  .toc-chips a{font-family:"IBM Plex Mono",monospace;font-size:11.5px;text-decoration:none;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 13px;transition:all .15s ease;}
+  .toc-chips a:hover{border-color:var(--teal);color:var(--teal);}
+
+  footer{background:var(--navy-deep);color:#9FBDC8;padding:26px 52px;font-size:12px;line-height:1.7;}
+  footer b{color:#C6DCE4;}
+  footer .sig{font-family:"IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase;font-size:10.5px;color:#57C7BE;}
+
+  /* scrollspy highlight */
+  @media (max-width:960px){
+    body{flex-direction:column;}
+    aside{position:static;width:100%;flex:none;height:auto;max-height:44vh;border-bottom:1px solid rgba(255,255,255,.2);}
+    section{padding:34px 20px;}
+    .grid2{grid-template-columns:1fr;}
+    footer{padding:22px 20px;}
+    .app-head h4{font-size:16.5px;}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+</style>
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<aside id="sidebar">
+  <div class="brand">
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>
+    </div>
+    <div><b>IA Médica 2026</b><span>App del clínico</span></div>
+  </div>
+  <nav id="nav">
+    <span class="nav-label">Contenido</span>
+    <a href="#inicio"><svg viewBox="0 0 24 24"><path d="M4 11l8-8 8 8M6 10v9h12v-9"/></svg>Inicio</a>
+    <a href="#resumen"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Resumen de un vistazo</a>
+
+    <div class="navgroup open">
+      <a href="#ia-general" class="parent"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg>IA en general<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>
+      <div class="subnav">
+        <a href="#iag-asistentes">Asistentes conversacionales</a>
+        <a href="#iag-plataformas">Plataformas de IA</a>
+        <a href="#iag-modelos">Modelos por categoría</a>
+      </div>
+    </div>
+
+    <div class="navgroup open">
+      <a href="#apps" class="parent"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Las 21 aplicaciones<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>
+      <div class="subnav">
+        <a href="#apps-bus">Búsqueda e investigación</a>
+        <a href="#apps-evi">Evidencia y literatura</a>
+        <a href="#evi-comparativa">Evidencia: comparativa ES</a>
+        <a href="#evi-flujo">Flujo de publicación</a>
+        <a href="#apps-cli">Clínica <span class="cbadge">★ Vera · 🇪🇸 Kleia</span></a>
+        <a href="#apps-dat">Datos y estadística</a>
+        <a href="#apps-doc">Docencia y presentaciones</a>
+      </div>
+    </div>
+
+    <div class="navgroup open">
+      <a href="#disponibilidad" class="parent"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18M7 6v12"/></svg>Disponibilidad en España<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>
+      <div class="subnav">
+        <a href="#disp-clinica">Decisión clínica y evidencia</a>
+        <a href="#disp-general">Asistentes de IA general</a>
+        <a href="#disp-invest">Investigación y publicaciones</a>
+        <a href="#disp-datos">Datos, docencia y creación</a>
+      </div>
+    </div>
+
+    <div class="navgroup open">
+      <a href="#vera" class="parent"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.3-9A5.4 5.4 0 0112 6.4 5.4 5.4 0 0121.3 12C19 16.4 12 21 12 21z"/></svg>Vera Health a fondo<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>
+      <div class="subnav">
+        <a href="#vera-origen">Origen y aval clínico</a>
+        <a href="#vera-metodo">Cómo funciona</a>
+        <a href="#vera-funciones">Funcionalidades</a>
+        <a href="#vera-adopcion">Adopción en España</a>
+      </div>
+    </div>
+
+    <div class="navgroup open">
+      <a href="#kleia" class="parent"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 01-8.5 8.5c-1.6 0-3.1-.4-4.4-1.2L3 20l1.2-5.1A8.5 8.5 0 1121 11.5z"/></svg>Kleia a fondo<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>
+      <div class="subnav">
+        <a href="#kleia-origen">Origen</a>
+        <a href="#kleia-funciones">Funcionalidades y certificaciones</a>
+      </div>
+    </div>
+
+    <div class="navgroup open">
+      <a href="#comparativa" class="parent"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg>Comparativa<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>
+      <div class="subnav">
+        <a href="#comp-tabla">Tabla comparativa</a>
+        <a href="#comp-protocolos">Protocolos españoles</a>
+        <a href="#comp-casos">Casos de uso reales</a>
+      </div>
+    </div>
+
+    <a href="#guia"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>Guía práctica</a>
+    <a href="#fuentes"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V4a2 2 0 00-2-2H6.5A2.5 2.5 0 004 4.5v15zM4 19.5A2.5 2.5 0 006.5 22H20v-5"/></svg>Fuentes</a>
+  </nav>
+  <div class="side-foot">
+    <p>Ficha técnica IA sanitaria<br>Actualizada: agosto 2026</p>
+    <div class="side-tags"><span>RGPD</span><span>HIPAA</span><span>AEMPS</span><span>UE</span></div>
+  </div>
+</aside>
+
+<!-- ===================== MAIN ===================== -->
+<main id="main">
+<div class="ekgbar"></div>
+
+<!-- ============ INICIO ============ -->
+<section id="inicio">
+  <div class="eyebrow">IA en medicina · Panorama 2026 · España / UE</div>
+  <h1>Aplicaciones de <span class="hl">inteligencia artificial</span> para el médico</h1>
+  <p class="sub">21 aplicaciones organizadas por área de trabajo, con su uso principal, características, coste orientativo y enlace directo. Diseñado para <b>investigación, docencia, análisis estadístico y preparación de presentaciones</b>, con un análisis a fondo de las dos grandes apuestas españolas: <b>Vera Health</b> y <b>Kleia (iDoctus)</b>.</p>
+  <div class="grid-stats">
+    <div class="stat"><b>21</b><span>aplicaciones comparadas</span></div>
+    <div class="stat"><b>5</b><span>áreas de trabajo clínicas y académicas</span></div>
+    <div class="stat"><b>0&nbsp;€</b><span>Vera Health (+Kleia en iDoctus) para médicos</span></div>
+    <div class="stat"><b>60M+</b><span>papers y guías indexados en el corpus de Vera</span></div>
+  </div>
+  <div>
+    <span class="tagline">Investigación</span><span class="tagline">Docencia</span><span class="tagline">Estadística</span><span class="tagline">Presentaciones</span>
+  </div>
+  <svg class="ekg" viewBox="0 0 1000 52" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 26 L190 26 L200 26 L208 12 L216 40 L226 26 L340 26 L350 26 L358 14 L366 38 L376 26 L500 26 L510 26 L518 8 L528 44 L538 26 L650 26 L660 26 L668 16 L676 36 L686 26 L810 26 L820 26 L828 10 L838 42 L848 26 L1000 26"/>
+  </svg>
+  <div class="toc-chips">
+    <a href="#resumen">Resumen rápido</a><a href="#ia-general">IA en general</a><a href="#apps">Aplicaciones</a><a href="#disponibilidad">Disponibilidad</a><a href="#vera">Vera Health</a><a href="#kleia">Kleia</a><a href="#comparativa">Comparativa</a><a href="#guia">Guía práctica</a>
+  </div>
+</section>
+
+<!-- ============ IA EN GENERAL ============ -->
+<section id="ia-general">
+  <div class="eyebrow">Contexto general · Antes de las apps médicas</div>
+  <h2>IA en general: asistentes, plataformas y modelos</h2>
+  <p class="lead">Mapa del ecosistema general de IA: los grandes asistentes conversacionales, las plataformas de uso común y la clasificación de los principales modelos por rendimiento, coste y caso de uso. Datos aportados para esta ficha (2026).</p>
+
+  <div class="panel" id="iag-asistentes">
+    <div class="panel-head"><h3>Asistentes conversacionales: los tres grandes</h3><span class="chip">ChatGPT · Claude · Gemini</span></div>
+    <div class="panel-body">
+      <div class="table-scroll">
+      <table class="ct">
+        <tr><th style="width:18%;">Característica</th><th>🧠 ChatGPT (OpenAI)</th><th>✍️ Claude (Anthropic)</th><th>🌐 Gemini (Google)</th></tr>
+        <tr><td>Enfoque principal</td><td>Versatilidad, voz en tiempo real y automatización</td><td>Redacción creativa, análisis profundo y código</td><td>Integración de ecosistema, datos vivos y gran contexto</td></tr>
+        <tr><td>Punto más fuerte</td><td>Su enorme ecosistema de asistentes personalizados (GPTs)</td><td>Interfaz interactiva de "Artifacts" y matices lógicos excelentes</td><td>Acceso directo a tu cuenta de Gmail, Google Drive, Docs y Maps</td></tr>
+        <tr><td>Modelos disponibles (2026)</td><td>GPT-5.6 <b>Terra</b> o GPT-5.6 <b>Sol</b></td><td>Claude <b>Sonnet 5</b> o Claude <b>Opus 5</b> (Opus reservado al plan Max)</td><td>Gemini <b>3.7 Flash</b></td></tr>
+        <tr><td>Ventana de contexto</td><td>Estándar (ideal para hilos de conversación intermedios)</td><td>Muy alta (mantiene la memoria sin perder el hilo en textos largos)</td><td>Masiva (procesa miles de páginas de documentos en un solo prompt)</td></tr>
+        <tr><td>Público objetivo</td><td>Usuarios generales, creadores y entusiastas</td><td>Desarrolladores, escritores, analistas y profesionales técnicos</td><td>Usuarios del entorno corporativo o personal de Google Workspace</td></tr>
+      </table>
+      </div>
+      <p style="margin-top:12px;"><b>Lectura para el clínico:</b> Gemini brilla si trabajas dentro de Google Workspace (Docs, Drive, Gmail); Claude es muy útil para analizar literatura larga sin perder el hilo; ChatGPT destaca por su versatilidad y por el ecosistema de GPTs especializados.</p>
+    </div>
+  </div>
+
+  <div class="panel" id="iag-plataformas">
+    <div class="panel-head"><h3>Plataformas de IA de uso común</h3><span class="chip">Copilot · Perplexity · DeepSeek · Grok</span></div>
+    <div class="panel-body">
+      <div class="table-scroll">
+      <table class="ct">
+        <tr><th style="width:17%;">Plataforma</th><th>🧠 Enfoque principal</th><th>✨ Punto más fuerte</th><th>🎯 Ideal para…</th></tr>
+        <tr><td>Copilot (Microsoft)</td><td>Productividad de oficina y entorno empresarial</td><td>Integración total con Windows, Word, Excel y PowerPoint</td><td>Usuarios corporativos y estudiantes que usan Microsoft 365</td></tr>
+        <tr><td>Perplexity</td><td>Motor de búsqueda conversacional y de investigación</td><td>Busca en la web en tiempo real y cita de forma exacta cada fuente</td><td>Estudiantes, periodistas y personas que necesitan datos verificados</td></tr>
+        <tr><td>DeepSeek</td><td>Procesamiento avanzado de lenguaje y razonamiento lógico</td><td>Alta eficiencia en programación y matemáticas con costes muy accesibles</td><td>Programadores y usuarios que buscan una alternativa técnica potente</td></tr>
+        <tr><td>Grok (xAI)</td><td>Información inmediata y sin filtros de corrección política</td><td>Acceso instantáneo a los datos y tendencias globales de la red social X</td><td>Seguir noticias de última hora, memes y tendencias de internet</td></tr>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="iag-modelos">
+    <div class="panel-head"><h3>Modelos de mercado por categoría</h3><span class="chip">Rendimiento · coste · uso</span></div>
+    <div class="panel-body">
+      <p style="margin-bottom:12px;">Clasificación visual de los principales modelos actuales según su rendimiento, coste y caso de uso.</p>
+      <div class="table-scroll">
+      <table class="ct">
+        <tr><th style="width:15%;">Categoría</th><th>🧠 Modelos clave</th><th>✨ Fortaleza principal</th><th>💸 Nivel de coste</th><th>🎯 Ideal para…</th></tr>
+        <tr>
+          <td style="background:var(--navy);color:#fff;font-weight:700;">Premium / Frontera</td>
+          <td>GPT-6 Astra · Claude Opus 5 / Fable</td>
+          <td>Máximo razonamiento lógico, matemáticas avanzadas y resolución de problemas complejos</td>
+          <td><span class="coste-tag" style="background:var(--red-soft);color:var(--red);">Alto</span></td>
+          <td>Proyectos científicos, auditorías críticas y tareas complejas de larga duración</td>
+        </tr>
+        <tr>
+          <td style="background:var(--blue);color:#fff;font-weight:700;">Trabajo Diario</td>
+          <td>Claude Sonnet 5 · GPT-5.6 Terra · Grok 4.6</td>
+          <td>Equilibrio perfecto entre alta velocidad, precisión excelente y coste moderado</td>
+          <td><span class="coste-tag" style="background:var(--blue-soft);color:var(--blue);">Medio</span></td>
+          <td>Programación diaria, redacción profesional y automatizaciones estándar</td>
+        </tr>
+        <tr>
+          <td style="background:var(--teal);color:#fff;font-weight:700;">Rápidos / Multimodales</td>
+          <td>Gemini 3.8 Flash · GPT-5.6 Luna · DeepSeek V4 Flash</td>
+          <td>Respuestas en milisegundos y procesamiento masivo de vídeo, audio y archivos gigantes</td>
+          <td><span class="coste-tag" style="background:var(--green-soft);color:var(--green);">Muy bajo</span></td>
+          <td>Clasificación de miles de datos, transcripciones y aplicaciones que requieren inmediatez</td>
+        </tr>
+        <tr>
+          <td style="background:var(--graphite);color:#fff;font-weight:700;">Código Abierto</td>
+          <td>Llama 4 (Meta) · Qwen 3.8 · Mistral</td>
+          <td>Descarga gratuita para instalar en servidores propios, garantizando privacidad total</td>
+          <td><span class="coste-tag" style="background:var(--graphite-soft);color:var(--graphite);">Gratis (Licencia)</span></td>
+          <td>Empresas que manejan datos confidenciales o que crean su propia IA interna</td>
+        </tr>
+      </table>
+      </div>
+      <div class="callout" style="margin-top:14px;"><b>Consejo:</b> para tu práctica médica, las 21 aplicaciones del apartado <a href="#apps">Las 21 aplicaciones</a> aportan lo esencial (evidencia graduada, citas verificables, cumplimiento RGPD). Los modelos generales de esta tabla son la base tecnológica sobre la que trabajan.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESUMEN ============ -->
+<section id="resumen">
+  <div class="eyebrow">De un vistazo</div>
+  <h2>Resumen de un vistazo</h2>
+  <p class="lead">Tabla compacta dividida por categorías. Detalles, enlaces y precios completos en la sección <a href="#apps">Las 21 aplicaciones</a>.</p>
+  <div class="panel" style="margin-top:18px;">
+    <div class="table-scroll">
+    <table class="qt">
+      <thead><tr><th>Aplicación</th><th>Uso en una línea</th><th>Coste (2026)</th></tr></thead>
+      <tbody>
+        <tr class="q-group" style="--gcol:#0E7C7B"><td colspan="3"><span class="qg-n">3</span>Búsqueda e investigación web</td></tr>
+        <tr><td class="q-app">Perplexity</td><td class="q-uso">Investigación web rápida con citas</td><td class="q-price">Free · $20/mes</td></tr>
+        <tr><td class="q-app">Genspark</td><td class="q-uso">Investigación profunda + infografías</td><td class="q-price">Free · $24,99/mes</td></tr>
+        <tr><td class="q-app">Grok</td><td class="q-uso">Actualidad y tendencias en X</td><td class="q-price">~$8-16/mes</td></tr>
+        <tr class="q-group" style="--gcol:#3A6B9E"><td colspan="3"><span class="qg-n">4</span>Evidencia científica y literatura médica</td></tr>
+        <tr><td class="q-app">Consensus</td><td class="q-uso">¿Qué opina la ciencia? (Consensus Meter)</td><td class="q-price">Free · ~$10-15/mes</td></tr>
+        <tr><td class="q-app">Paperguide</td><td class="q-uso">Gestor de referencias con IA + borrador Vancouver</td><td class="q-price">Free · $12-24/mes</td></tr>
+        <tr><td class="q-app">Scite.ai</td><td class="q-uso">Auditoría de citas y detección de retractados</td><td class="q-price">~$20/mes</td></tr>
+        <tr><td class="q-app">Elicit</td><td class="q-uso">Extracción de datos para metanálisis</td><td class="q-price">Free · $49/mes</td></tr>
+        <tr class="q-group" style="--gcol:#1D63A8"><td colspan="3"><span class="qg-n">7</span>Decisión clínica y farmacología</td></tr>
+        <tr><td class="q-app q-star">★ Vera Health</td><td class="q-uso">Decisión clínica UE/España · 900+ calculadoras</td><td class="q-price">Gratis médicos colegiados</td></tr>
+        <tr><td class="q-app">Kleia</td><td class="q-uso">IA española adaptada a protocolos españoles</td><td class="q-price">Gratis LatAm · integrada en iDoctus</td></tr>
+        <tr><td class="q-app">Elna</td><td class="q-uso">Respuestas clínicas europeas referenciadas</td><td class="q-price">Gratis para clínicos</td></tr>
+        <tr><td class="q-app">Glass Health</td><td class="q-uso">Diagnóstico diferencial y planes de tratamiento con IA</td><td class="q-price">Free · Pro $90/mes</td></tr>
+        <tr><td class="q-app">OpenEvidence</td><td class="q-uso">Respuestas clínicas hiper-citadas (EE.UU.)</td><td class="q-price">Gratis sanitarios</td></tr>
+        <tr><td class="q-app">UpToDate AI</td><td class="q-uso">Consulta segura en UCI (cero alucinaciones)</td><td class="q-price">Licencia hospital/universidad</td></tr>
+        <tr><td class="q-app">MeQA (AEMPS)</td><td class="q-uso">Consultas farmacológicas oficiales</td><td class="q-price">Gratis sanitarios</td></tr>
+        <tr class="q-group" style="--gcol:#2E7D5B"><td colspan="3"><span class="qg-n">3</span>Análisis de datos y estadística</td></tr>
+        <tr><td class="q-app">Julius AI</td><td class="q-uso">Estadística y gráficos con Python/R</td><td class="q-price">Free · $20/mes</td></tr>
+        <tr><td class="q-app">Polymer</td><td class="q-uso">Excel/CSV → web analítica interactiva</td><td class="q-price">$50/mes</td></tr>
+        <tr><td class="q-app">Gemini</td><td class="q-uso">Análisis de textos masivos</td><td class="q-price">Free · $19,99/mes</td></tr>
+        <tr class="q-group" style="--gcol:#5B6FA8"><td colspan="3"><span class="qg-n">4</span>Docencia, imágenes y presentaciones</td></tr>
+        <tr><td class="q-app">NotebookLM</td><td class="q-uso">Podcasts y temarios desde tus archivos</td><td class="q-price">Gratis</td></tr>
+        <tr><td class="q-app">Microsoft Copilot</td><td class="q-uso">Informes y presentaciones en Office</td><td class="q-price">Free · ~$20/mes</td></tr>
+        <tr><td class="q-app">Midjourney</td><td class="q-uso">Ilustraciones e imágenes médicas</td><td class="q-price">$10-30/mes</td></tr>
+        <tr><td class="q-app">Runway</td><td class="q-uso">Vídeo hiperrealista para docencia</td><td class="q-price">Free · $15-35/mes</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APLICACIONES ============ -->
+<section id="apps">
+  <div class="eyebrow">El detalle</div>
+  <h2>Las 21 aplicaciones</h2>
+  <p class="lead">Cada tarjeta incluye el enlace directo a la web oficial. <b>Vera Health</b> se trata en bloque destacado y su análisis a fondo está en las secciones <a href="#vera">Vera a fondo</a> y <a href="#kleia">Kleia a fondo</a>.</p>
+  <div class="toc-chips">
+    <a href="#apps-bus">Búsqueda</a><a href="#apps-evi">Evidencia</a><a href="#apps-cli">Clínica</a><a href="#apps-dat">Datos</a><a href="#apps-doc">Docencia</a>
+  </div>
+
+  <!-- VERA FEATURED -->
+  <div class="vera-feat" id="apps-cli">
+    <div class="vera-top">
+      <span class="flag">🌍 Decisión clínica · España y Unión Europea</span>
+      <span class="badge">★ Destacada</span>
+      <span style="margin-left:auto;font-family:&quot;IBM Plex Mono&quot;,monospace;font-size:12px;color:#CEE4F7;">Estándar de oro de IA médica en el punto de atención</span>
+    </div>
+    <div class="vera-body">
+      <div class="vera-main">
+        <h3>Vera Health</h3>
+        <p style="margin-top:8px;"><b>Uso principal:</b> soporte de decisiones médicas en tiempo real, prescripción, dosificación y calculadoras clínicas, con actualización continuada de la literatura.</p>
+        <div class="vera-checks">
+          <span class="chk">100% RGPD (UE)</span><span class="chk">HIPAA</span><span class="chk">Multilingüe nativo</span><span class="chk">Gratis para médicos</span><span class="chk">Sin publicidad farmacéutica</span>
+        </div>
+        <a class="cta" href="https://www.verahealth.ai/es/home" target="_blank" rel="noopener">Ir a Vera Health ↗</a>
+      </div>
+      <div class="vera-facts">
+        <div class="fact"><b>60M+</b><span>papers y guías con evidencia graduada transparente</span></div>
+        <div class="fact"><b>900+</b><span>calculadoras médicas: SOFA, APACHE, aclaramiento renal…</span></div>
+        <div class="fact"><b>1 de 7</b><span>médicos en España ya la utilizan (2026)</span></div>
+        <div class="fact"><b>Fundada 2024</b><span>consejo clínico de Harvard, Yale, Columbia, Mayo Clinic</span></div>
+      </div>
+    </div>
+    <div class="note" style="margin:0 24px 24px;"><b>Por qué es estratégica:</b> cumple la normativa europea (RGPD), es independiente de patrocinios y gradúa la solidez de la evidencia con niveles CEBM/ACEP. <b>Coste (2026):</b> gratuita e ilimitada para médicos colegiados y estudiantes de medicina, previa verificación profesional.</div>
+  </div>
+
+  <!-- BÚSQUEDA -->
+  <div class="cat-band" id="apps-bus" style="--cat:#0E7C7B;--catsoft:#E2F0EF;">
+    <h3 class="cat-title"><span class="cat-chip">BÚS</span>Búsqueda e investigación web</h3>
+    <p class="lead" style="font-size:14px;">Información actualizada y verificable con citas, modo académico y sin sesgos comerciales ni SEO.</p>
+    <div class="grid2">
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">BÚS-01</span><h4>Perplexity</h4></div>
+        <p class="uso"><b>Uso principal:</b> investigación web rápida y reportes citados, sustituyendo al buscador tradicional.</p>
+        <ul class="feats"><li>Respuestas con citas de fuentes directas</li><li>Modos Académico y Escritura</li><li>Páginas de informe compartibles</li></ul>
+        <div class="card-foot"><div class="coste">Free $0 · Pro $20/mes</div><a class="app-link" href="https://www.perplexity.ai" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">BÚS-02</span><h4>Genspark</h4></div>
+        <p class="uso"><b>Uso principal:</b> investigación temática profunda y creación automática de contenidos e infografías.</p>
+        <ul class="feats"><li>Generación de páginas web (Sparkpages)</li><li>Filtro de sesgos comerciales y SEO</li><li>Múltiples agentes en paralelo</li></ul>
+        <div class="card-foot"><div class="coste">Free ~100 créditos/día · Plus $24,99/mes</div><a class="app-link" href="https://www.genspark.ai" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">BÚS-03</span><h4>Grok</h4></div>
+        <p class="uso"><b>Uso principal:</b> monitoreo de actualidad y tendencias en X; contenido informal.</p>
+        <ul class="feats"><li>Integración nativa con la plataforma X</li><li>Datos en tiempo real</li><li>Modo "Fun" (tono humorístico)</li></ul>
+        <div class="card-foot"><div class="coste">X Premium ~$8/mes · Premium+ ~$16/mes</div><a class="app-link" href="https://x.com/i/grok" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVIDENCIA -->
+  <div class="cat-band" id="apps-evi" style="--cat:#3A6B9E;--catsoft:#E8EEF6;">
+    <h3 class="cat-title"><span class="cat-chip">EVI</span>Evidencia científica y literatura médica</h3>
+    <p class="lead" style="font-size:14px;">El ciclo completo de la evidencia: <b>plantear</b> (Consensus), <b>auditar</b> (Scite), <b>gestionar y redactar</b> (Paperguide) y <b>extraer datos</b> (Elicit).</p>
+    <div class="grid2">
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">EVI-01</span><h4>Consensus</h4></div>
+        <p class="uso"><b>Uso principal:</b> averiguar qué opina la ciencia sobre una pregunta clínica directa (fase de hipótesis).</p>
+        <ul class="feats"><li>Consensus Meter: % general de acuerdo científico</li><li>Respuestas basadas en 200M+ papers</li><li>Copiado rápido de citas · traduce resúmenes (literatura sobre todo anglosajona)</li></ul>
+        <div class="card-foot"><div class="coste">Free 10-15 créditos/mes · Premium ~$10-15/mes</div><a class="app-link" href="https://consensus.app" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">EVI-02</span><h4>Paperguide</h4></div>
+        <p class="uso"><b>Uso principal:</b> gestionar referencias, extraer datos a tablas y redactar el borrador final.</p>
+        <ul class="feats"><li>Sustituto directo de Mendeley/Zotero: gestor de referencias nativo con IA</li><li>AI Writer: redacción que respeta el formato <b>Vancouver</b> de forma nativa</li><li>Excelente con papers internacionales indexados (limitada en revistas locales)</li></ul>
+        <div class="card-foot"><div class="coste">Free · Plus $12/mes · Pro $24/mes (anual)</div><a class="app-link" href="https://paperguide.ai" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">EVI-03</span><h4>Scite.ai</h4></div>
+        <p class="uso"><b>Uso principal:</b> verificar la solidez de un paper y ver quién lo contradice o apoya (fase de auditoría).</p>
+        <ul class="feats"><li>Clasifica citas: Apoya, Menciona o Disputa, con el fragmento exacto</li><li><b>Reference Check:</b> detecta citas retractadas antes de enviar a una revista</li><li>Plugin para Zotero/Mendeley y navegador (PubMed, Google Scholar)</li></ul>
+        <div class="card-foot"><div class="coste">Individual ~$20/mes</div><a class="app-link" href="https://scite.ai" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">EVI-04</span><h4>Elicit</h4></div>
+        <p class="uso"><b>Uso principal:</b> extracción de datos estadísticos de literatura para revisiones sistemáticas.</p>
+        <ul class="feats"><li>Extrae variables de miles de PDFs a la vez</li><li>Matrices de datos numéricos para metanálisis</li></ul>
+        <div class="card-foot"><div class="coste">Basic $0 (2 reportes/mes) · Pro $49/mes</div><a class="app-link" href="https://elicit.com" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVIDENCIA: COMPARATIVA ESPAÑA -->
+  <div class="panel" id="evi-comparativa" style="margin-top:22px;">
+    <div class="panel-head"><h3>Comparativa de los tres gigantes frente a la Medicina en España</h3><span class="chip">Consensus · Paperguide · Scite</span></div>
+    <div class="panel-body">
+      <div class="table-scroll">
+      <table class="ct">
+        <tr><th style="width:20%;">Criterio</th><th>📗 Consensus</th><th>📘 Paperguide</th><th>🔬 Scite.ai</th></tr>
+        <tr><td>Función principal</td><td>Averiguar qué opina la ciencia sobre una pregunta clínica directa</td><td>Gestionar, extraer datos a tablas y redactar el borrador final</td><td>Verificar la solidez de un paper y ver quién lo contradice o apoya</td></tr>
+        <tr><td>Análisis de contradicciones</td><td>Da un % general de acuerdo (Consensus Meter)</td><td>Muestra métricas de impacto (SJR/SNIP), pero no debate el texto</td><td>Muestra los fragmentos exactos donde otros autores lo rebaten o apoyan</td></tr>
+        <tr><td>Relación con Mendeley / Zotero</td><td>Ninguna (solo guarda favoritos en su web)</td><td><b>Sustituto directo:</b> gestor de referencias nativo con IA</td><td><b>Complemento:</b> importa tu librería Mendeley/Zotero para analizarla</td></tr>
+        <tr><td>Herramienta estrella para publicar</td><td>Copiado rápido de citas sueltas</td><td><b>AI Writer:</b> redacción en su plataforma con formato Vancouver nativo</td><td><b>Reference Check:</b> escáner que detecta si citarás un paper retractado</td></tr>
+        <tr><td>Cobertura en España / castellano</td><td>Traduce resúmenes, pero busca sobre todo literatura anglosajona</td><td>Excelente con papers internacionales; limitada en revistas locales</td><td>Muy buena en biomedicina (PubMed/WoS); lagunas en revistas puramente en español</td></tr>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVIDENCIA: FLUJO -->
+  <div class="panel" id="evi-flujo" style="margin-top:22px;">
+    <div class="panel-head"><h3>Cómo encaja Scite en tu flujo de publicaciones médicas</h3><span class="chip">Reference Check + plugin</span></div>
+    <div class="panel-body">
+      <p><b>Reference Check (control de referencias):</b> antes de enviar tu manuscrito a una revista española (p. ej. <i>Medicina Clínica</i> o <i>Revista Española de Cardiología</i>), subes el borrador en PDF y la IA escanea tu bibliografía: te alerta si citas algún artículo <b>retractado</b> o si apoyas tu hipótesis en un paper con decenas de estudios que lo contradicen. Evita un rechazo directo en la revisión por pares.</p>
+      <p><b>Plugin para Zotero/Mendeley y navegador:</b> al buscar en PubMed o Google Scholar, Scite coloca un distintivo visual junto a cada paper indicando cuántas réplicas positivas o negativas tiene, sin salir de tu búsqueda.</p>
+      <div class="callout" style="margin-top:14px;"><b>Conclusión: son fases, no competidores.</b>
+        <ol style="padding-left:20px;margin-top:8px;">
+          <li>Usa <b>Consensus</b> al inicio, cuando planteas la hipótesis y quieres saber si la comunidad médica está de acuerdo con tu enfoque.</li>
+          <li>Usa <b>Scite.ai</b> para auditar los papers clave de tu marco teórico y asegurarte de que la evidencia que citas es sólida e irrefutable.</li>
+          <li>Usa <b>Paperguide</b> (o Mendeley tradicional) para estructurar carpetas, extraer datos clínicos a tablas y dar el formato <b>Vancouver</b> final a tu texto.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLÍNICA -->
+  <div class="cat-band" style="--cat:#1D63A8;--catsoft:#E3EDF8;">
+    <h3 class="cat-title"><span class="cat-chip">CLI</span>Decisión clínica y farmacología <span class="cat-chip" style="background:var(--red);">Kleia</span> <span class="cat-chip" style="background:var(--blue);">Vera arriba</span></h3>
+    <p class="lead" style="font-size:14px;">Respuestas en el punto de atención: hipersintesis con citas, sistemas cerrados y consultas oficiales de la AEMPS.</p>
+    <div class="grid2">
+      <div class="appcard" style="--cat:#C60B1E;--catsoft:#FBEBEC;">
+        <div class="app-head"><span class="app-id" style="color:#C60B1E;">CLI-01</span><h4>Kleia</h4><span class="es">🇪🇸 100% española · iDoctus</span></div>
+        <p class="uso"><b>Uso principal:</b> consultas médicas en segundos con síntesis de evidencia de fuentes verificables, apoyando el juicio clínico sin sustituirlo.</p>
+        <ul class="feats"><li>Adaptada a protocolos y guías de práctica clínica españolas (locales e internacionales)</li><li>Base farmacológica propia (vademécum iDoctus) contra las alucinaciones</li><li>ISO 27001 e ISO 42001; finalista IA BIC 2026</li></ul>
+        <div class="card-foot"><div class="coste">Gratis en iDoctus · gratuita en LatAm</div><a class="app-link" href="https://kleia.ai" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">CLI-02</span><h4>Elna</h4><span class="free">Europea · Gratis</span></div>
+        <p class="uso"><b>Uso principal:</b> respuestas clínicas instantáneas, referenciadas y basadas en evidencia en el punto de atención (consulta, rondas o guardias).</p>
+        <ul class="feats"><li>Respuestas concisas con referencias claras y <b>tablas/esquemas visuales</b> para decidir rápido</li><li><b>20M+ fuentes clínicas curadas</b> · 40+ especialidades · 10+ idiomas · 150K consultas/mes</li><li><b>Construida en Europa</b> para la práctica clínica europea; partners: Roche, NVIDIA Inception, Google for Startups, BSC AI Factory</li></ul>
+        <div class="card-foot"><div class="coste">Gratis para clínicos individuales</div><a class="app-link" href="https://www.elna.health/" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">CLI-03</span><h4>OpenEvidence</h4><span class="free">Solo EE.UU.</span></div>
+        <p class="uso"><b>Uso principal:</b> respuestas clínicas inmediatas hiper-citadas (principalmente EE.UU.).</p>
+        <ul class="feats"><li>Citaciones clicables a JAMA, NEJM</li><li>OE Visits: transcripción ambiental y notas</li><li>HIPAA; verificación NPI</li></ul>
+        <div class="card-foot"><div class="coste">Gratis sanitarios verificados</div><a class="app-link" href="https://openevidence.com" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">CLI-04</span><h4>Glass Health</h4></div>
+        <p class="uso"><b>Uso principal:</b> soporte a la decisión clínica en el punto de atención: diagnósticos diferenciales y planes de tratamiento basados en evidencia en segundos.</p>
+        <ul class="feats"><li>Diferencial en 3 niveles: <b>Most Likely · Expanded · Can't Miss</b></li><li>Razona sobre <b>38M+ citas revisadas por pares, guías actuales y 150.000+ fichas de fármacos de la FDA</b></li><li>Ambient scribing (transcripción de consulta) e integración EHR (SMART on FHIR); app móvil + web</li></ul>
+        <div class="card-foot"><div class="coste">Free · Pro $90/mes (precio publicado)</div><a class="app-link" href="https://glass.health" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">CLI-05</span><h4>UpToDate AI</h4><span class="free">Licencia</span></div>
+        <p class="uso"><b>Uso principal:</b> consulta clínica rápida guiada por IA, especialmente en UCI.</p>
+        <ul class="feats"><li>Base médica de UpToDate</li><li>Cero alucinaciones: sistema cerrado</li></ul>
+        <div class="card-foot"><div class="coste">Licencia hospital/universidad</div><a class="app-link" href="https://www.uptodate.com" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">CLI-06</span><h4>MeQA · AEMPS</h4><span class="free">Gratis</span></div>
+        <p class="uso"><b>Uso principal:</b> consultas farmacológicas oficiales en España, integrada con el vademécum de la AEMPS.</p>
+        <ul class="feats"><li>Dosificación y alertas oficiales</li><li>Fuente institucional (AEMPS/CIMA)</li></ul>
+        <div class="card-foot"><div class="coste">Gratis para personal sanitario</div><a class="app-link" href="https://cima.aemps.es/cima/publico/meqa.html" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="callout" style="grid-column:1/-1;"><b>Nota:</b> para decisión clínica en España y la UE, <b>Vera Health</b> (bloque destacado) es la opción integral (RGPD, independencia, gratuidad). <b>Kleia</b> aporta el sello español de iDoctus: guías locales y adaptación a los protocolos de práctica clínica españoles.</div>
+    </div>
+  </div>
+
+  <!-- DATOS -->
+  <div class="cat-band" id="apps-dat" style="--cat:#2E7D5B;--catsoft:#E5F1EB;">
+    <h3 class="cat-title"><span class="cat-chip">DAT</span>Análisis de datos y estadística</h3>
+    <p class="lead" style="font-size:14px;">De tus datos a resultados publicables: Python/R desde el chat, curvas de supervivencia y exploración visual sin código.</p>
+    <div class="grid2">
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">DAT-01</span><h4>Julius AI</h4></div>
+        <p class="uso"><b>Uso principal:</b> análisis estadístico automatizado y generación de gráficos y código matemático.</p>
+        <ul class="feats"><li>Ejecuta Python/R desde el chat</li><li>Curvas de supervivencia y p-valores descargables</li></ul>
+        <div class="card-foot"><div class="coste">Free 15 msgs/mes · Plus $20/mes</div><a class="app-link" href="https://julius.ai" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">DAT-02</span><h4>Polymer</h4></div>
+        <p class="uso"><b>Uso principal:</b> exploración visual de bases de datos masivas (ensayos, registros, cohortes).</p>
+        <ul class="feats"><li>Excel/CSV → web analítica interactiva</li><li>Sugiere correlaciones sin código</li></ul>
+        <div class="card-foot"><div class="coste">Pro $50/mes (o $600/año)</div><a class="app-link" href="https://www.polymersearch.com" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">DAT-03</span><h4>Google AI · Gemini</h4></div>
+        <p class="uso"><b>Uso principal:</b> análisis de textos masivos y flujos de trabajo de oficina; multimedia largo.</p>
+        <ul class="feats"><li>Contexto de millones de tokens</li><li>Integración Google Workspace</li><li>Vídeo y audio de larga duración</li></ul>
+        <div class="card-foot"><div class="coste">Free $0 · Advanced $19,99/mes</div><a class="app-link" href="https://gemini.google.com" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCENCIA -->
+  <div class="cat-band" id="apps-doc" style="--cat:#5B6FA8;--catsoft:#ECEEF7;">
+    <h3 class="cat-title"><span class="cat-chip">DOC</span>Docencia, imágenes y presentaciones</h3>
+    <p class="lead" style="font-size:14px;">Clases y ponencias: podcasts de tus apuntes, presentaciones en Office, ilustraciones médicas y vídeo de simulación.</p>
+    <div class="grid2">
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">DOC-01</span><h4>NotebookLM</h4><span class="free">Gratis</span></div>
+        <p class="uso"><b>Uso principal:</b> podcasts educativos automáticos; síntesis de temarios y guías de UCI.</p>
+        <ul class="feats"><li>100% basado en tus archivos subidos</li><li>Citas exactas del origen</li></ul>
+        <div class="card-foot"><div class="coste">Free (cuenta Google)</div><a class="app-link" href="https://notebooklm.google.com" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">DOC-02</span><h4>Microsoft Copilot</h4></div>
+        <p class="uso"><b>Uso principal:</b> automatización en Office; informes y presentaciones PowerPoint.</p>
+        <ul class="feats"><li>Integración Word, Excel, PowerPoint, Outlook</li><li>Resúmenes de reuniones largas</li></ul>
+        <div class="card-foot"><div class="coste">Free $0 · M365 Pro ~$20/mes/usuario</div><a class="app-link" href="https://copilot.microsoft.com" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">DOC-03</span><h4>Midjourney</h4></div>
+        <p class="uso"><b>Uso principal:</b> imágenes fotorrealistas e ilustraciones médicas para material docente.</p>
+        <ul class="feats"><li>Alta coherencia estética</li><li>Modo "Relax" ilimitado lento</li></ul>
+        <div class="card-foot"><div class="coste">Basic $10 · Standard $30/mes</div><a class="app-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+      <div class="appcard">
+        <div class="app-head"><span class="app-id">DOC-04</span><h4>Runway</h4></div>
+        <p class="uso"><b>Uso principal:</b> vídeo hiperrealista y clips cinemáticos para docencia.</p>
+        <ul class="feats"><li>Gen-3 Alpha y Gen-4.5</li><li>Consistencia de personajes y entornos</li></ul>
+        <div class="card-foot"><div class="coste">Free 125 créditos · Standard $15 · Pro $35/mes</div><a class="app-link" href="https://runwayml.com" target="_blank" rel="noopener">Visitar ↗</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- ============ DISPONIBILIDAD EN ESPAÑA ============ -->
+  <section id="disponibilidad">
+    <div class="eyebrow">Tabla maestra · Todas las herramientas</div>
+    <h2>Disponibilidad, precio y acceso en España</h2>
+    <p class="lead">Todas las herramientas encontradas en esta investigación (médicas, europeas y generales), con el país donde se usan, si puedes utilizarlas en España, su coste, si el acceso es libre o institucional, su uso principal y el enlace directo. <b>Datos de septiembre de 2026.</b></p>
+
+    <div class="legend">
+      <span><span class="pill p-y">Sí</span> disponible en España</span>
+      <span><span class="pill p-l">Parcial</span> con condiciones</span>
+      <span><span class="pill p-n">No</span> no disponible</span>
+      <span><span class="pill p-libre">Libre</span> alta individual</span>
+      <span><span class="pill p-inst">Institucional</span> vía centro/empresa</span>
+    </div>
+
+    <div class="panel" style="margin-top:14px;">
+      <div class="table-scroll">
+      <table class="dt">
+        <thead>
+          <tr><th>Aplicación</th><th>Dónde se usa</th><th>¿En España?</th><th>Precio (2026)</th><th>Acceso</th><th>Uso principal</th><th>Enlace</th></tr>
+        </thead>
+        <tbody>
+
+          <tr class="d-group" id="disp-clinica" style="--gcol:#1D63A8"><td colspan="7">Decisión clínica y evidencia médica · 22 herramientas</td></tr>
+          <tr><td class="d-app">★ Vera Health</td><td class="d-country">EE.UU. (San Francisco) · uso global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Gratis clínicos verificados · institucional</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Respuestas clínicas con evidencia graduada + 900 calculadoras</td><td><a class="d-link" href="https://www.verahealth.ai/es/home" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Kleia</td><td class="d-country">España · LatAm</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Gratis (integrada en iDoctus)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Consultas con guías y protocolos de práctica clínica españoles</td><td><a class="d-link" href="https://kleia.ai" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Elna</td><td class="d-country">Europa (UE)</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Gratis clínicos individuales</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Respuestas clínicas europeas referenciadas (20M+ fuentes)</td><td><a class="d-link" href="https://www.elna.health/" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">OpenEvidence</td><td class="d-country">EE.UU.</td><td><span class="pill p-n">No</span></td><td class="d-price">Gratis sanitarios verificados (NPI EE.UU.)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Respuestas hiper-citadas + notas clínicas (retirada UE/UK el 28-04-2026)</td><td><a class="d-link" href="https://openevidence.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Glass Health</td><td class="d-country">EE.UU.</td><td><span class="pill p-l">Parcial</span></td><td class="d-price">Free · Pro $90/mes</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Diagnóstico diferencial (3 niveles) y planes de tratamiento</td><td><a class="d-link" href="https://glass.health" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">UpToDate Expert AI</td><td class="d-country">EE.UU. (Wolters Kluwer) · global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Suscripción (~500 $/año individual; institucional)</td><td><span class="pill p-inst">Institucional</span></td><td class="d-uso">Referencia clínica con asistente conversacional y CME</td><td><a class="d-link" href="https://www.uptodate.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">DynaMed</td><td class="d-country">EE.UU. (EBSCO) · global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Suscripción institucional</td><td><span class="pill p-inst">Institucional</span></td><td class="d-uso">3.400+ temas con niveles de evidencia explícitos (GRADE)</td><td><a class="d-link" href="https://www.dynamed.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">MeQA (AEMPS)</td><td class="d-country">España</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Gratis</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Consultas farmacológicas oficiales del vademécum AEMPS/CIMA</td><td><a class="d-link" href="https://cima.aemps.es/cima/publico/meqa.html" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">iatroX</td><td class="d-country">Reino Unido</td><td><span class="pill p-l">Parcial</span></td><td class="d-price">Gratis (núcleo)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Búsqueda clínica con NICE/CKS/SmPC + calculadoras y CPD</td><td><a class="d-link" href="https://www.iatrox.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Medwise AI</td><td class="d-country">Reino Unido (NHS)</td><td><span class="pill p-l">Parcial</span></td><td class="d-price">Licencia enterprise (no individual)</td><td><span class="pill p-inst">Institucional</span></td><td class="d-uso">Búsqueda con políticas y formularios locales del NHS</td><td><a class="d-link" href="https://medwise.ai" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Tandem Health</td><td class="d-country">Suecia · UE</td><td><span class="pill p-y">Sí</span></td><td class="d-price">No publicado</td><td><span class="pill p-inst">Institucional</span></td><td class="d-uso">Ambient scribing + apoyo a la decisión en consulta (CE, MDR IIa)</td><td><a class="d-link" href="https://tandemhealth.ai" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Praxis Medicine</td><td class="d-country">Suecia · Reino Unido</td><td><span class="pill p-l">Parcial</span></td><td class="d-price">No publicado (acceso anticipado)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Búsqueda clínica con fuentes NHS (NICE, CKS, Europe PMC)</td><td class="d-uso">—</td></tr>
+          <tr><td class="d-app">AMBOSS</td><td class="d-country">Alemania · DACH</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Suscripción (importe no verificado)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Referencia curada por médicos editores + AI Mode</td><td><a class="d-link" href="https://www.amboss.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">ClariMed</td><td class="d-country">Alemania</td><td><span class="pill p-l">Parcial</span></td><td class="d-price">Licencia hospitalaria</td><td><span class="pill p-inst">Institucional</span></td><td class="d-uso">Búsqueda de guías alemanas AWMF, NVL y S3</td><td class="d-uso">—</td></tr>
+          <tr><td class="d-app">Ada Health</td><td class="d-country">Alemania · global</td><td><span class="pill p-l">Parcial</span></td><td class="d-price">Gratis (app) · enterprise</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Evaluación de síntomas (orientada a paciente y triaje)</td><td><a class="d-link" href="https://ada.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Isabel DDx</td><td class="d-country">Reino Unido</td><td><span class="pill p-y">Sí</span></td><td class="d-price">No verificado (individual e institucional)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Diagnóstico diferencial sobre 10.000+ condiciones</td><td><a class="d-link" href="https://www.isabelhealthcare.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Tucuvi (LOLA)</td><td class="d-country">España</td><td><span class="pill p-y">Sí</span></td><td class="d-price">No publicado</td><td><span class="pill p-inst">Institucional</span></td><td class="d-uso">Monitorización remota de pacientes por voz (Clase IIb, ISO 13485)</td><td><a class="d-link" href="https://www.tucuvi.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Legit.Health</td><td class="d-country">España</td><td><span class="pill p-y">Sí</span></td><td class="d-price">No publicado</td><td><span class="pill p-inst">Institucional</span></td><td class="d-uso">IA dermatológica con marcado CE para detección y severidad</td><td><a class="d-link" href="https://legit.health" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">BrainTrip</td><td class="d-country">Malta</td><td><span class="pill p-l">Parcial</span></td><td class="d-price">No publicado</td><td><span class="pill p-inst">Institucional</span></td><td class="d-uso">EEG con IA: índice de demencia (CE, ~95% precisión)</td><td><a class="d-link" href="https://braintrip.net" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Doctolib</td><td class="d-country">Francia · Alemania · Italia</td><td><span class="pill p-n">No</span></td><td class="d-price">Gratis pacientes · suscripción profesionales</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Agenda y gestión de citas online</td><td><a class="d-link" href="https://about.doctolib.com/" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Nabla</td><td class="d-country">Francia · EE.UU.</td><td><span class="pill p-l">Parcial</span></td><td class="d-price">No publicado</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Ambient scribing: notas clínicas automáticas</td><td><a class="d-link" href="https://www.nabla.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Pathway MD</td><td class="d-country">Canadá · global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Gratis / freemium</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Guías clínicas presentadas como algoritmos de decisión</td><td><a class="d-link" href="https://www.pathway.md" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+
+          <tr class="d-group" id="disp-general" style="--gcol:#5B6FA8"><td colspan="7">Asistentes y plataformas de IA general · 8 herramientas</td></tr>
+          <tr><td class="d-app">ChatGPT (OpenAI)</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Free · Plus ~$20/mes (importe no verificado)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Versatilidad, voz en tiempo real y ecosistema de GPTs</td><td><a class="d-link" href="https://chatgpt.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Claude (Anthropic)</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Free · Pro/Max (no verificado)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Redacción extensa, análisis profundo y código (Artifacts)</td><td><a class="d-link" href="https://claude.ai" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Gemini (Google)</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Free · Advanced $19,99/mes</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Ecosistema Google y contexto masivo (análisis de datos)</td><td><a class="d-link" href="https://gemini.google.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Microsoft Copilot</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Free · M365 ~$20/mes/usuario</td><td><span class="pill p-libre">Libre</span> <span class="pill p-inst">Institucional</span></td><td class="d-uso">Productividad en Office: informes y presentaciones</td><td><a class="d-link" href="https://copilot.microsoft.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Perplexity</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Free · Pro $20/mes</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Búsqueda conversacional con citas verificadas</td><td><a class="d-link" href="https://www.perplexity.ai" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">DeepSeek</td><td class="d-country">China · global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Gratis (modelos abiertos)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Razonamiento lógico, matemáticas y programación</td><td><a class="d-link" href="https://www.deepseek.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Grok (xAI)</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">X Premium ~$8 · Premium+ ~$16/mes</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Actualidad y tendencias en tiempo real de la red X</td><td><a class="d-link" href="https://x.com/i/grok" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Genspark</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Free ~100 créd/día · Plus $24,99 · Pro $249,99/mes</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Investigación profunda y generación de infografías y páginas</td><td><a class="d-link" href="https://www.genspark.ai" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+
+          <tr class="d-group" id="disp-invest" style="--gcol:#3A6B9E"><td colspan="7">Investigación científica y publicaciones · 4 herramientas</td></tr>
+          <tr><td class="d-app">Consensus</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Free 10-15 créditos · Premium ~$10-15/mes</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">¿Qué opina la ciencia? Porcentaje de acuerdo (Consensus Meter)</td><td><a class="d-link" href="https://consensus.app" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Paperguide</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Free · Plus $12 · Pro $24/mes (anual)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Gestor de referencias con IA + redacción en formato Vancouver</td><td><a class="d-link" href="https://paperguide.ai" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Scite.ai</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Individual ~$20/mes</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Auditoría de citas (Apoya/Disputa) y Reference Check</td><td><a class="d-link" href="https://scite.ai" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Elicit</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Basic $0 · Pro $49/mes</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Extracción de datos de miles de PDFs para metanálisis</td><td><a class="d-link" href="https://elicit.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+
+          <tr class="d-group" id="disp-datos" style="--gcol:#2E7D5B"><td colspan="7">Análisis de datos, docencia y creación · 5 herramientas</td></tr>
+          <tr><td class="d-app">Julius AI</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Free 15 msgs/mes · Plus $20/mes</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Estadística y gráficos ejecutando Python/R desde el chat</td><td><a class="d-link" href="https://julius.ai" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Polymer</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Pro $50/mes (o $600/año)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Excel/CSV convertido en web analítica interactiva sin código</td><td><a class="d-link" href="https://www.polymersearch.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">NotebookLM</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Gratis (cuenta de Google)</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Podcasts y síntesis 100% basados en tus archivos</td><td><a class="d-link" href="https://notebooklm.google.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Midjourney</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Basic $10 · Standard $30/mes</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Imágenes fotorrealistas e ilustraciones médicas para docencia</td><td><a class="d-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+          <tr><td class="d-app">Runway</td><td class="d-country">Global</td><td><span class="pill p-y">Sí</span></td><td class="d-price">Free · Standard $15 · Pro $35/mes</td><td><span class="pill p-libre">Libre</span></td><td class="d-uso">Vídeo hiperrealista y clips para docencia</td><td><a class="d-link" href="https://runwayml.com" target="_blank" rel="noopener">Visitar ↗</a></td></tr>
+
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:16px;"><b>Cómo leer esta tabla:</b> <b>«No en España»</b> no significa que no puedas abrir la web, sino que <b>no ofrece servicio/utiliza datos en la UE</b> conforme al RGPD (caso de OpenEvidence, retirada el 28-04-2026). <b>«Parcial»</b> indica que la herramienta existe y es accesible, pero está orientada a otro sistema sanitario (guías NICE del Reino Unido, AWMF alemán) o solo se vende a instituciones. <b>«Institucional»</b> = no contratable por un médico individual, sino vía hospital, universidad u organización.</div>
+    <div class="callout"><b>Nota de transparencia:</b> los importes marcados como «no verificado» o «no publicado» no están disponibles en las fuentes consultadas y no se han estimado. Precios en USD salvo indicación, referidos a septiembre de 2026 y sujetos a cambio. La disponibilidad y el encaje regulatorio de las herramientas estadounidenses en la UE pueden variar tras la entrada en aplicación del AI Act.</div>
+  </section>
+
+  <!-- ============ VERA A FONDO ============ -->
+<section id="vera">
+  <div class="eyebrow">Análisis a fondo · 01</div>
+  <h2>Vera Health, en profundidad</h2>
+  <p class="lead">El «Google de la medicina»: un motor de búsqueda clínica que recupera, clasifica y sintetiza la evidencia en segundos.</p>
+
+  <div class="panel" id="vera-origen"><div class="panel-head"><h3>Origen y aval clínico</h3><span class="chip">SF · 2024</span></div>
+    <div class="panel-body">
+      <p>Startup fundada en <b>2024 en San Francisco</b> por <b>Taieb Bennani y Maxime Allouch</b> [<a href="https://www.elespanol.com/invertia/disruptores/ecosistema-startup/startups/20260716/vera-health-expande-espana-inteligencia-artificial-medica/1003744322218_0.html" target="_blank" rel="noopener">El Español</a>]. Su Consejo Clínico incluye médicos de <b>Harvard, Columbia, Yale, la Clínica Mayo y la Universidad de Virginia</b>, que revisan de forma continua la aplicación y definen qué es una respuesta clínica de alta calidad [<a href="https://verahealth.ai/es/blog/vera-health-expands-into-spain" target="_blank" rel="noopener">blog oficial</a>].</p>
+      <div class="note"><b>Matiz honesto:</b> en las fuentes oficiales no se confirma el origen «MIT» que circula en algunas tablas; lo documentado es el consejo clínico citado y los fundadores Bennani/Allouch.</div>
+      <p>Nació junto a <b>médicos de urgencias</b>: de ahí su alianza estratégica con el <b>Colegio Estadounidense de Médicos de Urgencias (ACEP)</b> —una de las mayores sociedades médicas de EE.UU., con más de 40.000 miembros, cuyas políticas clínicas están integradas en la plataforma [<a href="https://verahealth.ai/es/blog/vera-health-expands-into-spain" target="_blank" rel="noopener">blog oficial</a>].</p>
+    </div>
+  </div>
+
+  <div class="panel" id="vera-metodo"><div class="panel-head"><h3>Cómo funciona: la diferencia de método</h3><span class="chip">No memoriza: recupera</span></div>
+    <div class="panel-body">
+      <p>Vera no genera respuestas «de memoria» como un asistente generalista. Analiza <b>más de 60 millones de publicaciones revisadas por pares, guías clínicas, referencias de fármacos y monografías</b>, vincula cada afirmación con fuentes verificables y <b>gradúa la solidez de la evidencia</b>: cada fuente se clasifica por diseño del estudio, <b>nivel CEBM de Oxford</b>, clasificación ACEP, calidad de la revista e impacto de citas. El clínico ve qué dice la evidencia <i>y hasta qué punto es sólida</i> [<a href="https://verahealth.ai/es/blog/vera-health-expands-into-spain" target="_blank" rel="noopener">blog oficial</a>].</p>
+    </div>
+  </div>
+
+  <div class="panel" id="vera-funciones"><div class="panel-head"><h3>Funcionalidades verificadas</h3><span class="chip">Evaluación 2026: 4.8/5</span></div>
+    <div class="panel-body">
+      <div class="table-scroll">
+      <table class="ct">
+        <tr><th style="width:32%;">Funcionalidad</th><th>Detalle</th></tr>
+        <tr><td>Motor de búsqueda clínica</td><td>Síntesis con citas en segundos; diagnóstico diferencial por IA; comparación de opciones terapéuticas</td></tr>
+        <tr><td>Calculadoras</td><td><b>900+ integradas</b> — más que cualquier otra plataforma revisada</td></tr>
+        <tr><td>Farmacología</td><td>Base de datos con pautas posológicas y comprobador de interacciones</td></tr>
+        <tr><td>Otros</td><td>Feed diario de noticias de investigación; créditos CME; subida de documentos e imágenes; análisis profundo de literatura; multilingüe; app móvil + web; integración EHR (Epic, Cerner, MEDITECH)</td></tr>
+      </table>
+      </div>
+      <p style="margin-top:10px;">Fuentes: <a href="https://verahealth.ai/es/home" target="_blank" rel="noopener">verahealth.ai/es/home</a> · <a href="https://clinicalaireport.com/es/reviews/vera-health" target="_blank" rel="noopener">Clinical AI Report</a> (n.º 1 de su evaluación 2026, 96/100, 18 reseñas de médicos).</p>
+      <p><b>Limitaciones:</b> implementaciones institucionales e integración EHR completa requieren coordinación con TI; consejo asesor orientado a urgencias; subespecialidades de nicho en desarrollo; la web rinde menos que la app móvil [<a href="https://clinicalaireport.com/es/reviews/vera-health" target="_blank" rel="noopener">Clinical AI Report</a>].</p>
+    </div>
+  </div>
+
+  <div class="panel" id="vera-adopcion"><div class="panel-head"><h3>Adopción real en España</h3><span class="chip">julio 2026</span></div>
+    <div class="panel-body">
+      <p>Aproximadamente <b>uno de cada siete médicos en ejercicio en España</b> usa Vera (1 de cada 9 en Italia); en total <b>más de 400.000 clínicos en el mundo</b> y <b>más de tres millones de preguntas clínicas mensuales</b>. Crecimiento logrado sin campañas de marketing, por recomendación entre colegas [<a href="https://www.elespanol.com/invertia/disruptores/ecosistema-startup/startups/20260716/vera-health-expande-espana-inteligencia-artificial-medica/1003744322218_0.html" target="_blank" rel="noopener">El Español</a>] [<a href="https://verahealth.ai/es/blog/vera-health-expands-into-spain" target="_blank" rel="noopener">blog oficial</a>].</p>
+      <p><b>Precio:</b> gratuito e ilimitado para clínicos colegiados y profesionales en formación con verificación profesional; contratos institucionales disponibles [<a href="https://verahealth.ai/es/home" target="_blank" rel="noopener">web oficial</a>] [<a href="https://clinicalaireport.com/es/reviews/vera-health" target="_blank" rel="noopener">Clinical AI Report</a>].</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KLEIA A FONDO ============ -->
+<section id="kleia">
+  <div class="eyebrow">Análisis a fondo · 02</div>
+  <h2>Kleia (iDoctus), en profundidad</h2>
+  <p class="lead">La respuesta española a la IA médica segura: asistente conversacional integrado en la app de iDoctus, con guías locales y farmacología española.</p>
+
+  <div class="panel" id="kleia-origen"><div class="panel-head"><h3>Origen</h3><span class="chip">España · M3 / iDoctus</span></div>
+    <div class="panel-body">
+      <p>La IA del grupo español <b>iDoctus (M3 Inc)</b>, la plataforma de referencia para el médico en español con <b>más de 600.000 médicos activos</b>. Su nombre es el acrónimo de <i>Knowledge, Learning e Inteligencia Artificial</i>. Se lanzó primero en Latinoamérica y en <b>España se desplegó el 29 de abril de 2026</b>, integrada en la app de iDoctus [<a href="https://www.europapress.es/comunicados/salud-0910/noticia-comunicado-idoctus-lanza-kleia-respuesta-espanola-desafio-ia-medica-segura-20260429115625.html" target="_blank" rel="noopener">Europa Press</a>].</p>
+      <p>Filosofía declarada: <b>«el fin de la era de la búsqueda y el inicio de la respuesta»</b>. Según Javier Pérez (CTO de iDoctus): «<i>Kleia no pretende sustituir el criterio médico, sino ayudar al profesional a llegar antes a una respuesta mejor documentada, trazable y aplicable</i>» [<a href="https://www.europapress.es/comunicados/salud-0910/noticia-comunicado-idoctus-lanza-kleia-respuesta-espanola-desafio-ia-medica-segura-20260429115625.html" target="_blank" rel="noopener">Europa Press</a>].</p>
+    </div>
+  </div>
+
+  <div class="panel" id="kleia-funciones"><div class="panel-head"><h3>Funcionalidades verificadas</h3><span class="chip">Fuente: kleia.ai</span></div>
+    <div class="panel-body">
+      <div class="table-scroll">
+      <table class="ct">
+        <tr><th style="width:32%;">Funcionalidad</th><th>Detalle</th></tr>
+        <tr><td>Asistente conversacional clínico</td><td>Presentas un escenario o caso y obtienes respuestas adaptadas que acompañan tu razonamiento clínico</td></tr>
+        <tr><td>Evidencia con sesgo local</td><td>Analiza y <b>ranquea la literatura actual respondiendo según guías de práctica clínica locales</b> y el ranking de la mejor evidencia internacional</td></tr>
+        <tr><td>Conocimiento compartido</td><td>Compartir consultas y hallazgos con colegas mediante enlace seguro (un clic)</td></tr>
+        <tr><td>Historial organizado</td><td>Favoritos, continuidad de conversaciones y recuperación de consultas clave</td></tr>
+        <tr><td>Referencias</td><td>Referencias bibliográficas precisas y actualizadas tras cada decisión</td></tr>
+        <tr><td>Certificaciones</td><td><b>ISO 27001, ISO 42001 y RGPD</b>; aproximación en curso a ISO 13485 y al marco europeo de IA</td></tr>
+        <tr><td>Reconocimiento</td><td>Finalista en los <b>premios IA BIC 2026</b></td></tr>
+      </table>
+      </div>
+      <p style="margin-top:10px;">Fuentes: <a href="https://kleia.ai/" target="_blank" rel="noopener">kleia.ai</a> · <a href="https://kleia.ai/terms" target="_blank" rel="noopener">términos de uso</a> · <a href="https://es.linkedin.com/posts/idoctus-m3_premiosiabic-kleia-idoctus-activity-7452585745325658112-NHK4" target="_blank" rel="noopener">iDoctus · IA BIC 2026</a>.</p>
+      <p><b>Gratuidad:</b> integrada de forma gratuita en la app de iDoctus, previo registro de usuario en la aplicación [<a href="https://kleia.ai/terms" target="_blank" rel="noopener">términos</a>].</p>
+      <p><b>Limitaciones (valoración propia):</b> producto reciente (abril 2026 en España) con escasas reseñas independientes; las cifras públicas son del ecosistema iDoctus, no de usuarios de Kleia; el tamaño de su corpus no está publicado; su valor depende de la integración en iDoctus.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPARATIVA ============ -->
+<section id="comparativa">
+  <div class="eyebrow">Frente a frente</div>
+  <h2>Comparativa Vera Health vs Kleia</h2>
+  <p class="lead">Son herramientas <b>complementarias, no sustitutas</b>: Vera te dice qué evidencia es la más sólida del mundo; Kleia te dice qué hacer con los recursos, fármacos y protocolos españoles.</p>
+
+  <div class="panel" id="comp-tabla"><div class="panel-head"><h3>Tabla comparativa</h3><span class="chip">2026</span></div>
+    <div class="panel-body">
+      <div class="table-scroll">
+      <table class="ct">
+        <tr><th style="width:20%;">Criterio</th><th>Vera Health</th><th>Kleia (iDoctus)</th></tr>
+        <tr><td>Origen</td><td>San Francisco, 2024 (Bennani &amp; Allouch)</td><td>España, grupo iDoctus/M3 · despliegue ES 04/2026</td></tr>
+        <tr><td>Modelo</td><td>Motor de búsqueda clínica con evidencia graduada</td><td>Asistente conversacional integrado en la app iDoctus</td></tr>
+        <tr><td>Corpus</td><td class="win">60M+ papers, guías, fármacos, monografías</td><td>Literatura actual + guías locales + vademécum (volumen no publicado)</td></tr>
+        <tr><td>Graduación de la evidencia</td><td class="win">Sí: diseño de estudio, niveles CEBM de Oxford, ACEP, calidad de revista</td><td>Ranking de literatura y guías (método menos transparente)</td></tr>
+        <tr><td>Calculadoras</td><td class="win">900+ (SOFA, APACHE…)</td><td>No es su mensaje central (el ecosistema iDoctus sí tiene)</td></tr>
+        <tr><td>Farmacología</td><td>BD global + interacciones</td><td class="win">Vademécum y farmacología española</td></tr>
+        <tr><td>Protocolos españoles</td><td>Guias internacionales + políticas ACEP; alianzas locales en curso</td><td class="win">Diseño explícito para guías locales y contextualización regional</td></tr>
+        <tr><td>Privacidad / estándares</td><td>RGPD (UE) + HIPAA (EE.UU.)</td><td>RGPD + ISO 27001 + ISO 42001 (ruta a 13485 / AI Act)</td></tr>
+        <tr><td>Precio</td><td>Gratis ilimitado para colegiados (verificación) · contratos institucionales</td><td>Gratis integrada en iDoctus (registro en la app)</td></tr>
+        <tr><td>Adopción documentada</td><td class="win">1 de cada 7 médicos en España; 400.000+ clínicos; 3M preguntas/mes</td><td>600.000+ médicos en el ecosistema iDoctus; finalista IA BIC 2026</td></tr>
+        <tr><td>Valoración externa</td><td class="win">#1 Clinical AI Report 2026 (4.8/5, 18 reseñas)</td><td>Sin reseñas independientes consolidadas</td></tr>
+        <tr><td>Limitación principal</td><td>Integraciones EHR/institucionales requieren TI</td><td>Dependencia del ecosistema iDoctus; madurez menor</td></tr>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="comp-protocolos"><div class="panel-head"><h3>Protocolos clínicos adaptados: dónde está la diferencia real</h3><span class="chip">Lo que importa en España</span></div>
+    <div class="panel-body">
+      <p><b>Kleia domina el terreno español.</b> Su misión declarada ataca «la contextualización regional»: guías en constante evolución aplicadas al entorno propio. En su web: respuestas basadas en <i>local clinical practice guidelines</i> y el ranking de la mejor evidencia internacional [<a href="https://kleia.ai/" target="_blank" rel="noopener">kleia.ai</a>]. Su base farmacológica es la española (vademécum iDoctus), y sus casos de demostración trabajan la consulta española real (p. ej. plan de evaluación estructurado de obesidad con guías oficiales y enlaces directos a evidencia).</p>
+      <p><b>Vera apuesta por el estándar global.</b> Sus guías integradas son internacionales y su alianza emblemática es el ACEP. La adaptación local española está anunciada como fase en curso: «en los próximos meses ampliará su colaboración con hospitales, proveedores, sociedades médicas e instituciones científicas en España e Italia» [<a href="https://verahealth.ai/es/blog/vera-health-expands-into-spain" target="_blank" rel="noopener">blog oficial</a>]. <b>Excelente para evidencia universal; aún no especializada en protocolos del SNS.</b></p>
+    </div>
+  </div>
+
+  <div class="panel" id="comp-casos"><div class="panel-head"><h3>Casos de uso reales en el sistema sanitario español</h3><span class="chip">Foto honesta · agosto 2026</span></div>
+    <div class="panel-body">
+      <div class="callout"><b>La foto honesta:</b> ambas son herramientas de <b>uso individual (BYOD)</b> por profesionales; no hay despliegues institucionales públicos documentados en hospitales del SNS a fecha de hoy. Lo verificado:</div>
+      <ul>
+        <li><b>Vera:</b> uso generalizado individual (≈14% de los médicos en ejercicio), impulsado por recomendación entre colegas; origen y fortaleza en urgencias (alianza ACEP). Su expansión institucional española está anunciada, aún sin nombres de hospitales concretos publicados [<a href="https://www.elespanol.com/invertia/disruptores/ecosistema-startup/startups/20260716/vera-health-expande-espana-inteligencia-artificial-medica/1003744322218_0.html" target="_blank" rel="noopener">El Español</a>].</li>
+        <li><b>Kleia:</b> cala especialmente en <b>residentes/MIR</b> (la cultura «¿tienes la app de iDoctus? Será tu mejor amigo» está documentada en la comunidad médica) y en consulta de AP y farmacología; casos reales comparados con OpenEvidence (p. ej. paciente polimedicada) [<a href="https://es.linkedin.com/posts/idoctus-comunidadmedica_inteligenciaartificial-kleia-idoctus-activity-7430671112964972544-DMf2" target="_blank" rel="noopener">iDoctus Comunidad</a>].</li>
+        <li><b>El complemento institucional español</b> es el que ya existe en la infografía: <b>MeQA (AEMPS)</b> para farmacología oficial y <b>UpToDate</b> con licencias hospitalarias.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GUÍA ============ -->
+<section id="guia">
+  <div class="eyebrow">Uso recomendado</div>
+  <h2>Guía práctica para tu consulta</h2>
+  <div class="panel"><div class="panel-body">
+    <ul style="padding-left:20px;">
+      <li><b>En consulta y para fármacos/protocolos españoles → Kleia:</b> integración natural con iDoctus, gratuita, guías locales.</li>
+      <li><b>Para rigor de evidencia, metaanálisis y cálculo clínico → Vera:</b> 60M+ papers graduados, 900+ calculadoras, citación verificable; muy útil para presentaciones.</li>
+      <li><b>Úsalas como par complementario:</b> ante la misma pregunta, contrasta la respuesta local (Kleia) con la graduación internacional (Vera).</li>
+    </ul>
+    <div class="note"><b>Recordatorio:</b> ambas son herramientas de apoyo; la decisión clínica final es siempre responsabilidad del médico. Dado lo reciente de ambas, se recomienda <b>reverificar este análisis en 3-6 meses</b> (alianzas hospitalarias de Vera en España, cifras propias de adopción de Kleia, estado de MeQA tras su relanzamiento).</div>
+  </div></div>
+</section>
+
+<!-- ============ FUENTES ============ -->
+<section id="fuentes">
+  <div class="eyebrow">Referencias</div>
+  <h2>Fuentes consultadas</h2>
+  <div class="panel"><div class="panel-body">
+    <ul class="src-list">
+      <li><span class="tag-src">VERA</span>Expansión en España: uno de cada siete médicos — <a href="https://verahealth.ai/es/blog/vera-health-expands-into-spain" target="_blank" rel="noopener">verahealth.ai/blog</a></li>
+      <li><span class="tag-src">VERA</span>Vera Health expande a España su IA médica — <a href="https://www.elespanol.com/invertia/disruptores/ecosistema-startup/startups/20260716/vera-health-expande-espana-inteligencia-artificial-medica/1003744322218_0.html" target="_blank" rel="noopener">El Español (Invertia)</a></li>
+      <li><span class="tag-src">VERA</span>Reseña técnica (n.º 1, 4.8/5) — <a href="https://clinicalaireport.com/es/reviews/vera-health" target="_blank" rel="noopener">Clinical AI Report</a></li>
+      <li><span class="tag-src">VERA</span>Web oficial España — <a href="https://verahealth.ai/es/home" target="_blank" rel="noopener">verahealth.ai/es/home</a></li>
+      <li><span class="tag-src">KLEIA</span>iDoctus lanza Kleia: la respuesta española a la IA médica segura — <a href="https://www.europapress.es/comunicados/salud-0910/noticia-comunicado-idoctus-lanza-kleia-respuesta-espanola-desafio-ia-medica-segura-20260429115625.html" target="_blank" rel="noopener">Europa Press · 29/04/2026</a></li>
+      <li><span class="tag-src">KLEIA</span>Plataforma — <a href="https://kleia.ai/" target="_blank" rel="noopener">kleia.ai</a> · términos: <a href="https://kleia.ai/terms" target="_blank" rel="noopener">kleia.ai/terms</a></li>
+      <li><span class="tag-src">KLEIA</span>Finalista IA BIC 2026 — <a href="https://es.linkedin.com/posts/idoctus-m3_premiosiabic-kleia-idoctus-activity-7452585745325658112-NHK4" target="_blank" rel="noopener">iDoctus LinkedIn</a> · comunidad: <a href="https://es.linkedin.com/posts/idoctus-comunidadmedica_inteligenciaartificial-kleia-idoctus-activity-7430671112964972544-DMf2" target="_blank" rel="noopener">iDoctus Comunidad Médica</a></li>
+      <li><span class="tag-src">CONTEXTO</span>MeQA relanzada por la AEMPS — <a href="https://www.redaccionmedica.com/innovacion/sanidad-digital/20250801/la-ia-de-la-aemps-se-relanzara-finales-tras-revisar-su-algoritmo/249138_0.html" target="_blank" rel="noopener">Redacción Médica</a> · <a href="https://cima.aemps.es/cima/publico/meqa.html" target="_blank" rel="noopener">CIMA / AEMPS</a></li>
+      <li><span class="tag-src">EVID</span>Análisis Consensus vs Paperguide vs Scite frente a la Medicina en España — aportado por el usuario para esta ficha · <a href="https://paperguide.ai/" target="_blank" rel="noopener">paperguide.ai</a> · <a href="https://paperguide.ai/pricing/" target="_blank" rel="noopener">planes</a></li>
+      <li><span class="tag-src">EVID</span>Scite Reference Check y plugin — <a href="https://www.youtube.com/watch?v=Sj5J0cfWdyI" target="_blank" rel="noopener">demo (YouTube)</a> · <a href="https://paperguide.ai/blog/elicit-vs-scite/" target="_blank" rel="noopener">Elicit vs Scite</a></li>
+      <li><span class="tag-src">GLASS</span>Glass for Clinicians — <a href="https://glass.health/for-clinicians" target="_blank" rel="noopener">glass.health/for-clinicians</a> · <a href="https://glass.health/" target="_blank" rel="noopener">glass.health</a> · planes: <a href="https://glass.health/compare" target="_blank" rel="noopener">comparativa oficial</a> · <a href="https://apps.apple.com/us/app/glass-for-clinicians/id6746718047" target="_blank" rel="noopener">App Store</a></li>
+      <li><span class="tag-src">ELNA</span>Elna Health — IA clínica europea, gratuita para clínicos — <a href="https://www.elna.health/" target="_blank" rel="noopener">elna.health</a> · <a href="https://play.google.com/store/apps/details?id=com.elna_health_app&hl=es" target="_blank" rel="noopener">Google Play</a></li>
+    </ul>
+    <p style="margin-top:12px;font-size:12.5px;">Precios orientativos, agosto 2026, pueden variar. El dato «MIT» atribuido a Vera no se ha podido verificar en fuentes oficiales. Datos de Kleia: 600.000+ médicos corresponden al ecosistema iDoctus, no necesariamente a usuarios de Kleia.</p>
+  </div></div>
+</section>
+
+<footer>
+  <span class="sig">Ficha técnica IA sanitaria · 2026</span><br><br>
+  <b>Aplicación de consulta</b> para uso en investigación, docencia, análisis estadístico y presentaciones. Herramientas de apoyo a la decisión: el criterio clínico es siempre del profesional. Verificar información crítica con las fuentes primarias.
+</footer>
+</main>
+
+<script>
+(function(){
+  var nav=document.getElementById('nav');
+  var links=Array.prototype.slice.call(nav.querySelectorAll('a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));}).filter(Boolean);
+  var groups=Array.prototype.slice.call(nav.querySelectorAll('.navgroup'));
+
+  groups.forEach(function(g){
+    var p=g.querySelector('.parent');
+    p.addEventListener('click',function(){ g.classList.toggle('open'); });
+  });
+
+  function onScroll(){
+    var pos=window.scrollY+120, cur=null;
+    for(var i=0;i<secs.length;i++){ if(secs[i].offsetTop<=pos) cur=secs[i]; }
+    links.forEach(function(a){a.classList.remove('active');});
+    if(cur){
+      var match=links.filter(function(a){return a.getAttribute('href')==='#'+cur.id;})[0];
+      if(match){
+        match.classList.add('active');
+        var g=match.closest?match.closest('.navgroup'):null;
+        if(g){var par=g.querySelector('.parent'); if(par) par.classList.add('active');}
+      }
+    }
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+})();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

@@ -25,12 +25,26 @@ const CALCULADORAS = [
     title: 'Nutrición Clínica UCI',
     description: 'Dashboard de nutrición clínica en UCI.',
     url: 'https://icuconnect-nutricion.web.app'
-  },
+  }
+];
+const FORMACION = [
   {
     id: 'monitorizacion-hemodinamica',
     title: 'Monitorización hemodinámica',
     description: 'Dashboard, atlas, técnicas y soporte (ECMO, PiCCO, shunt…).',
     url: 'https://jrodagu-star.github.io/hemodinamica/'
+  },
+  {
+    id: 'conferencias-cardiologia',
+    title: 'Conferencias de cardiología crítica',
+    description: 'Notas de conferencia: shock cardiogénico, TEP, IAM, ECMO, soporte mecánico y más.',
+    path: '../biblioteca/assets/formacion/conferencias-cardiologia/conferencias-cardiologia.html?v=20261010a'
+  },
+  {
+    id: 'herramientas-ia-medicina',
+    title: 'Herramientas IA medicina',
+    description: 'Aplicación interactiva sobre IA médica 2026.',
+    path: '../biblioteca/assets/formacion/herramientas-ia-medicina.html?v=20261010a'
   }
 ];
 const PROTOCOLOS = [
@@ -127,22 +141,6 @@ const PROTOCOLOS = [
     ]
   },
   {
-    id: 'conferencias-cardiologia',
-    title: 'Conferencias de cardiología crítica',
-    description: 'Notas de conferencia: shock cardiogénico, TEP, IAM, ECMO, soporte mecánico y más.',
-    audiences: ['medicina'],
-    parts: [
-      {
-        id: 'notas',
-        title: 'Notas de conferencia · Cardiología crítica',
-        description: 'Documento navegable con resúmenes y mapas mentales.',
-        path: '../biblioteca/assets/protocolos/conferencias-cardiologia/conferencias-cardiologia.html?v=20260910a',
-        ext: '.html',
-        view: 'document'
-      }
-    ]
-  },
-  {
     id: 'envin-uci',
     title: 'ENVIN-UCI',
     description: 'Explorador microbiológico: infecciones, antibióticos y exportación de datos.',
@@ -206,6 +204,7 @@ const els = {
   collapseAllBtn: document.getElementById('collapseAllBtn'),
   calculadorasBtn: document.getElementById('calculadorasBtn'),
   protocolosBtn: document.getElementById('protocolosBtn'),
+  formacionBtn: document.getElementById('formacionBtn'),
   herramientasBtn: document.getElementById('herramientasBtn'),
   edicionHost: document.getElementById('edicionHost'),
   edicionPanelBody: document.getElementById('edicionPanelBody'),
@@ -702,6 +701,7 @@ function lightboxShowAt(index) {
 function clearSectionButtons() {
   if (els.calculadorasBtn) els.calculadorasBtn.classList.remove('active');
   if (els.protocolosBtn) els.protocolosBtn.classList.remove('active');
+  if (els.formacionBtn) els.formacionBtn.classList.remove('active');
   if (els.herramientasBtn) els.herramientasBtn.classList.remove('active');
 }
 
@@ -809,6 +809,82 @@ function openCalculadora(calc) {
     '</div>';
   const closeBtn = document.getElementById('closeCalculadoraBtn');
   if (closeBtn) closeBtn.addEventListener('click', () => showCalculadoras());
+}
+
+function showFormacion() {
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  parkEdicionHost();
+  state.currentFile = null;
+  state.currentFileParentId = null;
+  state.currentPath = null;
+  state.selectedId = null;
+  state.selectedType = null;
+  document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
+  clearSectionButtons();
+  if (els.formacionBtn) els.formacionBtn.classList.add('active');
+  els.selectedInfo.textContent = 'Selección actual: Formación';
+  els.title.textContent = 'Formación';
+  els.meta.textContent = 'Material formativo y educativo';
+  els.crumbs.textContent = 'Formación';
+  const cards = FORMACION.map(item =>
+    '<button type="button" class="calculadora-card" data-formacion-id="' + escapeHtml(item.id) + '">' +
+      '<span class="calculadora-card-title">' + escapeHtml(item.title) + '</span>' +
+      '<span class="calculadora-card-desc">' + escapeHtml(item.description) + '</span>' +
+      '<span class="calculadora-card-cta">Abrir</span>' +
+    '</button>'
+  ).join('');
+  els.viewer.innerHTML =
+    '<div class="calculadoras-panel">' +
+      '<div class="calculadoras-panel-head">' +
+        '<div>' +
+          '<h2 class="calculadoras-title">Formación</h2>' +
+          '<p class="calculadoras-lead">Elige un recurso formativo.</p>' +
+        '</div>' +
+        '<button type="button" class="btn" id="closeFormacionSectionBtn">Cerrar</button>' +
+      '</div>' +
+      '<div class="calculadoras-grid" id="formacionGrid">' + cards + '</div>' +
+    '</div>';
+  const closeSectionBtn = document.getElementById('closeFormacionSectionBtn');
+  if (closeSectionBtn) closeSectionBtn.addEventListener('click', () => showHome());
+  els.viewer.querySelectorAll('[data-formacion-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = FORMACION.find(f => f.id === btn.dataset.formacionId);
+      if (item) openFormacion(item);
+    });
+  });
+}
+
+function openFormacion(item) {
+  if (!item) return;
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  parkEdicionHost();
+  clearSectionButtons();
+  if (els.formacionBtn) els.formacionBtn.classList.add('active');
+  els.title.textContent = item.title;
+  els.meta.textContent = item.url ? 'Enlace externo' : 'Formación';
+  els.crumbs.textContent = 'Formación / ' + item.title;
+  els.selectedInfo.textContent = 'Selección actual: ' + item.title;
+  const src = item.url || normalizeAssetPath(item.path);
+  const openExternalBtn = item.url
+    ? '<a class="btn" href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener noreferrer">Abrir en pestaña</a>'
+    : '';
+  els.viewer.innerHTML =
+    '<div class="calculadora-view">' +
+      '<div class="calculadora-toolbar">' +
+        '<div class="calculadora-toolbar-title">' + escapeHtml(item.title) + '</div>' +
+        '<div class="calculadora-toolbar-actions">' +
+          openExternalBtn +
+          '<button type="button" class="btn btn-accent" id="closeFormacionBtn">Cerrar</button>' +
+        '</div>' +
+      '</div>' +
+      '<iframe class="calculadora-frame" id="formacionFrame" title="' + escapeHtml(item.title) + '" src="' + escapeHtml(src) + '"></iframe>' +
+    '</div>';
+  const closeBtn = document.getElementById('closeFormacionBtn');
+  if (closeBtn) closeBtn.addEventListener('click', () => showFormacion());
 }
 
 function showHerramientas() {
@@ -2044,7 +2120,9 @@ function initEvents() {
   els.collapseAllBtn.addEventListener('click', collapseAllFolders);
   if (els.calculadorasBtn) els.calculadorasBtn.addEventListener('click', showCalculadoras);
   if (els.protocolosBtn) els.protocolosBtn.addEventListener('click', showProtocolos);
-  if (els.herramientasBtn) els.herramientasBtn.addEventListener('click', showHerramientas);  document.querySelectorAll('.audience-btn[data-audience]').forEach(btn => {
+  if (els.formacionBtn) els.formacionBtn.addEventListener('click', showFormacion);
+  if (els.herramientasBtn) els.herramientasBtn.addEventListener('click', showHerramientas);
+  document.querySelectorAll('.audience-btn[data-audience]').forEach(btn => {
     btn.addEventListener('click', () => setAudienceFilter(btn.dataset.audience));
   });
   const formBtn = document.getElementById('audienceFormularioBtn');
