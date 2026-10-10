@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "revision": "20261010c",
+  "revision": "20261010g",
   "exportedAt": "2026-09-25T08:00:00.000Z",
   "tree": {
     "id": "f-1",
@@ -255,9 +255,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Digestivo / Enzimas hepaticas",
             "source": "asset",
             "audience": "medicina"
+          },
+          {
+            "id": "p-hipertension-portal",
+            "type": "file",
+            "title": "Hipertension portal",
+            "path": "../biblioteca/assets/digestivo/hipertension-portal.jpg",
+            "ext": ".jpg",
+            "specialty": "Digestivo",
+            "breadcrumb": "Digestivo / Hipertension portal",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 3
+        "file_count": 4
       },
       {
         "id": "f-17",
@@ -314,14 +325,67 @@ window.BIBLIOTECA_DATA = {
         "title": "Endocrino",
         "children": [
           {
-            "id": "p-21",
-            "type": "file",
-            "title": "Ac MTB aprox",
-            "path": "../biblioteca/assets/endocrino/ac-mtb-aprox.png",
-            "ext": ".png",
-            "specialty": "Endocrino",
-            "breadcrumb": "Endocrino / Ac MTB aprox",
-            "source": "asset"
+            "id": "f-estudios-gasometricos",
+            "type": "folder",
+            "title": "Estudios Gasométricos",
+            "children": [
+              {
+                "id": "p-21",
+                "type": "file",
+                "title": "Ac MTB aprox",
+                "path": "../biblioteca/assets/endocrino/estudios-gasometricos/ac-mtb-aprox.png",
+                "ext": ".png",
+                "specialty": "Endocrino",
+                "breadcrumb": "Endocrino / Estudios Gasométricos / Ac MTB aprox",
+                "source": "asset",
+                "audience": "medicina"
+              },
+              {
+                "id": "p-23",
+                "type": "file",
+                "title": "Delta radio",
+                "path": "../biblioteca/assets/endocrino/estudios-gasometricos/delta-radio.png",
+                "ext": ".png",
+                "specialty": "Endocrino",
+                "breadcrumb": "Endocrino / Estudios Gasométricos / Delta radio",
+                "source": "asset",
+                "audience": "medicina"
+              },
+              {
+                "id": "u-467d0afp-mrtf5z49",
+                "type": "file",
+                "title": "Gasometria arterial",
+                "ext": ".png",
+                "source": "asset",
+                "breadcrumb": "Endocrino / Estudios Gasométricos / Gasometria arterial",
+                "specialty": "Endocrino",
+                "path": "../biblioteca/assets/endocrino/estudios-gasometricos/gasometria-arterial.png",
+                "audience": "medicina"
+              },
+              {
+                "id": "p-gases-arteriales",
+                "type": "file",
+                "title": "Gases arteriales",
+                "path": "../biblioteca/assets/endocrino/estudios-gasometricos/gases-arteriales.jpg",
+                "ext": ".jpg",
+                "specialty": "Endocrino",
+                "breadcrumb": "Endocrino / Estudios Gasométricos / Gases arteriales",
+                "source": "asset",
+                "audience": "medicina"
+              },
+              {
+                "id": "p-analisis-gases-arteriales",
+                "type": "file",
+                "title": "Analisis gases arteriales",
+                "path": "../biblioteca/assets/endocrino/estudios-gasometricos/analisis-gases-arteriales.jpg",
+                "ext": ".jpg",
+                "specialty": "Endocrino",
+                "breadcrumb": "Endocrino / Estudios Gasométricos / Analisis gases arteriales",
+                "source": "asset",
+                "audience": "medicina"
+              }
+            ],
+            "file_count": 5
           },
           {
             "id": "p-22",
@@ -335,16 +399,6 @@ window.BIBLIOTECA_DATA = {
             "audiences": ["medicina", "enfermeria"]
           },
           {
-            "id": "p-23",
-            "type": "file",
-            "title": "Delta radio",
-            "path": "../biblioteca/assets/endocrino/delta-radio.png",
-            "ext": ".png",
-            "specialty": "Endocrino",
-            "breadcrumb": "Endocrino / Delta radio",
-            "source": "asset"
-          },
-          {
             "id": "p-24",
             "type": "file",
             "title": "Interpretacion tiroides",
@@ -353,16 +407,6 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Endocrino",
             "breadcrumb": "Endocrino / Interpretacion tiroides",
             "source": "asset"
-          },
-          {
-            "id": "u-467d0afp-mrtf5z49",
-            "type": "file",
-            "title": "Gasometria arterial",
-            "ext": ".png",
-            "source": "asset",
-            "breadcrumb": "Endocrino / Gasometria arterial",
-            "specialty": "Endocrino",
-            "path": "../biblioteca/assets/endocrino/gasometria-arterial.png"
           },
           {
             "id": "p-control-cad-enfermeria",
@@ -399,7 +443,7 @@ window.BIBLIOTECA_DATA = {
             "audience": "medicina"
           }
         ],
-        "file_count": 8
+        "file_count": 10
       },
       {
         "id": "f-25",
@@ -447,9 +491,20 @@ window.BIBLIOTECA_DATA = {
             "breadcrumb": "Hematologia / Trombocitopenia y Purpura",
             "source": "asset",
             "audience": "medicina"
+          },
+          {
+            "id": "p-cascada-coagulacion",
+            "type": "file",
+            "title": "Cascada coagulacion",
+            "path": "../biblioteca/assets/hematologia/cascada-coagulacion.jpg",
+            "ext": ".jpg",
+            "specialty": "Hematologia",
+            "breadcrumb": "Hematologia / Cascada coagulacion",
+            "source": "asset",
+            "audiences": ["medicina", "enfermeria"]
           }
         ],
-        "file_count": 4
+        "file_count": 5
       },
       {
         "id": "f-28",
@@ -887,9 +942,42 @@ window.BIBLIOTECA_DATA = {
                 "breadcrumb": "Respiratorio / Ventilacion mecanica / APRV",
                 "source": "asset",
                 "audience": "medicina"
+              },
+              {
+                "id": "p-pafi",
+                "type": "file",
+                "title": "PAFI",
+                "path": "../biblioteca/assets/respiratorio/ventilacion-mecanica/pafi.jpg",
+                "ext": ".jpg",
+                "specialty": "Respiratorio",
+                "breadcrumb": "Respiratorio / Ventilacion mecanica / PAFI",
+                "source": "asset",
+                "audiences": ["medicina", "enfermeria"]
+              },
+              {
+                "id": "p-curvas-de-vm",
+                "type": "file",
+                "title": "Curvas de VM",
+                "path": "../biblioteca/assets/respiratorio/ventilacion-mecanica/curvas-de-vm.jpg",
+                "ext": ".jpg",
+                "specialty": "Respiratorio",
+                "breadcrumb": "Respiratorio / Ventilacion mecanica / Curvas de VM",
+                "source": "asset",
+                "audience": "medicina"
+              },
+              {
+                "id": "p-aspectos-basicos-vm",
+                "type": "file",
+                "title": "Aspectos basicos de VM",
+                "path": "../biblioteca/assets/respiratorio/ventilacion-mecanica/aspectos-basicos-de-vm.jpg",
+                "ext": ".jpg",
+                "specialty": "Respiratorio",
+                "breadcrumb": "Respiratorio / Ventilacion mecanica / Aspectos basicos de VM",
+                "source": "asset",
+                "audience": "medicina"
               }
             ],
-            "file_count": 9
+            "file_count": 12
           },
           {
             "id": "f-56",
@@ -939,6 +1027,36 @@ window.BIBLIOTECA_DATA = {
             "file_count": 1
           },
           {
+            "id": "f-espirometria",
+            "type": "folder",
+            "title": "Espirometria",
+            "children": [
+              {
+                "id": "p-espirometria-1",
+                "type": "file",
+                "title": "Espirometria 1",
+                "path": "../biblioteca/assets/respiratorio/espirometria/espirometria-1.jpg",
+                "ext": ".jpg",
+                "specialty": "Respiratorio",
+                "breadcrumb": "Respiratorio / Espirometria / Espirometria 1",
+                "source": "asset",
+                "audience": "medicina"
+              },
+              {
+                "id": "p-espirometria-2",
+                "type": "file",
+                "title": "Espirometria 2",
+                "path": "../biblioteca/assets/respiratorio/espirometria/espirometria-2.jpg",
+                "ext": ".jpg",
+                "specialty": "Respiratorio",
+                "breadcrumb": "Respiratorio / Espirometria / Espirometria 2",
+                "source": "asset",
+                "audience": "medicina"
+              }
+            ],
+            "file_count": 2
+          },
+          {
             "id": "p-tubo-toracico",
             "type": "file",
             "title": "Tubo torácico",
@@ -950,7 +1068,7 @@ window.BIBLIOTECA_DATA = {
             "audience": "medicina"
           }
         ],
-        "file_count": 15
+        "file_count": 20
       },
       {
         "id": "f-6hyg0pre-mrtm320x",
@@ -1133,6 +1251,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 2
       }
     ],
-    "file_count": 86
+    "file_count": 95
   }
 };
