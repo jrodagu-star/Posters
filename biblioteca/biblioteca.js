@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "revision": "20261010b",
+  "revision": "20261010c",
   "exportedAt": "2026-09-25T08:00:00.000Z",
   "tree": {
     "id": "f-1",
@@ -233,9 +233,31 @@ window.BIBLIOTECA_DATA = {
             "specialty": "Digestivo",
             "breadcrumb": "Digestivo / Ascitis",
             "source": "asset"
+          },
+          {
+            "id": "p-ascitis-ddx",
+            "type": "file",
+            "title": "Ascitis diagnostico diferencial",
+            "path": "../biblioteca/assets/digestivo/ascitis-diagnostico-diferencial.jpg",
+            "ext": ".jpg",
+            "specialty": "Digestivo",
+            "breadcrumb": "Digestivo / Ascitis diagnostico diferencial",
+            "source": "asset",
+            "audience": "medicina"
+          },
+          {
+            "id": "p-enzimas-hepaticas",
+            "type": "file",
+            "title": "Enzimas hepaticas",
+            "path": "../biblioteca/assets/digestivo/enzimas-hepaticas.jpg",
+            "ext": ".jpg",
+            "specialty": "Digestivo",
+            "breadcrumb": "Digestivo / Enzimas hepaticas",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 1
+        "file_count": 3
       },
       {
         "id": "f-17",
@@ -1111,6 +1133,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 2
       }
     ],
-    "file_count": 84
+    "file_count": 86
   }
 };
