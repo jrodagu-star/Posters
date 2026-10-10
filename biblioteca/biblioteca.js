@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "revision": "20260925b",
+  "revision": "20261010b",
   "exportedAt": "2026-09-25T08:00:00.000Z",
   "tree": {
     "id": "f-1",
@@ -964,9 +964,20 @@ window.BIBLIOTECA_DATA = {
             "specialty": "RCP",
             "breadcrumb": "RCP / Causas tratables RCP",
             "source": "asset"
+          },
+          {
+            "id": "p-pcr",
+            "type": "file",
+            "title": "PCR",
+            "path": "../biblioteca/assets/rcp/pcr.jpg",
+            "ext": ".jpg",
+            "specialty": "RCP",
+            "breadcrumb": "RCP / PCR",
+            "source": "asset",
+            "audiences": ["medicina", "enfermeria"]
           }
         ],
-        "file_count": 3
+        "file_count": 4
       },
       {
         "id": "f-7mt3exx3-mrtm3e37",
@@ -1100,6 +1111,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 2
       }
     ],
-    "file_count": 83
+    "file_count": 84
   }
 };
