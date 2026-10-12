@@ -1,16 +1,16 @@
-/* Service Worker — Dashboard Posters UCI
+﻿/* Service Worker — Dashboard Posters UCI
  * Network-first: al estar online siempre intenta traer la versión nueva.
  * Al desplegar, cambia CACHE_VERSION para invalidar cachés antiguas.
  */
-const CACHE_VERSION = 'posters-v20261012b';
+const CACHE_VERSION = 'posters-v20261012e';
 const SHELL_URLS = [
   './',
   './index.html',
-  './styles.css?v=20261012b',
-  './app.js?v=20261012b',
-  './sw-register.js?v=20261012b',
+  './styles.css?v=20261012e',
+  './app.js?v=20261012e',
+  './sw-register.js?v=20261012e',
   './manifest.webmanifest',
-  '../biblioteca/biblioteca.js?v=20261012b'
+  '../biblioteca/biblioteca.js?v=20261012e'
 ];
 
 self.addEventListener('install', (event) => {

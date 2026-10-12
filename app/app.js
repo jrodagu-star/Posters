@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'dashboard_medicina_persistente_state_v6';
+﻿const STORAGE_KEY = 'dashboard_medicina_persistente_state_v6';
 const DB_NAME = 'dashboard_medicina_persistente_v6_db';
 const DB_STORE = 'state';
 const REVISION_KEY = 'dashboard_medicina_base_revision_v6';
@@ -166,7 +166,7 @@ const PROTOCOLOS = [
         id: 'protocolo',
         title: 'Protocolo de analgosedación en VM',
         description: 'Documento clínico de analgosedación en el paciente ventilado.',
-        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261012b',
+        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261012e',
         ext: '.html',
         view: 'document'
       }
