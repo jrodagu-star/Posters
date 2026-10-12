@@ -21,8 +21,9 @@
   --font: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:64px}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+html,body{height:100%;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
 h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;text-wrap:balance}
 h2{font-size:1.5rem}
 h3{font-size:1.12rem}
@@ -32,18 +33,23 @@ small,.muted{color:var(--muted)}
 .num{font-variant-numeric:tabular-nums}
 a{color:var(--blue-dk)}
 
-/* --- top bar --- */
-.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
-.top .in{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:8px 18px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--blue-dk);white-space:nowrap}
-.brand svg{width:30px;height:30px}
-nav.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1}
-nav.tabs a{padding:7px 11px;border-radius:7px;text-decoration:none;color:var(--ink);font-size:.86rem;font-weight:600;white-space:nowrap}
-nav.tabs a:hover,nav.tabs a.on{background:var(--blue-bg);color:var(--blue-dk)}
-.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 12px;font:600 .85rem var(--font);cursor:pointer;color:var(--ink)}
-.btn:hover{border-color:var(--blue);color:var(--blue-dk)}
-
+/* --- layout + índice lateral --- */
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);height:100%;min-height:0}
+.toc{background:#161b26;border-right:1px solid #2a3550;color:#e8f0fc;display:flex;flex-direction:column;min-height:0;height:100%;overflow:hidden}
+.toc-head{padding:14px 14px 10px;border-bottom:1px solid #2a3550;flex-shrink:0}
+.toc-kicker{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#4fb3e8;font-weight:700;margin:0 0 4px}
+.toc-head .brand{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.toc-head .brand svg{width:30px;height:30px;flex-shrink:0}
+.toc-head h1{margin:0;font-size:15px;line-height:1.25;color:#e8f7ff;font-weight:700}
+.toc-head .btn{width:100%;margin-top:10px;border:1px solid #2a3550;background:#0a1220;border-radius:8px;padding:8px 12px;font:600 .82rem var(--font);cursor:pointer;color:#e8f0fc}
+.toc-head .btn:hover{border-color:#4fb3e8;color:#dff4ff}
+nav.tabs{overflow:auto;padding:8px 8px 16px;flex:1}
+nav.tabs a{display:block;padding:7px 10px;border-radius:7px;text-decoration:none;color:#8899bb;font-size:12.5px;line-height:1.35;font-weight:600;border-left:3px solid transparent}
+nav.tabs a:hover{background:#1c2638;color:#e8f0fc}
+nav.tabs a.on{background:rgba(79,179,232,.14);color:#dff4ff;border-left-color:#4fb3e8;font-weight:650}
+.doc{overflow:auto;min-height:0;background:var(--bg);scroll-behavior:smooth}
 main{max-width:1240px;margin:0 auto;padding:18px}
+section.part{scroll-margin-top:16px}
 section.part{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:26px 28px;margin:0 0 22px}
 .part-h{display:flex;align-items:baseline;gap:12px;border-bottom:3px solid var(--blue-dk);padding-bottom:10px;margin-bottom:18px}
 .part-h .k{background:var(--blue-dk);color:#fff;font-weight:800;border-radius:7px;padding:3px 10px;font-size:.85rem;letter-spacing:.05em}
@@ -185,7 +191,7 @@ td.c,th.c{text-align:center}
 .drug .ea b{color:var(--warn)}
 .h-op{background:var(--op)} .h-sed{background:var(--sed)} .h-a2{background:var(--a2)} .h-inh{background:#b98a00}
 .h-bzd{background:var(--bzd)} .h-ket{background:var(--ket)} .h-bnm{background:var(--bnm)} .h-rev{background:#5b6675}
-.weight{position:sticky;top:58px;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--blue-dk);color:#fff;border-radius:10px;padding:10px 16px;margin-bottom:16px}
+.weight{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--blue-dk);color:#fff;border-radius:10px;padding:10px 16px;margin-bottom:16px}
 .weight label{font-weight:700}
 .weight input{width:90px;font:800 1.1rem var(--font);padding:5px 8px;border-radius:7px;border:0;text-align:center}
 .weight small{color:#d6e3f7}
@@ -209,12 +215,13 @@ td.c,th.c{text-align:center}
 .cam .card b.f{display:inline-block;background:var(--a2);color:#fff;border-radius:6px;padding:1px 8px;margin-bottom:5px;font-size:.78rem}
 
 /* summary table */
-.sum th{position:sticky;top:58px}
+.sum th{position:sticky;top:0}
 .sum td:first-child{font-weight:800;white-space:nowrap}
 .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
 
 .refs li{margin:.35em 0;font-size:.86rem;overflow-wrap:anywhere}
 footer{max-width:1240px;margin:0 auto;padding:6px 18px 40px;color:var(--muted);font-size:.8rem}
+@media (max-width:720px){.layout{grid-template-columns:210px minmax(0,1fr)}.toc-head h1{font-size:14px}nav.tabs a{font-size:12px;padding:6px 8px}}
 
 .g2>*,.g3>*,.drugs>*,.flowwrap>*,.hero>*,.algo>*{min-width:0}
 .tw{overflow-x:auto}
@@ -237,7 +244,6 @@ footer{max-width:1240px;margin:0 auto;padding:6px 18px 40px;color:var(--muted);f
   .tof{grid-template-columns:repeat(3,1fr)}
   .algo{grid-template-columns:1fr}
   .rot{writing-mode:horizontal-tb;transform:none}
-  .brand span{display:none}
 }
 
 /* ---------- PRINT A4 ---------- */
@@ -248,7 +254,10 @@ footer{max-width:1240px;margin:0 auto;padding:6px 18px 40px;color:var(--muted);f
   h3,h4{break-after:avoid}
   .pb{break-before:page}
   .flowwrap{grid-template-columns:minmax(0,1fr) 280px}
-  .top,.noprint{display:none!important}
+  .toc,.noprint{display:none!important}
+  html,body{height:auto;overflow:visible}
+  .layout{display:block;height:auto}
+  .doc{overflow:visible}
   main{padding:0;max-width:none}
   section.part{border:0;padding:0;margin:0;break-before:page;border-radius:0}
   section.part:first-of-type{break-before:auto}
@@ -265,11 +274,15 @@ footer{max-width:1240px;margin:0 auto;padding:6px 18px 40px;color:var(--muted);f
 </head>
 <body>
 
-<header class="top">
-  <div class="in">
-    <div class="brand">
-      <svg viewBox="0 0 32 32" aria-label="Logotipo analgosedación UCI" fill="none"><rect width="32" height="32" rx="7" fill="#1d4e89"/><path d="M6 17h5l2-6 4 12 3-8 2 2h4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span>Analgosedación · VM</span>
+<div class="layout">
+  <aside class="toc" aria-label="Índice del protocolo">
+    <div class="toc-head">
+      <p class="toc-kicker">Protocolo UCI</p>
+      <div class="brand">
+        <svg viewBox="0 0 32 32" aria-hidden="true" fill="none"><rect width="32" height="32" rx="7" fill="#1d4e89"/><path d="M6 17h5l2-6 4 12 3-8 2 2h4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h1>Analgosedación · VM</h1>
+      </div>
+      <button class="btn" type="button" onclick="window.print()">Imprimir / PDF</button>
     </div>
     <nav class="tabs" id="tabs">
       <a href="#p0">Resumen</a>
@@ -282,10 +295,8 @@ footer{max-width:1240px;margin:0 auto;padding:6px 18px 40px;color:var(--muted);f
       <a href="#p7">Bibliografía</a>
       <a href="#p8">Versiones</a>
     </nav>
-    <button class="btn" onclick="window.print()">Imprimir / PDF</button>
-  </div>
-</header>
-
+  </aside>
+  <div class="doc" id="doc">
 <main>
 
 <!-- ================= RESUMEN / INFOGRAFÍA ================= -->
@@ -885,6 +896,8 @@ footer{max-width:1240px;margin:0 auto;padding:6px 18px 40px;color:var(--muted);f
 </section>
 </main>
 <footer>Protocolo docente de analgosedación en VM · UCI · Versión 3 · 12/10/2026 · Archivo autónomo, funciona sin conexión.</footer>
+  </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){
@@ -901,14 +914,25 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   inp.addEventListener('input', calc);
   calc();
-  // active tab
+  // active sidebar link
   var links = Array.prototype.slice.call(document.querySelectorAll('#tabs a'));
   var secs = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  var doc = document.getElementById('doc');
+  links.forEach(function(a){
+    a.addEventListener('click', function(e){
+      var target = document.querySelector(a.getAttribute('href'));
+      if(!target || !doc) return;
+      e.preventDefault();
+      target.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
   if('IntersectionObserver' in window){
     var io = new IntersectionObserver(function(ents){
       ents.forEach(function(e){ if(e.isIntersecting){ var i = secs.indexOf(e.target); links.forEach(function(l,j){ l.classList.toggle('on', i===j); }); } });
-    },{rootMargin:'-40% 0px -55% 0px'});
+    },{root: doc || null, rootMargin:'0px 0px -55% 0px', threshold:[0.08,0.2,0.35]});
     secs.forEach(function(s){ if(s) io.observe(s); });
+  } else if(links[0]){
+    links[0].classList.add('on');
   }
 });
 </script>
