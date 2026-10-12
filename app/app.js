@@ -166,7 +166,7 @@ const PROTOCOLOS = [
         id: 'protocolo',
         title: 'Protocolo de analgosedación en VM',
         description: 'Documento clínico de analgosedación en el paciente ventilado.',
-        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261012f',
+        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261012g',
         ext: '.html',
         view: 'document'
       }
@@ -182,7 +182,7 @@ const PROTOCOLOS = [
         id: 'protocolo',
         title: 'Protocolo VM · Cuidados integrales',
         description: 'Documento clínico de cuidados integrales en el paciente ventilado.',
-        path: '../biblioteca/assets/protocolos/vm-cuidados-integrales/protocolo-vm-cuidados-integrales.html?v=20261012f',
+        path: '../biblioteca/assets/protocolos/vm-cuidados-integrales/protocolo-vm-cuidados-integrales.html?v=20261012g',
         ext: '.html',
         view: 'document'
       }
