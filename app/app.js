@@ -155,6 +155,22 @@ const PROTOCOLOS = [
         view: 'document'
       }
     ]
+  },
+  {
+    id: 'analgosedacion-vm',
+    title: 'Analgosedación en VM',
+    description: 'Protocolo de analgosedación en ventilación mecánica en UCI.',
+    audiences: ['medicina', 'enfermeria'],
+    parts: [
+      {
+        id: 'protocolo',
+        title: 'Protocolo de analgosedación en VM',
+        description: 'Documento clínico de analgosedación en el paciente ventilado.',
+        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261012a',
+        ext: '.html',
+        view: 'document'
+      }
+    ]
   }
 ];
 const FORMULARIO_BADGE_SVG =

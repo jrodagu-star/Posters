@@ -2,15 +2,15 @@
  * Network-first: al estar online siempre intenta traer la versión nueva.
  * Al desplegar, cambia CACHE_VERSION para invalidar cachés antiguas.
  */
-const CACHE_VERSION = 'posters-v20261010g';
+const CACHE_VERSION = 'posters-v20261012a';
 const SHELL_URLS = [
   './',
   './index.html',
-  './styles.css?v=20261010g',
-  './app.js?v=20261010g',
-  './sw-register.js?v=20261010g',
+  './styles.css?v=20261012a',
+  './app.js?v=20261012a',
+  './sw-register.js?v=20261012a',
   './manifest.webmanifest',
-  '../biblioteca/biblioteca.js?v=20261010g'
+  '../biblioteca/biblioteca.js?v=20261012a'
 ];
 
 self.addEventListener('install', (event) => {

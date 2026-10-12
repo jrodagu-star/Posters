@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infografía A3 · Analgosedación en el paciente intubado · UCI</title>
+<style>
+:root{
+  --ink:#1b2430; --muted:#566170; --line:#d5dbe3; --soft:#f0f3f7;
+  --blue:#2f6fde; --blue-bg:#e6efff; --blue-dk:#1d4e89;
+  --op:#e98a15; --op-bg:#fff1dc; --sed:#3b78e7; --sed-bg:#dfeaff;
+  --a2:#7b3fa0; --a2-bg:#f1e6f8; --inh:#c99700; --inh-bg:#fff7d6;
+  --bzd:#d63384; --bzd-bg:#fde6f1; --ket:#0f8a7e; --ket-bg:#dcf4f1;
+  --ok:#1f8a4c; --ok-bg:#e3f5ea; --warn:#a85600; --warn-bg:#fff0de; --bad:#b42318; --bad-bg:#fde7e5;
+  --font: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#cfd5dd;font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased}
+.stage{padding:24px 0;display:flex;justify-content:center}
+/* A3 vertical a 96 dpi: 297 × 420 mm = 1123 × 1587 px */
+.sheet{width:1123px;height:1587px;background:#fff;position:relative;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.25);
+  display:flex;flex-direction:column;font-size:11.5px;line-height:1.35;transform-origin:top center}
+h2,h3,h4{margin:0;line-height:1.15}
+p{margin:0}
+a{color:inherit;text-decoration:none}
+.num{font-variant-numeric:tabular-nums}
+
+/* cabecera */
+.hd{background:var(--blue-dk);color:#fff;padding:11px 26px 10px;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center}
+.hd svg{width:50px;height:50px}
+.hd h1{margin:0;font-size:31px;letter-spacing:-.01em;line-height:1.05}
+.hd .sub{font-size:14px;color:#d4e2f6;margin-top:3px}
+.hd .ver{text-align:right;font-size:11px;color:#d4e2f6;line-height:1.5}
+.hd .ver b{display:inline-block;background:#fff;color:var(--blue-dk);border-radius:99px;padding:3px 11px;font-size:12px;margin-bottom:4px}
+
+.body{flex:1;padding:10px 22px 0;display:flex;flex-direction:column;gap:9px;min-height:0}
+.blk{border:1.5px solid var(--line);border-radius:11px;padding:9px 12px;background:#fff;min-width:0}
+.bh{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.bh .k{background:var(--blue-dk);color:#fff;font-weight:800;font-size:11px;border-radius:6px;padding:3px 8px;letter-spacing:.04em;white-space:nowrap}
+.bh h2{font-size:15.5px;color:var(--blue-dk)}
+.bh .s{margin-left:auto;font-size:10.5px;color:var(--muted);font-weight:600}
+.row{display:grid;gap:10px;min-height:0}
+
+/* objetivo */
+.goal{background:linear-gradient(180deg,#f3f7fd,#fff);border-color:#bcd0ee}
+.goalg{display:grid;grid-template-columns:1.15fr 1fr 1fr 1fr 1fr;gap:8px}
+.gc{border-radius:9px;padding:7px 10px;border:1.5px solid var(--line);background:#fff}
+.gc .t{font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.gc .v{font-size:17px;font-weight:800;line-height:1.05;margin:3px 0 3px}
+.gc p{font-size:10.3px;line-height:1.3;color:#38424f}
+.gc.lead{background:var(--blue-dk);border-color:var(--blue-dk);color:#fff}
+.gc.lead .t{color:#c9daf3}.gc.lead p{color:#e6eefa}
+.gc.lead .v{font-size:14px}
+.gc.pain{border-color:var(--op);background:var(--op-bg)} .gc.pain .v{color:#9a5400}
+.gc.light{border-color:var(--ok);background:var(--ok-bg)} .gc.light .v{color:var(--ok)}
+.gc.deep{border-color:var(--inh);background:var(--inh-bg)} .gc.deep .v{color:#7a5600}
+.gc.del{border-color:var(--a2);background:var(--a2-bg)} .gc.del .v{color:var(--a2)}
+
+/* tablas */
+table{border-collapse:collapse;width:100%;font-size:10.4px;line-height:1.28}
+th,td{border:1px solid var(--line);padding:3px 5px;vertical-align:top;text-align:left}
+th{background:var(--soft);font-weight:700}
+td.c,th.c{text-align:center}
+.rass td{padding:1.6px 6px;white-space:nowrap}
+.rass th{padding:2px 6px}
+.rass td:first-child{font-weight:800;text-align:center;width:34px;font-size:12px}
+.rass tr.agit td:first-child{background:#fde7e5;color:var(--bad)}
+.rass tr.zero td:first-child{background:var(--ok-bg);color:var(--ok)}
+.rass tr.light td:first-child{background:#e3f1ff;color:var(--blue-dk)}
+.rass tr.deep td:first-child{background:#ffeec2;color:#7a5600}
+.rass tr.tg td{background:#f2faf5}
+.rass tr.tg td:first-child{background:var(--ok-bg);color:var(--ok)}
+.rass tr.tp td{background:#fffaeb}
+.zone{font-size:9.5px;font-weight:800;color:#fff;text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);padding:2px;letter-spacing:.04em}
+.note{font-size:9.8px;line-height:1.3;color:var(--muted);margin-top:5px}
+.callout{border-left:4px solid var(--blue);background:var(--blue-bg);padding:4px 8px;border-radius:0 7px 7px 0;font-size:10.1px;line-height:1.3;margin-top:6px}
+.callout.warn{border-color:var(--warn);background:var(--warn-bg)}
+.callout.bad{border-color:var(--bad);background:var(--bad-bg)}
+
+/* EVA */
+.evn{display:grid;grid-template-columns:repeat(11,1fr);border-radius:7px;overflow:hidden;text-align:center;font-weight:800;font-size:13px;color:#fff}
+.evn div{padding:6px 0}
+.evnl{display:grid;grid-template-columns:4fr 3fr 4fr;font-size:10px;font-weight:700;color:var(--muted);margin-top:3px;text-align:center}
+.faces{display:grid;grid-template-columns:repeat(6,1fr);margin-top:6px;text-align:center;font-size:9.5px;color:var(--muted)}
+.faces svg{width:28px;height:28px;display:block;margin:0 auto 1px}
+
+/* CAM */
+.cam{display:grid;grid-template-columns:1fr;gap:4px}
+.cam .f{border:1px solid var(--line);background:var(--soft);border-radius:7px;padding:3px 7px;font-size:10.2px;line-height:1.3}
+.cam .f b.x{display:inline-block;background:var(--a2);color:#fff;border-radius:5px;padding:0 6px;font-size:9.5px;margin-right:4px}
+.formula{display:flex;align-items:center;justify-content:center;gap:6px;margin:5px 0 0;font-weight:800;font-size:13px}
+.formula span{border:2px solid var(--a2);color:var(--a2);border-radius:7px;padding:2px 9px;background:#fff}
+.formula i{font-style:normal;color:var(--muted)}
+
+/* ---------- diagramas de flujo ---------- */
+.flow{display:flex;flex-direction:column;align-items:center}
+.n{position:relative;border:2px solid var(--blue);border-radius:7px;padding:3px 7px;background:#fff;text-align:center;font-size:10.4px;line-height:1.25;width:100%}
+.n.q::before{content:"?";position:absolute;left:-9px;top:50%;transform:translateY(-50%);width:16px;height:16px;border-radius:50%;background:var(--blue);color:#fff;font:800 10px/16px var(--font)}
+.n.start{background:var(--blue-dk);border-color:var(--blue-dk);color:#fff;font-weight:700}
+.n.op{background:var(--op-bg);border-color:var(--op);font-weight:800}
+.n.sed{background:var(--sed-bg);border-color:var(--sed);font-weight:800}
+.n.a2{background:var(--a2-bg);border-color:var(--a2);font-weight:800}
+.n.inh{background:var(--inh-bg);border:2px dashed var(--inh);font-weight:800}
+.n.bzd{background:var(--bzd-bg);border-color:var(--bzd);font-weight:800}
+.n.ket{background:var(--ket-bg);border-color:var(--ket);font-weight:800}
+.n.end{background:var(--ok-bg);border-color:var(--ok);font-weight:700}
+.n .d{display:block;font-weight:500;font-size:9.3px;color:var(--muted);margin-top:0}
+.ar{width:2px;height:8px;background:#2b3440;position:relative;margin:0 0 6px}
+.ar::after{content:"";position:absolute;left:-4px;bottom:-6px;border:5px solid transparent;border-top:6px solid #2b3440;border-bottom:0}
+.ar.t{height:15px}
+.ar .lbl{position:absolute;left:8px;top:0;white-space:nowrap;margin:0}
+.lbl{display:inline-block;font-size:8.8px;font-weight:800;letter-spacing:.03em;padding:0 6px;border-radius:99px}
+.lbl.si{background:var(--ok-bg);color:var(--ok);border:1px solid #b8e2c8}
+.lbl.no{background:var(--bad-bg);color:var(--bad);border:1px solid #f4c7c2}
+.lbl.pos{background:var(--a2-bg);color:var(--a2);border:1px solid #dcc4ea}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;position:relative;padding-top:10px;margin-top:8px}
+.split::before{content:"";position:absolute;top:0;left:25%;right:25%;height:2px;background:#2b3440}
+.split::after{content:"";position:absolute;top:-8px;left:50%;width:2px;height:8px;background:#2b3440}
+.split > .flow{position:relative}
+.split > .flow::before{content:"";position:absolute;top:-10px;left:50%;width:2px;height:10px;background:#2b3440}
+.split .lbl{margin-bottom:3px}
+.split.three{grid-template-columns:repeat(3,1fr)}
+.split.three::before{left:16.6%;right:16.6%}
+.split.m{padding-bottom:10px}
+.split.m > .flow::after{content:"";position:absolute;bottom:-10px;left:50%;width:2px;height:10px;background:#2b3440}
+.merge{height:2px;background:#2b3440}
+
+/* columna vertebral + salidas laterales */
+.flow.sp{align-items:flex-start;--sw:258px}
+.flow.sp > .n,.flow.sp > .split{width:var(--sw)}
+.flow.sp > .ar{margin-left:calc(var(--sw) / 2 - 1px)}
+.flow.sp > .merge{margin-left:calc(var(--sw) / 4);width:calc(var(--sw) / 2)}
+.qr{display:grid;grid-template-columns:var(--sw) minmax(0,1fr);width:100%;align-items:center}
+.qr > .n{grid-column:1}
+.qr .sd{grid-column:2;display:flex;align-items:center;min-width:0}
+.qr .hl{flex:0 0 10px;height:2px;background:#2b3440;position:relative}
+.qr .hl.ah{flex-basis:10px}
+.qr .hl.ah::after{content:"";position:absolute;right:-5px;top:-4px;border:5px solid transparent;border-left:6px solid #2b3440;border-right:0}
+.qr .sd .lbl{margin:0 3px;flex:none}
+.qr .sd .n{flex:1;min-width:0;font-size:9.8px;padding:2px 5px;margin-left:5px}
+.algo{display:grid;grid-template-columns:24px minmax(0,1fr);gap:12px}
+.rot{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:800;letter-spacing:.12em;font-size:10.5px;padding:8px 4px;border-radius:6px;color:#fff;text-align:center}
+.sidebox{border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;font-size:9.8px;line-height:1.3;background:var(--soft)}
+.sidebox h4{font-size:9.8px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:3px}
+.sidebox ul{margin:0;padding-left:1.1em}
+.sidebox.bad{border-color:var(--bad);background:var(--bad-bg)}
+.sidebox.bad h4{color:var(--bad)}
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}
+
+/* pie */
+.ft{padding:7px 22px 9px;font-size:9.3px;color:var(--muted);display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end;border-top:1px solid var(--line);margin-top:10px}
+.ft b{color:var(--ink)}
+.legend{display:flex;gap:9px;flex-wrap:wrap;font-size:9.5px;font-weight:700;color:var(--ink)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{width:11px;height:11px;border-radius:3px;border:2px solid;display:inline-block}
+
+.tools{position:fixed;right:16px;bottom:16px;display:flex;gap:8px;z-index:9}
+.tools button{border:0;background:var(--blue-dk);color:#fff;font:700 13px var(--font);padding:9px 14px;border-radius:8px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+@page{size:A3 portrait;margin:0}
+@media print{
+  body{background:#fff}
+  html,body{width:297mm;height:420mm;overflow:hidden}
+  .stage{padding:0;display:block;height:auto!important;overflow:visible!important}
+  .sheet{box-shadow:none;transform:none!important;margin:0;width:297mm;height:420mm}
+  .tools{display:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+<article class="sheet" id="sheet" aria-label="Infografía A3 de analgosedación en el paciente intubado">
+
+  <header class="hd">
+    <svg viewBox="0 0 32 32" aria-label="Logotipo analgosedación UCI" fill="none"><rect width="32" height="32" rx="7" fill="#fff"/><path d="M6 17h5l2-6 4 12 3-8 2 2h4" stroke="#1d4e89" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div>
+      <h1>Analgosedación en el paciente intubado</h1>
+      <div class="sub">UCI · adultos en ventilación mecánica invasiva · primero el dolor, después la sedación, y siempre medido</div>
+    </div>
+    <div class="ver"><b>INFOGRAFÍA A3 · v3</b><br>12/10/2026<br>Basada en el protocolo del servicio y redEMC</div>
+  </header>
+
+  <div class="body">
+
+    <!-- OBJETIVO -->
+    <section class="blk goal">
+      <div class="bh"><span class="k">OBJETIVO</span><h2>¿Qué buscamos en el paciente intubado?</h2><span class="s">Valorar en cada turno y antes, durante y 15 min después de procedimientos</span></div>
+      <div class="goalg">
+        <div class="gc lead"><div class="t">Objetivo global</div><div class="v">Confortable, sin dolor, adaptado a la VM</div><p>Analgesia primero (basada en opioide) y sedación mínima eficaz, individualizada.</p></div>
+        <div class="gc pain"><div class="t">1 · Dolor controlado</div><div class="v num">EVA/EVN &lt; 4</div><p>ESCID ≤ 3 si RASS −3 · NOL 10–25 si RASS −4/−5 o BNM.</p></div>
+        <div class="gc light"><div class="t">2 · Sedación ligera por defecto</div><div class="v num">RASS 0 / −2</div><p>Despierta a la voz con contacto visual. Evitar la sobresedación.</p></div>
+        <div class="gc deep"><div class="t">3 · Profunda solo con indicación</div><div class="v num">RASS −4/−5</div><p>BIS 40–60 · SDRA, asma, asincronía, HTIC, status, BNM. Revisar a diario.</p></div>
+        <div class="gc del"><div class="t">4 · Sin delirium</div><div class="v">CAM-ICU −</div><p>Cada turno si RASS ≥ −3. Si +: dexmedetomidina y tratar causas.</p></div>
+      </div>
+    </section>
+
+    <!-- 2.1 + RASS -->
+    <div class="row" style="grid-template-columns:1.02fr 1fr">
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+      <section class="blk">
+        <div class="bh"><span class="k">ÁRBOL 2.1</span><h2>¿Qué herramienta uso para el dolor?</h2></div>
+        <div class="algo">
+          <div class="rot" style="background:var(--blue-dk)">MEDIR EL DOLOR</div>
+          <div class="flow">
+            <div class="n start" style="width:84%">Paciente en VM · ¿nivel de sedación (RASS)?<span class="d" style="color:#d4e2f6">Valorar el dolor en cada turno y con los procedimientos</span></div>
+            <div class="split three">
+              <div class="flow"><span class="lbl si">RASS 0 a −2</span><div class="n">Puede comunicarse</div><div class="ar"></div><div class="n end">EVA / EVN 0–10<span class="d">Objetivo &lt; 4</span></div></div>
+              <div class="flow"><span class="lbl pos">RASS −3</span><div class="n">No comunica; hay conductas</div><div class="ar"></div><div class="n end">ESCID 0–10<span class="d">Objetivo ≤ 3</span></div></div>
+              <div class="flow"><span class="lbl no">RASS −4/−5 · BNM</span><div class="n">Sin conductas valorables</div><div class="ar"></div><div class="n end">Monitor NOL<span class="d">Objetivo 10–25</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:8px"><b>Por encima del objetivo:</b> ajustar primero el opioide; subir el sedante solo con el dolor controlado. <b>NOL</b> &gt; 25 durante ≥ 1 min = más analgesia; &lt; 10 = posible exceso (validación en UCI en estudio).</div>
+      </section>
+        
+      </div>
+
+      <section class="blk">
+        <div class="bh"><span class="k">ESCALA</span><h2>RASS · Richmond Agitation-Sedation Scale</h2></div>
+        <table class="rass">
+          <tr><th class="c">Punt.</th><th>Término</th><th>Descripción</th></tr>
+          <tr class="agit"><td>+4</td><td>Combativo</td><td>Violento, peligro para el personal</td></tr>
+          <tr class="agit"><td>+3</td><td>Muy agitado</td><td>Se retira tubos o catéteres; agresivo</td></tr>
+          <tr class="agit"><td>+2</td><td>Agitado</td><td>Movimientos sin propósito; lucha con el respirador</td></tr>
+          <tr class="agit"><td>+1</td><td>Inquieto</td><td>Ansioso, sin movimientos agresivos</td></tr>
+          <tr class="tg"><td>0</td><td><b>Alerta y tranquilo</b></td><td>Objetivo de sedación ligera</td></tr>
+          <tr class="tg"><td>−1</td><td><b>Somnoliento</b></td><td>Despierta a la voz &gt; 10 s, con contacto visual</td></tr>
+          <tr class="tg"><td>−2</td><td><b>Sedación ligera</b></td><td>Despierta a la voz &lt; 10 s, con contacto visual</td></tr>
+          <tr class="light"><td>−3</td><td>Sedación moderada</td><td>Se mueve o abre los ojos a la voz, sin contacto visual</td></tr>
+          <tr class="tp"><td style="background:#ffeec2;color:#7a5600">−4</td><td><b>Sedación profunda</b></td><td>No responde a la voz; sí al estímulo físico</td></tr>
+          <tr class="tp"><td style="background:#ffeec2;color:#7a5600">−5</td><td><b>No despertable</b></td><td>Sin respuesta a la voz ni al estímulo físico</td></tr>
+        </table>
+        <p class="note"><b>Cómo:</b> observar 30 s → llamar por su nombre y pedir que mire → estímulo físico (hombro, esternón). <span style="color:var(--ok);font-weight:700">Verde: ligera.</span> <span style="color:#7a5600;font-weight:700">Ámbar: profunda.</span></p>
+      </section>
+    </div>
+
+    <!-- ESCID + EVA + CAM -->
+    <div class="row" style="grid-template-columns:1.5fr 1fr">
+      <section class="blk">
+        <div class="bh"><span class="k">ESCALA</span><h2>ESCID · Conductas Indicadoras de Dolor</h2><span class="s">RASS −3 · no comunicativo</span></div>
+        <table>
+          <tr><th style="width:21%">Ítem</th><th class="c" style="width:23%">0</th><th class="c" style="width:28%">1</th><th class="c">2</th></tr>
+          <tr><td><b>Musculatura facial</b></td><td>Relajada</td><td>Tensa, ceño fruncido o mueca</td><td>Ceño fruncido habitual o dientes apretados</td></tr>
+          <tr><td><b>Tranquilidad</b></td><td>Tranquilo, movimientos normales</td><td>Inquietud o cambios de posición ocasionales</td><td>Movimientos frecuentes (cabeza, extremidades)</td></tr>
+          <tr><td><b>Tono muscular</b></td><td>Normal</td><td>Aumentado; flexión de dedos de manos/pies</td><td>Rígido</td></tr>
+          <tr><td><b>Adaptación a la VM</b></td><td>Tolera la VM</td><td>Tose, pero tolera la VM</td><td>Lucha con el respirador</td></tr>
+          <tr><td><b>Confortabilidad</b></td><td>Confortable, tranquilo</td><td>Se calma con el tacto o la voz</td><td>Difícil de confortar</td></tr>
+        </table>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:5px;text-align:center;font-size:9.8px;line-height:1.2">
+          <div style="background:var(--ok-bg);border-radius:6px;padding:2px"><b class="num" style="font-size:12px;color:var(--ok)">0</b><br>sin dolor</div>
+          <div style="background:#f3f7d9;border-radius:6px;padding:2px"><b class="num" style="font-size:12px;color:#5f7a00">1–3</b><br>leve-moderado</div>
+          <div style="background:var(--warn-bg);border-radius:6px;padding:2px"><b class="num" style="font-size:12px;color:var(--warn)">4–6</b><br>moderado-grave</div>
+          <div style="background:var(--bad-bg);border-radius:6px;padding:2px"><b class="num" style="font-size:12px;color:var(--bad)">&gt; 6</b><br>muy intenso</div>
+        </div>
+        <p class="note">Suma de 5 ítems (0–10), validada en España en críticos no comunicativos en VM. <b>No válida con RASS ≤ −4 ni con BNM.</b></p>
+      </section>
+
+<div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+<section class="blk">
+          <div class="bh"><span class="k">ESCALA</span><h2>EVA / EVN</h2><span class="s">RASS 0 a −2 · numérica 0–10 o visual 10 cm</span></div>
+          <div class="evn num">
+            <div style="background:#1f8a4c">0</div><div style="background:#3c9a4a">1</div><div style="background:#62a845">2</div><div style="background:#8db43d">3</div><div style="background:#c3b52f">4</div><div style="background:#e0a92a">5</div><div style="background:#e8902a">6</div><div style="background:#e7752b">7</div><div style="background:#de5a2c">8</div><div style="background:#cf3f2c">9</div><div style="background:#b42318">10</div>
+          </div>
+          <div class="evnl"><div style="color:var(--ok)">0–3 · objetivo (&lt; 4)</div><div style="color:var(--warn)">4–6 · moderado</div><div style="color:var(--bad)">7–10 · intenso</div></div>
+          
+        </section>
+      <section class="blk" style="flex:1">
+          <div class="bh"><span class="k">ESCALA</span><h2>CAM-ICU · delirium</h2><span class="s">Si RASS ≥ −3</span></div>
+          <div class="cam">
+            <div class="f"><b class="x">1</b>Cambio agudo o curso fluctuante del estado mental</div>
+            <div class="f"><b class="x">2</b>Inatención: 10 letras, apretar la mano con la «A»; &gt; 2 errores</div>
+            <div class="f"><b class="x">3</b>Nivel de conciencia alterado: RASS actual ≠ 0</div>
+            <div class="f"><b class="x">4</b>Pensamiento desorganizado: 4 preguntas sí/no + orden; &gt; 1 error</div>
+          </div>
+          <div class="formula"><i>Delirium =</i><span>1</span><i>+</i><span>2</span><i>+</i><span>3 o 4</span></div>
+        </section>
+      </div>
+        </div>
+
+    <!-- 3.A + 3.B -->
+    <div class="row" style="grid-template-columns:1fr 1fr;flex:1">
+      <section class="blk" style="display:flex;flex-direction:column">
+        <div class="bh"><span class="k" style="background:var(--ok)">ÁRBOL 3.A</span><h2>Sedación ligera · RASS 0 / −2</h2></div>
+        <div class="algo" style="flex:1">
+          <div class="rot" style="background:#1b2430">SEDACIÓN LIGERA</div>
+          <div class="flow sp">
+            <div class="n q">¿Objetivo RASS 0 / −2?</div>
+            <div class="ar"></div>
+            <div class="n op">REMIFENTANILO &lt; 6 µg/kg/h<span class="d">1.ª elección · analgosedación</span></div>
+            <div class="ar"></div>
+            <div class="qr"><div class="n q">¿Necesita sedación?</div><div class="sd"><span class="hl"></span><span class="lbl no">NO</span><span class="hl ah"></span><div class="n end">Mantener remifentanilo<span class="d">↺ reevaluar RASS y dolor</span></div></div></div>
+            <div class="ar t"><span class="lbl si">SÍ</span></div>
+            <div class="n op">REMIFENTANILO 6 → 12 µg/kg/h<span class="d">↑ 1,5 µg/kg/h cada ≥ 5 min</span></div>
+            <div class="ar"></div>
+            <div class="qr"><div class="n q">¿RASS objetivo?</div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n end">Mantener · ↺ reevaluar</div></div></div>
+            <div class="ar t"><span class="lbl no">NO · dosis máxima</span></div>
+            <div class="qr"><div class="n q">Valorar DELIRIUM (CAM-ICU)</div><div class="sd"><span class="hl"></span><span class="lbl pos">+</span><span class="hl ah"></span><div class="n a2">+ DEXMEDETOMIDINA<span class="d">0,2–1,4 µg/kg/h · sin bolo</span></div></div></div>
+            <div class="ar t"><span class="lbl si">CAM-ICU −</span></div>
+            <div class="qr"><div class="n q">¿Contraindicación para PROPOFOL?<span class="d">Hipertrigliceridemia · inestabilidad HD · shock cardiogénico</span></div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n a2">DEXMEDETOMIDINA<span class="d">o sedación inhalada</span></div></div></div>
+            <div class="ar t"><span class="lbl no">NO</span></div>
+            <div class="n sed">PROPOFOL hasta 4–4,5 mg/kg/h<span class="d">2.º sedante</span></div>
+            <div class="ar"></div>
+            <div class="qr"><div class="n q">¿RASS objetivo?</div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n end">Mantener · ↺ reevaluar</div></div></div>
+            <div class="ar t"><span class="lbl no">NO · 3.er sedante</span></div>
+            <div class="n inh">SEDACIÓN INHALADA · ISOFLURANO<span class="d">Sedaconda ACD · FeIso 0,2–1 %</span></div>
+            <div class="ar"></div>
+            <div class="n q">¿Contraindicada o insuficiente la vía inhalada?</div>
+            <div class="ar t"><span class="lbl si">SÍ</span></div>
+            <div class="n bzd">MIDAZOLAM &lt; 0,25 mg/kg/h<span class="d">Menos dosis en insuficiencia renal · uso dinámico</span></div>
+          </div>
+        </div>
+        <div class="notes">
+          <div class="sidebox"><h4>Dexmedetomidina 1.ª elección si</h4>Delirium, abstinencia, sedación difícil o ahorro de sedantes. Solo hasta RASS −3.</div>
+          <div class="sidebox bad"><h4>Evitar la vía inhalada si</h4>Hipertermia maligna (personal o familiar), <b>ascendencia materna venezolana</b>, hipersensibilidad, fístula broncopleural, HTIC.</div>
+        </div>
+      </section>
+
+      <section class="blk" style="display:flex;flex-direction:column">
+        <div class="bh"><span class="k" style="background:#a87c00">ÁRBOL 3.B</span><h2>Sedación profunda · RASS −4 / −5 ± BIS 40–60</h2></div>
+        <div class="algo" style="flex:1">
+          <div class="rot" style="background:#d9a400;color:#1b2430">SEDACIÓN PROFUNDA</div>
+          <div class="flow sp">
+            <div class="n q">¿Objetivo RASS −4 / −5?<span class="d">SDRA · asma · asincronía · HTIC · status · BNM</span></div>
+            <div class="ar"></div>
+            <div class="n op">FENTANILO<span class="d">Mejor que remifentanilo · dolor con monitor NOL</span></div>
+            <div class="ar"></div>
+            <div class="n q">¿Inestabilidad hemodinámica?</div>
+            <div class="split m">
+              <div class="flow"><span class="lbl no">NO</span><div class="n sed">PROPOFOL / ISOFLURANO</div></div>
+              <div class="flow"><span class="lbl si">SÍ</span><div class="n bzd">MIDAZOLAM / ISOFLURANO</div></div>
+            </div>
+            <div class="merge"></div>
+            <div class="ar"></div>
+            <div class="qr"><div class="n q">¿RASS / BIS objetivo?</div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n end">Seguimiento y monitorización<span class="d">Superficializar en cuanto se pueda</span></div></div></div>
+            <div class="ar t"><span class="lbl no">NO</span></div>
+            <div class="n sed">ASOCIAR 2.º FÁRMACO<span class="d">Propofol / midazolam / isoflurano (el no utilizado)</span></div>
+            <div class="ar"></div>
+            <div class="qr"><div class="n q">¿RASS / BIS objetivo?</div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n end">Seguimiento y monitorización<span class="d">Superficializar en cuanto se pueda</span></div></div></div>
+            <div class="ar t"><span class="lbl no">NO</span></div>
+            <div class="n ket">ASOCIAR 3.er FÁRMACO<span class="d">Propofol / midazolam / isoflurano / ketamina</span></div>
+            <div class="ar"></div>
+            <div class="n a2">Valorar además<span class="d">α2-agonistas (dexmedetomidina / clonidina) · metadona enteral</span></div>
+          </div>
+        </div>
+        <div class="notes">
+          <div class="sidebox"><h4>Midazolam: útil con condiciones</h4>Más delirium y días de VM. Dosis &lt; 0,25 mg/kg/h, vigilar en fracaso renal, uso secuencial.</div>
+          <div class="sidebox bad"><h4>Antes de elegir isoflurano</h4>Preguntar: ¿la madre o la abuela materna nacieron en Venezuela? Si es así: <b>propofol</b> (estable) o <b>midazolam</b> (inestable).</div>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+  <footer class="ft">
+    <div><b>Fuentes:</b> protocolo del servicio; algoritmos redEMC; PADIS 2018 y 2025 (SCCM); ESCID (Latorre-Marco, Enferm Intensiva 2011); fichas técnicas AEMPS; SEFF 2026 y Rev Chil Anest 2026. Dosis orientativas: verificar ficha técnica y concentraciones del hospital. Preparaciones en el protocolo de consulta v3.</div>
+    <div class="legend">
+      <span><i style="border-color:var(--op);background:var(--op-bg)"></i>Opioide</span>
+      <span><i style="border-color:var(--sed);background:var(--sed-bg)"></i>Propofol</span>
+      <span><i style="border-color:var(--a2);background:var(--a2-bg)"></i>α2</span>
+      <span><i style="border-color:var(--inh);background:var(--inh-bg);border-style:dashed"></i>Inhalada</span>
+      <span><i style="border-color:var(--bzd);background:var(--bzd-bg)"></i>Midazolam</span>
+      <span><i style="border-color:var(--ket);background:var(--ket-bg)"></i>Ketamina</span>
+      <span><i style="border-color:var(--ok);background:var(--ok-bg)"></i>Objetivo</span>
+    </div>
+  </footer>
+</article>
+</div>
+<div class="tools"><button onclick="window.print()">Imprimir A3 / PDF</button></div>
+<script>
+(function(){
+  var s=document.getElementById('sheet'),st=document.getElementById('stage');
+  function fit(){
+    if(window.matchMedia('print').matches) return;
+    var w=window.innerWidth-24, k=Math.min(1,w/1123);
+    s.style.transform='scale('+k+')';
+    st.style.height=(1587*k+48)+'px';
+    st.style.overflow='hidden';
+  }
+  window.addEventListener('resize',fit); fit();
+})();
+</script>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  const DEFAULT_LINE_HEIGHT = 16;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  const PICK_CAPABILITIES = ["pick"];
+  const PICK_CHAIN_LENGTH = 4;
+  const PICK_MAX_TEXT_CHARS = 120;
+  const PICK_MAX_HTML_CHARS = 300;
+
+  function truncate(value, maxChars) {
+    return value.length > maxChars ? value.slice(0, maxChars - 1) + "…" : value;
+  }
+
+  function isPickableElement(element) {
+    return (
+      element instanceof Element &&
+      element !== document.documentElement &&
+      element !== document.body
+    );
+  }
+
+  function resolvePickTarget(x, y) {
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    const element = document.elementFromPoint(x, y);
+    return isPickableElement(element) ? element.closest("svg") || element : null;
+  }
+
+  function pickLabel(element) {
+    if (element.id) return element.localName + "#" + element.id;
+    return [element.localName].concat(Array.from(element.classList).slice(0, 2)).join(".");
+  }
+
+  // Only attributes that help find the element in source. data-* values and URL
+  // query strings or fragments can carry tokens.
+  const PICK_ATTRIBUTES = new Set([
+    "id",
+    "class",
+    "name",
+    "type",
+    "role",
+    "alt",
+    "aria-label",
+    "href",
+    "src",
+  ]);
+
+  function pickAttributeValue(attribute) {
+    return attribute.name === "href" || attribute.name === "src"
+      ? attribute.value.split(/[?#]/)[0]
+      : attribute.value;
+  }
+
+  function describePickElement(element) {
+    const chain = [];
+    for (
+      let current = element;
+      isPickableElement(current) && chain.length < PICK_CHAIN_LENGTH;
+      current = current.parentElement
+    ) {
+      chain.unshift(current);
+    }
+    const attributes = Array.from(element.attributes)
+      .filter((attribute) => PICK_ATTRIBUTES.has(attribute.name))
+      .map((attribute) => ` ${attribute.name}="${pickAttributeValue(attribute).replace(/"/g, "&quot;")}"`)
+      .join("");
+    const text = (element.innerText || element.textContent || "").replace(/\s+/g, " ").trim();
+    return {
+      chain: chain.map(pickLabel),
+      html: truncate(`<${element.localName}${attributes}>`, PICK_MAX_HTML_CHARS),
+      text: text ? truncate(text, PICK_MAX_TEXT_CHARS) : undefined,
+    };
+  }
+
+  // Hover asks once per frame, and innerText on a large section forces layout,
+  // so only the rect is re-read while the pointer stays on the same element.
+  // Clicks ask for fresh details since the page may have changed the element.
+  let lastPick = null;
+
+  function describePickTarget(element, fresh) {
+    if (fresh || lastPick?.element !== element) {
+      lastPick = { element, details: describePickElement(element) };
+    }
+    const rect = element.getBoundingClientRect();
+    return {
+      rect: { x: rect.left, y: rect.top, width: rect.width, height: rect.height },
+      ...lastPick.details,
+    };
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+      capabilities: PICK_CAPABILITIES,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_PICK") {
+      const element = resolvePickTarget(event.data.x, event.data.y);
+      postToTrustedTop({
+        type: "INLINE_EDIT_PICK_RESULT",
+        seq: event.data.seq,
+        target: element ? describePickTarget(element, event.data.fresh === true) : null,
+      });
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_BY") {
+      const { deltaX, deltaY, deltaMode } = event.data;
+      if (!scrollForwarding || !Number.isFinite(deltaX) || !Number.isFinite(deltaY)) return;
+      if (deltaMode !== 0 && deltaMode !== 1 && deltaMode !== 2) return;
+      const lineHeight =
+        parseFloat(getComputedStyle(document.documentElement).lineHeight) || DEFAULT_LINE_HEIGHT;
+      const scaleX = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerWidth : 1;
+      const scaleY = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerHeight : 1;
+      // The selection overlay receives the wheel event instead of this iframe.
+      // Instant scrolling preserves trackpad deltas even on smooth-scroll sites.
+      window.scrollBy({ left: deltaX * scaleX, top: deltaY * scaleY, behavior: "instant" });
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>

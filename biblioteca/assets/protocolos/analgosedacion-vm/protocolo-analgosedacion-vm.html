@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protocolo de analgosedación en ventilación mecánica · UCI</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d4e89'/%3E%3Cpath d='M6 17h5l2-6 4 12 3-8 2 2h4' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f6f7f9; --paper:#ffffff; --ink:#1b2430; --muted:#5b6675; --line:#d9dee5; --soft:#eef1f5;
+  --blue:#2f6fde; --blue-bg:#e6efff; --blue-dk:#1d4e89;
+  --op:#e98a15; --op-bg:#fff1dc;         /* opioides */
+  --sed:#3b78e7; --sed-bg:#dfeaff;        /* propofol */
+  --a2:#7b3fa0; --a2-bg:#f1e6f8;          /* alfa-2 */
+  --inh:#d9a400; --inh-bg:#fff7d6;        /* inhalada */
+  --bzd:#d63384; --bzd-bg:#fde6f1;        /* midazolam */
+  --ket:#0f8a7e; --ket-bg:#dcf4f1;        /* ketamina */
+  --bnm:#c0392b; --bnm-bg:#fde8e6;        /* BNM */
+  --ok:#1f8a4c; --ok-bg:#e3f5ea; --warn:#b35c00; --warn-bg:#fff0de; --bad:#b42318; --bad-bg:#fde7e5;
+  --r:10px;
+  --font: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{line-height:1.2;margin:0 0 .5em;text-wrap:balance}
+h2{font-size:1.5rem}
+h3{font-size:1.12rem}
+h4{font-size:.95rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+p{margin:0 0 .7em}
+small,.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+a{color:var(--blue-dk)}
+
+/* --- top bar --- */
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.top .in{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:8px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--blue-dk);white-space:nowrap}
+.brand svg{width:30px;height:30px}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1}
+nav.tabs a{padding:7px 11px;border-radius:7px;text-decoration:none;color:var(--ink);font-size:.86rem;font-weight:600;white-space:nowrap}
+nav.tabs a:hover,nav.tabs a.on{background:var(--blue-bg);color:var(--blue-dk)}
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 12px;font:600 .85rem var(--font);cursor:pointer;color:var(--ink)}
+.btn:hover{border-color:var(--blue);color:var(--blue-dk)}
+
+main{max-width:1240px;margin:0 auto;padding:18px}
+section.part{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:26px 28px;margin:0 0 22px}
+.part-h{display:flex;align-items:baseline;gap:12px;border-bottom:3px solid var(--blue-dk);padding-bottom:10px;margin-bottom:18px}
+.part-h .k{background:var(--blue-dk);color:#fff;font-weight:800;border-radius:7px;padding:3px 10px;font-size:.85rem;letter-spacing:.05em}
+.part-h h2{margin:0}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.25fr 1fr;gap:24px;align-items:center}
+.hero h1{font-size:2rem;color:var(--blue-dk);margin-bottom:.3em}
+.hero .sub{font-size:1.05rem;color:var(--muted);max-width:60ch}
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+.pill{border-radius:12px;padding:14px;border:1px solid var(--line);background:var(--soft)}
+.pill b{display:block;font-size:1.6rem;color:var(--blue-dk);line-height:1}
+.pill span{display:block;font-weight:700;margin:.35em 0 .2em}
+.pill p{font-size:.85rem;color:var(--muted);margin:0}
+.ladder{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ladder .row{display:grid;grid-template-columns:86px 1fr;border-bottom:1px solid var(--line)}
+.ladder .row:last-child{border-bottom:0}
+.ladder .lv{display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;color:#fff}
+.ladder .tx{padding:9px 12px;font-size:.88rem}
+.ladder .tx b{display:block}
+
+/* generic grid & cards */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{border:1px solid var(--line);border-radius:var(--r);padding:16px;background:#fff}
+.card.soft{background:var(--soft)}
+.callout{border-left:5px solid var(--blue);background:var(--blue-bg);padding:11px 14px;border-radius:0 8px 8px 0;margin:10px 0;font-size:.92rem}
+.callout.warn{border-color:var(--warn);background:var(--warn-bg)}
+.callout.bad{border-color:var(--bad);background:var(--bad-bg)}
+.callout.ok{border-color:var(--ok);background:var(--ok-bg)}
+ul.tight{margin:.2em 0 .6em;padding-left:1.2em}
+ul.tight li{margin:.15em 0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--muted);vertical-align:middle}
+
+/* tables */
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{border:1px solid var(--line);padding:7px 9px;vertical-align:top;text-align:left}
+th{background:var(--soft);font-weight:700}
+td.c,th.c{text-align:center}
+.rass td:first-child{font-weight:800;text-align:center;width:52px;font-size:1rem}
+.rass tr.agit td:first-child{background:#fde7e5;color:var(--bad)}
+.rass tr.zero td:first-child{background:var(--ok-bg);color:var(--ok)}
+.rass tr.light td:first-child{background:#e3f1ff;color:var(--blue-dk)}
+.rass tr.deep td:first-child{background:#ffeec2;color:#7a5600}
+.rass tr.target td{box-shadow:inset 0 0 0 9999px rgba(31,138,76,.05)}
+
+/* ---------- FLOWCHARTS ---------- */
+.flow{display:flex;flex-direction:column;align-items:center}
+.n{position:relative;border:2px solid var(--blue);border-radius:9px;padding:9px 14px;background:#fff;text-align:center;font-size:.92rem;max-width:440px;width:100%}
+.n.q{border-color:var(--blue)}
+.n.q::before{content:"?";position:absolute;left:-11px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;font:800 .72rem/20px var(--font)}
+.n.start{background:var(--blue-dk);border-color:var(--blue-dk);color:#fff;font-weight:700}
+.n.op{background:linear-gradient(#fff6e6,var(--op-bg));border-color:var(--op);font-weight:700}
+.n.sed{background:linear-gradient(#eef4ff,var(--sed-bg));border-color:var(--sed);font-weight:700}
+.n.a2{background:var(--a2-bg);border-color:var(--a2);font-weight:700}
+.n.inh{background:var(--inh-bg);border:2px dashed var(--inh);font-weight:700}
+.n.bzd{background:var(--bzd-bg);border-color:var(--bzd);font-weight:700}
+.n.ket{background:var(--ket-bg);border-color:var(--ket);font-weight:700}
+.n.bnm{background:var(--bnm-bg);border-color:var(--bnm);font-weight:700}
+.n.end{background:var(--ok-bg);border-color:var(--ok);font-weight:600}
+.n.alert{background:var(--warn-bg);border-color:var(--warn)}
+.n .d{display:block;font-weight:500;font-size:.8rem;color:var(--muted);margin-top:2px}
+.ar{width:2px;height:22px;background:#2b3440;position:relative;margin:1px 0 7px}
+.ar::after{content:"";position:absolute;left:-5px;bottom:-7px;border:6px solid transparent;border-top:7px solid #2b3440;border-bottom:0}
+.ar.l{height:14px}
+.lbl{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.05em;padding:2px 9px;border-radius:99px;margin:0 0 6px}
+.lbl.si{background:var(--ok-bg);color:var(--ok);border:1px solid #b8e2c8}
+.lbl.no{background:var(--bad-bg);color:var(--bad);border:1px solid #f4c7c2}
+.lbl.pos{background:var(--a2-bg);color:var(--a2);border:1px solid #dcc4ea}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:18px;width:100%;position:relative;padding-top:16px}
+.split::before{content:"";position:absolute;top:0;left:25%;right:25%;height:2px;background:#2b3440}
+.split::after{content:"";position:absolute;top:-14px;left:50%;width:2px;height:14px;background:#2b3440}
+.split > .flow{position:relative}
+.split > .flow::before{content:"";position:absolute;top:-16px;left:50%;width:2px;height:16px;background:#2b3440}
+.split.three{grid-template-columns:repeat(3,1fr)}
+.split.three::before{left:16.6%;right:16.6%}
+.loop{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;color:var(--blue-dk);background:var(--blue-bg);border-radius:99px;padding:3px 10px;margin-top:8px}
+.side{font-size:.8rem;color:var(--muted);margin-top:6px;max-width:440px;text-align:center}
+.flowwrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start}
+.flowwrap aside .card{margin-bottom:12px}
+.rot{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:800;letter-spacing:.1em;font-size:.82rem;padding:10px 6px;border-radius:6px;color:#fff;text-align:center}
+.algo{display:grid;grid-template-columns:34px minmax(0,1fr);gap:14px;border:1px solid var(--line);border-radius:12px;padding:18px 16px;margin-bottom:18px;background:#fff}
+
+
+/* spine + side exits */
+.qr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,380px) minmax(0,1fr);width:100%;align-items:center}
+.qr > .n{grid-column:2;max-width:none}
+.qr .sd{grid-column:3;display:flex;align-items:center;min-width:0}
+.qr .sd.lft{grid-column:1;grid-row:1;flex-direction:row-reverse}
+.qr .hl{flex:0 0 18px;height:2px;background:#2b3440;position:relative}
+.qr .sd .hl:last-of-type{flex-basis:14px}
+.qr .sd .hl.ah::after{content:"";position:absolute;right:-6px;top:-5px;border:6px solid transparent;border-left:7px solid #2b3440;border-right:0}
+.qr .sd .lbl{margin:0 4px;flex:none}
+.qr .sd .n{flex:1;min-width:0;font-size:.84rem;padding:7px 9px;margin-left:6px}
+.qr .sd .loop{margin:0 0 0 6px}
+.ar.t{height:30px}
+.ar .lbl{position:absolute;left:9px;top:3px;white-space:nowrap;margin:0}
+.split{margin-top:14px}
+.split.m{padding-bottom:16px}
+.split.m > .flow::after{content:"";position:absolute;bottom:-16px;left:50%;width:2px;height:16px;background:#2b3440}
+.merge{width:50%;height:2px;background:#2b3440}
+@media (max-width:600px){
+  .qr{grid-template-columns:1fr}
+  .qr > .n,.qr .sd,.qr .sd.lft{grid-column:1;grid-row:auto}
+  .qr .sd{margin-top:6px;padding-left:14px}
+  .qr .sd.lft{flex-direction:row}
+  .merge,.split.m>.flow::after{display:none}
+}
+
+
+.flow.sp{align-items:flex-start;--sw:340px}
+.flow.sp > .n,.flow.sp > .split{width:var(--sw);max-width:100%}
+.flow.sp > .ar{margin-left:calc(var(--sw) / 2 - 1px)}
+.flow.sp > .merge{margin-left:calc(var(--sw) / 4);width:calc(var(--sw) / 2)}
+.flow.sp .qr{grid-template-columns:var(--sw) minmax(0,1fr)}
+.flow.sp .qr > .n{grid-column:1}
+.flow.sp .qr .sd{grid-column:2;max-width:330px}
+.flow.sp .split{gap:10px}
+.flow.sp .split .n{font-size:.84rem;padding:8px}
+@media (max-width:600px){ .flow.sp{--sw:100%} .flow.sp .qr{grid-template-columns:1fr} .flow.sp .qr .sd{grid-column:1} }
+
+/* ---------- DRUG CARDS ---------- */
+.drugs{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.drug{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;display:flex;flex-direction:column;break-inside:avoid}
+.drug header{padding:12px 16px;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.drug header h3{margin:0;font-size:1.15rem}
+.drug header .cls{font-size:.75rem;font-weight:700;background:rgba(255,255,255,.22);padding:3px 9px;border-radius:99px;white-space:nowrap}
+.drug .body{padding:12px 16px 14px;font-size:.87rem}
+.drug dl{display:grid;grid-template-columns:118px 1fr;gap:5px 10px;margin:0}
+.drug dt{font-weight:700;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;padding-top:2px}
+.drug dd{margin:0}
+.drug .prep{background:var(--soft);border-radius:8px;padding:8px 10px;margin:9px 0}
+.drug .prep b.big{font-size:1.02rem}
+.rate{width:100%;margin-top:8px;font-size:.82rem}
+.rate th,.rate td{padding:4px 7px;text-align:center}
+.rate td.mlh{font-weight:800;color:var(--blue-dk)}
+.drug .ci{border-top:1px dashed var(--line);margin-top:9px;padding-top:9px}
+.drug .ci b{color:var(--bad)}
+.drug .ea b{color:var(--warn)}
+.h-op{background:var(--op)} .h-sed{background:var(--sed)} .h-a2{background:var(--a2)} .h-inh{background:#b98a00}
+.h-bzd{background:var(--bzd)} .h-ket{background:var(--ket)} .h-bnm{background:var(--bnm)} .h-rev{background:#5b6675}
+.weight{position:sticky;top:58px;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:var(--blue-dk);color:#fff;border-radius:10px;padding:10px 16px;margin-bottom:16px}
+.weight label{font-weight:700}
+.weight input{width:90px;font:800 1.1rem var(--font);padding:5px 8px;border-radius:7px;border:0;text-align:center}
+.weight small{color:#d6e3f7}
+
+/* scales */
+.bis-bar{display:grid;grid-template-columns:repeat(5,1fr);border-radius:9px;overflow:hidden;border:1px solid var(--line);font-size:.8rem;text-align:center}
+.bis-bar div{padding:9px 4px}
+.bis-bar b{display:block;font-size:1rem}
+.nol-bar{display:grid;grid-template-columns:10fr 15fr 75fr;border-radius:9px;overflow:hidden;border:1px solid var(--line);font-size:.8rem;text-align:center}
+.nol-bar div{padding:9px 4px}
+.tof{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center;font-size:.8rem}
+.tof .t{border:1px solid var(--line);border-radius:9px;padding:8px 4px}
+.tof .bars{display:flex;justify-content:center;gap:3px;height:34px;align-items:flex-end;margin-bottom:5px}
+.tof .bars i{display:block;width:8px;background:var(--blue);border-radius:2px}
+.tof .bars i.off{background:var(--line);height:4px!important}
+.tof .t.target{border:2px solid var(--ok);background:var(--ok-bg)}
+.evn{display:grid;grid-template-columns:repeat(11,1fr);border-radius:8px;overflow:hidden;text-align:center;font-weight:800;font-size:.85rem;color:#fff}
+.evn div{padding:7px 0}
+.cam{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cam .card{padding:12px}
+.cam .card b.f{display:inline-block;background:var(--a2);color:#fff;border-radius:6px;padding:1px 8px;margin-bottom:5px;font-size:.78rem}
+
+/* summary table */
+.sum th{position:sticky;top:58px}
+.sum td:first-child{font-weight:800;white-space:nowrap}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+
+.refs li{margin:.35em 0;font-size:.86rem;overflow-wrap:anywhere}
+footer{max-width:1240px;margin:0 auto;padding:6px 18px 40px;color:var(--muted);font-size:.8rem}
+
+.g2>*,.g3>*,.drugs>*,.flowwrap>*,.hero>*,.algo>*{min-width:0}
+.tw{overflow-x:auto}
+@media (max-width:980px){
+  .hero,.g2,.flowwrap,.drugs{grid-template-columns:1fr}
+  .g3,.pillars,.cam{grid-template-columns:1fr 1fr}
+}
+@media (max-width:600px){
+  section.part{padding:18px 14px}
+  main{padding:10px}
+  table{font-size:.8rem}
+  .bis-bar,.nol-bar{font-size:.7rem}
+  .evn{font-size:.72rem}
+  .g3,.pillars,.cam{grid-template-columns:1fr}
+  .split,.split.three{grid-template-columns:1fr}
+  .split::before,.split::after,.split>.flow::before{display:none}
+  .drug dl{grid-template-columns:1fr}
+  .drug header{flex-wrap:wrap}
+  .drug header .cls{white-space:normal}
+  .tof{grid-template-columns:repeat(3,1fr)}
+  .algo{grid-template-columns:1fr}
+  .rot{writing-mode:horizontal-tb;transform:none}
+  .brand span{display:none}
+}
+
+/* ---------- PRINT A4 ---------- */
+@page{size:A4;margin:11mm}
+@media print{
+  html{zoom:.74}
+  body{background:#fff}
+  h3,h4{break-after:avoid}
+  .pb{break-before:page}
+  .flowwrap{grid-template-columns:minmax(0,1fr) 280px}
+  .top,.noprint{display:none!important}
+  main{padding:0;max-width:none}
+  section.part{border:0;padding:0;margin:0;break-before:page;border-radius:0}
+  section.part:first-of-type{break-before:auto}
+  .weight{position:static;background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .weight small{color:var(--muted)}
+  .weight input{border:1px solid var(--line)}
+  .algo,.card,.drug,table,.n{break-inside:avoid}
+  .sum th{position:static}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  a{color:inherit;text-decoration:none}
+  .refs a::after{content:" — " attr(href);font-size:8pt;color:#555;word-break:break-all}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="in">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-label="Logotipo analgosedación UCI" fill="none"><rect width="32" height="32" rx="7" fill="#1d4e89"/><path d="M6 17h5l2-6 4 12 3-8 2 2h4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Analgosedación · VM</span>
+    </div>
+    <nav class="tabs" id="tabs">
+      <a href="#p0">Resumen</a>
+      <a href="#p1">1 · Principios</a>
+      <a href="#p2">2 · Escalas</a>
+      <a href="#p3">3 · Algoritmos</a>
+      <a href="#p4">4 · Fármacos</a>
+      <a href="#p5">5 · BNM</a>
+      <a href="#p6">6 · Tabla rápida</a>
+      <a href="#p7">Bibliografía</a>
+      <a href="#p8">Versiones</a>
+    </nav>
+    <button class="btn" onclick="window.print()">Imprimir / PDF</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= RESUMEN / INFOGRAFÍA ================= -->
+<section class="part" id="p0">
+  <div class="hero">
+    <div>
+      <span class="tag">PROTOCOLO UCI · ADULTOS · VENTILACIÓN MECÁNICA INVASIVA</span> <span class="tag" style="background:var(--blue-dk);color:#fff">VERSIÓN 3 · 12/10/2026</span>
+      <h1>Analgosedación en el paciente intubado</h1>
+      <p class="sub">Primero el dolor, después la sedación. Sedación ligera por defecto, profunda sólo con indicación, y siempre medida con escalas y monitores objetivos.</p>
+      <div class="pillars">
+        <div class="pill"><b>1</b><span>Analgesia primero</span><p>El primer objetivo es controlar el dolor (analgosedación basada en opioide).</p></div>
+        <div class="pill"><b>2</b><span>Sedación ligera</span><p>RASS 0 a −2. Evitar la sobresedación.</p></div>
+        <div class="pill"><b>3</b><span>Medir</span><p>RASS + escala de dolor adecuada a la capacidad de comunicación. BIS/NOL si profunda.</p></div>
+        <div class="pill"><b>4</b><span>Individualizar</span><p>Profunda sólo si SDRA, asma, asincronía, HTIC, status o BNM.</p></div>
+      </div>
+    </div>
+    <div class="ladder" aria-label="Escalera de decisión">
+      <div class="row"><div class="lv" style="background:#1f8a4c">RASS<br>0 / −2</div><div class="tx"><b>Sedación ligera</b>Remifentanilo → +dexmedetomidina (si delirium) o +propofol → inhalada → midazolam</div></div>
+      <div class="row"><div class="lv" style="background:#b98a00">RASS<br>−3</div><div class="tx"><b>Transición</b>Dolor por ESCID; dexmedetomidina hasta RASS −3 (FT)</div></div>
+      <div class="row"><div class="lv" style="background:#d07a00">RASS<br>−4 / −5</div><div class="tx"><b>Sedación profunda</b>Fentanilo + propofol / isoflurano (estable) o midazolam / isoflurano (inestable). BIS + NOL</div></div>
+      <div class="row"><div class="lv" style="background:#c0392b">BNM</div><div class="tx"><b>Bloqueo neuromuscular</b>Sólo con sedación profunda asegurada. Rocuronio / cisatracurio. TOF. Sugammadex</div></div>
+    </div>
+  </div>
+  <div class="callout warn" style="margin-top:18px"><b>Nota de uso.</b> Documento docente basado en el protocolo del servicio y en los algoritmos de redEMC Medicina Intensiva. Las preparaciones son orientativas: adaptarlas a la estandarización de concentraciones de cada hospital y verificar siempre con la ficha técnica vigente.</div>
+</section>
+
+<!-- ================= 1. PRINCIPIOS ================= -->
+<section class="part" id="p1">
+  <div class="part-h"><span class="k">PARTE 1</span><h2>Principios generales</h2></div>
+  <div class="g3">
+    <div class="card">
+      <h3>Normas generales</h3>
+      <ul class="tight">
+        <li><b>Primer objetivo: el control del dolor.</b> Se trata el dolor antes de considerar un sedante (<a href="https://www.sccm.org/clinical-resources/guidelines/guidelines/guidelines-for-the-prevention-and-management-of-pa">PADIS 2018</a>).</li>
+        <li><b>Estrategia individualizada</b> y reevaluada en cada turno.</li>
+        <li><b>Sedación ligera por defecto</b> (RASS 0 a −2); evitar la sobresedación.</li>
+        <li>Pauta escalonada por protocolo, guiada por escalas.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>¿Cuándo sedación profunda?</h3>
+      <ul class="tight">
+        <li>SDRA grave · asma grave · asincronías refractarias</li>
+        <li>Hipertensión intracraneal (HTIC) · status epiléptico</li>
+        <li>Necesidad de bloqueo neuromuscular (BNM)</li>
+      </ul>
+      <div class="callout" style="margin:8px 0 0">Objetivo: RASS −4/−5 y, si es posible, BIS 40–60. Reevaluar a diario la indicación y superficializar en cuanto se pueda.</div>
+    </div>
+    <div class="card">
+      <h3>¿Cómo medir?</h3>
+      <ul class="tight">
+        <li><b>Sedación:</b> RASS (profundidad) · BIS (monitorización continua)</li>
+        <li><b>Dolor, RASS 0 a −2</b> (comunica): escala visual/numérica EVA/EVN</li>
+        <li><b>Dolor, RASS −3</b> (no comunica): ESCID</li>
+        <li><b>Dolor, RASS −4/−5 o BNM:</b> monitor de nocicepción NOL (dedil)</li>
+        <li><b>Delirium:</b> CAM-ICU · <b>Bloqueo:</b> TOF</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout bad" style="margin-top:16px"><b>Antes de iniciar sedación inhalada, preguntar siempre: ¿la madre o la abuela materna nacieron en Venezuela?</b> Si es así, no usar isoflurano, sevoflurano ni desflurano y elegir sedación intravenosa; si el origen materno es desconocido, valorar también evitarlos. Motivo: riesgo de daño neurológico grave asociado a la variante mitocondrial MT-ND4 m.11232T&gt;C (<a href="https://seff.es/alerta-respaldada-por-la-seff-posible-riesgo-con-anestesicos-halogenados-en-pacientes-con-ascendencia-venezolana-materna-2/">SEFF 2026</a>). Detalle en la ficha de isoflurano (parte 4.3).</div>
+  <div class="callout ok" style="margin-top:12px"><b>Actualización PADIS 2025.</b> Se sugiere dexmedetomidina frente a propofol en pacientes ventilados cuando la sedación ligera y/o la reducción del delirium son prioritarias (recomendación condicional, certeza moderada); en sedación profunda o alto riesgo de bradicardia se prefieren alternativas (<a href="https://www.sccm.org/clinical-resources/guidelines/guidelines/focused-update-padis-guideline">SCCM, focused update 2025</a>).</div>
+</section>
+
+<!-- ================= 2. ESCALAS ================= -->
+<section class="part" id="p2">
+  <div class="part-h"><span class="k">PARTE 2</span><h2>Escalas y sistemas de medición</h2></div>
+
+  <h3>2.1 · Árbol: ¿qué herramienta uso para el dolor?</h3>
+  <div class="algo">
+    <div class="rot" style="background:var(--blue-dk)">MEDIR EL DOLOR</div>
+    <div class="flow">
+      <div class="n start">Paciente en VM · valorar dolor en cada turno, antes/durante/15 min tras procedimientos</div>
+      <div class="ar"></div>
+      <div class="n q">¿Nivel de sedación? (RASS)</div>
+      <div class="split three">
+        <div class="flow"><span class="lbl si">RASS 0 a −2</span><div class="n">Puede comunicarse</div><div class="ar"></div><div class="n end">EVA / EVN 0–10<span class="d">Objetivo &lt; 4</span></div></div>
+        <div class="flow"><span class="lbl pos">RASS −3</span><div class="n">No comunica; conductas observables</div><div class="ar"></div><div class="n end">ESCID 0–10<span class="d">Objetivo ≤ 3</span></div></div>
+        <div class="flow"><span class="lbl no">RASS −4 / −5 · BNM</span><div class="n">Sin conductas valorables</div><div class="ar"></div><div class="n end">Monitor de nocicepción NOL<span class="d">Objetivo 10–25</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div>
+      <h3>2.2 · RASS — Richmond Agitation-Sedation Scale</h3>
+      <div class="tw"><table class="rass">
+        <tr><th class="c">Punt.</th><th>Término</th><th>Descripción</th></tr>
+        <tr class="agit"><td>+4</td><td>Combativo</td><td>Violento, peligro inmediato para el personal</td></tr>
+        <tr class="agit"><td>+3</td><td>Muy agitado</td><td>Se retira tubos o catéteres; agresivo</td></tr>
+        <tr class="agit"><td>+2</td><td>Agitado</td><td>Movimientos frecuentes sin propósito; lucha con el respirador</td></tr>
+        <tr class="agit"><td>+1</td><td>Inquieto</td><td>Ansioso, movimientos no agresivos ni vigorosos</td></tr>
+        <tr class="zero target"><td>0</td><td>Alerta y tranquilo</td><td>—</td></tr>
+        <tr class="light target"><td>−1</td><td>Somnoliento</td><td>Despertar sostenido (&gt;10 s) a la voz, con contacto visual</td></tr>
+        <tr class="light target"><td>−2</td><td>Sedación ligera</td><td>Despierta brevemente (&lt;10 s) a la voz, con contacto visual</td></tr>
+        <tr class="light"><td>−3</td><td>Sedación moderada</td><td>Movimiento o apertura ocular a la voz, sin contacto visual</td></tr>
+        <tr class="deep"><td>−4</td><td>Sedación profunda</td><td>Sin respuesta a la voz; se mueve o abre ojos a estímulo físico</td></tr>
+        <tr class="deep"><td>−5</td><td>No despertable</td><td>Sin respuesta a la voz ni al estímulo físico</td></tr>
+      </table></div>
+      <p class="muted" style="margin-top:6px;font-size:.82rem"><b>Cómo:</b> 1) observar 30 s; 2) si no está alerta, llamar por su nombre y pedir que mire; 3) si no responde, estímulo físico (hombro, luego esternón). Sombreado verde: objetivo de sedación ligera.</p>
+    </div>
+    <div>
+      <h3>2.3 · ESCID — Escala de Conductas Indicadoras de Dolor</h3>
+      <div class="tw"><table>
+        <tr><th>Ítem</th><th class="c">0</th><th class="c">1</th><th class="c">2</th></tr>
+        <tr><td><b>Musculatura facial</b></td><td>Relajada</td><td>En tensión, ceño fruncido y/o mueca de dolor</td><td>Ceño fruncido habitual y/o dientes apretados</td></tr>
+        <tr><td><b>Tranquilidad</b></td><td>Tranquilo, relajado, movimientos normales</td><td>Movimientos ocasionales de inquietud y/o de posición</td><td>Movimientos frecuentes, incluyendo cabeza o extremidades</td></tr>
+        <tr><td><b>Tono muscular</b></td><td>Normal</td><td>Aumentado; flexión de dedos de manos y/o pies</td><td>Rígido</td></tr>
+        <tr><td><b>Adaptación a VM</b></td><td>Tolera la VM</td><td>Tose, pero tolera la VM</td><td>Lucha con el respirador</td></tr>
+        <tr><td><b>Confortabilidad</b></td><td>Confortable, tranquilo</td><td>Se tranquiliza con el tacto y/o la voz; fácil de distraer</td><td>Difícil de confortar con el tacto o hablándole</td></tr>
+      </table></div>
+      <p style="margin-top:8px;font-size:.86rem"><b>Interpretación (0–10):</b> 0 sin dolor · 1–3 leve-moderado · 4–6 moderado-grave · &gt;6 muy intenso. Escala desarrollada y validada en España para pacientes críticos no comunicativos en VM, con buena correlación con BPS (r 0,94–0,97) (<a href="https://www.elsevier.es/es-revista-enfermeria-intensiva-142-pdf-download-S1130239910001069">Latorre-Marco et al., Enferm Intensiva 2011</a>). Se recomienda mantener puntuación &lt;4 y valorar antes, durante y 15 min después de los procedimientos (<a href="https://www.revistafarmaciahospitalaria.es/es-manejo-sedoanalgesia-delirio-el-paciente-avance-S1130634325001047">Farmacia Hospitalaria</a>).</p>
+      <div class="callout warn">No válida si RASS ≤ −4 o con relajación muscular: no hay conductas que observar.</div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:20px">
+    <div class="card">
+      <h3>2.4 · EVA / EVN — paciente comunicativo (RASS 0 a −2)</h3>
+      <div class="evn num">
+        <div style="background:#1f8a4c">0</div><div style="background:#3c9a4a">1</div><div style="background:#62a845">2</div><div style="background:#8db43d">3</div><div style="background:#c3b52f">4</div><div style="background:#e0a92a">5</div><div style="background:#e8902a">6</div><div style="background:#e7752b">7</div><div style="background:#de5a2c">8</div><div style="background:#cf3f2c">9</div><div style="background:#b42318">10</div>
+      </div>
+      <p style="margin-top:8px;font-size:.86rem">Numérica 0–10 (señalando con el dedo o tablero) o visual analógica de 10 cm. Objetivo &lt;4. La escala numérica 0–10 es válida y factible en pacientes críticos capaces de autoinformar (<a href="https://www.ashp.org/-/media/assets/pharmacy-practice/resource-centers/Clinical-Pharmacy-Resources/Critical-Care/MCM-2018/MCM18-241-Mgmt-of-Pain-Agitation-and-Delirium-in-ICU.pdf">resumen PADIS 2018, ASHP</a>).</p>
+    </div>
+    <div class="card">
+      <h3>2.5 · NOL — monitor de nocicepción (dedil)</h3>
+      <div class="nol-bar num">
+        <div style="background:#e3f1ff">&lt;10<br><small>¿exceso de analgesia?</small></div>
+        <div style="background:var(--ok-bg)"><b>10–25</b><br><small>analgesia adecuada</small></div>
+        <div style="background:var(--bad-bg)">&gt;25 durante ≥1 min<br><small>nocicepción → más analgesia</small></div>
+      </div>
+      <p style="margin-top:8px;font-size:.86rem">Índice 0–100 que integra frecuencia cardiaca y su variabilidad, pletismografía, conductancia cutánea y temperatura mediante un sensor de dedo; &gt;25 indica analgesia insuficiente (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12793994/">revisión 2025, PMC</a>). Útil en RASS −4/−5 y BNM, aunque su validación en UCI sigue en estudio. En UCI se ha usado el umbral &gt;25 durante 1 min para administrar rescate (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11230048/">ensayo aleatorizado NOL</a>).</p>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-top:20px">
+    <div class="card">
+      <h3>2.6 · BIS — índice biespectral (sedación)</h3>
+      <div class="bis-bar num">
+        <div style="background:#e3f5ea"><b>100–80</b>despierto / ligera</div>
+        <div style="background:#eaf6ff"><b>80–60</b>moderada</div>
+        <div style="background:#ffeec2"><b>60–40</b>profunda · objetivo</div>
+        <div style="background:#ffd7c2"><b>40–20</b>excesiva</div>
+        <div style="background:#f5b7b1"><b>&lt;20</b>supresión</div>
+      </div>
+      <ul class="tight" style="margin-top:8px;font-size:.86rem">
+        <li>Indicado en sedación profunda, BNM y sedación inhalada.</li>
+        <li>Vigilar la <b>tasa de supresión (SR)</b>: SR &gt;0 sugiere sobresedación.</li>
+        <li>Interferencias: <b>EMG</b> alto (falsamente elevado), ketamina (eleva BIS), hipotermia, marcapasos.</li>
+        <li>Siempre correlacionar con RASS y clínica; no sustituye a la exploración.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>2.7 · CAM-ICU — despistaje de delirium</h3>
+      <p style="font-size:.86rem;margin-bottom:8px">Aplicable si RASS ≥ −3. <b>Delirium = 1 + 2 + (3 o 4)</b>.</p>
+      <div class="cam">
+        <div class="card soft"><b class="f">RASGO 1</b><br>Cambio agudo o curso fluctuante del estado mental</div>
+        <div class="card soft"><b class="f">RASGO 2</b><br>Inatención: lectura de 10 letras, apretar la mano con la «A»; &gt;2 errores</div>
+        <div class="card soft"><b class="f">RASGO 3</b><br>Nivel de conciencia alterado: RASS actual ≠ 0</div>
+        <div class="card soft"><b class="f">RASGO 4</b><br>Pensamiento desorganizado: 4 preguntas sí/no + orden; &gt;1 error</div>
+      </div>
+      <div class="callout" style="margin-top:8px">Si CAM-ICU positivo → de elección <b>dexmedetomidina</b> como sedante asociado; corregir desencadenantes y medidas no farmacológicas.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <h3>2.8 · TOF — tren de cuatro (bloqueo neuromuscular)</h3>
+    <div class="tof">
+      <div class="t"><div class="bars"><i style="height:34px"></i><i style="height:34px"></i><i style="height:34px"></i><i style="height:34px"></i></div><b>4/4</b><br>bloqueo &lt;75 %</div>
+      <div class="t"><div class="bars"><i style="height:34px"></i><i style="height:28px"></i><i style="height:20px"></i><i class="off"></i></div><b>3/4</b><br>≈75 %</div>
+      <div class="t target"><div class="bars"><i style="height:30px"></i><i style="height:18px"></i><i class="off"></i><i class="off"></i></div><b>2/4</b><br>≈80 % · objetivo</div>
+      <div class="t target"><div class="bars"><i style="height:22px"></i><i class="off"></i><i class="off"></i><i class="off"></i></div><b>1/4</b><br>≈90 % · objetivo</div>
+      <div class="t"><div class="bars"><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i></div><b>0/4</b><br>≈100 % (valorar PTC)</div>
+    </div>
+    <p style="margin-top:8px;font-size:.86rem">Estimulación del nervio cubital (aductor del pulgar) o facial. En UCI suele buscarse TOF 1–2/4 con la mínima dosis eficaz. El contaje postetánico (PTC) gradúa el bloqueo profundo y guía la dosis de sugammadex.</p>
+  </div>
+</section>
+
+<!-- ================= 3. ALGORITMOS ================= -->
+<section class="part" id="p3">
+  <div class="part-h"><span class="k">PARTE 3</span><h2>Árboles de decisión</h2></div>
+
+  <!-- A: analgesia + sedación ligera -->
+  <h3>3.A · Sedación ligera (objetivo RASS 0 / −2)</h3>
+  <div class="flowwrap">
+    <div class="algo" style="margin:0">
+      <div class="rot" style="background:#1b2430">SEDACIÓN LIGERA</div>
+      <div class="flow sp">
+        <div class="n q">¿Objetivo RASS 0 / −2?</div>
+        <div class="ar"></div>
+        <div class="n op">REMIFENTANILO &lt; 6 µg/kg/h<span class="d">1.ª elección · analgosedación</span></div>
+        <div class="ar"></div>
+        <div class="qr"><div class="n q">¿Necesita sedación?</div><div class="sd"><span class="hl"></span><span class="lbl no">NO</span><span class="hl ah"></span><div class="n end">Mantener remifentanilo<span class='d'>↺ reevaluar RASS y dolor</span></div></div></div>
+        <div class="ar t"><span class="lbl si">SÍ</span></div>
+        <div class="n op">REMIFENTANILO 6 → 12 µg/kg/h<span class="d">↑ 1,5 µg/kg/h cada ≥ 5 min</span></div>
+        <div class="ar"></div>
+        <div class="qr"><div class="n q">¿RASS objetivo?</div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n end">Mantener<span class='d'>↺ reevaluar</span></div></div></div>
+        <div class="ar t"><span class="lbl no">NO · dosis máxima</span></div>
+        <div class="qr"><div class="n q">Valorar DELIRIUM (CAM-ICU)</div><div class="sd"><span class="hl"></span><span class="lbl pos">+</span><span class="hl ah"></span><div class="n a2">Asociar DEXMEDETOMIDINA*<span class='d'>0,2–1,4 µg/kg/h · sin bolo</span></div></div></div>
+        <div class="ar t"><span class="lbl si">CAM-ICU −</span></div>
+        <div class="qr"><div class="n q">¿«Contraindicaciones» para PROPOFOL?<span class="d">Hipertrigliceridemia · inestabilidad HD · shock cardiogénico</span></div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n a2">DEXMEDETOMIDINA<span class='d'>o sedación inhalada</span></div></div></div>
+        <div class="ar t"><span class="lbl no">NO</span></div>
+        <div class="n sed">PROPOFOL hasta 4–4,5 mg/kg/h<span class="d">2.º sedante</span></div>
+        <div class="ar"></div>
+        <div class="qr"><div class="n q">¿RASS objetivo?</div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n end">Mantener<span class='d'>↺ reevaluar</span></div></div></div>
+        <div class="ar t"><span class="lbl no">NO · 3.er sedante</span></div>
+        <div class="n inh">SEDACIÓN INHALADA · ISOFLURANO<span class="d">Sedaconda ACD · FeIso 0,2–1 %</span></div>
+        <div class="ar"></div>
+        <div class="n q">¿Contraindicada o insuficiente la vía inhalada?</div>
+        <div class="ar t"><span class="lbl si">SÍ</span></div>
+        <div class="n bzd">MIDAZOLAM &lt; 0,25 mg/kg/h<span class="d">Menos dosis en insuficiencia renal · uso dinámico</span></div>
+      </div>
+    </div>
+    <aside>
+      <div class="card"><h4>* Dexmedetomidina de 1.ª elección si</h4><ul class="tight"><li>Delirium (CAM-ICU +)</li><li>Deprivación / síndrome de abstinencia</li><li>Sedación difícil o necesidad de dosis altas por consumo previo</li><li>«Ahorrador de sedantes»</li></ul><small>Indicada hasta RASS −3; no apta para sedación profunda.</small></div>
+      <div class="card"><h4>Remifentanilo · avisos</h4><ul class="tight"><li>Taquifilaxia</li><li>Fenómeno paradójico: hiperalgesia al retirar</li><li>Pautar analgesia de transición antes de suspender</li></ul></div>
+      <div class="card"><h4>Síndrome de infusión de propofol</h4><ul class="tight"><li>Rabdomiólisis</li><li>Hiperlactacidemia / acidosis</li><li>Depresión miocárdica</li><li>Elevada mortalidad</li></ul></div>
+      <div class="card"><h4>Evitar inhalada si</h4><ul class="tight"><li>Hipersensibilidad a halogenados</li><li>Hipertermia maligna (personal o familiar)</li><li><b>Ascendencia materna venezolana</b> (madre o abuela materna)</li><li>Fístula broncopleural de alto débito</li><li>HTIC</li></ul><small>Efecto on-off; útil si hay que profundizar (RASS ≤ −3).</small></div>
+    </aside>
+  </div>
+
+  <!-- B: sedación profunda -->
+  <h3 class="pb" style="margin-top:26px">3.B · Sedación profunda (objetivo RASS −4 / −5 ± BIS 40–60)</h3>
+  <div class="flowwrap">
+    <div class="algo" style="margin:0">
+      <div class="rot" style="background:#d9a400;color:#1b2430">SEDACIÓN PROFUNDA</div>
+      <div class="flow sp">
+        <div class="n q">¿Objetivo RASS −4 / −5?<span class="d">SDRA · asma · asincronía · HTIC · status · BNM</span></div>
+        <div class="ar"></div>
+        <div class="n op">FENTANILO<span class="d">mejor que remifentanilo · monitorización objetiva del dolor (NOL)</span></div>
+        <div class="ar"></div>
+        <div class="n q">¿Inestabilidad hemodinámica?</div>
+        <div class="split m">
+          <div class="flow"><span class="lbl no">NO</span><div class="n sed">PROPOFOL / ISOFLURANO</div></div>
+          <div class="flow"><span class="lbl si">SÍ</span><div class="n bzd">MIDAZOLAM / ISOFLURANO</div></div>
+        </div>
+        <div class="merge"></div>
+        <div class="ar"></div>
+        <div class="qr"><div class="n q">¿RASS / BIS objetivo?</div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n end">Seguimiento y monitorización<span class='d'>Superficializar cuando sea posible</span></div></div></div>
+        <div class="ar t"><span class="lbl no">NO</span></div>
+        <div class="n sed">ASOCIAR 2.º FÁRMACO<span class="d">Propofol / midazolam / isoflurano (el no utilizado)</span></div>
+        <div class="ar"></div>
+        <div class="qr"><div class="n q">¿RASS / BIS objetivo?</div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n end">Seguimiento y monitorización<span class='d'>Superficializar cuando sea posible</span></div></div></div>
+        <div class="ar t"><span class="lbl no">NO</span></div>
+        <div class="n ket">ASOCIAR 3.er FÁRMACO<span class="d">Propofol / midazolam / isoflurano / ketamina</span></div>
+        <div class="ar l"></div>
+        <div class="n a2">Valorar además<span class="d">α2-agonistas (dexmedetomidina / clonidina) · metadona</span></div>
+      </div>
+    </div>
+    <aside>
+      <div class="card"><h4>Por qué fentanilo en profunda</h4><p style="font-size:.86rem">Analgesia potente y estable para perfusiones de alta intensidad; titular con NOL porque ya no hay conductas valorables. Riesgo de acumulación: plan de retirada.</p></div>
+      <div class="card"><h4>Midazolam: «demonizado», pero útil</h4><ul class="tight"><li style="color:var(--bad)">Más delirium, más días de VM y traqueotomía</li><li style="color:var(--ok)">Dosis adecuada &lt; 0,25 mg/kg/h</li><li style="color:var(--ok)">Monitorizar en fracaso renal / uso prolongado</li><li style="color:var(--ok)">Dinamismo: uso secuencial</li></ul></div>
+      <div class="card" style="border-color:var(--bad)"><h4 style="color:var(--bad)">Antes de elegir isoflurano</h4><p style="font-size:.86rem">Si hay ascendencia materna venezolana (madre o abuela materna), descartar la vía inhalada: <b>propofol</b> si el paciente está estable y <b>midazolam</b> si está inestable.</p></div>
+      <div class="card"><h4>Metadona</h4><p style="font-size:.86rem">Sustituto del fentanilo por vía enteral para facilitar su retirada y prevenir la abstinencia.</p></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= 4. FÁRMACOS ================= -->
+<section class="part" id="p4">
+  <div class="part-h"><span class="k">PARTE 4</span><h2>Fármacos: efecto, preparación y dosis</h2></div>
+
+  <div class="weight noprint-keep">
+    <label for="peso">Peso del paciente</label>
+    <input id="peso" type="number" min="30" max="250" step="1" value="70" inputmode="numeric" aria-label="Peso en kg"> <b>kg</b>
+    <small>Los ritmos en mL/h se recalculan con la concentración indicada en cada ficha. Usar peso ideal/ajustado en obesidad según fármaco.</small>
+  </div>
+
+  <h3>4.1 · Analgésicos opioides</h3>
+  <div class="drugs">
+    <!-- REMIFENTANILO -->
+    <article class="drug">
+      <header class="h-op"><h3>Remifentanilo</h3><span class="cls">Opioide µ ultracorto · 1.ª elección ligera</span></header>
+      <div class="body">
+        <dl>
+          <dt>Efecto</dt><dd>Analgesia potente con inicio en ~1 min y vida media sensible al contexto de 3–4 min, independiente de la duración. Metabolismo por esterasas plasmáticas: no se acumula en insuficiencia renal ni hepática.</dd>
+          <dt>Presentación</dt><dd>Vial liofilizado 1, 2 o 5 mg.</dd>
+        </dl>
+        <div class="prep"><b class="big">5 mg en 100 mL SSF → 50 µg/mL</b><br><small>50 µg/mL es la dilución recomendada en adultos (<a href="https://cima.aemps.es/cima/dochtml/ft/73420/FT_73420.html">ficha técnica, CIMA</a>).</small></div>
+        <dl>
+          <dt>Dosis UCI</dt><dd>Inicio 6–9 µg/kg/h (0,1–0,15 µg/kg/min); ajustar en pasos de 1,5 µg/kg/h con ≥5 min entre cambios; si a 12 µg/kg/h se requiere sedación, añadir sedante (<a href="https://cima.aemps.es/cima/dochtml/ft/73420/FT_73420.html">FT CIMA</a>). Protocolo: &lt;6 → 6–12 µg/kg/h. Sin bolos en UCI.</dd>
+        </dl>
+        <table class="rate num"><tr><th>µg/kg/h</th><th>3</th><th>6</th><th>9</th><th>12</th></tr><tr><th>mL/h</th><td class="mlh" data-d="3" data-c="50"></td><td class="mlh" data-d="6" data-c="50"></td><td class="mlh" data-d="9" data-c="50"></td><td class="mlh" data-d="12" data-c="50"></td></tr></table>
+        <div class="ci"><b>Contraindicaciones:</b> hipersensibilidad a derivados del fentanilo; vía epidural/intratecal (contiene glicina).</div>
+        <div class="ea"><b>Efectos secundarios:</b> bradicardia, hipotensión, rigidez muscular, náuseas; <b>taquifilaxia</b> e <b>hiperalgesia paradójica</b> al retirar. La FT no recomienda más de 3 días de tratamiento en UCI por datos limitados (<a href="https://cima.aemps.es/cima/dochtml/ft/73420/FT_73420.html">FT CIMA</a>).</div>
+      </div>
+    </article>
+
+    <!-- FENTANILO -->
+    <article class="drug">
+      <header class="h-op"><h3>Fentanilo</h3><span class="cls">Opioide µ · sedación profunda</span></header>
+      <div class="body">
+        <dl>
+          <dt>Efecto</dt><dd>Opioide unas 100 veces más potente que la morfina, muy lipofílico. Inicio en 1–2 min. En perfusión prolongada se acumula en tejido graso y alarga el despertar. Metabolismo hepático por CYP3A4 (interacciones con azoles, macrólidos, inhibidores de proteasa).</dd>
+          <dt>Presentación</dt><dd>Ampolla 150 µg / 3 mL (50 µg/mL).</dd>
+        </dl>
+        <div class="prep"><b class="big">Sin diluir → 50 µg/mL</b> (jeringa de 50 mL = 2.500 µg)<br><small>Alternativa a dosis bajas: 750 µg + 35 mL SSF = 50 mL → 15 µg/mL.</small></div>
+        <dl>
+          <dt>Dosis</dt><dd>Bolo 0,5–1 µg/kg (25–100 µg) · perfusión 0,7–10 µg/kg/h (habitual 1–3 µg/kg/h). Titular por NOL en RASS −4/−5.</dd>
+        </dl>
+        <table class="rate num"><tr><th>µg/kg/h</th><th>0,7</th><th>1,5</th><th>3</th><th>5</th></tr><tr><th>mL/h</th><td class="mlh" data-d="0.7" data-c="50"></td><td class="mlh" data-d="1.5" data-c="50"></td><td class="mlh" data-d="3" data-c="50"></td><td class="mlh" data-d="5" data-c="50"></td></tr></table>
+        <div class="ci"><b>Contraindicaciones:</b> hipersensibilidad; precaución en insuficiencia hepática, IMAO, asociación con serotoninérgicos.</div>
+        <div class="ea"><b>Efectos secundarios:</b> rigidez torácica con bolos rápidos, bradicardia, hipotensión (menor que morfina), íleo, tolerancia y síndrome de abstinencia tras perfusiones &gt;5–7 días.</div>
+      </div>
+    </article>
+
+    <!-- METADONA -->
+    <article class="drug">
+      <header class="h-op"><h3>Metadona</h3><span class="cls">Opioide µ + anti-NMDA · retirada</span></header>
+      <div class="body">
+        <dl>
+          <dt>Efecto</dt><dd>Agonista µ de vida media larga y variable con efecto antagonista NMDA. Se usa como sustituto enteral del fentanilo para facilitar la retirada y prevenir la abstinencia, o como fármaco añadido en sedación difícil.</dd>
+          <dt>Presentación</dt><dd>Comprimidos 5 mg / solución oral; vía enteral (SNG).</dd>
+          <dt>Dosis</dt><dd>5–10 mg / 6–12 h por SNG; ajustar lentamente (se acumula en 3–5 días) y reducir fentanilo de forma progresiva.</dd>
+        </dl>
+        <div class="ci"><b>Contraindicaciones:</b> QT largo, hipersensibilidad. ECG basal y seguimiento del QTc.</div>
+        <div class="ea"><b>Efectos secundarios:</b> prolongación del QT / torsade de pointes, sedación y depresión respiratoria tardías, estreñimiento; interacciones por CYP3A4/2B6.</div>
+      </div>
+    </article>
+
+    <!-- KETAMINA -->
+    <article class="drug">
+      <header class="h-ket"><h3>Ketamina</h3><span class="cls">Antagonista NMDA · coadyuvante</span></header>
+      <div class="body">
+        <dl>
+          <dt>Efecto</dt><dd>Analgesia potente a dosis subanestésicas, efecto antihiperalgésico (reduce tolerancia a opioides), broncodilatación y preservación del tono simpático. Inicio en 30–60 s IV.</dd>
+          <dt>Presentación</dt><dd>Vial 500 mg / 10 mL (50 mg/mL).</dd>
+        </dl>
+        <div class="prep"><b class="big">500 mg + 40 mL SSF = 50 mL → 10 mg/mL</b></div>
+        <dl>
+          <dt>Dosis</dt><dd>Analgesia: bolo 0,1–0,5 mg/kg; perfusión 0,1–0,3 mg/kg/h. Sedación (asma, sedación difícil): 0,5–2 mg/kg/h. Inducción: 1–2 mg/kg. PADIS sugiere dosis bajas como coadyuvante para reducir opioides en el posoperatorio (<a href="https://www.ashp.org/-/media/assets/pharmacy-practice/resource-centers/Clinical-Pharmacy-Resources/Critical-Care/MCM-2018/MCM18-241-Mgmt-of-Pain-Agitation-and-Delirium-in-ICU.pdf">resumen PADIS 2018, ASHP</a>).</dd>
+        </dl>
+        <table class="rate num"><tr><th>mg/kg/h</th><th>0,1</th><th>0,3</th><th>1</th><th>2</th></tr><tr><th>mL/h</th><td class="mlh" data-d="0.1" data-c="10"></td><td class="mlh" data-d="0.3" data-c="10"></td><td class="mlh" data-d="1" data-c="10"></td><td class="mlh" data-d="2" data-c="10"></td></tr></table>
+        <div class="ci"><b>Contraindicaciones:</b> HTA grave no controlada, cardiopatía isquémica inestable, preeclampsia/eclampsia, psicosis activa, hipersensibilidad.</div>
+        <div class="ea"><b>Efectos secundarios:</b> HTA, taquicardia, ↑ consumo miocárdico de O₂, hipersialorrea, alucinaciones y reacciones de emergencia, elevación de enzimas hepáticas en perfusiones prolongadas; eleva el BIS.</div>
+      </div>
+    </article>
+  </div>
+
+  <h3 class="pb" style="margin-top:22px">4.2 · Sedantes intravenosos</h3>
+  <div class="drugs">
+    <!-- PROPOFOL -->
+    <article class="drug">
+      <header class="h-sed"><h3>Propofol</h3><span class="cls">Hipnótico GABA-A · 2.º sedante</span></header>
+      <div class="body">
+        <dl>
+          <dt>Efecto</dt><dd>Hipnótico sin efecto analgésico. Inicio en 30–60 s y despertar rápido incluso tras perfusiones largas. Muy titulable.</dd>
+          <dt>Presentación</dt><dd>Emulsión 1 % (10 mg/mL) y 2 % (20 mg/mL).</dd>
+        </dl>
+        <div class="prep"><b class="big">Sin diluir · preferir 2 % → 20 mg/mL</b><br><small>1 mL contiene 0,1 g de grasa: computar en la nutrición. Cambiar el sistema al menos cada 12 h (<a href="https://cima.aemps.es/cima/pdfs/es/p/67216/67216_p.pdf">prospecto, CIMA</a>).</small></div>
+        <dl>
+          <dt>Dosis UCI</dt><dd>0,3–4 mg/kg/h; no se recomiendan ritmos &gt;4 mg/kg/h (<a href="https://cima.aemps.es/cima/dochtml/ft/84395/FT_84395.html">FT Propofol, CIMA</a>). Protocolo: hasta 4–4,5 mg/kg/h. Bolo 0,5–1 mg/kg con cautela.</dd>
+        </dl>
+        <table class="rate num"><tr><th>mg/kg/h</th><th>0,5</th><th>1,5</th><th>3</th><th>4</th></tr><tr><th>mL/h (2 %)</th><td class="mlh" data-d="0.5" data-c="20"></td><td class="mlh" data-d="1.5" data-c="20"></td><td class="mlh" data-d="3" data-c="20"></td><td class="mlh" data-d="4" data-c="20"></td></tr></table>
+        <div class="ci"><b>Contraindicaciones:</b> hipersensibilidad a propofol, soja o cacahuete; sedación en UCI en ≤16 años. <b>Precaución:</b> hipertrigliceridemia, inestabilidad hemodinámica, shock cardiogénico.</div>
+        <div class="ea"><b>Efectos secundarios:</b> hipotensión, depresión miocárdica, bradicardia, hipertrigliceridemia, pancreatitis. <b>PRIS</b>: acidosis metabólica, rabdomiólisis, hiperpotasemia, ECG tipo Brugada e insuficiencia cardiaca; factores de riesgo: &gt;4 mg/kg/h durante &gt;48 h, TCE grave, sepsis, vasopresores, corticoides (<a href="https://cima.aemps.es/cima/dochtml/ft/89616/FT_89616.html">FT, CIMA</a>). Vigilar lípidos a los 3 días (<a href="https://labeling.pfizer.com/ShowLabeling.aspx?id=5136">FT Propofol Hospira</a>), CK y lactato.</div>
+      </div>
+    </article>
+
+    <!-- DEXMEDETOMIDINA -->
+    <article class="drug">
+      <header class="h-a2"><h3>Dexmedetomidina</h3><span class="cls">α2-agonista selectivo · delirium</span></header>
+      <div class="body">
+        <dl>
+          <dt>Efecto</dt><dd>Sedación «cooperativa» y despertable, ansiolisis y efecto ahorrador de opioides, sin depresión respiratoria. Indicada para sedación no más profunda que RASS 0 a −3 (<a href="https://cima.aemps.es/cima/dochtml/ft/11718006/FT_11718006.html">FT Dexdor, CIMA</a>).</dd>
+          <dt>Presentación</dt><dd>Ampolla 200 µg / 2 mL (100 µg/mL).</dd>
+        </dl>
+        <div class="prep"><b class="big">400 µg (2 amp) + 96 mL SSF = 100 mL → 4 µg/mL</b><br><small>La FT contempla 4 u 8 µg/mL (<a href="https://cima.aemps.es/cima/dochtml/ft/11718006/FT_11718006.html">FT Dexdor</a>).</small></div>
+        <dl>
+          <dt>Dosis</dt><dd>Inicio 0,7 µg/kg/h; rango 0,2–1,4 µg/kg/h; no superar 1,4. Sin dosis de carga. Nuevo equilibrio tras 1 h de cada ajuste; si no se alcanza la sedación con la dosis máxima, cambiar de sedante (<a href="https://cima.aemps.es/cima/dochtml/ft/11718006/FT_11718006.html">FT Dexdor</a>).</dd>
+        </dl>
+        <table class="rate num"><tr><th>µg/kg/h</th><th>0,2</th><th>0,7</th><th>1</th><th>1,4</th></tr><tr><th>mL/h</th><td class="mlh" data-d="0.2" data-c="4"></td><td class="mlh" data-d="0.7" data-c="4"></td><td class="mlh" data-d="1" data-c="4"></td><td class="mlh" data-d="1.4" data-c="4"></td></tr></table>
+        <div class="ci"><b>Contraindicaciones:</b> bloqueo AV de 2.º–3.er grado sin marcapasos, hipotensión no controlada, enfermedad cerebrovascular aguda, hipersensibilidad (<a href="https://cima.aemps.es/cima/dochtml/ft/11718006/FT_11718006.html">FT Dexdor</a>).</div>
+        <div class="ea"><b>Efectos secundarios:</b> bradicardia (RR 1,65 frente a propofol), hipotensión, hipertensión transitoria, sequedad de boca, rebote al retirar tras uso prolongado. Frente a propofol reduce la prevalencia de delirium (RR 0,55) (<a href="https://hal.science/hal-04961903v1/file/2025%20Lewis%20et%20al.,%20A%20Focused.pdf">PADIS 2025</a>). Precaución en insuficiencia hepática grave.</div>
+      </div>
+    </article>
+
+    <!-- MIDAZOLAM -->
+    <article class="drug">
+      <header class="h-bzd"><h3>Midazolam</h3><span class="cls">Benzodiacepina · inestabilidad HD</span></header>
+      <div class="body">
+        <dl>
+          <dt>Efecto</dt><dd>Sedante, ansiolítico, amnésico y anticonvulsivante; sin analgesia. Menor repercusión hemodinámica que propofol. Metabolismo CYP3A4 a α-hidroximidazolam activo de eliminación renal: se acumula en insuficiencia renal, obesidad (tejido adiposo) y ancianos.</dd>
+          <dt>Presentación</dt><dd>Ampollas 15 mg / 3 mL y 50 mg / 10 mL (5 mg/mL).</dd>
+        </dl>
+        <div class="prep"><b class="big">100 mg (2 amp de 50 mg) + 80 mL SSF = 100 mL → 1 mg/mL</b></div>
+        <dl>
+          <dt>Dosis</dt><dd>Carga 0,03–0,3 mg/kg en incrementos de 1–2,5 mg; mantenimiento 0,03–0,2 mg/kg/h (<a href="https://cima.aemps.es/cima/dochtml/ft/65796/FT_65796.html">FT Midazolam, CIMA</a>). Protocolo: evitar &gt;0,25 mg/kg/h; menos dosis en insuficiencia renal.</dd>
+        </dl>
+        <table class="rate num"><tr><th>mg/kg/h</th><th>0,03</th><th>0,1</th><th>0,2</th><th>0,25</th></tr><tr><th>mL/h</th><td class="mlh" data-d="0.03" data-c="1"></td><td class="mlh" data-d="0.1" data-c="1"></td><td class="mlh" data-d="0.2" data-c="1"></td><td class="mlh" data-d="0.25" data-c="1"></td></tr></table>
+        <div class="ci"><b>Contraindicaciones:</b> hipersensibilidad a benzodiacepinas. Antídoto: flumazenil.</div>
+        <div class="ea"><b>Efectos secundarios:</b> delirium, más días de VM y traqueotomía, tolerancia, abstinencia, despertar prolongado, hipotensión (sobre todo con bolos en hipovolemia).</div>
+      </div>
+    </article>
+
+    <!-- CLONIDINA -->
+    <article class="drug">
+      <header class="h-a2"><h3>Clonidina</h3><span class="cls">α2-agonista · ahorrador / abstinencia</span></header>
+      <div class="body">
+        <dl>
+          <dt>Efecto</dt><dd>α2-agonista menos selectivo y de vida media más larga que la dexmedetomidina. Coadyuvante en sedación difícil, prevención y tratamiento del síndrome de abstinencia y transición enteral tras dexmedetomidina.</dd>
+          <dt>Presentación</dt><dd>Ampolla 150 µg / 1 mL; comprimidos 150 µg.</dd>
+        </dl>
+        <div class="prep"><b class="big">750 µg (5 amp) + 45 mL SSF = 50 mL → 15 µg/mL</b></div>
+        <dl>
+          <dt>Dosis</dt><dd>IV 0,5–2 µg/kg/h · enteral 150–300 µg / 8 h.</dd>
+        </dl>
+        <table class="rate num"><tr><th>µg/kg/h</th><th>0,5</th><th>1</th><th>1,5</th><th>2</th></tr><tr><th>mL/h</th><td class="mlh" data-d="0.5" data-c="15"></td><td class="mlh" data-d="1" data-c="15"></td><td class="mlh" data-d="1.5" data-c="15"></td><td class="mlh" data-d="2" data-c="15"></td></tr></table>
+        <div class="ci"><b>Contraindicaciones:</b> bradicardia grave, bloqueo AV avanzado, hipotensión, hipersensibilidad.</div>
+        <div class="ea"><b>Efectos secundarios:</b> hipotensión, bradicardia, sequedad de boca, íleo; <b>HTA de rebote</b> si se suspende bruscamente.</div>
+      </div>
+    </article>
+  </div>
+
+  <h3 style="margin-top:22px">4.3 · Sedación inhalada</h3>
+  <div class="drugs">
+    <article class="drug" style="grid-column:1 / -1">
+      <header class="h-inh"><h3>Isoflurano (Sedaconda ACD) · sevoflurano</h3><span class="cls">Halogenado · 3.er sedante / profunda</span></header>
+      <div class="body">
+        <div class="g2">
+          <div>
+            <dl>
+              <dt>Efecto</dt><dd>Sedación dosis-dependiente con concentración espirada de isoflurano de 0,2–1 % (<a href="https://cima.aemps.es/cima/dochtml/ft/86293/FT_86293.html">FT Sedaconda, CIMA</a>). Fenómeno on-off (inicio y despertar en minutos), eliminación pulmonar sin acumulación renal ni hepática, broncodilatador.</dd>
+              <dt>Dispositivo</dt><dd>Sedaconda ACD entre pieza en Y y tubo; jeringa específica con adaptador de llenado. Requiere analizador de gases y sistema de evacuación; retirar la humidificación activa (el ACD actúa como intercambiador de calor y humedad).</dd>
+            </dl>
+            <div class="prep"><b class="big">Cebado 1,2 mL · inicio 3 mL/h</b><br>Ajustes de 0,5–1 mL/h · bolo programado 0,3–0,5 mL · mantenimiento ≈0,4 mL/h por litro de volumen minuto (≈3 mL/h con VM de 7 L) (<a href="https://cima.aemps.es/cima/dochtml/ft/86293/FT_86293.html">FT Sedaconda</a>).</div>
+          </div>
+          <div>
+            <dl>
+              <dt>Objetivo</dt><dd>FeIso 0,2–1 %; máximo prolongado 1 %, hasta 1,5 % en periodos breves (p. ej., cambios posturales). Valorar sedación con escala validada (RASS) o BIS, de forma frecuente las 2 primeras horas y luego al menos cada 4 h (<a href="https://assets.hpra.ie/products/Human/37765/Licence_PA23141-001-001_04072024163648.pdf">FT Sedaconda, HPRA</a>).</dd>
+              <dt>Sevoflurano</dt><dd>Uso fuera de ficha en UCI; inicio orientativo 5 mL/h con ACD-L (<a href="https://sedanamedical.com/wp-content/uploads/2024/10/ifu_sedaconda-acd-l_1021rev4-final-v3-hi-res.pdf">instrucciones Sedaconda ACD-L</a>). En uso prolongado vigilar fluoruro y diabetes insípida nefrogénica.</dd>
+            </dl>
+            <div class="ci"><b>Contraindicaciones / evitar:</b> hipersensibilidad a halogenados, hipertermia maligna (antecedente personal o familiar), <b>ascendencia materna venezolana</b>, fístula broncopleural de alto débito, HTIC, volumen corriente inadecuado para el dispositivo.</div>
+            <div class="ea"><b>Efectos secundarios:</b> hipotensión y depresión respiratoria a concentraciones altas (<a href="https://cima.aemps.es/cima/pdfs/ft/86293/FT_86293.pdf">FT Sedaconda</a>), taquicardia, náuseas y agitación al despertar; hipertermia maligna (rara).</div>
+          </div>
+        </div>
+        <div class="callout bad" style="margin-top:12px">
+          <b>Alerta · ascendencia materna venezolana.</b> Se han descrito en Sudamérica, Europa y Estados Unidos pacientes previamente sanos con linaje materno venezolano que, tras anestesia general con halogenados (sobre todo sevoflurano), presentaron infartos de los ganglios basales, deterioro neurológico grave y, en algunos casos, la muerte (<a href="https://seff.es/alerta-respaldada-por-la-seff-posible-riesgo-con-anestesicos-halogenados-en-pacientes-con-ascendencia-venezolana-materna-2/">SEFF, abril 2026</a>). Se relaciona con la variante mitocondrial <b>MT-ND4 m.11232T&gt;C</b>, que se hereda por vía materna; se propone que aumenta la sensibilidad del complejo I a los halogenados, aunque su papel causal aún no está confirmado (<a href="https://revistachilenadeanestesia.cl/revchilanestv55n2-18-2/">Rev Chil Anest 2026</a>).
+          <ul class="tight" style="margin-top:6px">
+            <li><b>Preguntar siempre antes de iniciar sedación inhalada:</b> ¿madre o abuela materna nacida en Venezuela? Considerar también el origen materno desconocido y la ovodonación (<a href="https://seff.es/alerta-respaldada-por-la-seff-posible-riesgo-con-anestesicos-halogenados-en-pacientes-con-ascendencia-venezolana-materna-2/">SEFF</a>).</li>
+            <li><b>Si hay ascendencia materna venezolana:</b> no usar isoflurano, sevoflurano ni desflurano. Usar sedación intravenosa (propofol, midazolam o dexmedetomidina según el algoritmo) con monitorización mediante EEG procesado/BIS, y mantener normoxia, normocapnia, normotermia y estabilidad hemodinámica (<a href="https://seff.es/alerta-respaldada-por-la-seff-posible-riesgo-con-anestesicos-halogenados-en-pacientes-con-ascendencia-venezolana-materna-2/">SEFF</a>).</li>
+            <li><b>Otros criterios de riesgo:</b> antecedentes familiares de eventos neurológicos graves tras anestesia general, o despertar retardado/complicación neurológica inexplicada tras una anestesia previa (<a href="https://revistachilenadeanestesia.cl/revchilanestv55n2-18-2/">Rev Chil Anest</a>).</li>
+            <li><b>Si ya se ha expuesto</b> y aparece despertar retardado o focalidad: suspender el halogenado y vigilar glucemia, acidosis y lactato, alteraciones descritas en el posoperatorio inmediato (<a href="https://revistachilenadeanestesia.cl/revchilanestv55n2-18-2/">Rev Chil Anest</a>). Ofrecer estudio genético dirigido con asesoramiento genético, también a los familiares por línea materna (<a href="https://seff.es/alerta-respaldada-por-la-seff-posible-riesgo-con-anestesicos-halogenados-en-pacientes-con-ascendencia-venezolana-materna-2/">SEFF</a>).</li>
+          </ul>
+          <small>Las series descritas proceden de la anestesia general; no hay datos específicos sobre la sedación inhalada prolongada en UCI, así que se extrapola por precaución. Un estudio genético negativo no descarta del todo la susceptibilidad (<a href="https://seff.es/alerta-respaldada-por-la-seff-posible-riesgo-con-anestesicos-halogenados-en-pacientes-con-ascendencia-venezolana-materna-2/">SEFF</a>). La SEFF respalda las alertas de SEDAR, ASA y SPA y califica sus recomendaciones de provisionales.</small>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= 5. BNM ================= -->
+<section class="part" id="p5">
+  <div class="part-h"><span class="k">PARTE 5</span><h2>Bloqueo neuromuscular (BNM)</h2></div>
+  <div class="flowwrap">
+    <div class="algo" style="margin:0">
+      <div class="rot" style="background:var(--bnm)">BLOQUEO NEUROMUSCULAR</div>
+      <div class="flow sp">
+        <div class="n q">¿Indicación de BNM?<span class="d">Intubación · SDRA grave precoz · asincronía refractaria · HTIC · status · temblor en hipotermia</span></div>
+        <div class="ar"></div>
+        <div class="n alert">Asegurar antes analgesia y sedación profunda<span class="d">RASS −5 · BIS 40–60 · NOL 10–25 → evitar paciente consciente bajo bloqueo</span></div>
+        <div class="ar"></div>
+        <div class="qr"><div class="n q">¿Es para la intubación?</div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n bnm">ROCURONIO 0,6–1,2 mg/kg<span class='d'>Inicio más rápido · siempre intubar con BNM</span></div></div></div>
+        <div class="ar t"><span class="lbl no">NO · perfusión en UCI</span></div>
+        <div class="qr"><div class="n q">¿Insuficiencia renal o hepática?</div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n bnm">CISATRACURIO<span class='d'>Eliminación de Hofmann</span></div></div></div>
+        <div class="ar t"><span class="lbl no">NO</span></div>
+        <div class="n bnm">CISATRACURIO o ROCURONIO</div>
+        <div class="ar"></div>
+        <div class="n">Monitorizar con TOF · objetivo 1–2/4<span class="d">Reevaluar cada 24 h · ventana de suspensión</span></div>
+        <div class="ar"></div>
+        <div class="qr"><div class="n q">¿Revertir un bloqueo por rocuronio?</div><div class="sd"><span class="hl"></span><span class="lbl si">SÍ</span><span class="hl ah"></span><div class="n end">SUGAMMADEX<span class='d'>2 / 4 / 16 mg/kg según TOF / PTC</span></div></div></div>
+      </div>
+    </div>
+    <aside>
+      <div class="card"><h4>Regla</h4><p style="font-size:.88rem">Bloqueantes <b>no despolarizantes siempre</b>. Rocuronio tiene un inicio de acción más rápido que el cisatracurio. Sugammadex es su antagonista.</p></div>
+      <div class="card"><h4>Cuidados durante el BNM</h4><ul class="tight"><li>Protección ocular (úlcera corneal)</li><li>Profilaxis de TVP y úlceras por presión</li><li>Debilidad adquirida en UCI (más con corticoides)</li><li>Sin escalas conductuales: usar BIS + NOL</li></ul></div>
+    </aside>
+  </div>
+
+  <div class="drugs" style="margin-top:18px">
+    <article class="drug">
+      <header class="h-bnm"><h3>Rocuronio</h3><span class="cls">Aminoesteroideo · intubación</span></header>
+      <div class="body">
+        <dl>
+          <dt>Efecto</dt><dd>Inicio en 60–90 s a 1,2 mg/kg (secuencia rápida); duración 30–60 min. Eliminación hepatobiliar: se prolonga en insuficiencia hepática y renal. Reversible con sugammadex.</dd>
+          <dt>Presentación</dt><dd>Vial 50 mg / 5 mL (10 mg/mL).</dd>
+        </dl>
+        <div class="prep"><b class="big">Sin diluir → 10 mg/mL</b></div>
+        <dl><dt>Dosis</dt><dd>Intubación 0,6 mg/kg; secuencia rápida 1,2 mg/kg · perfusión 0,3–0,6 mg/kg/h.</dd></dl>
+        <table class="rate num"><tr><th>mg/kg/h</th><th>0,3</th><th>0,45</th><th>0,6</th></tr><tr><th>mL/h</th><td class="mlh" data-d="0.3" data-c="10"></td><td class="mlh" data-d="0.45" data-c="10"></td><td class="mlh" data-d="0.6" data-c="10"></td></tr></table>
+        <div class="ci"><b>Contraindicaciones:</b> hipersensibilidad (anafilaxia más frecuente que con otros BNM).</div>
+        <div class="ea"><b>Efectos secundarios:</b> taquicardia leve, acumulación en fallo orgánico, debilidad prolongada.</div>
+      </div>
+    </article>
+    <article class="drug">
+      <header class="h-bnm"><h3>Cisatracurio</h3><span class="cls">Bencilisoquinolina · perfusión</span></header>
+      <div class="body">
+        <dl>
+          <dt>Efecto</dt><dd>Inicio en 2–3 min (más lento). Eliminación de Hofmann independiente de riñón e hígado: de elección en fallo orgánico; la acidosis y la hipotermia la enlentecen. Mínima liberación de histamina.</dd>
+          <dt>Presentación</dt><dd>Ampollas 2 mg/mL (5 y 10 mL) y vial 5 mg/mL (30 mL).</dd>
+        </dl>
+        <div class="prep"><b class="big">150 mg diluidos a 75 mL → 2 mg/mL</b></div>
+        <dl><dt>Dosis</dt><dd>Intubación 0,15–0,2 mg/kg · perfusión 0,06–0,18 mg/kg/h (1–3 µg/kg/min). SDRA (pauta ACURASYS): 15 mg en bolo + 37,5 mg/h durante 48 h.</dd></dl>
+        <table class="rate num"><tr><th>mg/kg/h</th><th>0,06</th><th>0,12</th><th>0,18</th><th>37,5 mg/h</th></tr><tr><th>mL/h</th><td class="mlh" data-d="0.06" data-c="2"></td><td class="mlh" data-d="0.12" data-c="2"></td><td class="mlh" data-d="0.18" data-c="2"></td><td class="mlh">18,8</td></tr></table>
+        <div class="ci"><b>Contraindicaciones:</b> hipersensibilidad.</div>
+        <div class="ea"><b>Efectos secundarios:</b> bradicardia, debilidad adquirida; laudanosina (metabolito, riesgo teórico convulsivante).</div>
+      </div>
+    </article>
+    <article class="drug" style="grid-column:1 / -1">
+      <header class="h-rev"><h3>Sugammadex</h3><span class="cls">Antagonista selectivo de rocuronio / vecuronio</span></header>
+      <div class="body">
+        <div class="g2">
+          <div>
+            <dl>
+              <dt>Efecto</dt><dd>γ-ciclodextrina que encapsula el rocuronio o el vecuronio en plasma; no revierte el cisatracurio.</dd>
+              <dt>Presentación</dt><dd>Vial 100 mg/mL (2 y 5 mL). Bolo IV rápido en 10 s (<a href="https://www.ema.europa.eu/es/documents/product-information/sugammadex-fresenius-kabi-epar-product-information_es.pdf">FT EMA</a>).</dd>
+            </dl>
+          </div>
+          <table class="num">
+            <tr><th>Profundidad del bloqueo</th><th>Dosis</th></tr>
+            <tr><td>Reaparición de T2 (moderado)</td><td><b>2 mg/kg</b> · <span class="mlh" data-d="2" data-c="100" data-unit="mL" data-once="1"></span></td></tr>
+            <tr><td>PTC 1–2 (profundo)</td><td><b>4 mg/kg</b> · <span class="mlh" data-d="4" data-c="100" data-unit="mL" data-once="1"></span></td></tr>
+            <tr><td>Reversión inmediata tras rocuronio</td><td><b>16 mg/kg</b> · <span class="mlh" data-d="16" data-c="100" data-unit="mL" data-once="1"></span></td></tr>
+          </table>
+        </div>
+        <div class="ci">Dosis según <a href="https://www.ema.europa.eu/es/documents/product-information/sugammadex-fresenius-kabi-epar-product-information_es.pdf">ficha técnica EMA</a>. Si hay que volver a bloquear con rocuronio, esperar 24 h; antes, usar un BNM no esteroideo como cisatracurio (<a href="https://www.san.gva.es/documents/d/farmacia-i-productes-sanitaris/sugammadex">ficha GVA</a>). <b>Efectos:</b> hipersensibilidad/anafilaxia, bradicardia, recurarización.</div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= 6. TABLA RÁPIDA ================= -->
+<section class="part" id="p6">
+  <div class="part-h"><span class="k">PARTE 6</span><h2>Tabla rápida de consulta</h2></div>
+  <div style="overflow-x:auto">
+  <table class="sum num">
+    <tr><th>Fármaco</th><th>Preparación</th><th>Dosis</th><th>Lugar en el protocolo</th><th>Vigilar</th></tr>
+    <tr><td><span class="sw" style="background:var(--op)"></span>Remifentanilo</td><td>5 mg/100 mL · 50 µg/mL</td><td>6–12 µg/kg/h</td><td>1.ª elección, sedación ligera</td><td>Taquifilaxia, hiperalgesia al retirar</td></tr>
+    <tr><td><span class="sw" style="background:var(--op)"></span>Fentanilo</td><td>Puro · 50 µg/mL</td><td>0,7–10 µg/kg/h</td><td>Analgesia en sedación profunda</td><td>Acumulación, abstinencia</td></tr>
+    <tr><td><span class="sw" style="background:var(--op)"></span>Metadona</td><td>Enteral (SNG)</td><td>5–10 mg/6–12 h</td><td>Sustituto del fentanilo / 3.er fármaco</td><td>QTc</td></tr>
+    <tr><td><span class="sw" style="background:var(--a2)"></span>Dexmedetomidina</td><td>400 µg/100 mL · 4 µg/mL</td><td>0,2–1,4 µg/kg/h, sin bolo</td><td>Delirium, abstinencia, sedación difícil</td><td>Bradicardia, hipotensión</td></tr>
+    <tr><td><span class="sw" style="background:var(--sed)"></span>Propofol 2 %</td><td>Puro · 20 mg/mL</td><td>0,3–4 (4,5) mg/kg/h</td><td>2.º sedante (ligera); profunda si estable</td><td>TG, CK, lactato · PRIS</td></tr>
+    <tr><td><span class="sw" style="background:var(--inh)"></span>Isoflurano</td><td>Sedaconda ACD · líquido 100 %</td><td>3 mL/h inicio · FeIso 0,2–1 %</td><td>3.er sedante; profunda (estable o inestable)</td><td>Hipotensión, evacuación de gases · <b>preguntar ascendencia materna venezolana</b></td></tr>
+    <tr><td><span class="sw" style="background:var(--bzd)"></span>Midazolam</td><td>100 mg/100 mL · 1 mg/mL</td><td>0,03–0,2 mg/kg/h (&lt;0,25)</td><td>Si CI inhalada; profunda si inestable</td><td>Delirium, acumulación renal</td></tr>
+    <tr><td><span class="sw" style="background:var(--ket)"></span>Ketamina</td><td>500 mg/50 mL · 10 mg/mL</td><td>0,1–0,3 (analg.) · 0,5–2 mg/kg/h</td><td>3.er fármaco en profunda</td><td>HTA, taquicardia, emergencia</td></tr>
+    <tr><td><span class="sw" style="background:var(--a2)"></span>Clonidina</td><td>750 µg/50 mL · 15 µg/mL</td><td>0,5–2 µg/kg/h</td><td>3.er fármaco / abstinencia</td><td>Hipotensión, rebote</td></tr>
+    <tr><td><span class="sw" style="background:var(--bnm)"></span>Rocuronio</td><td>Puro · 10 mg/mL</td><td>0,6–1,2 mg/kg · 0,3–0,6 mg/kg/h</td><td>Intubación</td><td>TOF · revertible</td></tr>
+    <tr><td><span class="sw" style="background:var(--bnm)"></span>Cisatracurio</td><td>2 mg/mL</td><td>0,15–0,2 mg/kg · 0,06–0,18 mg/kg/h</td><td>Perfusión; fallo renal/hepático</td><td>TOF</td></tr>
+    <tr><td><span class="sw" style="background:#5b6675"></span>Sugammadex</td><td>100 mg/mL</td><td>2 / 4 / 16 mg/kg</td><td>Reversión de rocuronio</td><td>Anafilaxia, bradicardia</td></tr>
+  </table>
+  </div>
+
+  <div class="g3" style="margin-top:18px">
+    <div class="card"><h4>Objetivos de monitorización</h4><ul class="tight"><li>RASS ligera 0 a −2 · profunda −4/−5</li><li>EVN &lt;4 · ESCID ≤3 · NOL 10–25</li><li>BIS 40–60 en profunda, SR = 0</li><li>TOF 1–2/4 con BNM</li></ul></div>
+    <div class="card"><h4>Retirada y abstinencia</h4><ul class="tight"><li>Reducir de forma progresiva tras perfusiones prolongadas</li><li>Apoyo con dexmedetomidina, clonidina o metadona</li><li>Analgesia de transición antes de parar remifentanilo</li></ul></div>
+    <div class="card"><h4>Errores frecuentes</h4><ul class="tight"><li>Sedar sin analgesia previa</li><li>Mantener profunda sin indicación diaria</li><li>BNM sin sedación profunda asegurada</li><li>Bolo de dexmedetomidina</li><li>Iniciar sedación inhalada sin preguntar la ascendencia materna venezolana</li></ul></div>
+  </div>
+</section>
+
+<!-- ================= BIBLIOGRAFÍA ================= -->
+<section class="part" id="p7">
+  <div class="part-h"><span class="k">FUENTES</span><h2>Bibliografía</h2></div>
+  <ol class="refs">
+    <li>Protocolo del servicio «Analgosedación en pacientes en ventilación mecánica» y algoritmos de sedación ligera/profunda de redEMC Medicina Intensiva (material aportado).</li>
+    <li>Devlin JW, et al. Clinical Practice Guidelines for the Prevention and Management of Pain, Agitation/Sedation, Delirium, Immobility, and Sleep Disruption in Adult Patients in the ICU (PADIS). Crit Care Med 2018;46:e825-73. <a href="https://www.sccm.org/clinical-resources/guidelines/guidelines/guidelines-for-the-prevention-and-management-of-pa">https://www.sccm.org/clinical-resources/guidelines/guidelines/guidelines-for-the-prevention-and-management-of-pa</a></li>
+    <li>Lewis K, et al. A Focused Update to the PADIS Guidelines. Crit Care Med 2025;53:e711-27. <a href="https://www.sccm.org/clinical-resources/guidelines/guidelines/focused-update-padis-guideline">https://www.sccm.org/clinical-resources/guidelines/guidelines/focused-update-padis-guideline</a> · texto completo: <a href="https://hal.science/hal-04961903v1/file/2025%20Lewis%20et%20al.,%20A%20Focused.pdf">https://hal.science/hal-04961903v1/file/2025%20Lewis%20et%20al.,%20A%20Focused.pdf</a></li>
+    <li>ASHP. Updates in the Management of Pain, Agitation, and Delirium in the ICU (resumen PADIS 2018). <a href="https://www.ashp.org/-/media/assets/pharmacy-practice/resource-centers/Clinical-Pharmacy-Resources/Critical-Care/MCM-2018/MCM18-241-Mgmt-of-Pain-Agitation-and-Delirium-in-ICU.pdf">https://www.ashp.org/-/media/assets/pharmacy-practice/resource-centers/Clinical-Pharmacy-Resources/Critical-Care/MCM-2018/MCM18-241-Mgmt-of-Pain-Agitation-and-Delirium-in-ICU.pdf</a></li>
+    <li>Latorre Marco I, et al. Validación de la Escala de Conductas Indicadoras de Dolor (ESCID). Enferm Intensiva 2011;22:3-12. <a href="https://www.elsevier.es/es-revista-enfermeria-intensiva-142-pdf-download-S1130239910001069">https://www.elsevier.es/es-revista-enfermeria-intensiva-142-pdf-download-S1130239910001069</a></li>
+    <li>Manejo de sedoanalgesia y delirium en el paciente crítico. Farmacia Hospitalaria. <a href="https://www.revistafarmaciahospitalaria.es/es-manejo-sedoanalgesia-delirio-el-paciente-avance-S1130634325001047">https://www.revistafarmaciahospitalaria.es/es-manejo-sedoanalgesia-delirio-el-paciente-avance-S1130634325001047</a></li>
+    <li>Ficha técnica Dexdor (dexmedetomidina). CIMA-AEMPS. <a href="https://cima.aemps.es/cima/dochtml/ft/11718006/FT_11718006.html">https://cima.aemps.es/cima/dochtml/ft/11718006/FT_11718006.html</a></li>
+    <li>Ficha técnica Remifentanilo Accord. CIMA-AEMPS. <a href="https://cima.aemps.es/cima/dochtml/ft/73420/FT_73420.html">https://cima.aemps.es/cima/dochtml/ft/73420/FT_73420.html</a></li>
+    <li>Ficha técnica Propofol Baxter 20 mg/mL. CIMA-AEMPS. <a href="https://cima.aemps.es/cima/dochtml/ft/84395/FT_84395.html">https://cima.aemps.es/cima/dochtml/ft/84395/FT_84395.html</a> · Propofol Farmak: <a href="https://cima.aemps.es/cima/dochtml/ft/89616/FT_89616.html">https://cima.aemps.es/cima/dochtml/ft/89616/FT_89616.html</a> · Propofol Hospira: <a href="https://labeling.pfizer.com/ShowLabeling.aspx?id=5136">https://labeling.pfizer.com/ShowLabeling.aspx?id=5136</a> · Prospecto Propofol Lipoven: <a href="https://cima.aemps.es/cima/pdfs/es/p/67216/67216_p.pdf">https://cima.aemps.es/cima/pdfs/es/p/67216/67216_p.pdf</a></li>
+    <li>Ficha técnica Midazolam Normon 5 mg/mL. CIMA-AEMPS. <a href="https://cima.aemps.es/cima/dochtml/ft/65796/FT_65796.html">https://cima.aemps.es/cima/dochtml/ft/65796/FT_65796.html</a></li>
+    <li>Ficha técnica Sedaconda (isoflurano). CIMA-AEMPS. <a href="https://cima.aemps.es/cima/dochtml/ft/86293/FT_86293.html">https://cima.aemps.es/cima/dochtml/ft/86293/FT_86293.html</a> · HPRA: <a href="https://assets.hpra.ie/products/Human/37765/Licence_PA23141-001-001_04072024163648.pdf">https://assets.hpra.ie/products/Human/37765/Licence_PA23141-001-001_04072024163648.pdf</a> · Instrucciones ACD-L: <a href="https://sedanamedical.com/wp-content/uploads/2024/10/ifu_sedaconda-acd-l_1021rev4-final-v3-hi-res.pdf">https://sedanamedical.com/wp-content/uploads/2024/10/ifu_sedaconda-acd-l_1021rev4-final-v3-hi-res.pdf</a></li>
+    <li>Ficha técnica Sugammadex Fresenius Kabi. EMA. <a href="https://www.ema.europa.eu/es/documents/product-information/sugammadex-fresenius-kabi-epar-product-information_es.pdf">https://www.ema.europa.eu/es/documents/product-information/sugammadex-fresenius-kabi-epar-product-information_es.pdf</a> · Ficha GVA: <a href="https://www.san.gva.es/documents/d/farmacia-i-productes-sanitaris/sugammadex">https://www.san.gva.es/documents/d/farmacia-i-productes-sanitaris/sugammadex</a></li>
+    <li>SEFF. Estudio farmacogenético mitocondrial en pacientes con ascendencia venezolana por línea materna que vayan a recibir anestesia general (nota de prensa, 27/04/2026). <a href="https://seff.es/alerta-respaldada-por-la-seff-posible-riesgo-con-anestesicos-halogenados-en-pacientes-con-ascendencia-venezolana-materna-2/">https://seff.es/alerta-respaldada-por-la-seff-posible-riesgo-con-anestesicos-halogenados-en-pacientes-con-ascendencia-venezolana-materna-2/</a></li>
+    <li>Márquez P, et al. Recomendaciones anestésicas frente a una variante genética mitocondrial (MT-ND4 m.11232T&gt;C). Rev Chil Anest 2026;55(2). <a href="https://revistachilenadeanestesia.cl/revchilanestv55n2-18-2/">https://revistachilenadeanestesia.cl/revchilanestv55n2-18-2/</a></li>
+    <li>SEFH. Infografía: anestesia general en linaje materno venezolano, riesgos y papel de la farmacia hospitalaria. <a href="https://gruposdetrabajo.sefh.es/infografias/backend/pdfs/anestesia_general_linaje_materno_venezuela_riesgos_rol_farmacia_hospitalaria.pdf">https://gruposdetrabajo.sefh.es/infografias/backend/pdfs/anestesia_general_linaje_materno_venezuela_riesgos_rol_farmacia_hospitalaria.pdf</a></li>
+    <li>Objective monitoring of acute pain and nociception in anaesthesia and intensive care (NOL). <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12793994/">https://pmc.ncbi.nlm.nih.gov/articles/PMC12793994/</a> · Ensayo NOL en UCI: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11230048/">https://pmc.ncbi.nlm.nih.gov/articles/PMC11230048/</a></li>
+  </ol>
+  <p class="muted" style="font-size:.82rem">Las dosis no referenciadas a una ficha técnica corresponden a rangos de uso habitual en UCI y deben contrastarse con el protocolo local y la farmacia del hospital.</p>
+</section>
+
+<!-- ================= VERSIONES ================= -->
+<section class="part" id="p8">
+  <div class="part-h"><span class="k">CONTROL</span><h2>Control de versiones</h2></div>
+  <table>
+    <tr><th class="c">Versión</th><th>Fecha</th><th>Cambios</th></tr>
+    <tr><td class="c"><b>1</b></td><td>12/10/2026</td><td>Versión inicial: principios, escalas (RASS, ESCID, EVA/EVN, NOL, BIS, CAM-ICU, TOF), árboles de sedación ligera y profunda, 12 fichas de fármacos con calculadora de mL/h, BNM, tabla rápida y bibliografía.</td></tr>
+    <tr><td class="c"><b>2</b></td><td>12/10/2026</td><td>«AF materna Venezolano» aclarado por el autor: <b>ascendencia materna venezolana</b>. Se añade como contraindicación de la sedación inhalada, separada de la hipertermia maligna, con una alerta en la ficha de isoflurano, en el árbol 3.A, en la tabla rápida y en errores frecuentes, y con nuevas referencias (SEFF, Rev Chil Anest, SEFH).</td></tr>
+    <tr><td class="c"><b>3</b></td><td>12/10/2026</td><td>Número de versión visible y esta tabla de control. Pregunta obligatoria sobre ascendencia materna venezolana en los principios generales y aviso en el árbol de sedación profunda (3.B), donde el isoflurano aparece en las dos ramas.</td></tr>
+  </table>
+  <h3 style="margin-top:16px">Pendiente de confirmar por el autor</h3>
+  <ul class="tight">
+    <li>Escala de dolor según el nivel de RASS (actualmente: EVA/EVN con RASS 0 a −2, ESCID con RASS −3, NOL con RASS −4/−5 o con BNM).</li>
+    <li>Diluciones estándar del hospital para fentanilo, midazolam, clonidina y ketamina.</li>
+  </ul>
+</section>
+</main>
+<footer>Protocolo docente de analgosedación en VM · UCI · Versión 3 · 12/10/2026 · Archivo autónomo, funciona sin conexión.</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var inp = document.getElementById('peso');
+  function fmt(x){ return (Math.round(x*10)/10).toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1}); }
+  function calc(){
+    var kg = parseFloat(inp.value);
+    if(!(kg>0)) kg = 70;
+    document.querySelectorAll('.mlh[data-d]').forEach(function(el){
+      var d = parseFloat(el.dataset.d), c = parseFloat(el.dataset.c);
+      var v = d*kg/c;
+      el.textContent = el.dataset.once ? fmt(v)+' mL ('+Math.round(d*kg)+' mg)' : fmt(v);
+    });
+  }
+  inp.addEventListener('input', calc);
+  calc();
+  // active tab
+  var links = Array.prototype.slice.call(document.querySelectorAll('#tabs a'));
+  var secs = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(ents){
+      ents.forEach(function(e){ if(e.isIntersecting){ var i = secs.indexOf(e.target); links.forEach(function(l,j){ l.classList.toggle('on', i===j); }); } });
+    },{rootMargin:'-40% 0px -55% 0px'});
+    secs.forEach(function(s){ if(s) io.observe(s); });
+  }
+});
+</script>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  const DEFAULT_LINE_HEIGHT = 16;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  const PICK_CAPABILITIES = ["pick"];
+  const PICK_CHAIN_LENGTH = 4;
+  const PICK_MAX_TEXT_CHARS = 120;
+  const PICK_MAX_HTML_CHARS = 300;
+
+  function truncate(value, maxChars) {
+    return value.length > maxChars ? value.slice(0, maxChars - 1) + "…" : value;
+  }
+
+  function isPickableElement(element) {
+    return (
+      element instanceof Element &&
+      element !== document.documentElement &&
+      element !== document.body
+    );
+  }
+
+  function resolvePickTarget(x, y) {
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    const element = document.elementFromPoint(x, y);
+    return isPickableElement(element) ? element.closest("svg") || element : null;
+  }
+
+  function pickLabel(element) {
+    if (element.id) return element.localName + "#" + element.id;
+    return [element.localName].concat(Array.from(element.classList).slice(0, 2)).join(".");
+  }
+
+  // Only attributes that help find the element in source. data-* values and URL
+  // query strings or fragments can carry tokens.
+  const PICK_ATTRIBUTES = new Set([
+    "id",
+    "class",
+    "name",
+    "type",
+    "role",
+    "alt",
+    "aria-label",
+    "href",
+    "src",
+  ]);
+
+  function pickAttributeValue(attribute) {
+    return attribute.name === "href" || attribute.name === "src"
+      ? attribute.value.split(/[?#]/)[0]
+      : attribute.value;
+  }
+
+  function describePickElement(element) {
+    const chain = [];
+    for (
+      let current = element;
+      isPickableElement(current) && chain.length < PICK_CHAIN_LENGTH;
+      current = current.parentElement
+    ) {
+      chain.unshift(current);
+    }
+    const attributes = Array.from(element.attributes)
+      .filter((attribute) => PICK_ATTRIBUTES.has(attribute.name))
+      .map((attribute) => ` ${attribute.name}="${pickAttributeValue(attribute).replace(/"/g, "&quot;")}"`)
+      .join("");
+    const text = (element.innerText || element.textContent || "").replace(/\s+/g, " ").trim();
+    return {
+      chain: chain.map(pickLabel),
+      html: truncate(`<${element.localName}${attributes}>`, PICK_MAX_HTML_CHARS),
+      text: text ? truncate(text, PICK_MAX_TEXT_CHARS) : undefined,
+    };
+  }
+
+  // Hover asks once per frame, and innerText on a large section forces layout,
+  // so only the rect is re-read while the pointer stays on the same element.
+  // Clicks ask for fresh details since the page may have changed the element.
+  let lastPick = null;
+
+  function describePickTarget(element, fresh) {
+    if (fresh || lastPick?.element !== element) {
+      lastPick = { element, details: describePickElement(element) };
+    }
+    const rect = element.getBoundingClientRect();
+    return {
+      rect: { x: rect.left, y: rect.top, width: rect.width, height: rect.height },
+      ...lastPick.details,
+    };
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+      capabilities: PICK_CAPABILITIES,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_PICK") {
+      const element = resolvePickTarget(event.data.x, event.data.y);
+      postToTrustedTop({
+        type: "INLINE_EDIT_PICK_RESULT",
+        seq: event.data.seq,
+        target: element ? describePickTarget(element, event.data.fresh === true) : null,
+      });
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_BY") {
+      const { deltaX, deltaY, deltaMode } = event.data;
+      if (!scrollForwarding || !Number.isFinite(deltaX) || !Number.isFinite(deltaY)) return;
+      if (deltaMode !== 0 && deltaMode !== 1 && deltaMode !== 2) return;
+      const lineHeight =
+        parseFloat(getComputedStyle(document.documentElement).lineHeight) || DEFAULT_LINE_HEIGHT;
+      const scaleX = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerWidth : 1;
+      const scaleY = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerHeight : 1;
+      // The selection overlay receives the wheel event instead of this iframe.
+      // Instant scrolling preserves trackpad deltas even on smooth-scroll sites.
+      window.scrollBy({ left: deltaX * scaleX, top: deltaY * scaleY, behavior: "instant" });
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>

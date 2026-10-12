@@ -1,7 +1,7 @@
 window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "revision": "20261010g",
+  "revision": "20261012a",
   "exportedAt": "2026-09-25T08:00:00.000Z",
   "tree": {
     "id": "f-1",
@@ -975,9 +975,20 @@ window.BIBLIOTECA_DATA = {
                 "breadcrumb": "Respiratorio / Ventilacion mecanica / Aspectos basicos de VM",
                 "source": "asset",
                 "audience": "medicina"
+              },
+              {
+                "id": "p-analgosedacion-paciente-intubado",
+                "type": "file",
+                "title": "Analgosedacion paciente intubado",
+                "path": "../biblioteca/assets/respiratorio/ventilacion-mecanica/analgosedacion-paciente-intubado.html",
+                "ext": ".html",
+                "specialty": "Respiratorio",
+                "breadcrumb": "Respiratorio / Ventilacion mecanica / Analgosedacion paciente intubado",
+                "source": "asset",
+                "audiences": ["medicina", "enfermeria"]
               }
             ],
-            "file_count": 12
+            "file_count": 13
           },
           {
             "id": "f-56",
@@ -1068,7 +1079,7 @@ window.BIBLIOTECA_DATA = {
             "audience": "medicina"
           }
         ],
-        "file_count": 20
+        "file_count": 21
       },
       {
         "id": "f-6hyg0pre-mrtm320x",
@@ -1251,6 +1262,6 @@ window.BIBLIOTECA_DATA = {
         "file_count": 2
       }
     ],
-    "file_count": 95
+    "file_count": 96
   }
 };
