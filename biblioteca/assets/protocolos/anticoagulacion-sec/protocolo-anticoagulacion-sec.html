@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protocolo de anticoagulación · Unidad de Shock Cardiogénico y Soporte Extracorpóreo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23842029'/%3E%3Cpath d='M6 17h5l2-6 4 11 2-5h7' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f6f5f2; --surface:#ffffff; --surface-2:#f0eeea; --border:#dedad3;
+  --text:#1d1f23; --muted:#5d6068; --faint:#8a8d94;
+  --primary:#842029; --primary-soft:#f6e6e7;
+  --ok:#1f6f5c; --ok-soft:#e3f1ec;
+  --warn:#9a5b00; --warn-soft:#fbf0dc;
+  --danger:#b4232c; --danger-soft:#fbe5e6;
+  --info:#1f4f8a; --info-soft:#e4ecf7;
+  --biac:#5b4a9e; --imp:#1f6f8b; --ecmo:#842029; --trrc:#2d6a3e;
+  --radius:10px; --shadow:0 1px 2px rgba(20,20,30,.06),0 2px 8px rgba(20,20,30,.04);
+  --font:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:ui-monospace,'SFMono-Regular',Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1400px;margin:0 auto}
+/* Sidebar */
+nav.toc{position:sticky;top:0;height:100vh;overflow-y:auto;padding:22px 18px;border-right:1px solid var(--border);background:var(--surface)}
+.brand{display:flex;gap:10px;align-items:center;margin-bottom:18px}
+.brand svg{flex:none;color:var(--primary)}
+.brand b{display:block;font-size:14px;line-height:1.2}
+.brand span{font-size:12px;color:var(--muted)}
+nav.toc ol{list-style:none;margin:0;padding:0;counter-reset:s}
+nav.toc li{counter-increment:s}
+nav.toc a{display:flex;gap:8px;padding:6px 8px;border-radius:6px;color:var(--text);text-decoration:none;font-size:13.5px}
+nav.toc a::before{content:counter(s);min-width:20px;color:var(--faint);font-variant-numeric:tabular-nums;font-weight:600}
+nav.toc a:hover{background:var(--surface-2)}
+nav.toc a.active{background:var(--primary-soft);color:var(--primary);font-weight:600}
+.toc-actions{margin-top:18px;display:grid;gap:8px}
+button,.btn{font:inherit;font-size:13.5px;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+button:hover{background:var(--surface-2)}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-primary:hover{background:#6c1a22}
+main{padding:28px 40px 80px;min-width:0}
+/* Header */
+header.doc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px 28px;box-shadow:var(--shadow);margin-bottom:18px;border-top:5px solid var(--primary)}
+header.doc .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);font-weight:700}
+header.doc h1{font-size:28px;line-height:1.2;margin:6px 0 8px;letter-spacing:-.01em}
+header.doc p{margin:0;color:var(--muted);max-width:80ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-size:12px;padding:3px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted);font-weight:600}
+.chip.draft{background:var(--warn-soft);border-color:#ecd3a6;color:var(--warn)}
+/* Sections */
+section.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:18px;box-shadow:var(--shadow)}
+section.card>h2{font-size:21px;margin:0 0 4px;display:flex;align-items:center;gap:10px;letter-spacing:-.005em}
+section.card>h2 .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--primary);color:#fff;font-size:14px;flex:none}
+.lead{color:var(--muted);margin:0 0 16px}
+h3{font-size:16px;margin:20px 0 8px}
+h4{font-size:14.5px;margin:14px 0 6px}
+p{margin:0 0 10px}
+ul,ol{margin:0 0 10px;padding-left:20px}
+li{margin:3px 0}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.box{border:1px solid var(--border);border-radius:8px;padding:14px 16px;background:var(--surface)}
+.box h4{margin-top:0}
+.callout{border-left:4px solid var(--info);background:var(--info-soft);padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0}
+.callout.warn{border-color:var(--warn);background:var(--warn-soft)}
+.callout.danger{border-color:var(--danger);background:var(--danger-soft)}
+.callout.ok{border-color:var(--ok);background:var(--ok-soft)}
+.callout b:first-child{display:block;margin-bottom:2px}
+/* Tables */
+.tbl-wrap{overflow-x:auto;margin:10px 0 14px;border:1px solid var(--border);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--border)}
+th{background:var(--surface-2);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.goal td{background:var(--ok-soft);font-weight:600}
+tr.low td:first-child{border-left:4px solid var(--info)}
+tr.high td:first-child{border-left:4px solid var(--warn)}
+tr.crit td:first-child{border-left:4px solid var(--danger)}
+/* Device tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+.tab{border:1px solid var(--border);background:var(--surface);padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:8px}
+.tab .dot{width:10px;height:10px;border-radius:50%}
+.tab[aria-selected="true"]{color:#fff}
+.tab[data-dev="biac"][aria-selected="true"]{background:var(--biac);border-color:var(--biac)}
+.tab[data-dev="imp"][aria-selected="true"]{background:var(--imp);border-color:var(--imp)}
+.tab[data-dev="ecmo"][aria-selected="true"]{background:var(--ecmo);border-color:var(--ecmo)}
+.tab[data-dev="trrc"][aria-selected="true"]{background:var(--trrc);border-color:var(--trrc)}
+.tab[data-dev="ecp"][aria-selected="true"]{background:#3a3d44;border-color:#3a3d44}
+.panel{display:none;border:1px solid var(--border);border-radius:8px;padding:18px 20px}
+.panel.show{display:block}
+.panel h3:first-child{margin-top:0}
+.kv{display:grid;grid-template-columns:200px 1fr;gap:6px 14px;font-size:14px;margin:8px 0 12px}
+.kv dt{color:var(--muted);font-weight:600}
+.kv dd{margin:0}
+
+/* Timeline */
+.ribbon{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin:6px 0 0}
+.rb{padding:9px 8px 10px 14px;color:#fff;display:grid;gap:1px;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,0 100%,9px 50%);min-width:0}
+.rb:first-child{clip-path:polygon(0 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,0 100%);border-radius:6px 0 0 6px}
+.rb .rt{font-weight:800;font-size:13px;line-height:1.15}
+.rb .rs{font-size:11px;opacity:.85}
+.rb .ri{font-size:11.5px;font-weight:600;margin-top:2px;line-height:1.2}
+.r0{background:#5d6068}.r1{background:#842029}.r2{background:#a8343e}.r3{background:#1f6f5c}.r4{background:#2d6a3e}.r5{background:#9a5b00}.r6{background:#6b3fa0}.r7{background:#1f4f8a}
+.intensity{display:grid;grid-template-columns:80px 1fr;align-items:center;gap:8px;margin:2px 0 14px}
+.intensity .il{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.intensity svg{width:100%;height:60px;display:block}
+.iwrap{position:relative}
+.itag{position:absolute;font-size:11px;font-weight:800;color:#842029;background:rgba(255,255,255,.85);padding:0 3px;border-radius:3px;white-space:nowrap}
+.itag.mute{color:#5d6068}
+.tl-filter{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 10px;font-size:13px;color:var(--muted);font-weight:700}
+.fb{padding:6px 10px;font-size:13px}
+.fb.on{outline:2px solid var(--primary);outline-offset:1px;background:var(--primary-soft)}
+.dv{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.03em;padding:1px 6px;border-radius:4px;color:#fff;margin-right:4px;vertical-align:1px;text-transform:uppercase}
+.dv.ecmo{background:var(--ecmo)}.dv.imp{background:var(--imp)}.dv.biac{background:var(--biac)}
+.lanes-key{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px;font-size:12.5px;font-weight:700}
+.lk{display:inline-flex;align-items:center;gap:6px}
+.lk::before{content:"";width:12px;height:12px;border-radius:3px;background:currentColor}
+.lk.lab,.lane.lab h5{color:#1f4f8a}.lk.ac,.lane.ac h5{color:#842029}.lk.mon,.lane.mon h5{color:#9a5b00}.lk.vig,.lane.vig h5{color:#1f6f5c}
+ol.tl{list-style:none;margin:0;padding:0;position:relative}
+ol.tl::before{content:"";position:absolute;left:121px;top:8px;bottom:8px;width:3px;background:var(--border);border-radius:2px}
+.ph{display:grid;grid-template-columns:108px 1fr;gap:28px;margin:0 0 12px;position:relative}
+.ph::before{content:"";position:absolute;left:114px;top:12px;width:17px;height:17px;border-radius:50%;background:#fff;border:4px solid var(--c,#842029);z-index:1}
+.ph .when{text-align:right;padding-top:8px}
+.ph .when b{display:block;font-size:15px;color:var(--c)}
+.ph .when span{font-size:12px;color:var(--muted)}
+.pcard{border:1px solid var(--border);border-left:4px solid var(--c);border-radius:8px;padding:12px 14px;background:#fff}
+.pcard h4{margin:0 0 8px;font-size:15px}
+.lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.lane{background:var(--surface-2);border-radius:6px;padding:8px 10px}
+.lane h5{margin:0 0 4px;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em}
+.lane ul{margin:0;padding-left:16px;font-size:13.5px}
+.lane li{margin:3px 0}
+.lane li.hid{display:none}
+.lane.empty{display:none}
+.p0{--c:#5d6068}.p1{--c:#842029}.p2{--c:#a8343e}.p3{--c:#1f6f5c}.p4{--c:#2d6a3e}.p5{--c:#9a5b00}.p6{--c:#6b3fa0}.p7{--c:#1f4f8a}
+table.freq td,table.freq th{text-align:center;font-size:12.5px;padding:7px 6px}
+table.freq td:first-child,table.freq th:first-child{text-align:left;white-space:nowrap}
+.f0{color:var(--faint)}.f1{background:#f6e6e7}.f2{background:#e9b9bd;font-weight:700}.f3{background:#842029;color:#fff;font-weight:800}
+@media screen and (max-width:980px){
+  .ribbon,.ribbon-9{grid-template-columns:repeat(2,1fr)}
+  .scen,.ecmo-con{grid-template-columns:1fr}
+  .gantt{grid-template-columns:110px repeat(9,92px)}
+  .rb,.rb:first-child{clip-path:none;border-radius:6px}
+  ol.tl::before{left:9px}
+  .ph{grid-template-columns:1fr;gap:6px;padding-left:30px}
+  .ph::before{left:2px;top:6px}
+  .ph .when{text-align:left;padding-top:0;display:flex;gap:8px;align-items:baseline}
+  .intensity{display:none}
+}
+
+.ribbon-9{grid-template-columns:repeat(9,1fr);margin-bottom:12px}
+.ecp-link{text-decoration:none;color:#fff;background:#3a3d44;border-color:#3a3d44;border-radius:8px;border:1px solid;font-weight:700}
+.ecp-link:hover{background:#24262b}
+.gantt{display:grid;grid-template-columns:150px repeat(9,minmax(0,1fr));gap:3px;font-size:12px;margin:6px 0 4px;overflow-x:auto}
+.gh{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;padding:2px 4px;text-align:center}
+.gl{font-weight:700;font-size:12.5px;display:flex;align-items:center;padding-right:6px}
+.g{border-radius:5px;padding:6px 6px;min-height:30px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.2;font-weight:700}
+.g-off{background:repeating-linear-gradient(45deg,#f3f1ed,#f3f1ed 5px,#ebe8e2 5px,#ebe8e2 10px)}
+.g-on{background:#842029;color:#fff}
+.gantt .gl:nth-of-type(n) + .g-on{}
+.g-wean{background:linear-gradient(90deg,#c25560,#f0cfd2);color:#3a0b10}
+.g-stop{background:#fff;border:2px dashed #6b3fa0;color:#6b3fa0}
+.g-hep{background:#1f6f8b;color:#fff}
+.g-hep2{background:#d6e8ef;color:#123e4e}
+.g-bolus{background:#123e4e;color:#fff}
+.g-pro{background:#e4ecf7;color:#1f4f8a}
+.g-imp{background:#1f6f8b;color:#fff}
+.g-wimp{background:linear-gradient(90deg,#1f6f8b,#cfe3ea);color:#0d2f3b}
+.g-hep{background:#2d6a3e!important}
+.g-txt{background:var(--surface-2);color:var(--text);font-weight:600}
+
+.dv.cit{background:#2d6a3e}.dv.hnf{background:#9a5b00}.dv.tih{background:#b4232c}
+.trrc-link{background:#2d6a3e!important;border-color:#2d6a3e!important}
+.scen{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:4px 0 12px}
+.sc{border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:grid;gap:4px;font-size:13px;background:#fff}
+.sc b{font-size:14.5px}.sc .dv{justify-self:start}
+.sc-cit{border-top:4px solid #2d6a3e}.sc-hnf{border-top:4px solid #9a5b00}.sc-tih{border-top:4px solid #b4232c}
+.g-cit{background:#2d6a3e;color:#fff}.g-ca{background:#d9ecdf;color:#173d22}.g-tih{background:#fbe5e6;color:#7a1219;border:1px solid #e9b9bd}
+.ecmo-con{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:center;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin:6px 0 14px;background:#fff}
+.ecmo-con svg{width:100%;height:auto}
+.ecmo-con ul{margin:0;font-size:13.5px}
+/* Calculators */
+.calc{border:1px solid var(--border);background:var(--surface-2);border-radius:10px;padding:18px 20px;margin:14px 0}
+.calc h3{margin-top:0;display:flex;align-items:center;gap:8px}
+.calc h3::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--primary)}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:12px}
+label{display:grid;gap:4px;font-size:12.5px;font-weight:700;color:var(--muted)}
+input,select{font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text);width:100%}
+input:focus,select:focus{outline:2px solid var(--primary);outline-offset:1px}
+.result{background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px 16px;min-height:52px}
+.result .big{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.result.ok{border-left:5px solid var(--ok)}
+.result.low{border-left:5px solid var(--info)}
+.result.high{border-left:5px solid var(--warn)}
+.result.crit{border-left:5px solid var(--danger)}
+.result .muted{color:var(--muted);font-size:13px}
+.ts-row{display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid var(--border)}
+.ts-row:last-of-type{border-bottom:0}
+.ts-row b{font-size:14px}
+.ts-opts{display:grid;gap:6px}
+.ts-opts label{display:flex;gap:8px;align-items:flex-start;font-weight:500;color:var(--text);font-size:13.5px;cursor:pointer}
+.ts-opts input{width:auto;margin-top:3px}
+/* Flow */
+.flow{display:grid;gap:8px;margin:10px 0}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:#fff}
+.step .n{width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+.step.ok .n{background:var(--ok)} .step.warn .n{background:var(--warn)} .step.danger .n{background:var(--danger)}
+.check{list-style:none;padding:0}
+.check li{padding:7px 0 7px 30px;position:relative;border-bottom:1px dashed var(--border)}
+.check li::before{content:"";position:absolute;left:2px;top:9px;width:16px;height:16px;border:2px solid var(--muted);border-radius:4px}
+.refs{font-size:13.5px}
+.refs li{margin:6px 0}
+a{color:var(--info)}
+footer{color:var(--muted);font-size:12.5px;text-align:center;padding:10px}
+.only-print{display:none}
+@media screen and (max-width:980px){
+  .layout{grid-template-columns:1fr}
+  nav.toc{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--border)}
+  nav.toc ol{display:flex;flex-wrap:wrap;gap:4px}
+  main{padding:18px 14px 60px}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .kv{grid-template-columns:1fr}
+  .ts-row{grid-template-columns:1fr}
+  section.card{padding:18px 16px}
+  header.doc h1{font-size:23px}
+}
+@media print{
+  @page{size:A4;margin:14mm 12mm}
+  @page crono{size:A4 landscape;margin:10mm 10mm}
+  .tl-page{page:crono}
+  #cronologia h3{break-before:page}
+  .gantt{font-size:8.5pt}
+  .ecmo-con{grid-template-columns:1.2fr 1fr;break-inside:avoid}.ecmo-con ul{font-size:8.6pt}.sc{font-size:8.6pt}.g{min-height:22px;padding:3px}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;font-size:10.5pt}
+  .layout{display:block}
+  nav.toc,.tabs,.no-print,.calc{display:none!important}
+  .only-print{display:block}
+  main{padding:0}
+  section.card,header.doc{box-shadow:none;break-inside:auto;border:0;padding:0 0 10px;margin:0 0 12px}
+  header.doc{border-top:4px solid var(--primary);padding-top:8px}
+  .panel{display:block!important;break-inside:avoid;margin-bottom:10px}
+  .tbl-wrap,.box,.step,.callout{break-inside:avoid}
+  section.card>h2{break-after:avoid}
+  .tl-page{break-before:page;break-after:page}
+  .ph{break-inside:avoid;grid-template-columns:80px 1fr;gap:18px}
+  ol.tl::before{left:89px}.ph::before{left:82px}
+  .lane li.hid{display:list-item}.lane.empty{display:block}
+  .lanes{grid-template-columns:repeat(4,1fr);gap:6px}
+  .lane ul{font-size:8.6pt;line-height:1.35}
+  .pcard{padding:7px 10px}.pcard h4{margin-bottom:4px;font-size:10.5pt}
+  .ph{margin-bottom:6px}
+  .tl-page .lead{font-size:9.5pt;margin-bottom:6px}
+  table.freq td,table.freq th{font-size:8.5pt;padding:4px}
+  .rb .ri{font-size:9px}.rb .rt{font-size:10.5px}
+  a{color:inherit;text-decoration:none}
+  .refs a::after{content:" — " attr(href);font-size:8.5pt;color:#555;word-break:break-all}
+}
+
+@media screen and (max-width:980px){.scen,.ecmo-con{grid-template-columns:1fr}.ecmo-con svg{min-height:150px}}
+@media print{#crono-trrc h3{break-after:avoid}#crono-trrc h3.conx{break-before:page}}
+
+/* Enfermería */
+.nseq{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:6px 0 16px}
+.ns{background:#fff;border:1px solid var(--border);border-top:4px solid var(--primary);border-radius:8px;padding:10px 10px 10px;display:grid;gap:3px;font-size:12.5px;color:var(--muted)}
+.ns b{color:var(--text);font-size:14px}
+.ns .nn{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12.5px}
+.ns:nth-child(4){border-top-color:#842029}.ns:nth-child(5),.ns:nth-child(6){border-top-color:var(--ok)}.ns:nth-child(5) .nn,.ns:nth-child(6) .nn{background:var(--ok)}
+.kit{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kt{border:1px solid var(--border);border-radius:8px;padding:4px 12px 6px;background:#fff;border-top:4px solid}
+.kt h4{margin:8px 0 2px}.kt .check li{font-size:13px;padding:5px 0 5px 26px}.kt .check li::before{top:7px;width:14px;height:14px}
+.kt-f{border-top-color:#842029}.kt-v{border-top-color:#2d6a3e}.kt-m{border-top-color:#1f4f8a}.kt-s{border-top-color:#9a5b00}
+.ncalc{border:1px solid var(--border);background:var(--surface-2);border-radius:10px;padding:18px 20px;margin:16px 0}
+.ncalc h3{margin-top:0}
+.prep-out{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.po{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 14px;border-left:5px solid var(--primary)}
+.po h5{margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.po .big{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.po .sm{font-size:13px;color:var(--muted);margin-top:4px}
+.po.b{border-left-color:#9a5b00}.po.p{border-left-color:#2d6a3e}.po.r{border-left-color:#1f4f8a}
+.label-hnf{grid-column:1/-1;border:2px dashed #842029;border-radius:8px;padding:10px 14px;background:#fff;display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13.5px}
+.label-hnf b.t{color:#842029;letter-spacing:.06em}
+.note{font-size:12.5px;color:var(--muted);margin-top:10px}
+.via{display:grid;grid-template-columns:1fr 1.6fr;gap:12px}
+.vcard{border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:#fff;position:relative}
+.vcard h4{margin:4px 0 6px}.vcard ul{font-size:13.5px;margin:0}
+.vtag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:999px}
+.v-per{border-top:4px solid var(--warn)}.v-per .vtag{background:var(--warn-soft);color:var(--warn)}
+.v-cen{border-top:4px solid var(--ok)}.v-cen .vtag{background:var(--ok-soft);color:var(--ok)}
+.v-cen svg{width:100%;max-width:520px;height:auto;display:block;margin:4px 0}
+.lum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lu{border-radius:7px;padding:8px 10px;font-size:12.5px;display:grid;gap:2px}
+.lu b{font-size:13.5px}
+.lu-no{background:var(--danger-soft);color:#6e1218}.lu-si{background:var(--ok-soft);color:#134a3c}.lu-alt{background:var(--info-soft);color:#173b67}
+.compat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cp{border:1px solid var(--border);border-radius:8px;padding:10px 12px;background:#fff;border-top:4px solid}
+.cp h4{margin:2px 0 8px}
+.cp-ok{border-top-color:var(--ok)}.cp-no{border-top-color:var(--danger)}.cp-q{border-top-color:var(--warn)}
+.pills{display:flex;flex-wrap:wrap;gap:5px}
+.pills span{font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:999px}
+.cp-ok .pills span{background:var(--ok-soft);color:#134a3c}.cp-no .pills span{background:var(--danger-soft);color:#7a1219}.cp-q .pills span{background:var(--warn-soft);color:#6b3f00}
+.cp .src{font-size:11.5px;color:var(--muted);margin:8px 0 0}
+table.m24 td,table.m24 th{text-align:center;vertical-align:middle;font-size:13px;padding:6px 6px}
+table.m24 td:first-child,table.m24 td:last-child,table.m24 th:first-child,table.m24 th:last-child{text-align:left}
+table.m24 td:first-child{min-width:190px}table.m24 td:last-child{min-width:200px;font-size:12.5px}
+table.m24 tr.grp td{background:var(--surface-2);font-weight:800;text-transform:uppercase;font-size:11.5px;letter-spacing:.06em;color:var(--muted)}
+i.d{display:inline-block;width:12px;height:12px;border-radius:50%;background:#1f4f8a;vertical-align:middle}
+i.d.k{background:#842029;width:14px;height:14px}i.d.o{background:#fff;border:2px solid #1f4f8a}
+.bar{display:block;background:var(--ok-soft);color:#134a3c;border-radius:999px;padding:3px 10px;font-weight:700;font-size:12px}
+.bar.imp{background:#e1eff3;color:#164f63}.bar.ecmo{background:var(--primary-soft);color:#842029}
+.act3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.ac{border-radius:8px;padding:10px 14px;border:1px solid}
+.ac h4{margin:4px 0 6px}.ac ul{font-size:13.5px;margin:0}
+.ac-stop{background:var(--danger-soft);border-color:#e9b9bd}.ac-stop h4{color:#8d1a22}
+.ac-call{background:var(--warn-soft);border-color:#ecd3a6}.ac-call h4{color:#7a4700}
+.ac-nom{background:var(--ok-soft);border-color:#b9dccf}.ac-nom h4{color:#134a3c}
+@media screen and (max-width:980px){
+  .nseq{grid-template-columns:repeat(2,1fr)}.kit,.compat,.act3,.via,.prep-out,.lum{grid-template-columns:1fr}
+}
+@media print{
+  .enf-page{break-before:page}
+  .enf-break{break-before:page}
+  .enf-page h3{break-after:avoid}
+  .ncalc{break-inside:avoid;padding:10px 12px}
+  .ncalc input,.ncalc select{font-size:9.5pt;padding:3px 6px}
+  .kit,.compat,.act3,.via,.nseq{break-inside:avoid}
+  .kt .check li,.cp .pills span,.ac ul,.vcard ul,.lu{font-size:8.6pt}
+  table.m24 td,table.m24 th{font-size:8.4pt;padding:3px 4px}
+  table.m24 td:first-child{min-width:0}table.m24 td:last-child{min-width:0}
+}
+
+/* Registro HNF */
+.reg-page{margin-top:22px;border-top:2px solid var(--border);padding-top:6px}
+.reg-head{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:10px 0}
+table.reg{font-size:12.5px;min-width:1320px}
+table.reg select[data-k="ev"]{min-width:98px}table.reg select[data-k="ts"]{min-width:104px}table.reg select[data-k="ac"]{min-width:128px}table.reg input[data-k="t"]{min-width:190px}
+table.reg th{font-size:11px;padding:6px 5px;vertical-align:bottom;text-align:left}
+table.reg th small{font-weight:600;text-transform:none;letter-spacing:0}
+table.reg td{padding:3px 3px;vertical-align:middle}
+table.reg input,table.reg select{font-size:12.5px;padding:5px 6px;border-radius:5px}
+table.reg td.nr{min-width:120px}
+table.reg .ml{font-size:11.5px;color:var(--muted);display:block;margin-top:2px;min-height:14px}
+table.reg tr.a-u td{background:#e4ecf7}table.reg tr.a-d td{background:var(--warn-soft)}table.reg tr.a-s td{background:var(--danger-soft)}table.reg tr.a-m td{background:var(--ok-soft)}table.reg tr.a-b td{background:#efe9f8}
+.rdel{padding:3px 8px;font-size:12px}
+.reg-actions{display:flex;gap:8px;margin:10px 0}
+.reg-key{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:12.5px;color:var(--muted);margin:4px 0 8px}
+i.ak{font-style:normal;font-weight:700;padding:1px 7px;border-radius:5px;margin-right:4px}
+.k-m{background:var(--ok-soft);color:#134a3c}.k-u{background:#e4ecf7;color:#173b67}.k-d{background:var(--warn-soft);color:#6b3f00}.k-s{background:var(--danger-soft);color:#7a1219}.k-b{background:#efe9f8;color:#4a3a82}
+.sug{font-size:11px;color:#1f4f8a;display:block;margin-top:2px;line-height:1.25}
+@media screen and (max-width:980px){.reg-head{grid-template-columns:repeat(2,1fr)}}
+@media print{
+  .reg-page{page:crono;break-before:page;border:0;padding:0;margin:0}
+  .reg-head{grid-template-columns:repeat(6,1fr);gap:6px}
+  .reg-head input,.reg-head select{font-size:9pt;padding:3px 5px}
+  table.reg{min-width:0;width:100%}
+  table.reg th{font-size:7.6pt;padding:3px}
+  table.reg td{padding:1px 2px;height:32px;border-left:1px solid #cfcac2}
+  table.reg th{border-left:1px solid #cfcac2}
+  .reg-page>.note{font-size:8pt;margin-bottom:4px}
+  table.reg input,table.reg select{font-size:8.4pt;padding:2px 3px;border:0;background:transparent;-webkit-appearance:none;appearance:none}
+  table.reg .sug{font-size:7pt}
+  table.reg tr{break-inside:avoid}
+  #registroHNF .tbl-wrap{break-inside:auto;overflow:visible}
+  table.reg input:invalid{color:transparent}
+  table.reg input:focus{outline:none}
+  table.reg .ml:empty,table.reg .sug:empty{display:none}
+  table.reg input,table.reg select{height:20px}
+  table.reg input::-webkit-calendar-picker-indicator,table.reg input::-webkit-inner-spin-button{display:none}
+  table.reg input::placeholder{color:#999}
+  table.reg select[data-k],table.reg input[data-k="t"]{min-width:0}
+  table.reg input[data-k="t"]{width:100%}
+  .reg-key{font-size:8pt}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="Índice">
+  <div class="brand">
+    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" aria-label="Logotipo del protocolo"><rect x="1.5" y="1.5" width="31" height="31" rx="8" stroke="currentColor" stroke-width="2.5"/><path d="M7 18h5l2.4-7 4.4 12 2.4-5.5H27" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div><b>Anticoagulación</b><span>Shock cardiogénico · MCS</span></div>
+  </div>
+  <ol id="tocList">
+    <li><a href="#alcance">Alcance y principios</a></li>
+    <li><a href="#cronologia">Cronología del ingreso</a></li>
+    <li><a href="#crono-ecpella">Cronología ECPELLA</a></li>
+    <li><a href="#crono-trrc">Cronología TRRC</a></li>
+    <li><a href="#valoracion">Valoración inicial</a></li>
+    <li><a href="#monitor">Monitorización</a></li>
+    <li><a href="#hnf">Heparina no fraccionada</a></li>
+    <li><a href="#nomograma">Nomograma anti-Xa / TTPa</a></li>
+    <li><a href="#dispositivos">Esquemas por dispositivo</a></li>
+    <li><a href="#sangrado">Sangrado y protamina</a></li>
+    <li><a href="#resistencia">Resistencia a heparina</a></li>
+    <li><a href="#hit">Trombocitopenia por heparina</a></li>
+    <li><a href="#enfermeria">Control de enfermería</a></li>
+    <li><a href="#turno">Checklist por turno</a></li>
+    <li><a href="#refs">Referencias</a></li>
+  </ol>
+  <div class="toc-actions no-print">
+    <button class="btn-primary" onclick="window.print()">Imprimir / guardar PDF</button>
+  </div>
+</nav>
+
+<main>
+<header class="doc">
+  <div class="kicker">Protocolo clínico · UCI</div>
+  <h1>Manejo de la anticoagulación en la Unidad de Shock Cardiogénico y Soporte Circulatorio Mecánico</h1>
+  <p>Heparina no fraccionada (HNF) guiada por anti-Xa y TTPa, esquemas específicos para BIAC, Impella, ECMO VA y TRRC, manejo del sangrado y reversión con protamina, resistencia a la heparina y trombocitopenia inducida por heparina (TIH).</p>
+  <div class="meta">
+    <span class="chip draft">Borrador · pendiente de validación local</span>
+    <span class="chip">Versión 1.0 · octubre 2026</span>
+    <span class="chip">Revisión: Medicina Intensiva · Hematología · Farmacia · Perfusión</span>
+  </div>
+</header>
+
+<!-- 1 -->
+<section class="card" id="alcance">
+  <h2><span class="num">1</span>Alcance y principios generales</h2>
+  <p class="lead">Aplica a pacientes adultos en shock cardiogénico (SCAI C–E) ingresados en la unidad, con o sin soporte circulatorio mecánico temporal (MCS) y/o terapia de reemplazo renal continua.</p>
+  <div class="grid-2">
+    <div class="box">
+      <h4>Principios</h4>
+      <ul>
+        <li>Anticoagulante de primera elección: <b>HNF IV en perfusión continua</b> (vida media corta, reversible con protamina, monitorizable a pie de cama).</li>
+        <li>Monitorización preferente con <b>anti-Xa</b>, con TTPa en paralelo para detectar déficit de factores o discordancias.</li>
+        <li>La diana se individualiza según dispositivo, indicación adicional (FA, trombo intraventricular, TEP) y riesgo hemorrágico, y se reevalúa al menos cada 24 h.</li>
+        <li>Dosificación por <b>peso real</b>; en obesidad (IMC &gt;40) usar peso ajustado y valorar con Farmacia.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>Responsabilidades</h4>
+      <ul>
+        <li><b>Médico responsable:</b> diana de anticoagulación diaria, cambios de estrategia, reversión.</li>
+        <li><b>Enfermería:</b> extracción a horario, aplicación del nomograma, registro de ritmo (UI/h y ml/h), vigilancia de sangrado y circuito.</li>
+        <li><b>Perfusionista / equipo ECMO:</b> inspección de circuito y oxigenador, presiones transmembrana.</li>
+        <li><b>Farmacia / Hematología:</b> preparaciones estandarizadas, AT, inhibidores directos de trombina.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout warn"><b>Antes de implantar</b>Las dosis y dianas de este documento proceden de guías y protocolos publicados (ver Referencias). Deben adaptarse a la concentración estándar de HNF de la farmacia, a los reactivos de anti-Xa/TTPa del laboratorio local y aprobarse por la Comisión correspondiente.</div>
+</section>
+
+<!-- CRONOLOGIA -->
+<section class="card tl-page" id="cronologia">
+  <h2><span class="num">2</span>Cronología de la anticoagulación: del ingreso a la retirada</h2>
+  <p class="lead">Secuencia práctica por fases. Filtre por dispositivo para ver solo las acciones que aplican; "Todos" indica medidas comunes. Los tiempos son orientativos y se ajustan a la situación clínica.</p>
+
+  <!-- Franja resumen -->
+  <div class="ribbon" aria-label="Resumen de fases">
+    <div class="rb r0"><span class="rt">Ingreso</span><span class="rs">0–2 h</span><span class="ri">Analítica basal</span></div>
+    <div class="rb r1"><span class="rt">Implante</span><span class="rs">Procedimiento</span><span class="ri">Bolo HNF · ACT</span></div>
+    <div class="rb r2"><span class="rt">Inicio</span><span class="rs">0–24 h</span><span class="ri">Perfusión · titulación</span></div>
+    <div class="rb r3"><span class="rt">Estabilización</span><span class="rs">Días 1–3</span><span class="ri">Diana estable</span></div>
+    <div class="rb r4"><span class="rt">Mantenimiento</span><span class="rs">Día 4 →</span><span class="ri">Control diario · TIH</span></div>
+    <div class="rb r5"><span class="rt">Destete</span><span class="rs">Variable</span><span class="ri">Mantener diana</span></div>
+    <div class="rb r6"><span class="rt">Retirada</span><span class="rs">Horas</span><span class="ri">Suspender HNF</span></div>
+    <div class="rb r7"><span class="rt">Post-retirada</span><span class="rs">0–72 h</span><span class="ri">Reinicio · eco</span></div>
+  </div>
+  <div class="intensity" aria-label="Intensidad de anticoagulación">
+    <div class="il">Intensidad</div>
+    <div class="iwrap"><svg viewBox="0 0 800 70" preserveAspectRatio="none" role="img" aria-label="Curva orientativa de intensidad de anticoagulación por fase">
+      <defs><linearGradient id="gI" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#842029" stop-opacity=".35"/><stop offset="1" stop-color="#842029" stop-opacity=".03"/></linearGradient></defs>
+      <path d="M0,62 L100,62 L130,6 L160,30 L200,40 L300,32 L400,32 L500,32 L600,32 L640,32 L660,64 L700,64 L740,50 L800,50 L800,70 L0,70 Z" fill="url(#gI)"/>
+      <path d="M0,62 L100,62 L130,6 L160,30 L200,40 L300,32 L400,32 L500,32 L600,32 L640,32 L660,64 L700,64 L740,50 L800,50" fill="none" stroke="#842029" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+    </svg>
+      <span class="itag" style="left:17%;top:0">Bolo</span>
+      <span class="itag" style="left:38%;top:18px">Perfusión en diana</span>
+      <span class="itag mute" style="left:76%;top:36px">Stop</span>
+      <span class="itag mute" style="left:88%;top:22px">Reinicio</span>
+    </div>
+  </div>
+
+  <!-- Filtro -->
+  <div class="tl-filter no-print" role="group" aria-label="Filtrar por dispositivo">
+    <span>Mostrar:</span>
+    <button class="fb on" data-f="all">Todos los dispositivos</button>
+    <button class="fb" data-f="ecmo"><span class="dv ecmo">ECMO VA</span></button>
+    <button class="fb" data-f="imp"><span class="dv imp">Impella</span></button>
+    <button class="fb" data-f="biac"><span class="dv biac">BIAC</span></button>
+    <a class="fb ecp-link" href="#crono-ecpella">ECPELLA: ver cronología →</a>
+    <a class="fb ecp-link trrc-link" href="#crono-trrc">TRRC: ver cronología →</a>
+  </div>
+  <div class="lanes-key">
+    <span class="lk lab">Analítica</span><span class="lk ac">Anticoagulación</span><span class="lk mon">Monitorización</span><span class="lk vig">Vigilancia</span>
+  </div>
+
+  <ol class="tl">
+    <!-- F0 -->
+    <li class="ph p0">
+      <div class="when"><b>Ingreso</b><span>Hora 0–2</span></div>
+      <div class="pcard">
+        <h4>Ingreso en la unidad</h4>
+        <div class="lanes">
+          <div class="lane lab"><h5>Analítica</h5><ul>
+            <li data-dev="all"><b>Analítica completa basal</b>: hemograma, TP/INR, TTPa, fibrinógeno, <b>anti-Xa basal</b>, antitrombina.</li>
+            <li data-dev="all">Hemólisis (LDH, bilirrubina, haptoglobina, Hb libre), función renal y hepática, lactato, grupo y escrutinio.</li>
+          </ul></div>
+          <div class="lane ac"><h5>Anticoagulación</h5><ul>
+            <li data-dev="all">Revisar antitrombóticos previos (DAPT, IIb/IIIa, ACOD, AVK, fibrinólisis) y hora de la última dosis.</li>
+            <li data-dev="all">Sin MCS e indicación terapéutica: HNF bolo 60–80 UI/kg (máx. 5.000) + 12–18 UI/kg/h.</li>
+          </ul></div>
+          <div class="lane vig"><h5>Vigilancia</h5><ul>
+            <li data-dev="all">Estratificar riesgo hemorrágico y trombótico; <b>definir la diana inicial</b>.</li>
+            <li data-dev="ecmo imp"><span class="dv ecmo">ECMO</span><span class="dv imp">Impella</span> Ecografía de los accesos vasculares previstos.</li>
+          </ul></div>
+        </div>
+      </div>
+    </li>
+    <!-- F1 -->
+    <li class="ph p1">
+      <div class="when"><b>Implante</b><span>Procedimiento</span></div>
+      <div class="pcard">
+        <h4>Canulación / implante del dispositivo</h4>
+        <div class="lanes">
+          <div class="lane ac"><h5>Anticoagulación</h5><ul>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> <b>Bolo HNF IV 50–100 UI/kg</b> antes de canular (25–50 UI/kg si sangrado o poscardiotomía).</li>
+            <li data-dev="imp"><span class="dv imp">Impella</span> Bolo HNF hasta <b>ACT ≥250 s</b> antes de retirar el dilatador (≥200 s si IIb/IIIa) (<a href="https://www.accessdata.fda.gov/cdrh_docs/pdf14/P140003c.pdf">instrucciones de uso de Impella, FDA</a>).</li>
+            <li data-dev="imp"><span class="dv imp">Impella</span> Purga con HNF 25 UI/ml en SG 5% lo antes posible.</li>
+            <li data-dev="biac"><span class="dv biac">BIAC</span> Sin bolo específico; estrategia de anticoagulación selectiva.</li>
+          </ul></div>
+          <div class="lane mon"><h5>Monitorización</h5><ul>
+            <li data-dev="ecmo imp"><span class="dv ecmo">ECMO</span><span class="dv imp">Impella</span> <b>ACT</b> a los 3–5 min del bolo.</li>
+          </ul></div>
+          <div class="lane vig"><h5>Vigilancia</h5><ul>
+            <li data-dev="all">Registrar hora y dosis de todos los bolos (necesario para calcular la protamina).</li>
+          </ul></div>
+        </div>
+      </div>
+    </li>
+    <!-- F2 -->
+    <li class="ph p2">
+      <div class="when"><b>0–6 h</b><span>Tras implante</span></div>
+      <div class="pcard">
+        <h4>Inicio de la perfusión continua</h4>
+        <div class="lanes">
+          <div class="lane ac"><h5>Anticoagulación</h5><ul>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> HNF <b>7,5–20 UI/kg/h sin bolo</b> cuando el ACT baje de 220–250 s y no sangren los puntos de canulación.</li>
+            <li data-dev="imp"><span class="dv imp">Impella</span> Si anti-Xa &lt;0,3: HNF IV 6–7 UI/kg/h (máx. inicial 750–1.000 UI/h), sumando la heparina de la purga.</li>
+            <li data-dev="biac"><span class="dv biac">BIAC</span> Si está indicada: HNF 10–12 UI/kg/h sin bolo.</li>
+          </ul></div>
+          <div class="lane mon"><h5>Monitorización</h5><ul>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> <b>ACT cada 1–2 h</b> (diana 180–220 s).</li>
+            <li data-dev="imp"><span class="dv imp">Impella</span> Anti-Xa al llegar a la UCI y 4 h tras iniciar la purga (<a href="https://acforum.org/web/scripts/viewPDF.php?id=1865">Anticoagulation Forum</a>).</li>
+            <li data-dev="all"><b>Anti-Xa + TTPa a las 6 h</b> del inicio de la perfusión.</li>
+          </ul></div>
+          <div class="lane vig"><h5>Vigilancia</h5><ul>
+            <li data-dev="all">Puntos de inserción, pulsos y perfusión distal <b>cada hora</b>; drenajes.</li>
+            <li data-dev="imp"><span class="dv imp">Impella</span> Flujo y presión de purga cada hora.</li>
+          </ul></div>
+        </div>
+      </div>
+    </li>
+    <!-- F3 -->
+    <li class="ph p2">
+      <div class="when"><b>6–24 h</b><span>Día 0–1</span></div>
+      <div class="pcard">
+        <h4>Titulación hasta la diana</h4>
+        <div class="lanes">
+          <div class="lane lab"><h5>Analítica</h5><ul>
+            <li data-dev="all">Hemograma y fibrinógeno <b>cada 12 h</b>.</li>
+            <li data-dev="ecmo imp"><span class="dv ecmo">ECMO</span><span class="dv imp">Impella</span> Hemólisis (LDH, Hb libre) cada 12–24 h.</li>
+          </ul></div>
+          <div class="lane ac"><h5>Anticoagulación</h5><ul>
+            <li data-dev="all">Ajustar con el <a href="#nomograma">nomograma</a> tras cada resultado.</li>
+          </ul></div>
+          <div class="lane mon"><h5>Monitorización</h5><ul>
+            <li data-dev="all"><b>Anti-Xa + TTPa cada 6 h</b>.</li>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> ACT cada 2–4 h hasta la estabilidad.</li>
+          </ul></div>
+        </div>
+      </div>
+    </li>
+    <!-- F4 -->
+    <li class="ph p3">
+      <div class="when"><b>Días 1–3</b><span>Estabilización</span></div>
+      <div class="pcard">
+        <h4>Diana alcanzada y estable</h4>
+        <div class="lanes">
+          <div class="lane lab"><h5>Analítica</h5><ul>
+            <li data-dev="all"><b>Analítica diaria</b>: hemograma, TP, TTPa, fibrinógeno, anti-Xa, LDH, bilirrubina, función renal y hepática.</li>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> Antitrombina si la dosis es alta o el anti-Xa sigue bajo.</li>
+          </ul></div>
+          <div class="lane ac"><h5>Anticoagulación</h5><ul>
+            <li data-dev="all"><b>Revisión diaria de la diana</b>: sangrado, trombosis, eyección del VI.</li>
+          </ul></div>
+          <div class="lane mon"><h5>Monitorización</h5><ul>
+            <li data-dev="all">Tras 2 valores en rango: <b>anti-Xa cada 12–24 h</b> y TTPa cada 12 h. Volver a cada 6 h tras cada cambio de ritmo.</li>
+          </ul></div>
+          <div class="lane vig"><h5>Vigilancia</h5><ul>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> Inspección del circuito y ΔP del oxigenador cada turno.</li>
+            <li data-dev="all">HNF en 24 h ≥35.000 UI o &gt;30 UI/kg/h → <a href="#resistencia">resistencia a heparina</a>.</li>
+          </ul></div>
+        </div>
+      </div>
+    </li>
+    <!-- F5 -->
+    <li class="ph p4">
+      <div class="when"><b>Día 4 →</b><span>Mantenimiento</span></div>
+      <div class="pcard">
+        <h4>Mantenimiento</h4>
+        <div class="lanes">
+          <div class="lane lab"><h5>Analítica</h5><ul>
+            <li data-dev="all"><b>Plaquetas diarias</b>. Ventana de TIH (días 5–10): <a href="#hit">escala 4Ts</a> si caen &gt;30 %.</li>
+            <li data-dev="ecmo imp"><span class="dv ecmo">ECMO</span><span class="dv imp">Impella</span> Hemólisis diaria.</li>
+          </ul></div>
+          <div class="lane ac"><h5>Anticoagulación</h5><ul>
+            <li data-dev="all">Sangrado: bajar la diana; ver <a href="#sangrado">sección de sangrado</a>.</li>
+            <li data-dev="imp"><span class="dv imp">Impella</span> Sangrado: suspender HNF IV y, si persiste, purga con bicarbonato.</li>
+          </ul></div>
+          <div class="lane mon"><h5>Monitorización</h5><ul>
+            <li data-dev="all">Anti-Xa diario + TTPa cada 12–24 h.</li>
+          </ul></div>
+          <div class="lane vig"><h5>Vigilancia</h5><ul>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> Cambio de oxigenador o bomba si sube la ΔP, hay hemólisis o empeora el intercambio de gases.</li>
+          </ul></div>
+        </div>
+      </div>
+    </li>
+    <!-- F6 -->
+    <li class="ph p5">
+      <div class="when"><b>Destete</b><span>Variable</span></div>
+      <div class="pcard">
+        <h4>Decisión y prueba de destete</h4>
+        <div class="lanes">
+          <div class="lane ac"><h5>Anticoagulación</h5><ul>
+            <li data-dev="all"><b>Mantener la anticoagulación en diana</b> durante todo el destete.</li>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> El flujo bajo aumenta el riesgo de trombosis del circuito: no bajar la diana durante las pruebas de flujo bajo.</li>
+            <li data-dev="imp"><span class="dv imp">Impella</span> Bajar el nivel P de forma progresiva manteniendo purga y HNF.</li>
+            <li data-dev="biac"><span class="dv biac">BIAC</span> No dejarlo de forma prolongada en 1:3 ni parado (<a href="https://resources.wfsahq.org/wp-content/uploads/Tutorial_568.pdf">WFSA</a>).</li>
+          </ul></div>
+          <div class="lane lab"><h5>Analítica</h5><ul>
+            <li data-dev="all">Antes de retirar: plaquetas, fibrinógeno, TP y TTPa; reservar hemoderivados.</li>
+          </ul></div>
+          <div class="lane vig"><h5>Vigilancia</h5><ul>
+            <li data-dev="all">Planificar el cierre (percutáneo o quirúrgico), el lugar y la hora de suspensión de la HNF.</li>
+          </ul></div>
+        </div>
+      </div>
+    </li>
+    <!-- F7 -->
+    <li class="ph p6">
+      <div class="when"><b>Retirada</b><span>Horas</span></div>
+      <div class="pcard">
+        <h4>Retirada del dispositivo</h4>
+        <div class="lanes">
+          <div class="lane ac"><h5>Anticoagulación</h5><ul>
+            <li data-dev="biac"><span class="dv biac">BIAC</span> Suspender HNF <b>1–4 h antes</b> de la retirada.</li>
+            <li data-dev="imp"><span class="dv imp">Impella</span> Retirar el catéter del VI a la aorta, suspender HNF y retirar el introductor con <b>ACT &lt;150 s</b>; mantener la purga hasta extraer el catéter (<a href="https://www.accessdata.fda.gov/cdrh_docs/pdf14/P140003c.pdf">instrucciones de uso, FDA</a>).</li>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> Decanulación percutánea <b>30–60 min</b> después de suspender la HNF; en reparación quirúrgica, según el cirujano.</li>
+            <li data-dev="all">Protamina no rutinaria; dosis parcial si sangra el acceso.</li>
+          </ul></div>
+          <div class="lane vig"><h5>Vigilancia</h5><ul>
+            <li data-dev="all">Hemostasia y pulsos distales cada 15 min ×4, cada 30 min ×2 y cada hora ×4 (<a href="https://norhdms.pgprint.com/norhresources/filestore/8/7/8_ac27ee7f13654f1/878_a6fa3b094379b63.pdf">Northside Hospital</a>).</li>
+            <li data-dev="imp"><span class="dv imp">Impella</span> Compresión manual 40 min o dispositivo de cierre.</li>
+          </ul></div>
+        </div>
+      </div>
+    </li>
+    <!-- F8 -->
+    <li class="ph p7">
+      <div class="when"><b>0–72 h</b><span>Post-retirada</span></div>
+      <div class="pcard">
+        <h4>Después de la retirada</h4>
+        <div class="lanes">
+          <div class="lane ac"><h5>Anticoagulación</h5><ul>
+            <li data-dev="all">Sin otra indicación: <b>tromboprofilaxis</b> a las 12–24 h si la hemostasia es correcta.</li>
+            <li data-dev="all">Con indicación terapéutica (FA, trombo en VI, TVP): <b>reiniciar HNF sin bolo</b> a las 6–12 h.</li>
+            <li data-dev="all">TIH: mantener el anticoagulante no heparínico; no dar AVK hasta plaquetas ≥150 ×10⁹/L.</li>
+          </ul></div>
+          <div class="lane mon"><h5>Monitorización</h5><ul>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> <b>Eco-Doppler de todos los vasos canulados y de la VCI en 24–72 h</b>: la TVP asociada a cánula aparece en el 35 % de los casos (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12565285/">estudio prospectivo</a>).</li>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> Buscar también trombosis arterial e isquemia del miembro (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13237882/">ecografía vascular en MCS</a>).</li>
+            <li data-dev="imp biac"><span class="dv imp">Impella</span><span class="dv biac">BIAC</span> Doppler del acceso si hay hematoma, soplo o isquemia.</li>
+          </ul></div>
+          <div class="lane lab"><h5>Analítica</h5><ul>
+            <li data-dev="all">Hemograma diario hasta la recuperación de las plaquetas.</li>
+          </ul></div>
+          <div class="lane vig"><h5>Vigilancia</h5><ul>
+            <li data-dev="ecmo"><span class="dv ecmo">ECMO</span> TVP de cánula confirmada → anticoagulación terapéutica.</li>
+          </ul></div>
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <h3>Matriz de frecuencia de controles</h3>
+  <div class="tbl-wrap"><table class="freq">
+    <thead><tr><th>Control</th><th>Ingreso</th><th>Implante</th><th>0–6 h</th><th>6–24 h</th><th>Días 1–3</th><th>Día 4 →</th><th>Destete</th><th>Retirada</th><th>Post</th></tr></thead>
+    <tbody>
+      <tr><td><b>ACT</b> <span class="dv ecmo">ECMO</span><span class="dv imp">Impella</span></td><td class="f0">—</td><td class="f3">3–5 min</td><td class="f3">1–2 h</td><td class="f2">2–4 h</td><td class="f1">Si precisa</td><td class="f0">—</td><td class="f0">—</td><td class="f2">&lt;150 s*</td><td class="f0">—</td></tr>
+      <tr><td><b>Anti-Xa</b></td><td class="f1">Basal</td><td class="f0">—</td><td class="f2">A las 6 h</td><td class="f2">6 h</td><td class="f1">12–24 h</td><td class="f1">24 h</td><td class="f1">24 h</td><td class="f0">—</td><td class="f1">Si HNF</td></tr>
+      <tr><td><b>TTPa</b></td><td class="f1">Basal</td><td class="f0">—</td><td class="f2">A las 6 h</td><td class="f2">6 h</td><td class="f1">12 h</td><td class="f1">12–24 h</td><td class="f1">12–24 h</td><td class="f1">Previo</td><td class="f1">Si HNF</td></tr>
+      <tr><td><b>Hemograma + fibrinógeno</b></td><td class="f1">Basal</td><td class="f0">—</td><td class="f1">Post-implante</td><td class="f2">12 h</td><td class="f1">24 h</td><td class="f1">24 h</td><td class="f1">24 h</td><td class="f1">Previo</td><td class="f1">24 h</td></tr>
+      <tr><td><b>Hemólisis</b> (LDH, Hb libre)</td><td class="f1">Basal</td><td class="f0">—</td><td class="f1">Post-implante</td><td class="f1">12–24 h</td><td class="f1">24 h</td><td class="f1">24 h</td><td class="f1">24 h</td><td class="f0">—</td><td class="f0">—</td></tr>
+      <tr><td><b>Antitrombina</b></td><td class="f1">Basal</td><td class="f0">—</td><td class="f0">—</td><td class="f0">—</td><td class="f1">Si resistencia</td><td class="f1">Si resistencia</td><td class="f0">—</td><td class="f0">—</td><td class="f0">—</td></tr>
+      <tr><td><b>4Ts</b></td><td class="f0">—</td><td class="f0">—</td><td class="f0">—</td><td class="f0">—</td><td class="f1">Si caen plaquetas</td><td class="f2">Días 5–10</td><td class="f1">Si caen</td><td class="f0">—</td><td class="f1">Si caen</td></tr>
+      <tr><td><b>Eco vascular</b></td><td class="f1">Accesos</td><td class="f0">—</td><td class="f0">—</td><td class="f0">—</td><td class="f0">—</td><td class="f0">—</td><td class="f0">—</td><td class="f0">—</td><td class="f2">24–72 h</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:12.5px;color:var(--muted)">* ACT &lt;150 s para retirar el introductor del Impella. Intensidad del color = frecuencia del control. Volver a anti-Xa/TTPa cada 6 h tras cualquier cambio de ritmo, sangrado o trombosis.</p>
+</section>
+
+<!-- CRONOLOGIA ECPELLA -->
+<section class="card tl-page" id="crono-ecpella">
+  <h2><span class="num">3</span>Cronología específica ECPELLA (ECMO VA + Impella)</h2>
+  <p class="lead">Dos dispositivos y dos fuentes de heparina: la purga del Impella y la perfusión IV. La diana es única y la secuencia de destete habitual es <b>primero ECMO y después Impella</b> (<a href="https://link.springer.com/article/10.1186/s40560-023-00710-2">J Intensive Care, 2023</a>). En una encuesta europea, el 83,8 % de los centros no modifica su manejo de la anticoagulación en ECPELLA respecto al de cada dispositivo (<a href="https://academic.oup.com/eurheartj/article/45/Supplement_1/ehae666.1728/7837788">Eur Heart J, 2024</a>).</p>
+
+  <div class="ribbon ribbon-9" aria-label="Fases ECPELLA">
+    <div class="rb r0"><span class="rt">Decisión</span><span class="rs">Ingreso</span><span class="ri">Estrategia</span></div>
+    <div class="rb r1"><span class="rt">Implante</span><span class="rs">Procedimiento</span><span class="ri">Bolo · ACT · purga</span></div>
+    <div class="rb r2"><span class="rt">Inicio</span><span class="rs">0–24 h</span><span class="ri">IV = total − purga</span></div>
+    <div class="rb r3"><span class="rt">Estabilización</span><span class="rs">Días 1–3</span><span class="ri">Hemólisis · posición</span></div>
+    <div class="rb r5"><span class="rt">Destete ECMO</span><span class="rs">Fase 1</span><span class="ri">Diana plena</span></div>
+    <div class="rb r6"><span class="rt">Retirada ECMO</span><span class="rs">Horas</span><span class="ri">Purga sigue</span></div>
+    <div class="rb r4"><span class="rt">Impella solo</span><span class="rs">Fase 2</span><span class="ri">Destete por nivel P</span></div>
+    <div class="rb r6"><span class="rt">Retirada Impella</span><span class="rs">Horas</span><span class="ri">ACT &lt;150 s</span></div>
+    <div class="rb r7"><span class="rt">Post</span><span class="rs">0–72 h</span><span class="ri">Reinicio · eco</span></div>
+  </div>
+
+  <h3 class="nobreak">Estado de los dispositivos y fuentes de heparina por fase</h3>
+  <div class="gantt" role="img" aria-label="Estado de ECMO, Impella, purga heparinizada y HNF IV por fase">
+    <div class="gh"></div><div class="gh">Decisión</div><div class="gh">Implante</div><div class="gh">0–24 h</div><div class="gh">Días 1–3</div><div class="gh">Destete ECMO</div><div class="gh">Retirada ECMO</div><div class="gh">Impella solo</div><div class="gh">Retirada Impella</div><div class="gh">Post</div>
+    <div class="gl"><span class="dv ecmo">ECMO VA</span></div>
+    <div class="g g-off"></div><div class="g g-on" style="grid-column:span 3">Soporte pleno</div><div class="g g-wean">↓ flujo 1–2 L/min</div><div class="g g-stop">Decanulación</div><div class="g g-off" style="grid-column:span 3"></div>
+    <div class="gl"><span class="dv imp">Impella</span></div>
+    <div class="g g-off"></div><div class="g g-imp" style="grid-column:span 2">Descarga VI · P mínimo eficaz</div><div class="g g-imp">Descarga VI</div><div class="g g-imp">Mantiene / ↑ soporte</div><div class="g g-imp">Soporte</div><div class="g g-wean g-wimp">↓ nivel P hasta P2</div><div class="g g-stop">Explante</div><div class="g g-off"></div>
+    <div class="gl">Purga HNF 25 UI/ml</div>
+    <div class="g g-off"></div><div class="g g-hep" style="grid-column:span 6">Continua (bicarbonato si sangrado o TIH)</div><div class="g g-hep">Hasta extraer el catéter</div><div class="g g-off"></div>
+    <div class="gl">HNF IV</div>
+    <div class="g g-off"></div><div class="g g-bolus">Bolo</div><div class="g g-hep2">Titulación</div><div class="g g-hep2">En diana</div><div class="g g-hep2">En diana</div><div class="g g-stop">Stop 30–60 min → reinicio</div><div class="g g-hep2">En diana</div><div class="g g-stop">Stop</div><div class="g g-pro">Profilaxis / terapéutica</div>
+    <div class="gl">Diana anti-Xa</div>
+    <div class="g g-off"></div><div class="g g-txt">ACT ≥250 s</div><div class="g g-txt" style="grid-column:span 3">0,30–0,50 UI/ml</div><div class="g g-txt">—</div><div class="g g-txt">0,20–0,50*</div><div class="g g-txt">ACT &lt;150 s</div><div class="g g-txt">Según indicación</div>
+  </div>
+  <p style="font-size:12.5px;color:var(--muted);margin-top:6px">* Con Impella solo, aplicar la diana local de Impella: 0,2–0,4 UI/ml según <a href="https://www.scai.org/quality-improvement-tools/qi-tips/impella-anticoagulation-management-ccu">SCAI</a> o 0,3–0,5 UI/ml según <a href="https://www.jacc.org/doi/10.1016/j.jacc.2022.02.052">JACC</a>.</p>
+
+  <div class="lanes-key">
+    <span class="lk lab">Analítica</span><span class="lk ac">Anticoagulación</span><span class="lk mon">Monitorización</span><span class="lk vig">Vigilancia</span>
+  </div>
+  <ol class="tl">
+    <li class="ph p0"><div class="when"><b>Decisión</b><span>Ingreso</span></div><div class="pcard"><h4>Indicación y estrategia de implante</h4><div class="lanes">
+      <div class="lane lab"><h5>Analítica</h5><ul><li>Analítica basal completa como en la <a href="#cronologia">cronología general</a>, con anti-Xa, AT, hemólisis y grupo.</li></ul></div>
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li><b>Simultáneo</b>: un único bolo de HNF para ambos accesos.</li>
+        <li><b>Secuencial</b> (ECMO primero e Impella después por distensión del VI, o al revés): el segundo dispositivo se implanta con el paciente ya anticoagulado; comprobar el ACT antes del segundo acceso.</li>
+      </ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul><li>En una serie de ECPELLA como puente a la decisión, el 60 % se implantó de forma simultánea (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11143097/">Neth Heart J</a>).</li><li>Ecografía de ambos accesos arteriales y del venoso.</li></ul></div>
+    </div></div></li>
+
+    <li class="ph p1"><div class="when"><b>Implante</b><span>Procedimiento</span></div><div class="pcard"><h4>Canulación ECMO + implante Impella</h4><div class="lanes">
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li><span class="dv ecmo">ECMO</span> Bolo HNF <b>50–100 UI/kg</b> (25–50 si sangrado o poscardiotomía).</li>
+        <li><span class="dv imp">Impella</span> <b>ACT ≥250 s</b> antes de retirar el dilatador; bolo adicional titulado por ACT si el paciente ya estaba en ECMO (<a href="https://www.accessdata.fda.gov/cdrh_docs/pdf14/P140003c.pdf">FDA</a>).</li>
+        <li><span class="dv imp">Impella</span> Purga HNF 25 UI/ml en SG 5% desde el inicio.</li>
+      </ul></div>
+      <div class="lane mon"><h5>Monitorización</h5><ul><li>ACT a los 3–5 min de cada bolo.</li></ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul><li><span class="dv imp">Impella</span> Iniciar en el nivel P mínimo que descargue el VI, para evitar succión y hemólisis.</li><li>Registrar todos los bolos (protamina).</li></ul></div>
+    </div></div></li>
+
+    <li class="ph p2"><div class="when"><b>0–24 h</b><span>Inicio</span></div><div class="pcard"><h4>Perfusión IV ajustada a la purga</h4><div class="lanes">
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li><b>Diana única anti-Xa 0,30–0,50 UI/ml</b> (o ACT 180–220 s) (<a href="https://www.intechopen.com/chapters/1238922">IntechOpen, descarga del VI en ECMO</a>).</li>
+        <li><b>HNF IV = dosis total − heparina de la purga</b>. La purga puede aportar unas 8–10 UI/kg/h (<a href="https://www.jacc.org/doi/10.1016/j.jacc.2020.12.054">JACC</a>).</li>
+        <li>Iniciar HNF IV <b>sin bolo a 6–7 UI/kg/h</b> cuando el ACT baje de 220–250 s y no haya sangrado.</li>
+      </ul></div>
+      <div class="lane mon"><h5>Monitorización</h5><ul>
+        <li>ACT cada 1–2 h hasta el primer anti-Xa.</li>
+        <li><b>Anti-Xa + TTPa a las 4–6 h y después cada 6 h</b>.</li>
+        <li>Flujo y presión de purga cada hora.</li>
+      </ul></div>
+      <div class="lane lab"><h5>Analítica</h5><ul><li>Hemograma, fibrinógeno y <b>hemólisis cada 12 h</b> (LDH, Hb libre).</li></ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul><li>Eco: posición del Impella, descarga del VI, apertura aórtica.</li><li>Ambos accesos y perfusión distal cada hora.</li></ul></div>
+    </div></div></li>
+
+    <li class="ph p3"><div class="when"><b>Días 1–3</b><span>Estabilización</span></div><div class="pcard"><h4>Equilibrio de flujos y hemólisis</h4><div class="lanes">
+      <div class="lane lab"><h5>Analítica</h5><ul>
+        <li>Analítica diaria completa; <b>Hb libre diaria</b>.</li>
+        <li>Hemólisis significativa: Hb libre &gt;40 mg/dl o subida &gt;27 mg/dl → revisar posición y volemia (<a href="https://www.jacc.org/doi/10.1016/j.jacc.2020.12.054">JACC</a>).</li>
+      </ul></div>
+      <div class="lane ac"><h5>Anticoagulación</h5><ul><li>Revisión diaria de la diana y del reparto purga/IV.</li><li>Sangrado: <b>1)</b> bajar o suspender HNF IV con la purga en marcha; <b>2)</b> purga con bicarbonato; <b>3)</b> mantener flujo de ECMO &gt;2 L/min.</li></ul></div>
+      <div class="lane mon"><h5>Monitorización</h5><ul><li>Anti-Xa cada 12–24 h tras 2 valores en rango.</li></ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul><li><span class="dv imp">Impella</span> Sospechar trombosis de bomba si la presión de purga supera 600 mmHg con flujo &lt;2 ml/h y suben LDH y dímero D (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13380731/">revisión de Impella</a>).</li><li><span class="dv ecmo">ECMO</span> Circuito y ΔP del oxigenador cada turno.</li></ul></div>
+    </div></div></li>
+
+    <li class="ph p5"><div class="when"><b>Destete ECMO</b><span>Fase 1</span></div><div class="pcard"><h4>Retirada progresiva del ECMO con Impella como soporte</h4><div class="lanes">
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li><b>Mantener la diana plena</b>: el flujo bajo de ECMO aumenta el riesgo de trombosis del circuito.</li>
+        <li>Pinzamiento o prueba de flujo mínimo siempre con anticoagulación terapéutica (<a href="https://journal.houstonmethodist.org/articles/10.14797/mdcvj.1256">Methodist DeBakey CV J</a>).</li>
+      </ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul>
+        <li>Reducir el flujo de ECMO mientras el Impella mantiene o aumenta el soporte.</li>
+        <li>Criterios de VD para retirar ECMO: PVC &lt;15 mmHg y PAPi ≥1,0; decisión con flujo de ECMO de 1–2 L/min (<a href="https://link.springer.com/article/10.1186/s40560-023-00710-2">J Intensive Care</a>).</li>
+      </ul></div>
+      <div class="lane lab"><h5>Analítica</h5><ul><li>Plaquetas, fibrinógeno, TP y TTPa previos a la decanulación.</li></ul></div>
+    </div></div></li>
+
+    <li class="ph p6"><div class="when"><b>Retirada ECMO</b><span>Horas</span></div><div class="pcard"><h4>Decanulación del ECMO con Impella en marcha</h4><div class="lanes">
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li>Suspender <b>solo la HNF IV</b> 30–60 min antes de la decanulación percutánea.</li>
+        <li><b>No suspender la purga heparinizada</b> del Impella.</li>
+        <li>Reiniciar HNF IV <b>sin bolo</b> en cuanto haya hemostasia, con la diana del Impella solo.</li>
+      </ul></div>
+      <div class="lane mon"><h5>Monitorización</h5><ul><li>Anti-Xa a las 6 h del reinicio.</li><li>Eco-Doppler de los vasos de ECMO en 24–72 h (TVP de cánula en torno al 35 %) (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12565285/">estudio prospectivo</a>).</li></ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul><li>Hemostasia y pulsos de la extremidad decanulada.</li><li>Si se retiran ambos dispositivos a la vez en quirófano con reparación vascular, el Impella puede retirarse con la heparina en curso (<a href="https://kdr74.github.io/guidelines/cardiovascular/impella/Impella_CP_Smart-Assist_Device.pdf">guía clínica de Impella CP</a>).</li></ul></div>
+    </div></div></li>
+
+    <li class="ph p4"><div class="when"><b>Impella solo</b><span>Fase 2</span></div><div class="pcard"><h4>Destete del Impella</h4><div class="lanes">
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li>Mantener purga + HNF IV en la diana del Impella.</li>
+        <li>Asegurar una heparinización adecuada si el flujo es &lt;1,5 L/min durante periodos prolongados (<a href="https://emcrit.org/ibcc/impella/">EMCrit IBCC</a>).</li>
+      </ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul>
+        <li>Bajar el nivel P de forma progresiva (aprox. 0,5 L/min cada hora) hasta P2.</li>
+        <li>Criterios de VI para retirar: PCP &lt;20 mmHg y CPO ≥0,6 W (<a href="https://link.springer.com/article/10.1186/s40560-023-00710-2">J Intensive Care</a>).</li>
+      </ul></div>
+      <div class="lane lab"><h5>Analítica</h5><ul><li>Hemólisis diaria y plaquetas (ventana de TIH días 5–10).</li></ul></div>
+    </div></div></li>
+
+    <li class="ph p6"><div class="when"><b>Retirada Impella</b><span>Horas</span></div><div class="pcard"><h4>Explante del Impella</h4><div class="lanes">
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li>Retirar el catéter del VI a la aorta en P2 y <b>suspender la HNF IV</b>.</li>
+        <li>Retirar el introductor con <b>ACT &lt;150 s</b>; la purga se mantiene hasta extraer el catéter (<a href="https://www.accessdata.fda.gov/cdrh_docs/pdf14/P140003c.pdf">FDA</a>).</li>
+        <li>Protamina no rutinaria.</li>
+      </ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul><li>Compresión manual 40 min o dispositivo de cierre.</li><li>Pulsos cada 15 min ×4, cada 30 min ×2 y cada hora ×4.</li></ul></div>
+    </div></div></li>
+
+    <li class="ph p7"><div class="when"><b>0–72 h</b><span>Post</span></div><div class="pcard"><h4>Después de retirar ambos dispositivos</h4><div class="lanes">
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li>Sin indicación: tromboprofilaxis a las 12–24 h si hay hemostasia.</li>
+        <li>Con indicación (FA, trombo en VI, TVP de cánula): HNF sin bolo a las 6–12 h.</li>
+      </ul></div>
+      <div class="lane mon"><h5>Monitorización</h5><ul><li>Eco-Doppler de <b>todos</b> los accesos (venoso y arteriales de ECMO, arterial de Impella).</li></ul></div>
+      <div class="lane lab"><h5>Analítica</h5><ul><li>Hemograma diario hasta la recuperación de las plaquetas.</li></ul></div>
+    </div></div></li>
+  </ol>
+</section>
+
+<!-- CRONOLOGIA TRRC -->
+<section class="card tl-page" id="crono-trrc">
+  <h2><span class="num">4</span>Cronología específica de la TRRC</h2>
+  <p class="lead">El citrato regional es la primera elección si no hay contraindicación (<a href="https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf">KDIGO</a>). En el paciente con ECMO o Impella, la HNF sistémica del dispositivo suele bastar para el filtro, y el citrato puede añadirse si se coagula de forma repetida. El shock con hipoperfusión obliga a vigilar más la acumulación de citrato (<a href="https://www.fda.gov/media/141186/download">ficha de Regiocit, FDA</a>).</p>
+
+  <div class="scen">
+    <div class="sc sc-cit"><span class="dv cit">Escenario A</span><b>Citrato regional</b><span>Sin MCS o sin anticoagulación sistémica, sin insuficiencia hepática grave ni hipoperfusión refractaria.</span></div>
+    <div class="sc sc-hnf"><span class="dv hnf">Escenario B</span><b>HNF sistémica del dispositivo</b><span>ECMO, Impella o ECPELLA ya anticoagulados: sin heparina adicional en el circuito; añadir citrato si el filtro se coagula de forma repetida.</span></div>
+    <div class="sc sc-tih"><span class="dv tih">Escenario C</span><b>TIH sospechada o confirmada</b><span>Sin heparina en ninguna forma (circuito, sellado, cebado); anticoagulante no heparínico sistémico ± citrato.</span></div>
+  </div>
+
+  <div class="ribbon ribbon-9" aria-label="Fases TRRC">
+    <div class="rb r0"><span class="rt">Indicación</span><span class="rs">Decisión</span><span class="ri">Escenario A/B/C</span></div>
+    <div class="rb r1"><span class="rt">Acceso</span><span class="rs">Conexión</span><span class="ri">Catéter o ECMO</span></div>
+    <div class="rb r2"><span class="rt">Inicio</span><span class="rs">0–2 h</span><span class="ri">iCa seriados</span></div>
+    <div class="rb r3"><span class="rt">Ajuste</span><span class="rs">2–24 h</span><span class="ri">iCa cada 6 h</span></div>
+    <div class="rb r4"><span class="rt">Mantenimiento</span><span class="rs">Diario</span><span class="ri">Ca total/iónico</span></div>
+    <div class="rb r5"><span class="rt">Incidencias</span><span class="rs">A demanda</span><span class="ri">Coagulación · acumulación</span></div>
+    <div class="rb r5"><span class="rt">Pausas</span><span class="rs">Procedimientos</span><span class="ri">Sellado del catéter</span></div>
+    <div class="rb r6"><span class="rt">Fin TRRC</span><span class="rs">Retirada</span><span class="ri">Citrato y Ca a la vez</span></div>
+    <div class="rb r7"><span class="rt">Post</span><span class="rs">24–48 h</span><span class="ri">Calcio · acceso</span></div>
+  </div>
+
+  <h3 class="nobreak">Anticoagulación del circuito por fase y escenario</h3>
+  <div class="gantt" role="img" aria-label="Anticoagulación del circuito de TRRC por fase y escenario">
+    <div class="gh"></div><div class="gh">Indicación</div><div class="gh">Acceso</div><div class="gh">0–2 h</div><div class="gh">2–24 h</div><div class="gh">Diario</div><div class="gh">Incidencias</div><div class="gh">Pausas</div><div class="gh">Fin TRRC</div><div class="gh">Post</div>
+    <div class="gl"><span class="dv cit">A</span>Citrato</div>
+    <div class="g g-off"></div><div class="g g-txt">Cebado</div><div class="g g-cit">Inicio · iCa 30 min, 1 h, 2 h</div><div class="g g-cit">pf-iCa 0,25–0,35</div><div class="g g-cit">En rango</div><div class="g g-wean">Acumulación: ↓ dosis</div><div class="g g-stop">Stop + sellado</div><div class="g g-stop">Stop</div><div class="g g-off"></div>
+    <div class="gl"><span class="dv cit">A</span>Calcio IV</div>
+    <div class="g g-off"></div><div class="g g-off"></div><div class="g g-ca" style="grid-column:span 3">Reposición · iCa sistémico 1,0–1,2</div><div class="g g-ca">Ajustar</div><div class="g g-stop">Stop con citrato</div><div class="g g-stop">Stop con citrato</div><div class="g g-txt">iCa a 1–2 h</div>
+    <div class="gl"><span class="dv hnf">B</span>HNF sistémica</div>
+    <div class="g g-hep2" style="grid-column:span 6">Sigue el protocolo del dispositivo (anti-Xa 0,3–0,5) · sin heparina extra en el circuito</div><div class="g g-hep2">Sin cambios</div><div class="g g-hep2">Sin cambios</div><div class="g g-hep2">Según dispositivo</div>
+    <div class="gl"><span class="dv hnf">B</span>Citrato añadido</div>
+    <div class="g g-off" style="grid-column:span 4"></div><div class="g g-txt">Si ≥2 filtros en 24 h</div><div class="g g-cit">Añadir citrato</div><div class="g g-off"></div><div class="g g-stop">Stop</div><div class="g g-off"></div>
+    <div class="gl"><span class="dv tih">C</span>TIH</div>
+    <div class="g g-tih" style="grid-column:span 9">Ninguna heparina (circuito, cebado, sellado) · bivalirudina o argatrobán sistémico ± citrato · sellado con citrato 4 %</div>
+  </div>
+
+  <h3 class="nobreak conx">Conexión al circuito de ECMO</h3>
+  <div class="ecmo-con">
+    <svg viewBox="0 0 760 170" role="img" aria-label="Esquema de conexión de la TRRC al circuito de ECMO entre la bomba y el oxigenador">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5d6068"/></marker></defs>
+      <rect x="10" y="60" width="96" height="44" rx="8" fill="#e4ecf7" stroke="#1f4f8a"/><text x="58" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#1f4f8a">Paciente</text><text x="58" y="96" text-anchor="middle" font-size="10.5" fill="#1f4f8a">cánula venosa</text>
+      <line x1="106" y1="82" x2="176" y2="82" stroke="#5d6068" stroke-width="3" marker-end="url(#ar)"/>
+      <text x="141" y="72" text-anchor="middle" font-size="10" fill="#b4232c" font-weight="700">presión −</text>
+      <text x="141" y="102" text-anchor="middle" font-size="10" fill="#b4232c" font-weight="700">NO conectar</text>
+      <circle cx="210" cy="82" r="30" fill="#842029"/><text x="210" y="86" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">Bomba</text>
+      <line x1="240" y1="82" x2="470" y2="82" stroke="#5d6068" stroke-width="3" marker-end="url(#ar)"/>
+      <text x="355" y="72" text-anchor="middle" font-size="10" fill="#1f6f5c" font-weight="700">presión + (post-bomba)</text>
+      <rect x="472" y="54" width="104" height="56" rx="8" fill="#f0eeea" stroke="#5d6068"/><text x="524" y="86" text-anchor="middle" font-size="12" font-weight="800" fill="#1d1f23">Oxigenador</text>
+      <line x1="576" y1="82" x2="650" y2="82" stroke="#5d6068" stroke-width="3" marker-end="url(#ar)"/>
+      <rect x="652" y="60" width="98" height="44" rx="8" fill="#e4ecf7" stroke="#1f4f8a"/><text x="701" y="80" text-anchor="middle" font-size="12" font-weight="700" fill="#1f4f8a">Paciente</text><text x="701" y="96" text-anchor="middle" font-size="10.5" fill="#1f4f8a">cánula arterial</text>
+      <rect x="330" y="128" width="130" height="34" rx="8" fill="#2d6a3e"/><text x="395" y="150" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">Máquina TRRC</text>
+      <path d="M612,82 L612,145 L460,145" fill="none" stroke="#2d6a3e" stroke-width="2.5" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+      <text x="616" y="128" font-size="10" fill="#2d6a3e" font-weight="700">acceso (post-oxigenador)</text>
+      <path d="M330,145 L300,145 L300,82" fill="none" stroke="#2d6a3e" stroke-width="2.5" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+      <text x="200" y="140" font-size="10" fill="#2d6a3e" font-weight="700">retorno (pre-oxigenador)</text>
+    </svg>
+    <ul>
+      <li>Conectar en el tramo <b>post-bomba</b> (presión positiva); nunca en el tramo pre-bomba por el riesgo de embolia gaseosa y de fallo de la bomba (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13281467/">revisión de TRRC en ECMO</a>).</li>
+      <li><b>Retorno siempre antes del oxigenador</b>, que actúa como filtro de microburbujas y émbolos.</li>
+      <li>El calcio de reposición va por una vía central del paciente, <b>no por el circuito de ECMO</b> (<a href="https://ecmo.icu/daily-care-nursing-routine-crrt-and-plasmapheresis/">Alfred ECMO Guideline</a>).</li>
+      <li>Un filtro coagulado puede embolizar al oxigenador: retirarlo de inmediato y, si se repite, buscar otro acceso (<a href="https://journals.lww.com/asaiojournal/fulltext/2022/02000/elso_guidelines_for_adult_and_pediatric.1.aspx">ELSO</a>).</li>
+    </ul>
+  </div>
+
+  <div class="tl-filter no-print" role="group" aria-label="Filtrar por escenario">
+    <span>Mostrar:</span>
+    <button class="fb on" data-f="all">Todos los escenarios</button>
+    <button class="fb" data-f="cit"><span class="dv cit">A · Citrato</span></button>
+    <button class="fb" data-f="hnf"><span class="dv hnf">B · HNF sistémica</span></button>
+    <button class="fb" data-f="tih"><span class="dv tih">C · TIH</span></button>
+  </div>
+  <div class="lanes-key">
+    <span class="lk lab">Analítica</span><span class="lk ac">Anticoagulación</span><span class="lk mon">Monitorización</span><span class="lk vig">Vigilancia</span>
+  </div>
+
+  <ol class="tl">
+    <li class="ph p0"><div class="when"><b>Indicación</b><span>Decisión</span></div><div class="pcard"><h4>Elección de la estrategia de anticoagulación</h4><div class="lanes">
+      <div class="lane lab"><h5>Analítica</h5><ul>
+        <li data-dev="all">Hemograma, coagulación, fibrinógeno, anti-Xa si hay HNF, gasometría con lactato, calcio total e iónico, Mg, función hepática.</li>
+      </ul></div>
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li data-dev="cit"><span class="dv cit">A</span> Citrato regional si no hay contraindicación; con shock e hipoperfusión, usarlo con monitorización intensiva o elegir otra opción.</li>
+        <li data-dev="hnf"><span class="dv hnf">B</span> Mantener la HNF del dispositivo; no añadir heparina al circuito.</li>
+        <li data-dev="tih"><span class="dv tih">C</span> Retirar toda heparina; anticoagulante no heparínico sistémico.</li>
+      </ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul>
+        <li data-dev="all">Contraindicaciones del citrato: insuficiencia hepática grave, shock con hipoperfusión muscular, acidosis láctica grave (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11001369/">revisión de prácticas de TRRC</a>).</li>
+      </ul></div>
+    </div></div></li>
+
+    <li class="ph p1"><div class="when"><b>Acceso</b><span>Conexión</span></div><div class="pcard"><h4>Catéter de diálisis o conexión al ECMO</h4><div class="lanes">
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li data-dev="all">Catéter: inserción ecoguiada; si el paciente está con HNF terapéutica, valorar la diana y la compresibilidad del vaso.</li>
+        <li data-dev="tih"><span class="dv tih">C</span> Cebado y lavados del circuito sin heparina.</li>
+      </ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul>
+        <li data-dev="hnf"><span class="dv hnf">B</span> Con ECMO: conexión integrada post-bomba con retorno pre-oxigenador, o catéter independiente; ambas son aceptables (<a href="https://link.springer.com/content/pdf/10.1007/s00134-026-08467-6.pdf">Intensive Care Med, 2026</a>).</li>
+        <li data-dev="hnf"><span class="dv hnf">B</span> Comprobar que la presión de retorno de la TRRC esté dentro de los límites de la máquina antes de iniciar.</li>
+      </ul></div>
+    </div></div></li>
+
+    <li class="ph p2"><div class="when"><b>0–2 h</b><span>Inicio</span></div><div class="pcard"><h4>Arranque de la terapia</h4><div class="lanes">
+      <div class="lane mon"><h5>Monitorización</h5><ul>
+        <li data-dev="cit"><span class="dv cit">A</span> <b>iCa postfiltro y sistémico a los 30 min, 1 h y 2 h</b> (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12986174/">serie de citrato regional</a>).</li>
+        <li data-dev="hnf"><span class="dv hnf">B</span> Sin controles adicionales: los del protocolo del dispositivo.</li>
+        <li data-dev="all">Presiones de acceso, retorno y transmembrana.</li>
+      </ul></div>
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li data-dev="cit"><span class="dv cit">A</span> Diana iCa postfiltro <b>0,25–0,35 mmol/L</b>; iCa sistémico en rango fisiológico (<a href="https://www.fda.gov/media/141186/download">FDA</a>).</li>
+        <li data-dev="cit"><span class="dv cit">A</span> Iniciar la reposición de calcio a la vez que el citrato.</li>
+      </ul></div>
+    </div></div></li>
+
+    <li class="ph p3"><div class="when"><b>2–24 h</b><span>Ajuste</span></div><div class="pcard"><h4>Estabilización del citrato y del filtro</h4><div class="lanes">
+      <div class="lane mon"><h5>Monitorización</h5><ul>
+        <li data-dev="cit"><span class="dv cit">A</span> <b>iCa postfiltro y sistémico cada 6–8 h</b>; diana sistémica 1,1–1,3 mmol/L (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10245563/">revisión de citrato regional</a>).</li>
+        <li data-dev="cit"><span class="dv cit">A</span> Primer cociente Ca total/iónico a las 6 h (<a href="https://www.crrtonline.com/conference/support/Protocols/Wythenshawe%20Citrate%20clinical%20guideline%20v5.pdf">protocolo de Wythenshawe</a>).</li>
+        <li data-dev="hnf"><span class="dv hnf">B</span> Anti-Xa según el dispositivo; vigilar el filtro.</li>
+      </ul></div>
+      <div class="lane lab"><h5>Analítica</h5><ul><li data-dev="all">Gasometría, Na, Mg y fósforo según dosis.</li></ul></div>
+    </div></div></li>
+
+    <li class="ph p4"><div class="when"><b>Diario</b><span>Mantenimiento</span></div><div class="pcard"><h4>Controles diarios</h4><div class="lanes">
+      <div class="lane lab"><h5>Analítica</h5><ul>
+        <li data-dev="cit"><span class="dv cit">A</span> <b>Ca total/iónico diario</b>: ≥2,5 indica acumulación de citrato (<a href="https://link.springer.com/article/10.1186/s13054-026-06066-x">consenso Delphi, Crit Care 2026</a>).</li>
+        <li data-dev="all">Ca total y Mg cada 12–24 h (<a href="https://resources.wfsahq.org/wp-content/uploads/Tutorial_548.pdf">WFSA</a>); gasometría, lactato, función hepática.</li>
+        <li data-dev="all"><b>Plaquetas diarias</b>: la trombocitopenia afecta hasta al 70 % de los pacientes en TRRC; descartar TIH con 4Ts (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11001369/">revisión de prácticas de TRRC</a>).</li>
+      </ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul>
+        <li data-dev="all">Vida del filtro, presión transmembrana y caída de presión del filtro.</li>
+        <li data-dev="hnf"><span class="dv hnf">B</span> ΔP del oxigenador si la TRRC está integrada en el ECMO.</li>
+      </ul></div>
+    </div></div></li>
+
+    <li class="ph p5"><div class="when"><b>Incidencias</b><span>A demanda</span></div><div class="pcard"><h4>Coagulación del filtro y acumulación de citrato</h4><div class="lanes">
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li data-dev="cit"><span class="dv cit">A</span> Acumulación: avisar, reducir la dosis de citrato y repetir el cociente en 1 h; si persiste &gt;2,5, suspender el citrato y valorar alternativa o TRRC sin anticoagulación (<a href="https://www.crrtonline.com/conference/support/Protocols/Wythenshawe%20Citrate%20clinical%20guideline%20v5.pdf">Wythenshawe</a>).</li>
+        <li data-dev="hnf"><span class="dv hnf">B</span> Pérdida de ≥2 filtros en 24 h: valorar citrato añadido (<a href="https://ecmo.icu/daily-care-nursing-routine-crrt-and-plasmapheresis/">Alfred</a>), que en ECMO VA redujo la trombosis del filtro (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12934447/">estudio en ECMO VA</a>).</li>
+        <li data-dev="tih"><span class="dv tih">C</span> Coagulación precoz del filtro: revisar la diana del anticoagulante no heparínico.</li>
+      </ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul>
+        <li data-dev="all">Antes de culpar a la anticoagulación: revisar el catéter (posición, flujo), la fracción de filtración y las pausas por alarmas.</li>
+        <li data-dev="hnf"><span class="dv hnf">B</span> Filtro coagulado integrado en el ECMO: retirarlo de inmediato.</li>
+      </ul></div>
+    </div></div></li>
+
+    <li class="ph p5"><div class="when"><b>Pausas</b><span>Procedimientos</span></div><div class="pcard"><h4>Desconexión temporal (TC, quirófano, cambio de set)</h4><div class="lanes">
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li data-dev="cit"><span class="dv cit">A</span> <b>Parar el citrato y el calcio a la vez</b>; devolver la sangre del circuito.</li>
+        <li data-dev="all">Sellado del catéter con <b>citrato 4 %</b>: misma supervivencia del catéter que la heparina (<a href="https://link.springer.com/article/10.1186/s13613-019-0553-4">ensayo VERROU-REA</a>) y menos sangrado (<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4413999/">metaanálisis</a>).</li>
+        <li data-dev="tih"><span class="dv tih">C</span> Nunca sellar con heparina.</li>
+      </ul></div>
+      <div class="lane mon"><h5>Monitorización</h5><ul><li data-dev="cit"><span class="dv cit">A</span> iCa sistémico 1–2 h después de la desconexión.</li></ul></div>
+    </div></div></li>
+
+    <li class="ph p6"><div class="when"><b>Fin TRRC</b><span>Retirada</span></div><div class="pcard"><h4>Fin de la terapia y retirada del acceso</h4><div class="lanes">
+      <div class="lane ac"><h5>Anticoagulación</h5><ul>
+        <li data-dev="cit"><span class="dv cit">A</span> Suspender el citrato y la reposición de calcio de forma simultánea.</li>
+        <li data-dev="hnf"><span class="dv hnf">B</span> La HNF sistémica continúa según el dispositivo; desconexión estéril del ECMO y cierre de los puertos.</li>
+        <li data-dev="all">Retirada del catéter: compresión ≥10 min; si hay HNF terapéutica, coordinar la retirada con un valor de anti-Xa/TTPa en rango bajo.</li>
+      </ul></div>
+      <div class="lane vig"><h5>Vigilancia</h5><ul><li data-dev="all">Hematoma o sangrado en el punto de inserción.</li></ul></div>
+    </div></div></li>
+
+    <li class="ph p7"><div class="when"><b>24–48 h</b><span>Post</span></div><div class="pcard"><h4>Después de la TRRC</h4><div class="lanes">
+      <div class="lane lab"><h5>Analítica</h5><ul>
+        <li data-dev="cit"><span class="dv cit">A</span> iCa y Ca total a las 1–2 h y a las 24 h: hipercalcemia de rebote al metabolizarse el citrato acumulado.</li>
+        <li data-dev="all">Función renal, K, fósforo y equilibrio ácido-base.</li>
+      </ul></div>
+      <div class="lane mon"><h5>Monitorización</h5><ul><li data-dev="all">Eco-Doppler del vaso del catéter si hay edema o dolor del miembro.</li></ul></div>
+    </div></div></li>
+  </ol>
+</section>
+
+<!-- 2 -->
+<section class="card" id="valoracion">
+  <h2><span class="num">5</span>Valoración inicial al ingreso</h2>
+  <div class="grid-2">
+    <div class="box">
+      <h4>Analítica basal (antes de iniciar HNF)</h4>
+      <ul>
+        <li>Hemograma completo, TP/INR, TTPa (ratio), fibrinógeno.</li>
+        <li>Anti-Xa basal (descarta heparina previa / ACOD con efecto anti-Xa).</li>
+        <li>Antitrombina (AT) si se prevé ECMO o soporte prolongado.</li>
+        <li>Hemólisis: LDH, bilirrubina, haptoglobina, Hb libre en plasma (si MCS).</li>
+        <li>Función renal y hepática, grupo y escrutinio de anticuerpos.</li>
+        <li>Fármacos previos: antiagregantes (DAPT, inhibidores IIb/IIIa), ACOD, AVK, fibrinolíticos, hora de la última dosis.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>Estratificación de riesgo</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Riesgo hemorrágico alto</th><th>Riesgo trombótico alto</th></tr></thead>
+        <tbody>
+          <tr><td>Sangrado activo o &lt;24 h de cirugía/esternotomía</td><td>Trombo en VI/aurícula, TEP, prótesis mecánica</td></tr>
+          <tr><td>Hemorragia intracraneal reciente</td><td>Flujo bajo en ECMO (&lt;2 L/min) o estasis en raíz aórtica</td></tr>
+          <tr><td>Plaquetas &lt;50 ×10⁹/L, fibrinógeno &lt;1,5 g/L</td><td>Ausencia de eyección aórtica (VI no pulsátil)</td></tr>
+          <tr><td>Triple terapia antitrombótica tras ICP</td><td>FA, BIAC en 1:2–1:3, TIH confirmada</td></tr>
+          <tr><td>Canulación difícil o múltiples punciones</td><td>Coágulos visibles en el circuito o aumento de ΔP del oxigenador</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="card" id="monitor">
+  <h2><span class="num">6</span>Monitorización de la anticoagulación</h2>
+  <p class="lead">Según las <a href="https://pubmed.ncbi.nlm.nih.gov/35080509/">guías ELSO 2021 de anticoagulación</a>, son aceptables tanto las pruebas basadas en tiempo (ACT, TTPa, viscoelásticas) como el anti-Xa; las dianas habituales son TTPa 1,5–2,5 veces el basal o anti-Xa 0,3–0,7 UI/ml (<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11063723/">revisión sistemática, 2024</a>).</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Prueba</th><th>Uso en la unidad</th><th>Frecuencia</th><th>Limitaciones</th></tr></thead>
+    <tbody>
+      <tr><td><b>Anti-Xa</b> (HNF)</td><td>Prueba principal para titular HNF</td><td class="num">6 h tras inicio o cambio; cada 12–24 h si 2 valores en rango</td><td>Falsamente bajo con hiperbilirrubinemia, hipertrigliceridemia o hemólisis (Hb libre elevada)</td></tr>
+      <tr><td><b>TTPa / ratio</b></td><td>En paralelo al anti-Xa; titulación si no hay anti-Xa disponible</td><td class="num">Cada 6–12 h</td><td>Alterado por déficit de factores, fibrinógeno alto, FVIII elevado, anticoagulante lúpico</td></tr>
+      <tr><td><b>ACT</b></td><td>Canulación, procedimientos, primeras horas en ECMO</td><td class="num">Cada 1–2 h en fase inicial</td><td>Baja correlación con dosis de HNF a niveles bajos</td></tr>
+      <tr><td><b>ROTEM/TEG</b></td><td>Sangrado, coagulopatía mixta, discordancia de pruebas</td><td class="num">A demanda</td><td>Disponibilidad; interpretación con heparina (usar canal HEP)</td></tr>
+      <tr><td><b>Antitrombina</b></td><td>Sospecha de resistencia a heparina</td><td class="num">A demanda</td><td>Sin umbral validado de suplementación</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Interpretación de discordancias</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Anti-Xa</th><th>TTPa</th><th>Posible causa</th><th>Actitud</th></tr></thead>
+    <tbody>
+      <tr><td>En rango</td><td>Muy prolongado</td><td>Coagulopatía de consumo, déficit de factores, hepatopatía, hemodilución</td><td>Guiar por anti-Xa; TP, fibrinógeno, ROTEM; corregir déficit si sangra</td></tr>
+      <tr><td>Bajo</td><td>Prolongado</td><td>Déficit de AT, interferencia por hemólisis/bilirrubina</td><td>Medir AT y Hb libre; ver <a href="#resistencia">Resistencia a heparina</a></td></tr>
+      <tr><td>En rango</td><td>Acortado</td><td>Reactantes de fase aguda (FVIII, fibrinógeno elevados)</td><td>Guiar por anti-Xa</td></tr>
+      <tr><td>Alto</td><td>En rango</td><td>Acumulación de HNF (insuficiencia renal/hepática), heparina de la purga del Impella</td><td>Contabilizar HNF total; reducir ritmo según nomograma</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><b>Extracción correcta</b>Extraer siempre del brazo contrario o de una vía sin heparina, nunca de la línea por la que se infunde la HNF ni del circuito postoxigenador sin protocolo específico. Registrar la hora exacta.</div>
+</section>
+
+<!-- 4 -->
+<section class="card" id="hnf">
+  <h2><span class="num">7</span>Heparina no fraccionada: preparación y dosificación</h2>
+  <div class="grid-2">
+    <div class="box">
+      <h4>Preparación estándar (adaptar a Farmacia)</h4>
+      <dl class="kv">
+        <dt>Opción A</dt><dd>25.000 UI en 250 ml SG 5% o SF → <b>100 UI/ml</b></dd>
+        <dt>Opción B</dt><dd>25.000 UI en 500 ml SG 5% o SF → <b>50 UI/ml</b></dd>
+        <dt>Vía</dt><dd>Luz exclusiva de catéter central; no compartir con bolos</dd>
+        <dt>Registro</dt><dd>UI/kg/h, UI/h y ml/h en cada cambio</dd>
+      </dl>
+    </div>
+    <div class="box">
+      <h4>Dosis de inicio orientativas</h4>
+      <div class="tbl-wrap" style="margin:0"><table>
+        <thead><tr><th>Situación</th><th>Bolo</th><th>Perfusión inicial</th></tr></thead>
+        <tbody>
+          <tr><td>Sin MCS, indicación terapéutica (SCA, FA, trombo)</td><td class="num">60–80 UI/kg (máx. 5.000)</td><td class="num">12–18 UI/kg/h</td></tr>
+          <tr><td>BIAC (estrategia selectiva)</td><td class="num">No</td><td class="num">10–12 UI/kg/h</td></tr>
+          <tr><td>Impella con purga heparinizada</td><td class="num">No</td><td class="num">6–7 UI/kg/h si anti-Xa &lt;0,3</td></tr>
+          <tr><td>ECMO VA (tras canulación)</td><td class="num">50–100 UI/kg en canulación</td><td class="num">7,5–20 UI/kg/h</td></tr>
+          <tr><td>Alto riesgo hemorrágico</td><td class="num">No</td><td class="num">Diana baja; iniciar al extremo inferior</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+  <p style="margin-top:12px;font-size:13.5px;color:var(--muted)">Dosis de BIAC según la <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10655856/">revisión de anticoagulación en MCS temporal</a>; Impella según el <a href="https://acforum.org/web/scripts/viewPDF.php?id=1865">protocolo UNMH/Anticoagulation Forum</a> y la <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11097937/">serie con inicio a 6 UI/kg/h</a>; ECMO según <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8062644/">la revisión de anticoagulación en ECMO</a> basada en ELSO.</p>
+</section>
+
+<!-- 5 -->
+<section class="card" id="nomograma">
+  <h2><span class="num">8</span>Nomograma de ajuste por anti-Xa y TTPa</h2>
+  <p class="lead">Nomograma de referencia para diana anti-Xa 0,30–0,50 UI/ml, adaptado del <a href="https://acforum.org/web/scripts/viewPDF.php?id=1865">protocolo de Impella del Anticoagulation Forum</a>. Para otras dianas, la calculadora desplaza los tramos de forma proporcional.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Anti-Xa (UI/ml)</th><th>Bolo</th><th>Cambio de perfusión</th><th>Siguiente control</th></tr></thead>
+    <tbody>
+      <tr class="crit"><td class="num">&lt;0,10</td><td>25 UI/kg (omitir si sangrado o alto riesgo)</td><td>↑ 3 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="low"><td class="num">0,10–0,19</td><td>No</td><td>↑ 2 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="low"><td class="num">0,20–0,29</td><td>No</td><td>↑ 1 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="goal"><td class="num">0,30–0,50</td><td>—</td><td>Sin cambios (diana)</td><td>6 h; cada 12–24 h tras 2 consecutivos</td></tr>
+      <tr class="high"><td class="num">0,51–0,60</td><td>No</td><td>↓ 1 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="high"><td class="num">0,61–0,75</td><td>No</td><td>Parar 1 h, después ↓ 2 UI/kg/h</td><td>6 h tras reinicio</td></tr>
+      <tr class="crit"><td class="num">&gt;0,75</td><td>No</td><td>Parar 1 h, después ↓ 3 UI/kg/h y avisar al médico</td><td>6 h tras reinicio</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Nomograma alternativo por ratio de TTPa (si no hay anti-Xa disponible)</h3>
+  <p style="font-size:13.5px;color:var(--muted)">Diana de ratio de TTPa 1,5–2,0 (equivalencia a validar con el reactivo local frente al anti-Xa). Adaptación local, sin bolos grandes por el riesgo hemorrágico de esta población.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Ratio de TTPa</th><th>Acción</th><th>Siguiente control</th></tr></thead>
+    <tbody>
+      <tr class="crit"><td class="num">&lt;1,2</td><td>Bolo 25 UI/kg (si no sangrado) y ↑ 3 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="low"><td class="num">1,2–1,49</td><td>↑ 2 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="goal"><td class="num">1,5–2,0</td><td>Sin cambios</td><td>6 h; cada 12–24 h tras 2 consecutivos</td></tr>
+      <tr class="high"><td class="num">2,01–2,5</td><td>↓ 1–2 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="high"><td class="num">2,51–3,0</td><td>Parar 1 h, después ↓ 2 UI/kg/h</td><td>6 h tras reinicio</td></tr>
+      <tr class="crit"><td class="num">&gt;3,0</td><td>Parar 1 h, ↓ 3 UI/kg/h, avisar al médico, valorar anti-Xa</td><td>6 h tras reinicio</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="calc no-print" id="calcHNF">
+    <h3>Calculadora de ajuste de HNF</h3>
+    <div class="fields">
+      <label>Peso (kg)<input type="number" id="h_peso" min="30" max="250" step="0.5" value="80"></label>
+      <label>Concentración<select id="h_conc"><option value="100">100 UI/ml</option><option value="50">50 UI/ml</option></select></label>
+      <label>Ritmo actual (ml/h)<input type="number" id="h_rate" min="0" step="0.1" value="8"></label>
+      <label>Diana anti-Xa<select id="h_target">
+        <option value="0.3-0.5">0,30–0,50 estándar</option>
+        <option value="0.2-0.4">0,20–0,40 Impella</option>
+        <option value="0.2-0.3">0,20–0,30 alto riesgo hemorr.</option>
+        <option value="0.3-0.7">0,30–0,70 ELSO</option>
+        <option value="0.5-0.7">0,50–0,70 trombosis</option>
+      </select></label>
+      <label>Anti-Xa medido (UI/ml)<input type="number" id="h_axa" min="0" max="2" step="0.01" placeholder="p. ej. 0,24"></label>
+      <label>Heparina por purga Impella (UI/h)<input type="number" id="h_purge" min="0" step="1" value="0"></label>
+    </div>
+    <div class="result" id="h_out" aria-live="polite">Introduce el anti-Xa medido.</div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="card" id="dispositivos">
+  <h2><span class="num">9</span>Esquemas específicos por dispositivo</h2>
+  <p class="lead">Seleccione el dispositivo. En la versión impresa se muestran todos.</p>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-dev="biac" aria-selected="true"><span class="dot" style="background:var(--biac)"></span>BIAC</button>
+    <button class="tab" role="tab" data-dev="imp" aria-selected="false"><span class="dot" style="background:var(--imp)"></span>Impella</button>
+    <button class="tab" role="tab" data-dev="ecmo" aria-selected="false"><span class="dot" style="background:var(--ecmo)"></span>ECMO VA</button>
+    <button class="tab" role="tab" data-dev="ecp" aria-selected="false"><span class="dot" style="background:#3a3d44"></span>ECPELLA</button>
+    <button class="tab" role="tab" data-dev="trrc" aria-selected="false"><span class="dot" style="background:var(--trrc)"></span>TRRC</button>
+  </div>
+
+  <div class="panel show" id="p-biac" style="border-top:4px solid var(--biac)">
+    <h3>Balón intraaórtico de contrapulsación (BIAC)</h3>
+    <dl class="kv">
+      <dt>Estrategia</dt><dd><b>Selectiva</b>: anticoagular si hay otra indicación, BIAC en 1:2 o 1:3, duración prevista &gt;5 días o ingreso en unidad coronaria (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10655856/">revisión de MCS temporal</a>).</dd>
+      <dt>Dosis</dt><dd>HNF sin bolo, 10–12 UI/kg/h.</dd>
+      <dt>Diana</dt><dd>TTPa 50–70 s (o 60–80 s) / anti-Xa 0,2–0,4 UI/ml.</dd>
+      <dt>Retirada</dt><dd>Suspender la HNF 1–4 h antes de retirar el balón (<a href="https://apps.worcsacute.nhs.uk/KeyDocumentPortal/Home/DownloadFile/4841">protocolo NHS Worcestershire</a>).</dd>
+    </dl>
+    <div class="callout"><b>Evidencia</b>En un ensayo aleatorizado de 153 pacientes, la heparina aumentó el sangrado (14,1 % frente a 2,4 %) sin reducir la isquemia de miembro (<a href="https://academic.oup.com/icvts/article/15/1/136/705704">ICVTS, revisión de mejor evidencia</a>).</div>
+    <div class="callout warn"><b>Precaución</b>No dejar el balón parado ni en ratios bajos (1:3) de forma prolongada por el alto riesgo de trombosis (<a href="https://resources.wfsahq.org/wp-content/uploads/Tutorial_568.pdf">WFSA</a>). La trombocitopenia es frecuente por destrucción mecánica; descartar TIH si coexiste con HNF.</div>
+  </div>
+
+  <div class="panel" id="p-imp" style="border-top:4px solid var(--imp)">
+    <h3>Impella (CP / 5.0 / 5.5 / RP)</h3>
+    <h4>Solución de purga</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Purga</th><th>Composición</th><th>Indicación</th></tr></thead>
+      <tbody>
+        <tr><td><b>Estándar</b></td><td>HNF 25 UI/ml en SG 5% (25.000 UI/1.000 ml)</td><td>Soporte continuado fuera del laboratorio de hemodinámica (<a href="https://www.scai.org/quality-improvement-tools/qi-tips/impella-anticoagulation-management-ccu">SCAI</a>)</td></tr>
+        <tr><td><b>Bicarbonato (BBPS)</b></td><td>Bicarbonato sódico 25 mEq/1.000 ml SG 5%</td><td>TIH confirmada o sospecha alta, alergia a heparina, sangrado clínicamente relevante (<a href="https://www.scai.org/quality-improvement-tools/qi-tips/impella-anticoagulation-management-ccu">SCAI</a>)</td></tr>
+        <tr><td>No recomendado</td><td>Bivalirudina o argatrobán en purga</td><td>Aumento de presiones de purga y fallo de bomba descritos (<a href="https://academic.oup.com/ajhp/article/81/5/e115/7410317">AJHP</a>)</td></tr>
+      </tbody>
+    </table></div>
+    <h4>Anticoagulación sistémica</h4>
+    <ol>
+      <li>Anti-Xa basal al llegar a la UCI y 4 h después de iniciar la purga (<a href="https://acforum.org/web/scripts/viewPDF.php?id=1865">Anticoagulation Forum</a>).</li>
+      <li>Si anti-Xa &lt;0,3 UI/ml: iniciar HNF IV a 6–7 UI/kg/h (máximo inicial 750–1.000 UI/h) y titular con el nomograma.</li>
+      <li>Diana: anti-Xa 0,2–0,4 UI/ml según <a href="https://www.scai.org/quality-improvement-tools/qi-tips/impella-anticoagulation-management-ccu">SCAI</a>, o 0,3–0,5 UI/ml (0,5–0,7 si trombosis aguda) según la <a href="https://www.jacc.org/doi/10.1016/j.jacc.2022.02.052">revisión de JACC</a>. Definir la diana local.</li>
+      <li>Dosis total = HNF de purga + HNF sistémica. El flujo de purga lo regula automáticamente la consola; registrarlo cada hora.</li>
+    </ol>
+    <div class="callout danger"><b>Sangrado con Impella</b>Suspender primero la HNF sistémica y, si persiste, cambiar la purga a bicarbonato. Nunca interrumpir la purga.</div>
+    <div class="callout"><b>TIH con Impella</b>Purga con bicarbonato + anticoagulación sistémica con inhibidor directo de trombina (bivalirudina o argatrobán) (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10655856/">revisión de MCS temporal</a>).</div>
+  </div>
+
+  <div class="panel" id="p-ecmo" style="border-top:4px solid var(--ecmo)">
+    <h3>ECMO venoarterial</h3>
+    <div class="flow">
+      <div class="step"><span class="n">1</span><div><b>Canulación:</b> bolo de HNF 50–100 UI/kg (reducir a 25–50 UI/kg si sangrado activo o poscardiotomía) y comprobar ACT (<a href="https://www.ahajournals.org/doi/10.1161/CIRCULATIONAHA.119.034512">Circulation, ECMO VA en shock cardiogénico</a>).</div></div>
+      <div class="step"><span class="n">2</span><div><b>Inicio de perfusión:</b> 7,5–20 UI/kg/h cuando el ACT baje de 220–250 s y no haya sangrado activo en los puntos de canulación (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8062644/">revisión de anticoagulación en ECMO</a>).</div></div>
+      <div class="step"><span class="n">3</span><div><b>Primeras 24 h:</b> ACT cada 1–2 h (diana 180–220 s) hasta disponer de anti-Xa; anti-Xa y TTPa cada 6 h.</div></div>
+      <div class="step"><span class="n">4</span><div><b>Mantenimiento:</b> anti-Xa 0,3–0,5 UI/ml (estándar); 0,2–0,3 UI/ml si alto riesgo hemorrágico; hasta 0,5–0,7 si trombosis. ELSO acepta 0,3–0,7 UI/ml.</div></div>
+    </div>
+    <h4>Objetivos hemostáticos orientativos</h4>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Parámetro</th><th>Sin sangrado</th><th>Con sangrado</th></tr></thead>
+      <tbody>
+        <tr><td>Plaquetas</td><td class="num">&gt;50 ×10⁹/L</td><td class="num">&gt;80–100 ×10⁹/L</td></tr>
+        <tr><td>Fibrinógeno</td><td class="num">&gt;1,5 g/L</td><td class="num">&gt;2 g/L</td></tr>
+        <tr><td>Hemoglobina</td><td class="num">&gt;7–8 g/dl</td><td class="num">Individualizar</td></tr>
+        <tr><td>Hb libre en plasma</td><td class="num">&lt;50 mg/dl</td><td class="num">Valorar cambio de bomba/oxigenador si &gt;50</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warn"><b>Situaciones especiales</b>
+      <ul style="margin:4px 0 0">
+        <li><b>Sangrado grave:</b> puede suspenderse temporalmente la HNF si el flujo es &gt;2 L/min (<a href="https://link.springer.com/article/10.1007/s12055-022-01467-3">IJTCVS</a>); preparar circuito de recambio.</li>
+        <li><b>Ventrículo no eyectivo / estasis en raíz aórtica:</b> considerar diana alta y descarga del VI.</li>
+        <li><b>Decanulación:</b> retirar la cánula 30–60 min después de suspender la heparina (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7005959/">Rev Bras Ter Intensiva</a>).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel" id="p-ecp" style="border-top:4px solid #3a3d44">
+    <h3>ECPELLA (ECMO VA + Impella)</h3>
+    <p><a href="#crono-ecpella">Ver la cronología específica de ECPELLA →</a></p>
+    <ul>
+      <li>Diana única basada en el dispositivo de mayor riesgo trombótico (habitualmente anti-Xa 0,3–0,5 UI/ml).</li>
+      <li>Contabilizar la HNF de la purga dentro de la dosis total para evitar sobredosificación.</li>
+      <li>En sangrado: suspender HNF sistémica, mantener la purga (cambiar a bicarbonato si persiste) y valorar el flujo de ECMO.</li>
+      <li>Vigilar hemólisis con mayor frecuencia (LDH y Hb libre cada 12–24 h): la posición de Impella y la succión aumentan el riesgo.</li>
+    </ul>
+  </div>
+
+  <div class="panel" id="p-trrc" style="border-top:4px solid var(--trrc)">
+    <h3>Terapia de reemplazo renal continua (TRRC)</h3>
+    <p><a href="#crono-trrc">Ver la cronología específica de la TRRC →</a></p>
+    <div class="grid-2">
+      <div class="box">
+        <h4>Paciente sin anticoagulación sistémica</h4>
+        <ul>
+          <li><b>Citrato regional</b> de primera elección si no hay contraindicaciones (<a href="https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf">KDIGO 2012</a>; reafirmado en el <a href="https://kdigo.org/wp-content/uploads/2026/03/KDIGO-2026-AKI-AKD-Guideline-Public-Review-Draft-March-2026.pdf">borrador KDIGO 2026</a>).</li>
+          <li>Contraindicación relativa: shock con hipoperfusión muscular e insuficiencia hepática grave, por riesgo de acumulación (<a href="https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf">KDIGO</a>).</li>
+          <li>Calcio iónico postfiltro 0,25–0,35 mmol/L; sistémico 1,0–1,2 mmol/L.</li>
+          <li>Acumulación de citrato: cociente calcio total/iónico &gt;2,5, acidosis metabólica con anión gap elevado o necesidad creciente de calcio.</li>
+          <li>Alternativa: HNF en el circuito.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h4>Paciente con ECMO o Impella (ya anticoagulado)</h4>
+        <ul>
+          <li>La HNF sistémica suele ser suficiente; no se recomienda añadir heparina en el circuito.</li>
+          <li>Si hay coagulación repetida del filtro, valorar <b>añadir citrato regional</b>: en ECMO VA se ha asociado a menos trombosis del filtro sin más sangrado (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12934447/">estudio en ECMO VA</a>).</li>
+          <li>El citrato no es aplicable al circuito de ECMO por el flujo sanguíneo elevado (<a href="https://link.springer.com/article/10.1186/s44158-023-00091-w">revisión de citrato regional</a>).</li>
+          <li>Conexión integrada al circuito de ECMO o en paralelo con acceso propio, según protocolo de perfusión.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="card" id="sangrado">
+  <h2><span class="num">10</span>Manejo del sangrado y reversión con protamina</h2>
+  <div class="grid-3">
+    <div class="box" style="border-top:4px solid var(--warn)">
+      <h4>Menor</h4>
+      <p>Puntos de inserción, mucosas, sin repercusión hemodinámica.</p>
+      <ul><li>Medidas locales (compresión, hemostáticos tópicos).</li><li>Revisar diana: bajar al extremo inferior.</li><li>Corregir plaquetas/fibrinógeno si están bajo umbral.</li></ul>
+    </div>
+    <div class="box" style="border-top:4px solid var(--danger)">
+      <h4>Mayor</h4>
+      <p>Caída de Hb ≥2 g/dl, ≥2 concentrados de hematíes en 24 h o sangrado en órgano crítico.</p>
+      <ul><li>Suspender HNF sistémica (Impella: mantener purga, cambiar a bicarbonato).</li><li>ROTEM/TEG y corrección dirigida.</li><li>Buscar origen (TC, endoscopia, cirugía).</li></ul>
+    </div>
+    <div class="box" style="border-top:4px solid #5c0f16">
+      <h4>Amenazante para la vida</h4>
+      <p>Hemorragia intracraneal, taponamiento, inestabilidad refractaria.</p>
+      <ul><li>Suspender toda heparina.</li><li>Protamina (ver cálculo).</li><li>Con ECMO: preparar circuito de recambio y aumentar flujo si es posible.</li></ul>
+    </div>
+  </div>
+  <h3>Dosificación de protamina</h3>
+  <ul>
+    <li><b>Perfusión de HNF:</b> 1 mg de protamina por cada 100 UI de HNF administradas en las <b>últimas 2–3 h</b>; dosis máxima 50 mg (<a href="https://www.heart.org/-/media/files/professional/quality-improvement/hemorrhagic--stroke/hemorrhagic-stroke-toolkit-page/5_18_2021/anticoagulation-reversal-guideline-for-adults-5182021.pdf">AHA, guía de reversión</a>).</li>
+    <li>Administración lenta, no más de 5 mg/min (50 mg en 10 min) (<a href="https://www.heart.org/-/media/files/professional/quality-improvement/hemorrhagic--stroke/hemorrhagic-stroke-toolkit-page/5_18_2021/ich-reversal-guideline-mar-2019.pdf">AHA</a>).</li>
+    <li>TTPa a los 15 min; si sigue prolongado, repetir 0,5 mg por cada 100 UI (<a href="https://www.heart.org/-/media/files/professional/quality-improvement/hemorrhagic--stroke/hemorrhagic-stroke-toolkit-page/5_18_2021/anticoagulation-reversal-guideline-for-adults-5182021.pdf">AHA</a>).</li>
+    <li>Dosis excesivas pueden empeorar el sangrado por efecto anticoagulante propio; posible rebote de heparina hasta 18 h (<a href="https://www.downstate.edu/education-training/fellowship-residency-programs/pharmacy/_documents/ptsaf-19-adult-therapeutic-hparin-enoxaparin-guideline-jan-2026.pdf">SUNY Downstate</a>).</li>
+    <li>Efectos adversos: hipotensión, bradicardia, vasoconstricción pulmonar y reacciones anafilactoides (<a href="https://www.heart.org/-/media/files/professional/quality-improvement/hemorrhagic--stroke/hemorrhagic-stroke-toolkit-page/5_18_2021/anticoagulation-reversal-guideline-for-adults-5182021.pdf">AHA</a>). No usar plasma para revertir heparina.</li>
+  </ul>
+  <div class="callout danger"><b>Protamina en ECMO / Impella</b>Reservar para sangrado amenazante para la vida. La reversión completa aumenta el riesgo de trombosis del oxigenador, de la bomba y de las cánulas; considerar dosis parcial y decisión consensuada con el equipo de ECMO.</div>
+
+  <div class="calc no-print">
+    <h3>Calculadora de protamina</h3>
+    <div class="fields">
+      <label>Ritmo de HNF (UI/h)<input type="number" id="p_rate" min="0" step="10" value="1000"></label>
+      <label>Horas a considerar<select id="p_h"><option value="2">2 h</option><option value="2.5">2,5 h</option><option value="3" selected>3 h</option></select></label>
+      <label>Bolos de HNF en ese periodo (UI)<input type="number" id="p_bolus" min="0" step="100" value="0"></label>
+      <label>Purga Impella (UI/h, si se suspende)<input type="number" id="p_purge" min="0" step="10" value="0"></label>
+    </div>
+    <div class="result" id="p_out" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="card" id="resistencia">
+  <h2><span class="num">11</span>Resistencia a la heparina</h2>
+  <p class="lead">Sin definición de consenso; la más usada es la necesidad de ≥35.000 UI de HNF en 24 h para alcanzar la diana (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9019066/">ASAIO J</a>). Se recomienda preferir criterios por peso: la mayoría de clínicos la diagnostica con &gt;30 UI/kg/h (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11665620/">Troubleshooting heparin resistance</a>).</p>
+  <div class="grid-2">
+    <div class="box">
+      <h4>Causas</h4>
+      <ul>
+        <li>Déficit de antitrombina (adquirido en ECMO, CID, hepatopatía, hemodilución).</li>
+        <li>Proteínas de fase aguda que fijan heparina; FVIII y fibrinógeno elevados.</li>
+        <li>Trombocitosis, aclaramiento aumentado.</li>
+        <li>Pseudorresistencia: TTPa acortado con anti-Xa en rango.</li>
+        <li>Andexanet alfa previo, síndrome antifosfolípido.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>Algoritmo</h4>
+      <div class="flow" style="margin:0">
+        <div class="step"><span class="n">1</span><div>Confirmar con <b>anti-Xa</b> (descartar pseudorresistencia por TTPa).</div></div>
+        <div class="step"><span class="n">2</span><div>Medir <b>actividad de AT</b>; revisar errores de preparación o de vía.</div></div>
+        <div class="step warn"><span class="n">3</span><div>Si anti-Xa bajo y AT &lt;50–60 % con trombosis o diana no alcanzada: valorar <b>concentrado de AT</b> (consenso con Hematología).</div></div>
+        <div class="step danger"><span class="n">4</span><div>Si persiste: cambiar a <b>bivalirudina</b> (o argatrobán).</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout"><b>Antitrombina</b>El umbral de suplementación varía entre centros (&lt;30 % a &lt;80 %, más a menudo &lt;70 %); un ensayo aleatorizado en ECMO VV no mostró menor necesidad de HNF, transfusión, hemorragia ni trombosis con la suplementación (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9457503/">revisión de estrategias en ECMO</a>). No suplementar de forma rutinaria. Dosis orientativa: UI = (AT deseada % − AT actual %) × peso (kg) ÷ factor de la ficha técnica del preparado disponible.</div>
+</section>
+
+<!-- 9 -->
+<section class="card" id="hit">
+  <h2><span class="num">12</span>Trombocitopenia inducida por heparina (TIH)</h2>
+  <p class="lead">La <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6258919/">guía ASH 2018</a> recomienda usar la escala 4Ts en lugar de la impresión clínica y no solicitar pruebas ni tratar empíricamente si la probabilidad es baja.</p>
+
+  <div class="calc no-print">
+    <h3>Escala 4Ts</h3>
+    <div id="ts">
+      <div class="ts-row"><b>Trombocitopenia</b><div class="ts-opts">
+        <label><input type="radio" name="t1" value="2">Caída &gt;50 % y nadir ≥20 ×10⁹/L (2)</label>
+        <label><input type="radio" name="t1" value="1">Caída 30–50 % o nadir 10–19 ×10⁹/L (1)</label>
+        <label><input type="radio" name="t1" value="0">Caída &lt;30 % o nadir &lt;10 ×10⁹/L (0)</label></div></div>
+      <div class="ts-row"><b>Tiempo de caída</b><div class="ts-opts">
+        <label><input type="radio" name="t2" value="2">Día 5–10, o ≤1 día con exposición en los 30 días previos (2)</label>
+        <label><input type="radio" name="t2" value="1">Compatible pero no claro, después del día 10, o ≤1 día con exposición hace 30–100 días (1)</label>
+        <label><input type="radio" name="t2" value="0">≤4 días sin exposición reciente (0)</label></div></div>
+      <div class="ts-row"><b>Trombosis</b><div class="ts-opts">
+        <label><input type="radio" name="t3" value="2">Trombosis nueva confirmada, necrosis cutánea o reacción sistémica tras bolo (2)</label>
+        <label><input type="radio" name="t3" value="1">Trombosis progresiva/recurrente, lesiones eritematosas, sospecha no confirmada (1)</label>
+        <label><input type="radio" name="t3" value="0">Ninguna (0)</label></div></div>
+      <div class="ts-row"><b>Otras causas</b><div class="ts-opts">
+        <label><input type="radio" name="t4" value="2">Ninguna aparente (2)</label>
+        <label><input type="radio" name="t4" value="1">Posible otra causa (sepsis, consumo por MCS, hemodilución) (1)</label>
+        <label><input type="radio" name="t4" value="0">Otra causa definida (0)</label></div></div>
+    </div>
+    <div class="result" id="ts_out" aria-live="polite" style="margin-top:12px">Complete los cuatro apartados.</div>
+  </div>
+  <p class="only-print">Escala 4Ts: trombocitopenia, tiempo, trombosis, otras causas (0–2 puntos cada una). Baja ≤3; intermedia 4–5; alta 6–8.</p>
+
+  <h3>Actuación según probabilidad</h3>
+  <div class="flow">
+    <div class="step ok"><span class="n">≤3</span><div><b>Baja:</b> no solicitar pruebas ni suspender heparina; buscar otras causas. Recalcular si cambia la situación clínica (<a href="https://www.hematology.org/-/media/hematology/files/clinicians/guidelines/vte/ashslideset-hit5-17.pdf">ASH</a>).</div></div>
+    <div class="step warn"><span class="n">4–5</span><div><b>Intermedia:</b> suspender toda heparina, inmunoensayo anti-PF4 e iniciar anticoagulante no heparínico; a dosis profiláctica si el riesgo hemorrágico es alto y terapéutica si no lo es (<a href="https://www.hematology.org/-/media/hematology/files/clinicians/guidelines/vte/ashslideset-hit5-17.pdf">ASH</a>).</div></div>
+    <div class="step danger"><span class="n">6–8</span><div><b>Alta:</b> suspender heparina e iniciar anticoagulante no heparínico a dosis terapéutica; inmunoensayo y, si es positivo, prueba funcional (SRA/HIPA) (<a href="https://www.hematology.org/-/media/hematology/files/clinicians/guidelines/vte/ashslideset-hit5-17.pdf">ASH</a>).</div></div>
+  </div>
+
+  <h3>Medidas específicas en la unidad</h3>
+  <ul class="check">
+    <li>Retirar <b>toda</b> heparina: perfusión, lavados de vías, sellados de catéteres, heparina en el circuito de TRRC.</li>
+    <li>Impella: cambiar la purga a bicarbonato 25 mEq/1.000 ml SG 5%.</li>
+    <li>ECMO: valorar con perfusión los componentes recubiertos de heparina del circuito.</li>
+    <li>No transfundir plaquetas de forma profiláctica salvo sangrado o procedimiento de alto riesgo.</li>
+    <li>No iniciar antagonistas de vitamina K hasta plaquetas ≥150 ×10⁹/L (<a href="https://www.hematology.org/-/media/hematology/files/clinicians/guidelines/vte/ashslideset-hit5-17.pdf">ASH</a>).</li>
+    <li>Si el inmunoensayo es negativo: valorar suspender el anticoagulante alternativo y reanudar heparina (<a href="https://documents.cap.org/documents/Heparin-Induced_Thrombocytopenia_ClinicianHandout.pdf">CAP</a>).</li>
+  </ul>
+
+  <h3>Anticoagulantes alternativos</h3>
+  <p style="font-size:13.5px;color:var(--muted)">En pacientes críticos, con riesgo hemorrágico o con procedimientos urgentes, se prefieren argatrobán o bivalirudina por su corta duración de acción; evitar o reducir argatrobán en disfunción hepática Child-Pugh B–C (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6258919/">ASH 2018</a>).</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Fármaco</th><th>Dosis de inicio</th><th>Monitorización</th><th>Consideraciones</th></tr></thead>
+    <tbody>
+      <tr><td><b>Bivalirudina</b></td><td class="num">0,15 mg/kg/h sin bolo (función orgánica normal); reducir en insuficiencia renal</td><td>TTPa 1,5–2,5 × basal (<a href="https://www.hematology.org/-/media/Hematology/Files/Education/Clinicians/Guidelines-Quality/Documents/ASH_VTE_HIT_PocketGuide.pdf">ASH</a>)</td><td>De elección en ECMO e ICP. Riesgo de estasis en el circuito (proteólisis local): evitar zonas de flujo lento</td></tr>
+      <tr><td><b>Argatrobán</b></td><td class="num">0,1–0,3 µg/kg/min en ECMO/crítico; titular</td><td>TTPa 50–70 s / ACT 150–230 s (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10532142/">revisión de ECMO</a>)</td><td>Metabolismo hepático: preferible en insuficiencia renal. Prolonga el INR</td></tr>
+      <tr><td>Fondaparinux</td><td class="num">Según peso</td><td>Anti-Xa calibrado específico</td><td>Vida media larga; no apropiado en MCS ni con procedimientos previstos</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- CONTROL ENFERMERIA -->
+<section class="card enf-page" id="enfermeria">
+  <h2><span class="num">13</span>Control de enfermería: ingreso y primeras 24 h</h2>
+  <p class="lead">Página operativa para la enfermera responsable: material que debe estar preparado antes de que llegue el paciente, preparación y cálculo de la heparina, vía de administración, compatibilidades, controles de las primeras 24 h y qué hacer con cada resultado. La heparina es un medicamento de alto riesgo: el cálculo y la programación de la bomba se comprueban con doble chequeo independiente (<a href="https://seguridaddelpaciente.sanidad.gob.es/practicasSeguras/usoSeguroMedicamentos/docs/Recomendaciones_uso_seguro_medicamentos_alto_riesgo.pdf">Ministerio de Sanidad e ISMP-España</a>).</p>
+
+  <div class="nseq" aria-label="Secuencia de ingreso">
+    <div class="ns"><span class="nn">1</span><b>Analítica basal</b><span>Antes de cualquier heparina</span></div>
+    <div class="ns"><span class="nn">2</span><b>Bomba y vía</b><span>Preparadas, etiquetadas y con doble chequeo</span></div>
+    <div class="ns"><span class="nn">3</span><b>Bolo</b><span>Si está pautado: IV directo y hora registrada</span></div>
+    <div class="ns"><span class="nn">4</span><b>Perfusión</b><span>ECMO: iniciar cuando el ACT baje de 220–250 s</span></div>
+    <div class="ns"><span class="nn">5</span><b>Control a las 6 h</b><span>Anti-Xa y TTPa</span></div>
+    <div class="ns"><span class="nn">6</span><b>Ajuste</b><span>Nomograma; nuevo control a las 6 h</span></div>
+  </div>
+
+  <h3>Material preparado para el ingreso</h3>
+  <div class="kit">
+    <div class="kt kt-f"><h4>Fármaco</h4><ul class="check">
+      <li>Bomba de heparina preparada, etiquetada y sin conectar.</li>
+      <li>Heparina sódica <b>1 % (1.000 UI/ml)</b>, viales de 5 ml = 5.000 UI, para el bolo (<a href="https://cima.aemps.es/cima/dochtml/ft/58693/FT_58693.html">ficha técnica, CIMA</a>).</li>
+      <li>Jeringas de 10 ml rotuladas «HEPARINA BOLO» y SF para lavado.</li>
+      <li>Solución de purga del Impella preparada (<a href="#dispositivos">ver Impella</a>).</li>
+      <li>Protamina localizada en la unidad (<a href="#sangrado">sección de sangrado</a>).</li>
+    </ul></div>
+    <div class="kt kt-v"><h4>Vía de administración</h4><ul class="check">
+      <li>Luz central exclusiva identificada o vía periférica dedicada.</li>
+      <li>Alargadera con válvula antirreflujo y etiqueta «HEPARINA».</li>
+      <li>Bomba volumétrica (bolsa) o de jeringa (50 ml), con biblioteca de fármacos si está disponible.</li>
+      <li>Presurizador de la línea arterial con SF <b>sin heparina</b>.</li>
+    </ul></div>
+    <div class="kt kt-m"><h4>Monitorización y extracciones</h4><ul class="check">
+      <li>Equipo de ACT con cartuchos (implante de ECMO o Impella).</li>
+      <li>Tubos de citrato (tapón azul) y peticiones de anti-Xa y TTPa.</li>
+      <li>Doppler portátil, linterna para revisar el circuito y NIRS si se dispone.</li>
+      <li>Hoja de registro de heparina: UI/kg/h, UI/h, ml/h y hora de cada cambio.</li>
+    </ul></div>
+    <div class="kt kt-s"><h4>Seguridad</h4><ul class="check">
+      <li>Peso real del paciente confirmado (báscula de la cama o dato fiable).</li>
+      <li>Diana de anti-Xa del día escrita en la prescripción.</li>
+      <li>Antecedente de TIH preguntado: si existe, <b>ninguna heparina</b> (lavados, sellados y purga incluidos).</li>
+      <li>Una sola concentración de heparina en la unidad (<a href="https://seguridaddelpaciente.sanidad.gob.es/practicasSeguras/usoSeguroMedicamentos/docs/Recomendaciones__para_el_Uso_Seguro_Medicamentos_Alto_Riesgo-_2023.pdf">Ministerio de Sanidad, 2023</a>).</li>
+    </ul></div>
+  </div>
+
+  <div class="ncalc" id="calcPrep">
+    <h3>Hoja de preparación: bomba y bolo según el peso</h3>
+    <div class="fields">
+      <label>Peso real (kg)<input type="number" id="e_peso" min="30" max="250" step="0.5" value="80"></label>
+      <label>Situación<select id="e_ind">
+        <option value="ecmo">ECMO VA (canulación)</option>
+        <option value="imp">Impella (sistémica + purga)</option>
+        <option value="ecp">ECPELLA</option>
+        <option value="biac">BIAC</option>
+        <option value="std">Sin MCS, dosis terapéutica</option>
+        <option value="custom">Personalizada</option>
+      </select></label>
+      <label>Bolo (UI/kg)<input type="number" id="e_bolo" min="0" max="150" step="5" value="75"></label>
+      <label>Bolo máximo (UI; 0 = sin límite)<input type="number" id="e_bmax" min="0" step="500" value="0"></label>
+      <label>Perfusión (UI/kg/h)<input type="number" id="e_perf" min="0" max="40" step="0.5" value="10"></label>
+      <label>Preparación<select id="e_prep">
+        <option value="250">25.000 UI en 250 ml → 100 UI/ml (bolsa)</option>
+        <option value="500">25.000 UI en 500 ml → 50 UI/ml (bolsa)</option>
+        <option value="50">25.000 UI en 50 ml → 500 UI/ml (jeringa)</option>
+      </select></label>
+      <label>Vial para preparar<select id="e_vial">
+        <option value="1000">Heparina 1 % (1.000 UI/ml)</option>
+        <option value="5000">Heparina 5 % (5.000 UI/ml)</option>
+      </select></label>
+      <label>Heparina por purga Impella (UI/h)<input type="number" id="e_purga" min="0" step="1" value="0"></label>
+    </div>
+    <div class="prep-out" id="e_out" aria-live="polite"></div>
+    <p class="note">Valores por defecto tomados de la <a href="#hnf">tabla de dosis de inicio</a> del protocolo. La dosis la prescribe el médico; esta hoja sirve para preparar, comprobar y registrar. Estabilidad de la dilución: 24 h a temperatura ambiente (<a href="https://www.comunidad.madrid/hospital/cruzroja/sites/cruzroja/files/2024-02/Guia%20de%20Administracion%20Parenteral%20mayo%202023.pdf">guía de administración parenteral, Comunidad de Madrid</a>).</p>
+  </div>
+
+  <h3 class="enf-keep">Vía de administración</h3>
+  <div class="via">
+    <div class="vcard v-per">
+      <span class="vtag">Aceptable</span><h4>Vía periférica</h4>
+      <ul>
+        <li>La HNF no es vesicante: puede ir por vía periférica como puente en el ingreso o si no hay catéter central.</li>
+        <li>Catéter de 20 G o mayor, <b>exclusivo para la heparina</b>.</li>
+        <li>Nunca extraer muestras de ese brazo (<a href="https://it.houstonmethodist.org/wp-content/uploads/2020/01/1768_HM_IP_HEPARIN_INFUSION_STANDARD_PROTOCOL.pdf">Houston Methodist</a>).</li>
+        <li>Inconvenientes en el shock: pérdida de la vía, hematoma en el punto de punción y retrasos en la perfusión.</li>
+      </ul>
+    </div>
+    <div class="vcard v-cen">
+      <span class="vtag">De elección</span><h4>Vía central: luz exclusiva</h4>
+      <svg viewBox="0 0 520 150" role="img" aria-label="Catéter venoso central de tres luces con la luz recomendada para la heparina">
+        <rect x="150" y="62" width="350" height="22" rx="11" fill="#e9e6e0" stroke="#8a8d94"/>
+        <circle cx="492" cy="73" r="6" fill="#6b4a2b"/><text x="492" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#6b4a2b">Distal</text>
+        <circle cx="400" cy="66" r="6" fill="#1f4f8a"/><text x="400" y="50" text-anchor="middle" font-size="11" font-weight="700" fill="#1f4f8a">Medial</text>
+        <circle cx="310" cy="80" r="6" fill="#fff" stroke="#5d6068" stroke-width="2"/><text x="310" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#5d6068">Proximal</text>
+        <path d="M150 73 C110 73 100 20 60 20" fill="none" stroke="#6b4a2b" stroke-width="5"/>
+        <path d="M150 73 C110 73 100 73 60 73" fill="none" stroke="#1f4f8a" stroke-width="5"/>
+        <path d="M150 73 C110 73 100 126 60 126" fill="none" stroke="#9aa0a8" stroke-width="5"/>
+        <rect x="6" y="8" width="54" height="24" rx="5" fill="#6b4a2b"/><text x="33" y="25" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">DIST</text>
+        <rect x="6" y="61" width="54" height="24" rx="5" fill="#1f4f8a"/><text x="33" y="78" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">MED</text>
+        <rect x="6" y="114" width="54" height="24" rx="5" fill="#fff" stroke="#5d6068"/><text x="33" y="131" text-anchor="middle" font-size="11" font-weight="800" fill="#1d1f23">PROX</text>
+        <rect x="64" y="61" width="74" height="24" rx="12" fill="#2d6a3e"/><text x="101" y="77" text-anchor="middle" font-size="10.5" font-weight="800" fill="#fff">HNF</text>
+        <rect x="64" y="8" width="80" height="24" rx="12" fill="#fbe5e6" stroke="#b4232c"/><text x="104" y="24" text-anchor="middle" font-size="10" font-weight="800" fill="#b4232c">NO HNF</text>
+      </svg>
+      <div class="lum">
+        <div class="lu lu-no"><b>Distal</b><span>No: se usa para PVC, volumen, hemoderivados y lavados, que empujarían bolos de heparina.</span></div>
+        <div class="lu lu-si"><b>Medial</b><span>Recomendada, en exclusiva, si no lleva nutrición parenteral.</span></div>
+        <div class="lu lu-alt"><b>Proximal</b><span>Alternativa exclusiva si la medial lleva nutrición parenteral; las extracciones se hacen por la línea arterial.</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout warn"><b>Reglas de la luz de heparina</b>Sin bolos ni lavados rápidos por esa luz, porque empujan la heparina del espacio muerto. Conectar en Y lo más cerca posible del catéter y nunca añadir fármacos a la bolsa o jeringa de heparina. No usar el introductor ni los puertos del catéter de Swan-Ganz, y no infundir en el circuito de ECMO salvo protocolo específico. Se recomienda un catéter de 4–5 luces en estos pacientes. La elección de la luz es una adaptación local que hay que validar según los colores de cada fabricante.</div>
+
+  <h3>Compatibilidad en Y con la heparina</h3>
+  <div class="compat">
+    <div class="cp cp-ok"><h4>Compatibles en Y</h4>
+      <div class="pills"><span>Noradrenalina</span><span>Adrenalina</span><span>Dopamina</span><span>Furosemida</span><span>Morfina</span><span>Fentanilo</span><span>Midazolam</span><span>ClK</span><span>Gluconato cálcico</span><span>Hidrocortisona</span><span>Lidocaína</span><span>Digoxina</span><span>Bicarbonato</span><span>Meropenem</span><span>Cefazolina</span><span>Fluconazol</span><span>NPT sin lípidos</span></div>
+      <p class="src">Fuente: guías de CHEO para <a href="https://outreach.cheo.on.ca/manual/1600">heparina</a> y <a href="https://outreach.cheo.on.ca/manual/1351">perfusión de heparina</a>.</p>
+    </div>
+    <div class="cp cp-no"><h4>Incompatibles: luz separada</h4>
+      <div class="pills"><span>Amiodarona</span><span>Dobutamina</span><span>Vancomicina</span><span>Gentamicina</span><span>Amikacina</span><span>Tobramicina</span><span>Ciprofloxacino</span><span>Eritromicina</span><span>Alteplasa</span><span>Diazepam</span><span>Fenitoína</span><span>Emulsiones lipídicas</span></div>
+      <p class="src">Amiodarona: precipita (<a href="https://www.anmfonline.org/wp-content/uploads/2023/09/Amiodarone_ANMFv1.0_20240815-1.pdf">ANMF</a>). Dobutamina: precipita en la misma línea (<a href="https://www.medicines.org.uk/emc/product/1681/smpc">ficha técnica, EMC</a>). Resto: <a href="https://outreach.cheo.on.ca/manual/1600">CHEO</a> y <a href="https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=56dc3074-f1c5-45a3-b923-f1d14858e06d">DailyMed</a>.</p>
+    </div>
+    <div class="cp cp-q"><h4>Sin dato concluyente: consultar con Farmacia</h4>
+      <div class="pills"><span>Milrinona</span><span>Levosimendán</span><span>Nitroglicerina</span><span>Nitroprusiato</span><span>Vasopresina</span><span>Insulina</span><span>Propofol</span><span>Dexmedetomidina</span><span>Remifentanilo</span><span>Cisatracurio</span></div>
+      <p class="src">Si no hay dato verificado, usar una luz separada. La compatibilidad depende de la concentración, del diluyente y de la marca (<a href="https://pdtm.vch.ca/Supporting%20Documents/IV%20Compatibility/Y-site%20Compatibility%20Critical%20Care%20Chart.pdf">tabla de compatibilidad de Vancouver Coastal Health</a>).</p>
+    </div>
+  </div>
+
+  <h3 class="enf-break">Controles de las primeras 24 h</h3>
+  <div class="tbl-wrap"><table class="m24">
+    <thead><tr><th>Control</th><th>Basal</th><th>Bolo / implante</th><th>1–4 h</th><th>6 h</th><th>12 h</th><th>18 h</th><th>24 h</th><th>Si está alterado</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="9">Analítica</td></tr>
+      <tr><td><b>Hemograma</b> (Hb, plaquetas)</td><td><i class="d"></i></td><td></td><td></td><td><i class="d"></i></td><td><i class="d"></i></td><td></td><td><i class="d"></i></td><td>Hb ↓ ≥2 g/dl, plaquetas &lt;100.000 o caída &gt;30 %: avisar</td></tr>
+      <tr><td><b>Coagulación</b> (TP, TTPa, fibrinógeno)</td><td><i class="d"></i></td><td></td><td></td><td></td><td><i class="d"></i></td><td></td><td><i class="d"></i></td><td>Fibrinógeno &lt;1,5 g/l con sangrado: avisar</td></tr>
+      <tr><td><b>Anti-Xa + TTPa</b></td><td><i class="d o"></i></td><td></td><td></td><td><i class="d k"></i></td><td><i class="d k"></i></td><td><i class="d k"></i></td><td><i class="d k"></i></td><td>Aplicar el <a href="#nomograma">nomograma</a>; repetir a las 6 h de cada cambio</td></tr>
+      <tr><td><b>ACT</b> (ECMO, Impella)</td><td></td><td><i class="d k"></i></td><td><i class="d"></i></td><td></td><td></td><td></td><td></td><td>3–5 min tras el bolo y cada 1–2 h en la fase inicial</td></tr>
+      <tr><td><b>Gasometría</b> con Hb y lactato</td><td><i class="d"></i></td><td></td><td><i class="d"></i></td><td><i class="d"></i></td><td><i class="d"></i></td><td><i class="d"></i></td><td><i class="d"></i></td><td>Hb en descenso: buscar sangrado y avisar</td></tr>
+      <tr><td><b>Hemólisis</b> (LDH, Hb libre, bilirrubina)</td><td><i class="d"></i></td><td></td><td></td><td><i class="d o"></i></td><td><i class="d"></i></td><td></td><td><i class="d"></i></td><td>Hb libre o LDH en aumento: avisar (posición del Impella, circuito)</td></tr>
+      <tr><td><b>Grupo y pruebas cruzadas</b>, función renal y hepática</td><td><i class="d"></i></td><td></td><td></td><td></td><td></td><td></td><td><i class="d"></i></td><td>Insuficiencia renal o hepática: riesgo de acumulación</td></tr>
+      <tr class="grp"><td colspan="9">Vigilancia de enfermería: cada hora las primeras 24 h</td></tr>
+      <tr><td><b>Bomba de HNF</b>: UI/h, ml/h, volumen restante y luz</td><td></td><td colspan="6"><span class="bar">Cada 1 h · doble chequeo en cada cambio de ritmo y de turno</span></td><td>Si no coincide con la prescripción: corregir y avisar</td></tr>
+      <tr><td><b>Puntos de inserción</b> y cánulas</td><td><i class="d"></i></td><td colspan="6"><span class="bar">Cada 1 h</span></td><td>Sangrado o hematoma en expansión: compresión y avisar</td></tr>
+      <tr><td><b>Perfusión distal</b> del miembro canulado (pulso o Doppler, color, temperatura, relleno capilar, NIRS)</td><td><i class="d"></i></td><td colspan="6"><span class="bar">Cada 1 h</span></td><td>Frialdad, palidez o pérdida de señal: avisar de inmediato</td></tr>
+      <tr><td><b>Neurológico</b> (pupilas, nivel de conciencia)</td><td><i class="d"></i></td><td colspan="6"><span class="bar">Cada 1 h</span></td><td>Anisocoria o deterioro: parar la HNF y avisar</td></tr>
+      <tr><td><b>Orina, drenajes y SNG</b> (volumen y color)</td><td></td><td colspan="6"><span class="bar">Cada 1 h</span></td><td>Hematuria u orina oscura (hemólisis): avisar</td></tr>
+      <tr><td><b>Impella</b>: flujo y presión de purga, posición, alarmas</td><td></td><td colspan="6"><span class="bar imp">Cada 1 h · registrar las UI/h de la purga</span></td><td>Presión de purga en aumento o alarma de posición: avisar</td></tr>
+      <tr><td><b>ECMO</b>: circuito revisado con linterna, ΔP del oxigenador</td><td></td><td colspan="6"><span class="bar ecmo">Cada 4 h y en cada turno</span></td><td>Coágulos o fibrina nuevos, ΔP en aumento: avisar</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note"><i class="d"></i> extracción programada · <i class="d k"></i> control clave para el ajuste de la HNF · <i class="d o"></i> según la situación (anticoagulación previa, Impella). Frecuencias basadas en la <a href="#monitor">sección de monitorización</a>; las de hemograma, gasometría y circuito son adaptaciones locales.</p>
+
+  <h3 class="enf-break">Qué hacer según el resultado</h3>
+  <div class="act3">
+    <div class="ac ac-stop"><h4>Parar la HNF y avisar de inmediato</h4><ul>
+      <li>Sangrado mayor activo o hematoma en expansión.</li>
+      <li>Anisocoria, focalidad o deterioro neurológico brusco.</li>
+      <li>Hb ↓ ≥2 g/dl con inestabilidad.</li>
+      <li>Anti-Xa &gt;0,75 UI/ml (parar 1 h según el <a href="#nomograma">nomograma</a>).</li>
+    </ul></div>
+    <div class="ac ac-call"><h4>Avisar al médico sin parar la HNF</h4><ul>
+      <li>Anti-Xa &lt;0,10 o dos controles seguidos fuera de rango.</li>
+      <li>Plaquetas &lt;100.000 o caída &gt;30 %: calcular los <a href="#hit">4Ts</a>.</li>
+      <li>Dosis de HNF ≥35.000 UI/24 h (posible <a href="#resistencia">resistencia</a>).</li>
+      <li>Anti-Xa y TTPa discordantes, o coágulos en el circuito.</li>
+    </ul></div>
+    <div class="ac ac-nom"><h4>Ajuste por enfermería según el nomograma</h4><ul>
+      <li>Anti-Xa 0,10–0,29 o 0,51–0,75: cambio de ritmo según la tabla, si la unidad tiene delegado el ajuste.</li>
+      <li>Registrar el nuevo UI/kg/h, UI/h y ml/h, con doble chequeo.</li>
+      <li>Nuevo control a las 6 h del cambio.</li>
+      <li>Anti-Xa en rango: control a las 6 h y, tras dos seguidos en rango, cada 12–24 h.</li>
+    </ul></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="box"><h4>Extracción correcta de muestras</h4><ul>
+      <li>Extraer por la línea arterial (lavado sin heparina), por el brazo contrario o por una luz que no lleve heparina (<a href="https://www.ahajournals.org/doi/10.1161/circulationaha.104.478222">Circulation</a>).</li>
+      <li>Nunca de la luz o del brazo por donde pasa la heparina.</li>
+      <li>Si no hay otra opción: parar la HNF, lavar la luz y desechar 10 ml de sangre antes de extraer (<a href="https://it.houstonmethodist.org/wp-content/uploads/2020/01/1768_HM_IP_HEPARIN_INFUSION_STANDARD_PROTOCOL.pdf">Houston Methodist</a>).</li>
+      <li>Llenar el tubo de citrato hasta la marca y extraerlo antes que la gasometría, que lleva heparina (<a href="https://www.lhsc.on.ca/critical-care-trauma-centre/blood-sampling-from-an-indwelling-line">LHSC</a>).</li>
+      <li>Anti-Xa &gt;1 UI/ml inesperado: sospechar contaminación y repetir por vía periférica (<a href="https://bpb-us-e1.wpmucdn.com/sites.uw.edu/dist/8/9473/files/2020/10/UW-Medicine-Heparin-Infusion-Algorithms-2019.pdf">UW Medicine</a>).</li>
+    </ul></div>
+    <div class="box"><h4>Registro en cada cambio</h4><ul>
+      <li>Hora exacta de la extracción y del resultado.</li>
+      <li>Ritmo anterior y nuevo en UI/kg/h, UI/h y ml/h.</li>
+      <li>Bolos (UI y hora): son necesarios para calcular la protamina.</li>
+      <li>UI/h de la purga del Impella y total de HNF en 24 h.</li>
+      <li>Firma de las dos enfermeras del doble chequeo.</li>
+      <li>Cambio de bolsa o jeringa cada 24 h aunque quede volumen.</li>
+    </ul></div>
+  </div>
+  <div class="reg-page" id="registroHNF">
+    <h3>Hoja de registro de la heparina</h3>
+    <p class="note" style="margin-top:0">Rellenable en pantalla (se guarda en este navegador) o imprimible en blanco. Al introducir el ritmo y el resultado del anti-Xa o del ratio de TTPa, la hoja propone la acción del <a href="#nomograma">nomograma</a> (diana 0,30–0,50 / ratio 1,5–2,0) y la hora del siguiente control. El ACT solo se registra: su interpretación depende de la diana pautada. La decisión final corresponde a la prescripción médica.</p>
+    <div class="reg-head">
+      <label>Paciente (REF)<input id="r_ref" placeholder="REF-AAAAMMDD-XXXX"></label>
+      <label>Dispositivo<input id="r_dev" placeholder="ECMO / Impella / ECPELLA / BIAC"></label>
+      <label>Peso (kg)<input id="r_peso" type="number" step="0.5"></label>
+      <label>Concentración (UI/ml)<select id="r_conc"><option value="100">100</option><option value="50">50</option><option value="500">500</option></select></label>
+      <label>Diana pautada<input id="r_diana" placeholder="anti-Xa 0,3–0,5 · ACT 180–220"></label>
+      <label>Purga Impella (UI/h)<input id="r_purga" type="number" step="1"></label>
+    </div>
+    <div class="reg-key">
+      <span><b>Evento:</b> Inicio · Bolo · Control · Cambio · Parada · Reinicio · Fin</span>
+      <span><b>Acción:</b> <i class="ak k-m">= Mantener</i> <i class="ak k-u">↑ Aumentar</i> <i class="ak k-d">↓ Disminuir</i> <i class="ak k-s">■ Parar</i> <i class="ak k-b">+ Bolo</i></span>
+    </div>
+    <div class="tbl-wrap"><table class="reg" id="regTable">
+      <thead><tr>
+        <th>Fecha y hora</th><th>Evento</th><th>Bolo (UI)</th><th>Perfusión actual<br><small>UI/kg/h</small></th><th>Prueba</th><th>Resultado</th><th>Acción</th><th>Nueva perfusión<br><small>UI/kg/h · ml/h</small></th><th>Parada<br><small>min</small></th><th>Próximo control</th><th>Enfermera / comprobó</th><th class="no-print"></th>
+      </tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <div class="reg-actions no-print">
+      <button type="button" id="r_add">Añadir fila</button>
+      <button type="button" id="r_clear">Vaciar hoja</button>
+      <button type="button" class="btn-primary" onclick="window.print()">Imprimir</button>
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="card" id="turno">
+  <h2><span class="num">14</span>Checklist de anticoagulación por turno</h2>
+  <div class="grid-2">
+    <div class="box">
+      <h4>Enfermería</h4>
+      <ul class="check">
+        <li>Ritmo de HNF verificado (UI/h y ml/h) y coincidente con la prescripción.</li>
+        <li>Anti-Xa/TTPa extraídos a la hora prevista y nomograma aplicado.</li>
+        <li>Flujo de purga del Impella registrado cada hora; solución de purga correcta.</li>
+        <li>Puntos de inserción y cánulas: sangrado, hematoma, isquemia de miembro.</li>
+        <li>Circuito ECMO/TRRC revisado con linterna: coágulos, fibrina, cambios de color.</li>
+        <li>Orina (hematuria, coloración por hemólisis), drenajes, SNG, heces.</li>
+        <li>Neurológico: pupilas y nivel de conciencia (alerta de hemorragia intracraneal).</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>Médico responsable</h4>
+      <ul class="check">
+        <li>Diana de anti-Xa del día definida y documentada.</li>
+        <li>Plaquetas, fibrinógeno, Hb y hemólisis (LDH, Hb libre) revisados.</li>
+        <li>Recuento plaquetario: calcular 4Ts si caída &gt;30 %.</li>
+        <li>Dosis total de HNF en 24 h (sospecha de resistencia si ≥35.000 UI o &gt;30 UI/kg/h).</li>
+        <li>Procedimientos previstos: plan de suspensión/reinicio.</li>
+        <li>Antiagregación concomitante revisada.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="card" id="refs">
+  <h2><span class="num">15</span>Referencias</h2>
+  <ol class="refs">
+    <li>McMichael ABV, et al. 2021 ELSO Adult and Pediatric Anticoagulation Guidelines. ASAIO J. 2022;68(3):303-310. <a href="https://pubmed.ncbi.nlm.nih.gov/35080509/">https://pubmed.ncbi.nlm.nih.gov/35080509/</a></li>
+    <li>ELSO. Traducción al español de las guías de anticoagulación. <a href="https://www.elso.org/ecmo-resources/elso-ecmo-guidelines.aspx">https://www.elso.org/ecmo-resources/elso-ecmo-guidelines.aspx</a></li>
+    <li>SCAI. Impella Anticoagulation Management in the CCU. <a href="https://www.scai.org/quality-improvement-tools/qi-tips/impella-anticoagulation-management-ccu">https://www.scai.org/quality-improvement-tools/qi-tips/impella-anticoagulation-management-ccu</a></li>
+    <li>Anticoagulation Management in Temporary Mechanical Circulatory Support Devices. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10655856/">https://pmc.ncbi.nlm.nih.gov/articles/PMC10655856/</a></li>
+    <li>Anticoagulation for Percutaneous Ventricular Assist Device-Supported Cardiogenic Shock. JACC Review Topic of the Week. <a href="https://www.jacc.org/doi/10.1016/j.jacc.2022.02.052">https://www.jacc.org/doi/10.1016/j.jacc.2022.02.052</a></li>
+    <li>Anticoagulation Forum / UNMH. Impella Anticoagulation Management. <a href="https://acforum.org/web/scripts/viewPDF.php?id=1865">https://acforum.org/web/scripts/viewPDF.php?id=1865</a></li>
+    <li>Safety and Effectiveness of an Anti-Xa-based UFH Protocol in Impella. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11097937/">https://pmc.ncbi.nlm.nih.gov/articles/PMC11097937/</a></li>
+    <li>Bicarbonate-based purge solution via Impella: case series. AJHP. <a href="https://academic.oup.com/ajhp/article/81/5/e115/7410317">https://academic.oup.com/ajhp/article/81/5/e115/7410317</a></li>
+    <li>Is heparin needed for patients with an intra-aortic balloon pump? ICVTS. <a href="https://academic.oup.com/icvts/article/15/1/136/705704">https://academic.oup.com/icvts/article/15/1/136/705704</a></li>
+    <li>WFSA. The Intra-Aortic Balloon Pump (tutorial 568). <a href="https://resources.wfsahq.org/wp-content/uploads/Tutorial_568.pdf">https://resources.wfsahq.org/wp-content/uploads/Tutorial_568.pdf</a></li>
+    <li>Veno-Arterial ECMO for Cardiogenic Shock. Circulation. <a href="https://www.ahajournals.org/doi/10.1161/CIRCULATIONAHA.119.034512">https://www.ahajournals.org/doi/10.1161/CIRCULATIONAHA.119.034512</a></li>
+    <li>Anticoagulation in ECMO patients: an overview. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8062644/">https://pmc.ncbi.nlm.nih.gov/articles/PMC8062644/</a></li>
+    <li>Update on Anticoagulation Strategies in Patients with ECMO — Narrative Review. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10532142/">https://pmc.ncbi.nlm.nih.gov/articles/PMC10532142/</a></li>
+    <li>Anti-factor Xa-guided anticoagulation and hemorrhage during ECMO: systematic review. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11063723/">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11063723/</a></li>
+    <li>KDIGO Clinical Practice Guideline for Acute Kidney Injury (2012). <a href="https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf">https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf</a></li>
+    <li>KDIGO 2026 AKI/AKD Guideline — Public Review Draft. <a href="https://kdigo.org/wp-content/uploads/2026/03/KDIGO-2026-AKI-AKD-Guideline-Public-Review-Draft-March-2026.pdf">https://kdigo.org/wp-content/uploads/2026/03/KDIGO-2026-AKI-AKD-Guideline-Public-Review-Draft-March-2026.pdf</a></li>
+    <li>Regional citrate anticoagulation versus UFH in VA-ECMO with CRRT. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12934447/">https://pmc.ncbi.nlm.nih.gov/articles/PMC12934447/</a></li>
+    <li>Regional citrate anticoagulation in critically ill patients (review). <a href="https://link.springer.com/article/10.1186/s44158-023-00091-w">https://link.springer.com/article/10.1186/s44158-023-00091-w</a></li>
+    <li>AHA. Anticoagulation Reversal Guideline for Adults. <a href="https://www.heart.org/-/media/files/professional/quality-improvement/hemorrhagic--stroke/hemorrhagic-stroke-toolkit-page/5_18_2021/anticoagulation-reversal-guideline-for-adults-5182021.pdf">https://www.heart.org/-/media/files/professional/quality-improvement/hemorrhagic--stroke/hemorrhagic-stroke-toolkit-page/5_18_2021/anticoagulation-reversal-guideline-for-adults-5182021.pdf</a></li>
+    <li>SUNY Downstate. Adult Therapeutic Heparin and Enoxaparin Guideline (2026). <a href="https://www.downstate.edu/education-training/fellowship-residency-programs/pharmacy/_documents/ptsaf-19-adult-therapeutic-hparin-enoxaparin-guideline-jan-2026.pdf">https://www.downstate.edu/education-training/fellowship-residency-programs/pharmacy/_documents/ptsaf-19-adult-therapeutic-hparin-enoxaparin-guideline-jan-2026.pdf</a></li>
+    <li>Heparin Resistance Is Common in Patients Undergoing ECMO. ASAIO J. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9019066/">https://pmc.ncbi.nlm.nih.gov/articles/PMC9019066/</a></li>
+    <li>Troubleshooting heparin resistance. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11665620/">https://pmc.ncbi.nlm.nih.gov/articles/PMC11665620/</a></li>
+    <li>Anticoagulation Strategies during ECMO. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9457503/">https://pmc.ncbi.nlm.nih.gov/articles/PMC9457503/</a></li>
+    <li>Cuker A, et al. ASH 2018 guidelines for management of VTE: heparin-induced thrombocytopenia. Blood Adv. 2018;2:3360-3392. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6258919/">https://pmc.ncbi.nlm.nih.gov/articles/PMC6258919/</a></li>
+    <li>ASH. Diagnosis &amp; Management of HIT (slide set). <a href="https://www.hematology.org/-/media/hematology/files/clinicians/guidelines/vte/ashslideset-hit5-17.pdf">https://www.hematology.org/-/media/hematology/files/clinicians/guidelines/vte/ashslideset-hit5-17.pdf</a></li>
+    <li>ASH. HIT Pocket Guide. <a href="https://www.hematology.org/-/media/Hematology/Files/Education/Clinicians/Guidelines-Quality/Documents/ASH_VTE_HIT_PocketGuide.pdf">https://www.hematology.org/-/media/Hematology/Files/Education/Clinicians/Guidelines-Quality/Documents/ASH_VTE_HIT_PocketGuide.pdf</a></li>
+    <li>CAP. Heparin-Induced Thrombocytopenia Testing. <a href="https://documents.cap.org/documents/Heparin-Induced_Thrombocytopenia_ClinicianHandout.pdf">https://documents.cap.org/documents/Heparin-Induced_Thrombocytopenia_ClinicianHandout.pdf</a></li>
+    <li>NHS Worcestershire. Intra-Aortic Balloon Pump Protocol. <a href="https://apps.worcsacute.nhs.uk/KeyDocumentPortal/Home/DownloadFile/4841">https://apps.worcsacute.nhs.uk/KeyDocumentPortal/Home/DownloadFile/4841</a></li>
+  </ol>
+</section>
+<footer>Documento de apoyo a la decisión clínica. No sustituye el juicio clínico ni los protocolos aprobados por el centro.</footer>
+</main>
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const fmt=(n,d=1)=>Number(n).toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const fmt0=n=>Math.round(n).toLocaleString('es-ES');
+
+  /* Tabs */
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected','false'));
+    t.setAttribute('aria-selected','true');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('show'));
+    $('p-'+t.dataset.dev).classList.add('show');
+  }));
+
+  /* HNF calculator */
+  function hnf(){
+    const w=parseFloat($('h_peso').value), c=parseFloat($('h_conc').value), r=parseFloat($('h_rate').value)||0;
+    const purge=parseFloat($('h_purge').value)||0;
+    const axaRaw=$('h_axa').value.replace(',','.'); const axa=parseFloat(axaRaw);
+    const [lo,hi]=$('h_target').value.split('-').map(Number);
+    const out=$('h_out');
+    if(!w||w<30){out.className='result';out.innerHTML='Introduce un peso válido.';return;}
+    const uih=r*c, ukgh=uih/w, totalKg=(uih+purge)/w;
+    let base=`<div class="muted">Ritmo actual: ${fmt0(uih)} UI/h = ${fmt(ukgh)} UI/kg/h${purge?` · Total con purga: ${fmt0(uih+purge)} UI/h (${fmt(totalKg)} UI/kg/h)`:''} · Dosis en 24 h: ${fmt0((uih+purge)*24)} UI</div>`;
+    if((uih+purge)*24>=35000||totalKg>30) base+=`<div class="muted" style="color:var(--warn);font-weight:700">Dosis compatible con resistencia a heparina: ver sección 8.</div>`;
+    if(isNaN(axa)){out.className='result';out.innerHTML='Introduce el anti-Xa medido.'+base;return;}
+    let d=0,bolus=0,stop=false,cls='ok',msg='',alert='';
+    if(axa<lo){
+      const gap=lo-axa;
+      if(gap>0.2){d=3;bolus=25;cls='crit';}
+      else if(gap>0.1){d=2;cls='low';}
+      else {d=1;cls='low';}
+    } else if(axa>hi){
+      const gap=axa-hi;
+      if(gap<=0.1){d=-1;cls='high';}
+      else if(gap<=0.25){d=-2;stop=true;cls='high';}
+      else {d=-3;stop=true;cls='crit';alert=' y <b>avisar al médico</b>';}
+    }
+    const newKg=Math.max(0,ukgh+d), newUih=newKg*w, newMl=newUih/c;
+    if(d===0) msg=`<div class="big">En rango (${fmt(lo,2)}–${fmt(hi,2)}): sin cambios</div><div>Mantener ${fmt(r)} ml/h. Siguiente anti-Xa en 6 h; cada 12–24 h tras 2 valores consecutivos en rango.</div>`;
+    else msg=`<div class="big">${stop?'Parar 1 h, después ':''}${d>0?'↑':'↓'} ${Math.abs(d)} UI/kg/h → ${fmt(newMl)} ml/h</div>
+      <div>${bolus?`Bolo ${fmt0(bolus*w)} UI (${bolus} UI/kg = ${fmt(bolus*w/c)} ml) si no hay sangrado ni alto riesgo hemorrágico. `:''}Nuevo ritmo: ${fmt0(newUih)} UI/h (${fmt(newKg)} UI/kg/h)${alert}. Siguiente anti-Xa 6 h ${stop?'tras el reinicio':'después del cambio'}.</div>`;
+    out.className='result '+cls; out.innerHTML=msg+base;
+  }
+  ['h_peso','h_conc','h_rate','h_target','h_axa','h_purge'].forEach(id=>$(id).addEventListener('input',hnf));
+  hnf();
+
+  /* Protamine */
+  function prot(){
+    const r=parseFloat($('p_rate').value)||0,h=parseFloat($('p_h').value),b=parseFloat($('p_bolus').value)||0,pu=parseFloat($('p_purge').value)||0;
+    const ui=(r+pu)*h+b, raw=ui/100, dose=Math.min(raw,50);
+    $('p_out').className='result '+(raw>50?'high':'ok');
+    $('p_out').innerHTML=`<div class="big">${fmt(dose)} mg de protamina IV</div>
+      <div>HNF estimada en ${fmt(h)} h: ${fmt0(ui)} UI → ${fmt(raw)} mg calculados${raw>50?' · <b>limitado a la dosis máxima de 50 mg</b>':''}.</div>
+      <div class="muted">Administrar en ≥10 min (máx. 5 mg/min). TTPa a los 15 min; si persiste prolongado, 0,5 mg/100 UI (máx. 25 mg).</div>`;
+  }
+  ['p_rate','p_h','p_bolus','p_purge'].forEach(id=>$(id).addEventListener('input',prot));
+  prot();
+
+  /* 4Ts */
+  function ts(){
+    let s=0,n=0;
+    ['t1','t2','t3','t4'].forEach(k=>{const v=document.querySelector(`input[name=${k}]:checked`); if(v){s+=+v.value;n++;}});
+    const o=$('ts_out');
+    if(n<4){o.className='result';o.innerHTML=`Puntuación parcial: ${s} (${n}/4 apartados).`;return;}
+    if(s<=3){o.className='result ok';o.innerHTML=`<div class="big">${s} puntos · probabilidad baja</div><div>No solicitar anti-PF4 ni suspender heparina. Buscar otras causas y recalcular si cambia la evolución.</div>`;}
+    else if(s<=5){o.className='result high';o.innerHTML=`<div class="big">${s} puntos · probabilidad intermedia</div><div>Suspender toda heparina, solicitar anti-PF4 e iniciar anticoagulante no heparínico (profiláctico si riesgo hemorrágico alto). Impella: purga con bicarbonato.</div>`;}
+    else {o.className='result crit';o.innerHTML=`<div class="big">${s} puntos · probabilidad alta</div><div>Suspender toda heparina e iniciar anticoagulante no heparínico a dosis terapéutica. Anti-PF4 y prueba funcional si positivo. Impella: purga con bicarbonato.</div>`;}
+  }
+  document.querySelectorAll('#ts input').forEach(i=>i.addEventListener('change',ts));
+
+
+  /* Timeline filter (scoped per section) */
+  document.querySelectorAll('.tl-filter').forEach(bar=>{
+    const sec=bar.closest('section');
+    bar.querySelectorAll('button.fb').forEach(b=>b.addEventListener('click',()=>{
+      bar.querySelectorAll('button.fb').forEach(x=>x.classList.toggle('on',x===b));
+      const f=b.dataset.f;
+      sec.querySelectorAll('ol.tl li[data-dev]').forEach(li=>{
+        const d=li.dataset.dev.split(' ');
+        li.classList.toggle('hid',!(f==='all'||d.includes('all')||d.includes(f)));
+      });
+      sec.querySelectorAll('ol.tl .lane').forEach(l=>l.classList.toggle('empty',!l.querySelector('li:not(.hid)')));
+    }));
+  });
+  /* Active TOC */
+  const links=[...document.querySelectorAll('nav.toc a')];
+  const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id));}}),{rootMargin:'-30% 0px -65% 0px'});
+  document.querySelectorAll('section.card').forEach(s=>obs.observe(s));
+  /* Hoja de preparación enfermería */
+  const PRE={ecmo:[75,0,10],imp:[0,0,6],ecp:[0,0,6],biac:[0,0,10],std:[80,5000,18]};
+  const NOTE={ecmo:'Bolo en la canulación (50–100 UI/kg; 25–50 si sangrado o poscardiotomía). La perfusión se inicia sin bolo cuando el ACT baje de 220–250 s.',imp:'Sin bolo en la UCI (en el implante se titula por ACT ≥250 s). Perfusión sistémica 6–7 UI/kg/h solo si el anti-Xa es &lt;0,3 con la purga sola.',ecp:'Sin bolo en la UCI. HNF sistémica de inicio 6–7 UI/kg/h sumada a la purga del Impella.',biac:'Sin bolo. Estrategia selectiva: 10–12 UI/kg/h si hay indicación.',std:'Bolo 60–80 UI/kg (máximo 5.000 UI) y perfusión 12–18 UI/kg/h.',custom:'Dosis personalizada según la prescripción.'};
+  function prep(){
+    const w=+$('e_peso').value||0, bk=+$('e_bolo').value||0, bmax=+$('e_bmax').value||0, pk=+$('e_perf').value||0, vol=+$('e_prep').value, vc=+$('e_vial').value, pu=+$('e_purga').value||0, ind=$('e_ind').value;
+    const conc=25000/vol; let bol=bk*w; const cap=bmax>0&&bol>bmax; if(cap) bol=bmax;
+    const bml=bol/1000, nv=Math.ceil(bml/5-1e-9);
+    const uih=pk*w, mlh=uih/conc, hepml=25000/vc, nvp=Math.ceil(hepml/5-1e-9), dil=vol-hepml, dur=mlh>0?vol/mlh:0;
+    const pump=vol===50?'Bomba de jeringa (50 ml)':'Bomba volumétrica';
+    const tot=uih+pu;
+    $('e_out').innerHTML=`
+      <div class="po b"><h5>Bolo IV directo</h5>${bol>0?`<div class="big">${fmt0(bol)} UI = ${fmt(bml)} ml</div><div class="sm">De heparina <b>1 % (1.000 UI/ml)</b>: ${nv} vial${nv>1?'es':''} de 5 ml${cap?' · limitado al máximo pautado':''}. IV directo lento por la luz de heparina o una vía periférica; lavar con 10 ml de SF. Registrar la hora.</div>`:`<div class="big">Sin bolo</div><div class="sm">${NOTE[ind]}</div>`}</div>
+      <div class="po p"><h5>Perfusión continua</h5><div class="big">${fmt(mlh)} ml/h</div><div class="sm">${fmt0(uih)} UI/h (${fmt(pk)} UI/kg/h) a ${fmt0(conc)} UI/ml${pu?` · con purga: <b>${fmt0(tot)} UI/h</b> (${fmt(w?tot/w:0)} UI/kg/h)`:''} · ${fmt0(tot*24)} UI en 24 h</div></div>
+      <div class="po r"><h5>Preparación</h5><div class="big">${fmt(hepml)} ml de heparina ${vc===1000?'1 %':'5 %'}</div><div class="sm">${nvp} vial${nvp>1?'es':''} (25.000 UI). ${vol===50?`Completar hasta 50 ml con SF en jeringa (${fmt(dil)} ml de SF).`:`Retirar ${fmt(hepml)} ml del suero de ${vol} ml (SF o SG 5 %) e inyectar la heparina; mezclar invirtiendo.`} ${pump}. Duración: ${dur?fmt(Math.min(dur,999)):'—'} h${dur>24?'; cambiar a las 24 h':''}.</div></div>
+      <div class="label-hnf"><b class="t">HEPARINA SÓDICA</b><span>25.000 UI / ${vol} ml = <b>${fmt0(conc)} UI/ml</b></span><span>Peso ${fmt(w)} kg</span><span>${fmt(pk)} UI/kg/h = <b>${fmt(mlh)} ml/h</b></span><span>Preparó: ______ · Comprobó: ______ · Hora: ____</span></div>
+      ${ind!=='custom'?`<div class="sm" style="grid-column:1/-1;font-size:13px;color:var(--muted)">${NOTE[ind]}</div>`:''}`;
+  }
+  $('e_ind').addEventListener('change',()=>{const v=PRE[$('e_ind').value]; if(v){$('e_bolo').value=v[0];$('e_bmax').value=v[1];$('e_perf').value=v[2];} prep();});
+  ['e_peso','e_bolo','e_bmax','e_perf','e_prep','e_vial','e_purga'].forEach(id=>$(id).addEventListener('input',prep));
+  prep();
+
+
+  /* Registro de heparina */
+  const RK='hnfRegistro_v1';
+  const EV=['','Inicio','Bolo','Control','Cambio','Parada','Reinicio','Fin'];
+  const TS=['','Anti-Xa','Ratio TTPa','ACT'];
+  const AC=[['',''],['m','= Mantener'],['u','↑ Aumentar'],['d','↓ Disminuir'],['s','■ Parar'],['b','+ Bolo'],['ub','+ Bolo y ↑']];
+  const opt=(arr,v)=>arr.map(o=>{const [val,txt]=Array.isArray(o)?o:[o,o];return `<option value="${val}"${val===v?' selected':''}>${txt}</option>`}).join('');
+  const tb=document.querySelector('#regTable tbody');
+  function rowHTML(d={}){
+    return `<td><input type="datetime-local" required data-k="t" value="${d.t||''}"></td>
+    <td><select data-k="ev">${opt(EV,d.ev||'')}</select></td>
+    <td><input type="number" step="100" data-k="bol" value="${d.bol||''}" style="width:78px"></td>
+    <td class="nr"><input type="number" step="0.5" data-k="cur" value="${d.cur||''}" style="width:72px"><span class="ml" data-o="curml"></span></td>
+    <td><select data-k="ts">${opt(TS,d.ts||'')}</select></td>
+    <td><input type="number" step="0.01" data-k="res" value="${d.res||''}" style="width:72px"><span class="sug" data-o="sug"></span></td>
+    <td><select data-k="ac">${opt(AC,d.ac||'')}</select></td>
+    <td class="nr"><input type="number" step="0.5" data-k="nw" value="${d.nw||''}" style="width:72px"><span class="ml" data-o="nwml"></span></td>
+    <td><input type="number" step="5" data-k="st" value="${d.st||''}" style="width:56px"></td>
+    <td><input type="time" required data-k="nx" value="${d.nx||''}"></td>
+    <td><input data-k="nu" value="${d.nu||''}" placeholder="____ / ____" style="width:110px"></td>
+    <td class="no-print"><button type="button" class="rdel" title="Eliminar fila">×</button></td>`;
+  }
+  function suggest(ts,r,cur){
+    if(r===''||isNaN(r)) return null;
+    if(ts==='Anti-Xa'){
+      if(r<0.10) return ['ub',3,0,'Bolo 25 UI/kg si no sangra · ↑3 UI/kg/h · control 6 h'];
+      if(r<0.20) return ['u',2,0,'↑2 UI/kg/h · control 6 h'];
+      if(r<0.30) return ['u',1,0,'↑1 UI/kg/h · control 6 h'];
+      if(r<=0.50) return ['m',0,0,'En diana · control 6 h (12–24 h tras 2 en rango)'];
+      if(r<=0.60) return ['d',-1,0,'↓1 UI/kg/h · control 6 h'];
+      if(r<=0.75) return ['s',-2,60,'Parar 1 h · reiniciar con ↓2 UI/kg/h'];
+      return ['s',-3,60,'Parar 1 h · ↓3 UI/kg/h · avisar al médico'+(r>1?' · descartar contaminación':'')];
+    }
+    if(ts==='Ratio TTPa'){
+      if(r<1.2) return ['ub',3,0,'Bolo 25 UI/kg si no sangra · ↑3 UI/kg/h'];
+      if(r<1.5) return ['u',2,0,'↑2 UI/kg/h · control 6 h'];
+      if(r<=2.0) return ['m',0,0,'En diana · control 6 h'];
+      if(r<=2.5) return ['d',-1.5,0,'↓1–2 UI/kg/h · control 6 h'];
+      if(r<=3.0) return ['s',-2,60,'Parar 1 h · reiniciar con ↓2 UI/kg/h'];
+      return ['s',-3,60,'Parar 1 h · ↓3 UI/kg/h · avisar · valorar anti-Xa'];
+    }
+    if(ts==='ACT') return ['',null,0,'Comparar con la diana pautada'];
+    return null;
+  }
+  function calcRow(tr,touched){
+    const g=k=>tr.querySelector(`[data-k="${k}"]`);
+    const w=+$('r_peso').value||0, c=+$('r_conc').value||100;
+    const ml=v=>(w&&v!==''&&!isNaN(v))?`${fmt(v*w/c)} ml/h · ${fmt0(v*w)} UI/h`:'';
+    tr.querySelector('[data-o="curml"]').textContent=ml(g('cur').value===''?'':+g('cur').value);
+    const s=suggest(g('ts').value,g('res').value===''?'':+g('res').value,+g('cur').value);
+    tr.querySelector('[data-o="sug"]').textContent=s?s[3]:'';
+    if(s&&touched){
+      if(!g('ac').dataset.man&&s[0]) g('ac').value=s[0];
+      if(!g('nw').dataset.man&&s[1]!==null&&g('cur').value!=='') g('nw').value=Math.max(0,+g('cur').value+s[1]);
+      if(!g('st').dataset.man) g('st').value=s[2]||'';
+      if(!g('nx').dataset.man&&g('t').value&&s[1]!==null){const d=new Date(g('t').value);d.setMinutes(d.getMinutes()+(s[2]||0)+360);g('nx').value=d.toTimeString().slice(0,5);}
+    }
+    tr.querySelector('[data-o="nwml"]').textContent=ml(g('nw').value===''?'':+g('nw').value);
+    const a=g('ac').value; tr.className=a?('a-'+(a==='ub'?'b':a)):'';
+  }
+  function save(){
+    const rows=[...tb.rows].map(tr=>{const o={};tr.querySelectorAll('[data-k]').forEach(e=>o[e.dataset.k]=e.value);return o;});
+    const head={};['r_ref','r_dev','r_peso','r_conc','r_diana','r_purga'].forEach(id=>head[id]=$(id).value);
+    try{localStorage.setItem(RK,JSON.stringify({head,rows}));}catch(e){}
+  }
+  function addRow(d){const tr=document.createElement('tr');tr.innerHTML=rowHTML(d);tb.appendChild(tr);calcRow(tr,false);}
+  tb.addEventListener('input',e=>{const tr=e.target.closest('tr');const k=e.target.dataset.k;
+    if(['ac','nw','st','nx'].includes(k)) e.target.dataset.man='1';
+    calcRow(tr,['ts','res','cur','t'].includes(k)); save();});
+  tb.addEventListener('change',e=>{const tr=e.target.closest('tr');const k=e.target.dataset.k;if(['ac'].includes(k))e.target.dataset.man='1';calcRow(tr,['ts'].includes(k));save();});
+  tb.addEventListener('click',e=>{if(e.target.classList.contains('rdel')){e.target.closest('tr').remove();save();}});
+  ['r_ref','r_dev','r_peso','r_conc','r_diana','r_purga'].forEach(id=>$(id).addEventListener('input',()=>{[...tb.rows].forEach(tr=>calcRow(tr,false));save();}));
+  $('r_add').addEventListener('click',()=>{addRow();save();});
+  $('r_clear').addEventListener('click',()=>{if(confirm('¿Vaciar toda la hoja de registro?')){tb.innerHTML='';for(let i=0;i<12;i++)addRow();['r_ref','r_dev','r_peso','r_diana','r_purga'].forEach(id=>$(id).value='');try{localStorage.removeItem(RK)}catch(e){}}});
+  let st=null;try{st=JSON.parse(localStorage.getItem(RK)||'null')}catch(e){}
+  if(st&&st.head){Object.entries(st.head).forEach(([k,v])=>{if($(k))$(k).value=v;});}
+  const rr=(st&&st.rows&&st.rows.length)?st.rows:[];
+  rr.forEach(addRow); for(let i=rr.length;i<12;i++) addRow();
+  if(!$('r_peso').value&&$('e_peso')) $('r_peso').value=$('e_peso').value;
+  [...tb.rows].forEach(tr=>calcRow(tr,false));
+
+})();
+</script>
+</body>
+</html>

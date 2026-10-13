@@ -166,7 +166,7 @@ const PROTOCOLOS = [
         id: 'protocolo',
         title: 'Protocolo de analgosedación en VM',
         description: 'Documento clínico de analgosedación en el paciente ventilado.',
-        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261012g',
+        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261013a',
         ext: '.html',
         view: 'document'
       }
@@ -182,9 +182,35 @@ const PROTOCOLOS = [
         id: 'protocolo',
         title: 'Protocolo VM · Cuidados integrales',
         description: 'Documento clínico de cuidados integrales en el paciente ventilado.',
-        path: '../biblioteca/assets/protocolos/vm-cuidados-integrales/protocolo-vm-cuidados-integrales.html?v=20261012g',
+        path: '../biblioteca/assets/protocolos/vm-cuidados-integrales/protocolo-vm-cuidados-integrales.html?v=20261013a',
         ext: '.html',
         view: 'document'
+      }
+    ]
+  },
+  {
+    id: 'anticoagulacion-sec',
+    title: 'Anticoagulación en SEC',
+    description: 'Protocolo de anticoagulación en shock cardiogénico y soporte extracorpóreo.',
+    audiences: ['medicina', 'enfermeria'],
+    parts: [
+      {
+        id: 'protocolo-medicina',
+        title: 'Protocolo clínico (Medicina)',
+        description: 'Anticoagulación en shock cardiogénico y soporte extracorpóreo.',
+        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/protocolo-anticoagulacion-sec.html?v=20261013a',
+        ext: '.html',
+        view: 'document',
+        audiences: ['medicina']
+      },
+      {
+        id: 'resumen-enfermeria',
+        title: 'Resumen de enfermería',
+        description: 'Resumen operativo de anticoagulación en shock cardiogénico para enfermería.',
+        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/resumen-enfermeria-anticoagulacion-sec.html?v=20261013a',
+        ext: '.html',
+        view: 'document',
+        audiences: ['enfermeria']
       }
     ]
   }
@@ -1152,6 +1178,15 @@ function showProtocolos() {
   });
 }
 
+function protocolPartsForAudience(item) {
+  const parts = item && item.parts ? item.parts.slice() : [];
+  const audience = state.audienceFilter || DEFAULT_AUDIENCE;
+  return parts.filter(part => {
+    if (!Array.isArray(part.audiences) || !part.audiences.length) return true;
+    return part.audiences.includes(audience);
+  });
+}
+
 function openProtocolo(item) {
   if (!item) return;
   closeLightbox().catch(() => {});
@@ -1160,13 +1195,17 @@ function openProtocolo(item) {
   parkEdicionHost();
   clearSectionButtons();
   if (els.protocolosBtn) els.protocolosBtn.classList.add('active');
-  const parts = item.parts || [];
+  const parts = protocolPartsForAudience(item);
   if (parts.length === 1) {
     openProtocoloPart(item, parts[0]);
     return;
   }
-  if (!parts.length && (item.path || item.url)) {
-    openProtocoloPart(item, item);
+  if (!parts.length) {
+    if ((!item.parts || !item.parts.length) && (item.path || item.url)) {
+      openProtocoloPart(item, item);
+      return;
+    }
+    els.viewer.innerHTML = '<div class="empty"><strong>' + escapeHtml(item.title) + '</strong>No hay documentos para ' + escapeHtml(filterLabel()) + '.</div>';
     return;
   }
   els.title.textContent = item.title;

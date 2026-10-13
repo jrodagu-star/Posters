@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resumen de enfermería · Anticoagulación en shock cardiogénico</title>
+<style>
+:root{
+  --bg:#f6f5f2; --surface:#ffffff; --surface-2:#f0eeea; --border:#dedad3;
+  --text:#1d1f23; --muted:#5d6068; --faint:#8a8d94;
+  --primary:#842029; --primary-soft:#f6e6e7;
+  --ok:#1f6f5c; --ok-soft:#e3f1ec;
+  --warn:#9a5b00; --warn-soft:#fbf0dc;
+  --danger:#b4232c; --danger-soft:#fbe5e6;
+  --info:#1f4f8a; --info-soft:#e4ecf7;
+  --biac:#5b4a9e; --imp:#1f6f8b; --ecmo:#842029; --trrc:#2d6a3e;
+  --radius:10px; --shadow:0 1px 2px rgba(20,20,30,.06),0 2px 8px rgba(20,20,30,.04);
+  --font:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --mono:ui-monospace,'SFMono-Regular',Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1400px;margin:0 auto}
+/* Sidebar */
+nav.toc{position:sticky;top:0;height:100vh;overflow-y:auto;padding:22px 18px;border-right:1px solid var(--border);background:var(--surface)}
+.brand{display:flex;gap:10px;align-items:center;margin-bottom:18px}
+.brand svg{flex:none;color:var(--primary)}
+.brand b{display:block;font-size:14px;line-height:1.2}
+.brand span{font-size:12px;color:var(--muted)}
+nav.toc ol{list-style:none;margin:0;padding:0;counter-reset:s}
+nav.toc li{counter-increment:s}
+nav.toc a{display:flex;gap:8px;padding:6px 8px;border-radius:6px;color:var(--text);text-decoration:none;font-size:13.5px}
+nav.toc a::before{content:counter(s);min-width:20px;color:var(--faint);font-variant-numeric:tabular-nums;font-weight:600}
+nav.toc a:hover{background:var(--surface-2)}
+nav.toc a.active{background:var(--primary-soft);color:var(--primary);font-weight:600}
+.toc-actions{margin-top:18px;display:grid;gap:8px}
+button,.btn{font:inherit;font-size:13.5px;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+button:hover{background:var(--surface-2)}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-primary:hover{background:#6c1a22}
+main{padding:28px 40px 80px;min-width:0}
+/* Header */
+header.doc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px 28px;box-shadow:var(--shadow);margin-bottom:18px;border-top:5px solid var(--primary)}
+header.doc .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);font-weight:700}
+header.doc h1{font-size:28px;line-height:1.2;margin:6px 0 8px;letter-spacing:-.01em}
+header.doc p{margin:0;color:var(--muted);max-width:80ch}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{font-size:12px;padding:3px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted);font-weight:600}
+.chip.draft{background:var(--warn-soft);border-color:#ecd3a6;color:var(--warn)}
+/* Sections */
+section.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;margin-bottom:18px;box-shadow:var(--shadow)}
+section.card>h2{font-size:21px;margin:0 0 4px;display:flex;align-items:center;gap:10px;letter-spacing:-.005em}
+section.card>h2 .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:7px;background:var(--primary);color:#fff;font-size:14px;flex:none}
+.lead{color:var(--muted);margin:0 0 16px}
+h3{font-size:16px;margin:20px 0 8px}
+h4{font-size:14.5px;margin:14px 0 6px}
+p{margin:0 0 10px}
+ul,ol{margin:0 0 10px;padding-left:20px}
+li{margin:3px 0}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.box{border:1px solid var(--border);border-radius:8px;padding:14px 16px;background:var(--surface)}
+.box h4{margin-top:0}
+.callout{border-left:4px solid var(--info);background:var(--info-soft);padding:12px 16px;border-radius:0 8px 8px 0;margin:12px 0}
+.callout.warn{border-color:var(--warn);background:var(--warn-soft)}
+.callout.danger{border-color:var(--danger);background:var(--danger-soft)}
+.callout.ok{border-color:var(--ok);background:var(--ok-soft)}
+.callout b:first-child{display:block;margin-bottom:2px}
+/* Tables */
+.tbl-wrap{overflow-x:auto;margin:10px 0 14px;border:1px solid var(--border);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--border)}
+th{background:var(--surface-2);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.goal td{background:var(--ok-soft);font-weight:600}
+tr.low td:first-child{border-left:4px solid var(--info)}
+tr.high td:first-child{border-left:4px solid var(--warn)}
+tr.crit td:first-child{border-left:4px solid var(--danger)}
+/* Device tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+.tab{border:1px solid var(--border);background:var(--surface);padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:8px}
+.tab .dot{width:10px;height:10px;border-radius:50%}
+.tab[aria-selected="true"]{color:#fff}
+.tab[data-dev="biac"][aria-selected="true"]{background:var(--biac);border-color:var(--biac)}
+.tab[data-dev="imp"][aria-selected="true"]{background:var(--imp);border-color:var(--imp)}
+.tab[data-dev="ecmo"][aria-selected="true"]{background:var(--ecmo);border-color:var(--ecmo)}
+.tab[data-dev="trrc"][aria-selected="true"]{background:var(--trrc);border-color:var(--trrc)}
+.tab[data-dev="ecp"][aria-selected="true"]{background:#3a3d44;border-color:#3a3d44}
+.panel{display:none;border:1px solid var(--border);border-radius:8px;padding:18px 20px}
+.panel.show{display:block}
+.panel h3:first-child{margin-top:0}
+.kv{display:grid;grid-template-columns:200px 1fr;gap:6px 14px;font-size:14px;margin:8px 0 12px}
+.kv dt{color:var(--muted);font-weight:600}
+.kv dd{margin:0}
+
+/* Timeline */
+.ribbon{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin:6px 0 0}
+.rb{padding:9px 8px 10px 14px;color:#fff;display:grid;gap:1px;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,0 100%,9px 50%);min-width:0}
+.rb:first-child{clip-path:polygon(0 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,0 100%);border-radius:6px 0 0 6px}
+.rb .rt{font-weight:800;font-size:13px;line-height:1.15}
+.rb .rs{font-size:11px;opacity:.85}
+.rb .ri{font-size:11.5px;font-weight:600;margin-top:2px;line-height:1.2}
+.r0{background:#5d6068}.r1{background:#842029}.r2{background:#a8343e}.r3{background:#1f6f5c}.r4{background:#2d6a3e}.r5{background:#9a5b00}.r6{background:#6b3fa0}.r7{background:#1f4f8a}
+.intensity{display:grid;grid-template-columns:80px 1fr;align-items:center;gap:8px;margin:2px 0 14px}
+.intensity .il{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.intensity svg{width:100%;height:60px;display:block}
+.iwrap{position:relative}
+.itag{position:absolute;font-size:11px;font-weight:800;color:#842029;background:rgba(255,255,255,.85);padding:0 3px;border-radius:3px;white-space:nowrap}
+.itag.mute{color:#5d6068}
+.tl-filter{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 10px;font-size:13px;color:var(--muted);font-weight:700}
+.fb{padding:6px 10px;font-size:13px}
+.fb.on{outline:2px solid var(--primary);outline-offset:1px;background:var(--primary-soft)}
+.dv{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.03em;padding:1px 6px;border-radius:4px;color:#fff;margin-right:4px;vertical-align:1px;text-transform:uppercase}
+.dv.ecmo{background:var(--ecmo)}.dv.imp{background:var(--imp)}.dv.biac{background:var(--biac)}
+.lanes-key{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px;font-size:12.5px;font-weight:700}
+.lk{display:inline-flex;align-items:center;gap:6px}
+.lk::before{content:"";width:12px;height:12px;border-radius:3px;background:currentColor}
+.lk.lab,.lane.lab h5{color:#1f4f8a}.lk.ac,.lane.ac h5{color:#842029}.lk.mon,.lane.mon h5{color:#9a5b00}.lk.vig,.lane.vig h5{color:#1f6f5c}
+ol.tl{list-style:none;margin:0;padding:0;position:relative}
+ol.tl::before{content:"";position:absolute;left:121px;top:8px;bottom:8px;width:3px;background:var(--border);border-radius:2px}
+.ph{display:grid;grid-template-columns:108px 1fr;gap:28px;margin:0 0 12px;position:relative}
+.ph::before{content:"";position:absolute;left:114px;top:12px;width:17px;height:17px;border-radius:50%;background:#fff;border:4px solid var(--c,#842029);z-index:1}
+.ph .when{text-align:right;padding-top:8px}
+.ph .when b{display:block;font-size:15px;color:var(--c)}
+.ph .when span{font-size:12px;color:var(--muted)}
+.pcard{border:1px solid var(--border);border-left:4px solid var(--c);border-radius:8px;padding:12px 14px;background:#fff}
+.pcard h4{margin:0 0 8px;font-size:15px}
+.lanes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.lane{background:var(--surface-2);border-radius:6px;padding:8px 10px}
+.lane h5{margin:0 0 4px;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em}
+.lane ul{margin:0;padding-left:16px;font-size:13.5px}
+.lane li{margin:3px 0}
+.lane li.hid{display:none}
+.lane.empty{display:none}
+.p0{--c:#5d6068}.p1{--c:#842029}.p2{--c:#a8343e}.p3{--c:#1f6f5c}.p4{--c:#2d6a3e}.p5{--c:#9a5b00}.p6{--c:#6b3fa0}.p7{--c:#1f4f8a}
+table.freq td,table.freq th{text-align:center;font-size:12.5px;padding:7px 6px}
+table.freq td:first-child,table.freq th:first-child{text-align:left;white-space:nowrap}
+.f0{color:var(--faint)}.f1{background:#f6e6e7}.f2{background:#e9b9bd;font-weight:700}.f3{background:#842029;color:#fff;font-weight:800}
+@media screen and (max-width:980px){
+  .ribbon,.ribbon-9{grid-template-columns:repeat(2,1fr)}
+  .scen,.ecmo-con{grid-template-columns:1fr}
+  .gantt{grid-template-columns:110px repeat(9,92px)}
+  .rb,.rb:first-child{clip-path:none;border-radius:6px}
+  ol.tl::before{left:9px}
+  .ph{grid-template-columns:1fr;gap:6px;padding-left:30px}
+  .ph::before{left:2px;top:6px}
+  .ph .when{text-align:left;padding-top:0;display:flex;gap:8px;align-items:baseline}
+  .intensity{display:none}
+}
+
+.ribbon-9{grid-template-columns:repeat(9,1fr);margin-bottom:12px}
+.ecp-link{text-decoration:none;color:#fff;background:#3a3d44;border-color:#3a3d44;border-radius:8px;border:1px solid;font-weight:700}
+.ecp-link:hover{background:#24262b}
+.gantt{display:grid;grid-template-columns:150px repeat(9,minmax(0,1fr));gap:3px;font-size:12px;margin:6px 0 4px;overflow-x:auto}
+.gh{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;padding:2px 4px;text-align:center}
+.gl{font-weight:700;font-size:12.5px;display:flex;align-items:center;padding-right:6px}
+.g{border-radius:5px;padding:6px 6px;min-height:30px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.2;font-weight:700}
+.g-off{background:repeating-linear-gradient(45deg,#f3f1ed,#f3f1ed 5px,#ebe8e2 5px,#ebe8e2 10px)}
+.g-on{background:#842029;color:#fff}
+.gantt .gl:nth-of-type(n) + .g-on{}
+.g-wean{background:linear-gradient(90deg,#c25560,#f0cfd2);color:#3a0b10}
+.g-stop{background:#fff;border:2px dashed #6b3fa0;color:#6b3fa0}
+.g-hep{background:#1f6f8b;color:#fff}
+.g-hep2{background:#d6e8ef;color:#123e4e}
+.g-bolus{background:#123e4e;color:#fff}
+.g-pro{background:#e4ecf7;color:#1f4f8a}
+.g-imp{background:#1f6f8b;color:#fff}
+.g-wimp{background:linear-gradient(90deg,#1f6f8b,#cfe3ea);color:#0d2f3b}
+.g-hep{background:#2d6a3e!important}
+.g-txt{background:var(--surface-2);color:var(--text);font-weight:600}
+
+.dv.cit{background:#2d6a3e}.dv.hnf{background:#9a5b00}.dv.tih{background:#b4232c}
+.trrc-link{background:#2d6a3e!important;border-color:#2d6a3e!important}
+.scen{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:4px 0 12px}
+.sc{border:1px solid var(--border);border-radius:8px;padding:10px 12px;display:grid;gap:4px;font-size:13px;background:#fff}
+.sc b{font-size:14.5px}.sc .dv{justify-self:start}
+.sc-cit{border-top:4px solid #2d6a3e}.sc-hnf{border-top:4px solid #9a5b00}.sc-tih{border-top:4px solid #b4232c}
+.g-cit{background:#2d6a3e;color:#fff}.g-ca{background:#d9ecdf;color:#173d22}.g-tih{background:#fbe5e6;color:#7a1219;border:1px solid #e9b9bd}
+.ecmo-con{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;align-items:center;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin:6px 0 14px;background:#fff}
+.ecmo-con svg{width:100%;height:auto}
+.ecmo-con ul{margin:0;font-size:13.5px}
+/* Calculators */
+.calc{border:1px solid var(--border);background:var(--surface-2);border-radius:10px;padding:18px 20px;margin:14px 0}
+.calc h3{margin-top:0;display:flex;align-items:center;gap:8px}
+.calc h3::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--primary)}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:12px}
+label{display:grid;gap:4px;font-size:12.5px;font-weight:700;color:var(--muted)}
+input,select{font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text);width:100%}
+input:focus,select:focus{outline:2px solid var(--primary);outline-offset:1px}
+.result{background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px 16px;min-height:52px}
+.result .big{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums}
+.result.ok{border-left:5px solid var(--ok)}
+.result.low{border-left:5px solid var(--info)}
+.result.high{border-left:5px solid var(--warn)}
+.result.crit{border-left:5px solid var(--danger)}
+.result .muted{color:var(--muted);font-size:13px}
+.ts-row{display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid var(--border)}
+.ts-row:last-of-type{border-bottom:0}
+.ts-row b{font-size:14px}
+.ts-opts{display:grid;gap:6px}
+.ts-opts label{display:flex;gap:8px;align-items:flex-start;font-weight:500;color:var(--text);font-size:13.5px;cursor:pointer}
+.ts-opts input{width:auto;margin-top:3px}
+/* Flow */
+.flow{display:grid;gap:8px;margin:10px 0}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:#fff}
+.step .n{width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+.step.ok .n{background:var(--ok)} .step.warn .n{background:var(--warn)} .step.danger .n{background:var(--danger)}
+.check{list-style:none;padding:0}
+.check li{padding:7px 0 7px 30px;position:relative;border-bottom:1px dashed var(--border)}
+.check li::before{content:"";position:absolute;left:2px;top:9px;width:16px;height:16px;border:2px solid var(--muted);border-radius:4px}
+.refs{font-size:13.5px}
+.refs li{margin:6px 0}
+a{color:var(--info)}
+footer{color:var(--muted);font-size:12.5px;text-align:center;padding:10px}
+.only-print{display:none}
+@media screen and (max-width:980px){
+  .layout{grid-template-columns:1fr}
+  nav.toc{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--border)}
+  nav.toc ol{display:flex;flex-wrap:wrap;gap:4px}
+  main{padding:18px 14px 60px}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .kv{grid-template-columns:1fr}
+  .ts-row{grid-template-columns:1fr}
+  section.card{padding:18px 16px}
+  header.doc h1{font-size:23px}
+}
+@media print{
+  @page{size:A4;margin:14mm 12mm}
+  @page crono{size:A4 landscape;margin:10mm 10mm}
+  .tl-page{page:crono}
+  #cronologia h3{break-before:page}
+  .gantt{font-size:8.5pt}
+  .ecmo-con{grid-template-columns:1.2fr 1fr;break-inside:avoid}.ecmo-con ul{font-size:8.6pt}.sc{font-size:8.6pt}.g{min-height:22px;padding:3px}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;font-size:10.5pt}
+  .layout{display:block}
+  nav.toc,.tabs,.no-print,.calc{display:none!important}
+  .only-print{display:block}
+  main{padding:0}
+  section.card,header.doc{box-shadow:none;break-inside:auto;border:0;padding:0 0 10px;margin:0 0 12px}
+  header.doc{border-top:4px solid var(--primary);padding-top:8px}
+  .panel{display:block!important;break-inside:avoid;margin-bottom:10px}
+  .tbl-wrap,.box,.step,.callout{break-inside:avoid}
+  section.card>h2{break-after:avoid}
+  .tl-page{break-before:page;break-after:page}
+  .ph{break-inside:avoid;grid-template-columns:80px 1fr;gap:18px}
+  ol.tl::before{left:89px}.ph::before{left:82px}
+  .lane li.hid{display:list-item}.lane.empty{display:block}
+  .lanes{grid-template-columns:repeat(4,1fr);gap:6px}
+  .lane ul{font-size:8.6pt;line-height:1.35}
+  .pcard{padding:7px 10px}.pcard h4{margin-bottom:4px;font-size:10.5pt}
+  .ph{margin-bottom:6px}
+  .tl-page .lead{font-size:9.5pt;margin-bottom:6px}
+  table.freq td,table.freq th{font-size:8.5pt;padding:4px}
+  .rb .ri{font-size:9px}.rb .rt{font-size:10.5px}
+  a{color:inherit;text-decoration:none}
+  .refs a::after{content:" — " attr(href);font-size:8.5pt;color:#555;word-break:break-all}
+}
+
+@media screen and (max-width:980px){.scen,.ecmo-con{grid-template-columns:1fr}.ecmo-con svg{min-height:150px}}
+@media print{#crono-trrc h3{break-after:avoid}#crono-trrc h3.conx{break-before:page}}
+
+/* Enfermería */
+.nseq{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:6px 0 16px}
+.ns{background:#fff;border:1px solid var(--border);border-top:4px solid var(--primary);border-radius:8px;padding:10px 10px 10px;display:grid;gap:3px;font-size:12.5px;color:var(--muted)}
+.ns b{color:var(--text);font-size:14px}
+.ns .nn{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12.5px}
+.ns:nth-child(4){border-top-color:#842029}.ns:nth-child(5),.ns:nth-child(6){border-top-color:var(--ok)}.ns:nth-child(5) .nn,.ns:nth-child(6) .nn{background:var(--ok)}
+.kit{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kt{border:1px solid var(--border);border-radius:8px;padding:4px 12px 6px;background:#fff;border-top:4px solid}
+.kt h4{margin:8px 0 2px}.kt .check li{font-size:13px;padding:5px 0 5px 26px}.kt .check li::before{top:7px;width:14px;height:14px}
+.kt-f{border-top-color:#842029}.kt-v{border-top-color:#2d6a3e}.kt-m{border-top-color:#1f4f8a}.kt-s{border-top-color:#9a5b00}
+.ncalc{border:1px solid var(--border);background:var(--surface-2);border-radius:10px;padding:18px 20px;margin:16px 0}
+.ncalc h3{margin-top:0}
+.prep-out{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.po{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 14px;border-left:5px solid var(--primary)}
+.po h5{margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.po .big{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.po .sm{font-size:13px;color:var(--muted);margin-top:4px}
+.po.b{border-left-color:#9a5b00}.po.p{border-left-color:#2d6a3e}.po.r{border-left-color:#1f4f8a}
+.label-hnf{grid-column:1/-1;border:2px dashed #842029;border-radius:8px;padding:10px 14px;background:#fff;display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13.5px}
+.label-hnf b.t{color:#842029;letter-spacing:.06em}
+.note{font-size:12.5px;color:var(--muted);margin-top:10px}
+.via{display:grid;grid-template-columns:1fr 1.6fr;gap:12px}
+.vcard{border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:#fff;position:relative}
+.vcard h4{margin:4px 0 6px}.vcard ul{font-size:13.5px;margin:0}
+.vtag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:999px}
+.v-per{border-top:4px solid var(--warn)}.v-per .vtag{background:var(--warn-soft);color:var(--warn)}
+.v-cen{border-top:4px solid var(--ok)}.v-cen .vtag{background:var(--ok-soft);color:var(--ok)}
+.v-cen svg{width:100%;max-width:520px;height:auto;display:block;margin:4px 0}
+.lum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lu{border-radius:7px;padding:8px 10px;font-size:12.5px;display:grid;gap:2px}
+.lu b{font-size:13.5px}
+.lu-no{background:var(--danger-soft);color:#6e1218}.lu-si{background:var(--ok-soft);color:#134a3c}.lu-alt{background:var(--info-soft);color:#173b67}
+.compat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cp{border:1px solid var(--border);border-radius:8px;padding:10px 12px;background:#fff;border-top:4px solid}
+.cp h4{margin:2px 0 8px}
+.cp-ok{border-top-color:var(--ok)}.cp-no{border-top-color:var(--danger)}.cp-q{border-top-color:var(--warn)}
+.pills{display:flex;flex-wrap:wrap;gap:5px}
+.pills span{font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:999px}
+.cp-ok .pills span{background:var(--ok-soft);color:#134a3c}.cp-no .pills span{background:var(--danger-soft);color:#7a1219}.cp-q .pills span{background:var(--warn-soft);color:#6b3f00}
+.cp .src{font-size:11.5px;color:var(--muted);margin:8px 0 0}
+table.m24 td,table.m24 th{text-align:center;vertical-align:middle;font-size:13px;padding:6px 6px}
+table.m24 td:first-child,table.m24 td:last-child,table.m24 th:first-child,table.m24 th:last-child{text-align:left}
+table.m24 td:first-child{min-width:190px}table.m24 td:last-child{min-width:200px;font-size:12.5px}
+table.m24 tr.grp td{background:var(--surface-2);font-weight:800;text-transform:uppercase;font-size:11.5px;letter-spacing:.06em;color:var(--muted)}
+i.d{display:inline-block;width:12px;height:12px;border-radius:50%;background:#1f4f8a;vertical-align:middle}
+i.d.k{background:#842029;width:14px;height:14px}i.d.o{background:#fff;border:2px solid #1f4f8a}
+.bar{display:block;background:var(--ok-soft);color:#134a3c;border-radius:999px;padding:3px 10px;font-weight:700;font-size:12px}
+.bar.imp{background:#e1eff3;color:#164f63}.bar.ecmo{background:var(--primary-soft);color:#842029}
+.act3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.ac{border-radius:8px;padding:10px 14px;border:1px solid}
+.ac h4{margin:4px 0 6px}.ac ul{font-size:13.5px;margin:0}
+.ac-stop{background:var(--danger-soft);border-color:#e9b9bd}.ac-stop h4{color:#8d1a22}
+.ac-call{background:var(--warn-soft);border-color:#ecd3a6}.ac-call h4{color:#7a4700}
+.ac-nom{background:var(--ok-soft);border-color:#b9dccf}.ac-nom h4{color:#134a3c}
+@media screen and (max-width:980px){
+  .nseq{grid-template-columns:repeat(2,1fr)}.kit,.compat,.act3,.via,.prep-out,.lum{grid-template-columns:1fr}
+}
+@media print{
+  .enf-page{break-before:page}
+  .enf-break{break-before:page}
+  .enf-page h3{break-after:avoid}
+  .ncalc{break-inside:avoid;padding:10px 12px}
+  .ncalc input,.ncalc select{font-size:9.5pt;padding:3px 6px}
+  .kit,.compat,.act3,.via,.nseq{break-inside:avoid}
+  .kt .check li,.cp .pills span,.ac ul,.vcard ul,.lu{font-size:8.6pt}
+  table.m24 td,table.m24 th{font-size:8.4pt;padding:3px 4px}
+  table.m24 td:first-child{min-width:0}table.m24 td:last-child{min-width:0}
+}
+
+/* Registro HNF */
+.reg-page{margin-top:22px;border-top:2px solid var(--border);padding-top:6px}
+.reg-head{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:10px 0}
+table.reg{font-size:12.5px;min-width:1320px}
+table.reg select[data-k="ev"]{min-width:98px}table.reg select[data-k="ts"]{min-width:104px}table.reg select[data-k="ac"]{min-width:128px}table.reg input[data-k="t"]{min-width:190px}
+table.reg th{font-size:11px;padding:6px 5px;vertical-align:bottom;text-align:left}
+table.reg th small{font-weight:600;text-transform:none;letter-spacing:0}
+table.reg td{padding:3px 3px;vertical-align:middle}
+table.reg input,table.reg select{font-size:12.5px;padding:5px 6px;border-radius:5px}
+table.reg td.nr{min-width:120px}
+table.reg .ml{font-size:11.5px;color:var(--muted);display:block;margin-top:2px;min-height:14px}
+table.reg tr.a-u td{background:#e4ecf7}table.reg tr.a-d td{background:var(--warn-soft)}table.reg tr.a-s td{background:var(--danger-soft)}table.reg tr.a-m td{background:var(--ok-soft)}table.reg tr.a-b td{background:#efe9f8}
+.rdel{padding:3px 8px;font-size:12px}
+.reg-actions{display:flex;gap:8px;margin:10px 0}
+.reg-key{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:12.5px;color:var(--muted);margin:4px 0 8px}
+i.ak{font-style:normal;font-weight:700;padding:1px 7px;border-radius:5px;margin-right:4px}
+.k-m{background:var(--ok-soft);color:#134a3c}.k-u{background:#e4ecf7;color:#173b67}.k-d{background:var(--warn-soft);color:#6b3f00}.k-s{background:var(--danger-soft);color:#7a1219}.k-b{background:#efe9f8;color:#4a3a82}
+.sug{font-size:11px;color:#1f4f8a;display:block;margin-top:2px;line-height:1.25}
+@media screen and (max-width:980px){.reg-head{grid-template-columns:repeat(2,1fr)}}
+@media print{
+  .reg-page{page:crono;break-before:page;border:0;padding:0;margin:0}
+  .reg-head{grid-template-columns:repeat(6,1fr);gap:6px}
+  .reg-head input,.reg-head select{font-size:9pt;padding:3px 5px}
+  table.reg{min-width:0;width:100%}
+  table.reg th{font-size:7.6pt;padding:3px}
+  table.reg td{padding:1px 2px;height:32px;border-left:1px solid #cfcac2}
+  table.reg th{border-left:1px solid #cfcac2}
+  .reg-page>.note{font-size:8pt;margin-bottom:4px}
+  table.reg input,table.reg select{font-size:8.4pt;padding:2px 3px;border:0;background:transparent;-webkit-appearance:none;appearance:none}
+  table.reg .sug{font-size:7pt}
+  table.reg tr{break-inside:avoid}
+  #registroHNF .tbl-wrap{break-inside:auto;overflow:visible}
+  table.reg input:invalid{color:transparent}
+  table.reg input:focus{outline:none}
+  table.reg .ml:empty,table.reg .sug:empty{display:none}
+  table.reg input,table.reg select{height:20px}
+  table.reg input::-webkit-calendar-picker-indicator,table.reg input::-webkit-inner-spin-button{display:none}
+  table.reg input::placeholder{color:#999}
+  table.reg select[data-k],table.reg input[data-k="t"]{min-width:0}
+  table.reg input[data-k="t"]{width:100%}
+  .reg-key{font-size:8pt}
+}
+</style>
+<style>
+body{background:#fff}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 24px 60px}
+.sum-h{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;border-top:5px solid var(--primary);border-bottom:1px solid var(--border);padding:12px 0 10px;margin-bottom:12px}
+.sum-h .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);font-weight:800}
+.sum-h h1{font-size:23px;margin:4px 0 2px;line-height:1.2}.sum-h p{margin:0;color:var(--muted);font-size:13.5px}
+.sum-id{display:grid;gap:6px;font-size:13px;font-weight:700;white-space:nowrap}
+.sum-bar{display:flex;gap:12px;align-items:center;margin:0 0 14px;font-size:13px;color:var(--muted)}
+.sp>h2{font-size:18px;margin:14px 0 10px;display:flex;align-items:center;gap:10px}
+.sp>h2 .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:7px;background:var(--primary);color:#fff;font-size:13px}
+.prep-recipe{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.prep-recipe>div{border:1px solid var(--border);border-left:5px solid var(--primary);border-radius:8px;padding:8px 12px;display:grid;gap:3px;font-size:13px}
+.prep-recipe>div:nth-child(2){border-left-color:#9a5b00}.prep-recipe>div:nth-child(3){border-left-color:#1f4f8a}
+table.dose th{font-size:11px}table.dose th small{font-weight:600;text-transform:none;letter-spacing:0}
+table.dose td,table.dose th{text-align:center}table.dose td:nth-child(n+4){background:var(--ok-soft)}
+.nom2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.nom2 h4{margin:0 0 6px}
+.nom2 table{font-size:12.5px}
+.srcs{font-size:10.5px;color:var(--muted);margin-top:12px;border-top:1px solid var(--border);padding-top:6px;word-break:break-word}
+@media screen and (max-width:980px){.sum-h{flex-direction:column;align-items:flex-start}.prep-recipe,.nom2{grid-template-columns:1fr}}
+@media print{
+  .wrap{page:port}
+  .wrap{padding:0;max-width:none}
+  .sp{break-before:auto}#nomograma,#p3,#p4{break-before:page}
+  .kt .check li{font-size:7.8pt!important;padding:2px 0 2px 20px!important;line-height:1.25}.kt .check li::before{top:3px!important;width:11px!important;height:11px!important}
+  .ac ul{font-size:8pt!important}.ac{padding:6px 10px}
+  .ns{padding:4px 6px}.ns .nn{width:18px;height:18px;font-size:9pt}
+  table.dose td,table.dose th{padding:3px 4px!important}
+  table.m24 td,table.m24 th{font-size:7.8pt!important;padding:2px 4px!important;line-height:1.25}
+  .bar{padding:1px 8px;font-size:7.5pt}
+  .grid-2 .box ul{font-size:7.8pt;margin:0}.grid-2 .box h4{margin:2px 0 3px;font-size:9.5pt}
+  .nom2 table td,.nom2 table th{font-size:8pt!important;padding:3px 4px!important}
+  .prep-recipe,.nom2,.dose,table.m24{break-inside:avoid}
+  .sp>h2{font-size:13pt;margin:4px 0 6px;break-after:avoid}.sp>h2.h2b{margin-top:10px}
+  .sum-h{padding:6px 0;margin-bottom:6px}.sum-h h1{font-size:15pt}.sum-h p{font-size:9pt}.sum-id{font-size:9pt}
+  .nseq{margin:4px 0 8px}.ns{font-size:8pt;padding:6px}.ns b{font-size:9.5pt}
+  .kit{grid-template-columns:repeat(2,1fr);gap:6px}.kt h4{font-size:10pt;margin:5px 0 0}
+  .act3{gap:6px}.ac h4{font-size:10pt}
+  .prep-recipe>div{font-size:8.6pt;padding:5px 8px}
+  table.dose td,table.dose th,.nom2 table td,.nom2 table th{font-size:8.6pt;padding:4px 5px}
+  .via{grid-template-columns:1fr 1.5fr;gap:8px}.callout{font-size:8.8pt;padding:6px 10px}
+  .compat{gap:6px}.cp h4{font-size:10pt}.cp .src{font-size:7.5pt}
+  .grid-2 .box{font-size:8.6pt;padding:6px 10px}.grid-2{gap:8px}
+  .srcs{font-size:6.8pt}
+  .reg-page{page:crono;break-before:page}
+  .reg-sec{page:reglan}
+}
+@media print{@page port{size:A4 portrait;margin:10mm}@page reglan{size:A4 landscape;margin:10mm}}
+</style>
+</head><body><main class="wrap">
+
+<header class="sum-h">
+  <div><div class="kicker">Resumen para enfermería · UCI</div>
+  <h1>Anticoagulación con heparina en shock cardiogénico y soporte circulatorio</h1>
+  <p>Ingreso y primeras 24 h · ECMO VA · Impella · ECPELLA · BIAC · TRRC</p></div>
+  <div class="sum-id"><span>REF ________________</span><span>Peso ______ kg</span><span>Fecha ____/____/______</span></div>
+</header>
+<div class="no-print sum-bar"><button class="btn-primary" onclick="window.print()">Imprimir / guardar PDF</button><span>5 páginas: 4 A4 verticales y la hoja de registro en A4 apaisada.</span></div>
+
+<section class="sp" id="p1">
+  <h2><span class="num">1</span>Secuencia y material de ingreso</h2>
+  <div class="nseq" aria-label="Secuencia de ingreso">
+    <div class="ns"><span class="nn">1</span><b>Analítica basal</b><span>Antes de cualquier heparina</span></div>
+    <div class="ns"><span class="nn">2</span><b>Bomba y vía</b><span>Preparadas, etiquetadas y con doble chequeo</span></div>
+    <div class="ns"><span class="nn">3</span><b>Bolo</b><span>Si está pautado: IV directo y hora registrada</span></div>
+    <div class="ns"><span class="nn">4</span><b>Perfusión</b><span>ECMO: iniciar cuando el ACT baje de 220–250 s</span></div>
+    <div class="ns"><span class="nn">5</span><b>Control a las 6 h</b><span>Anti-Xa y TTPa</span></div>
+    <div class="ns"><span class="nn">6</span><b>Ajuste</b><span>Nomograma; nuevo control a las 6 h</span></div>
+  </div>
+  <div class="kit">
+    <div class="kt kt-f"><h4>Fármaco</h4><ul class="check">
+      <li>Bomba de heparina preparada, etiquetada y sin conectar.</li>
+      <li>Heparina sódica <b>1 % (1.000 UI/ml)</b>, viales de 5 ml = 5.000 UI, para el bolo (<a href="https://cima.aemps.es/cima/dochtml/ft/58693/FT_58693.html">ficha técnica, CIMA</a>).</li>
+      <li>Jeringas de 10 ml rotuladas «HEPARINA BOLO» y SF para lavado.</li>
+      <li>Solución de purga del Impella preparada (ver Impella en el protocolo completo).</li>
+      <li>Protamina localizada en la unidad (ver sangrado en el protocolo completo).</li>
+    </ul></div>
+    <div class="kt kt-v"><h4>Vía de administración</h4><ul class="check">
+      <li>Luz central exclusiva identificada o vía periférica dedicada.</li>
+      <li>Alargadera con válvula antirreflujo y etiqueta «HEPARINA».</li>
+      <li>Bomba volumétrica (bolsa) o de jeringa (50 ml), con biblioteca de fármacos si está disponible.</li>
+      <li>Presurizador de la línea arterial con SF <b>sin heparina</b>.</li>
+    </ul></div>
+    <div class="kt kt-m"><h4>Monitorización y extracciones</h4><ul class="check">
+      <li>Equipo de ACT con cartuchos (implante de ECMO o Impella).</li>
+      <li>Tubos de citrato (tapón azul) y peticiones de anti-Xa y TTPa.</li>
+      <li>Doppler portátil, linterna para revisar el circuito y NIRS si se dispone.</li>
+      <li>Hoja de registro de heparina: UI/kg/h, UI/h, ml/h y hora de cada cambio.</li>
+    </ul></div>
+    <div class="kt kt-s"><h4>Seguridad</h4><ul class="check">
+      <li>Peso real del paciente confirmado (báscula de la cama o dato fiable).</li>
+      <li>Diana de anti-Xa del día escrita en la prescripción.</li>
+      <li>Antecedente de TIH preguntado: si existe, <b>ninguna heparina</b> (lavados, sellados y purga incluidos).</li>
+      <li>Una sola concentración de heparina en la unidad (<a href="https://seguridaddelpaciente.sanidad.gob.es/practicasSeguras/usoSeguroMedicamentos/docs/Recomendaciones__para_el_Uso_Seguro_Medicamentos_Alto_Riesgo-_2023.pdf">Ministerio de Sanidad, 2023</a>).</li>
+    </ul></div>
+  </div>
+  <h2 class="h2b"><span class="num">2</span>Qué hacer según el resultado</h2>
+  <div class="act3">
+    <div class="ac ac-stop"><h4>Parar la HNF y avisar de inmediato</h4><ul>
+      <li>Sangrado mayor activo o hematoma en expansión.</li>
+      <li>Anisocoria, focalidad o deterioro neurológico brusco.</li>
+      <li>Hb ↓ ≥2 g/dl con inestabilidad.</li>
+      <li>Anti-Xa &gt;0,75 UI/ml (parar 1 h según el <a href="#nomograma">nomograma</a>).</li>
+    </ul></div>
+    <div class="ac ac-call"><h4>Avisar al médico sin parar la HNF</h4><ul>
+      <li>Anti-Xa &lt;0,10 o dos controles seguidos fuera de rango.</li>
+      <li>Plaquetas &lt;100.000 o caída &gt;30 %: calcular los 4Ts.</li>
+      <li>Dosis de HNF ≥35.000 UI/24 h (posible resistencia).</li>
+      <li>Anti-Xa y TTPa discordantes, o coágulos en el circuito.</li>
+    </ul></div>
+    <div class="ac ac-nom"><h4>Ajuste por enfermería según el nomograma</h4><ul>
+      <li>Anti-Xa 0,10–0,29 o 0,51–0,75: cambio de ritmo según la tabla, si la unidad tiene delegado el ajuste.</li>
+      <li>Registrar el nuevo UI/kg/h, UI/h y ml/h, con doble chequeo.</li>
+      <li>Nuevo control a las 6 h del cambio.</li>
+      <li>Anti-Xa en rango: control a las 6 h y, tras dos seguidos en rango, cada 12–24 h.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section class="sp" id="nomograma">
+  <h2><span class="num">3</span>Preparación, bolo y ritmo según el peso</h2>
+  <div class="prep-recipe">
+    <div><b>Bolsa estándar</b><span>25.000 UI en 250 ml de SF o SG 5 % → <b>100 UI/ml</b>. Retirar 25 ml del suero y añadir 25 ml de heparina 1 % (5 viales).</span></div>
+    <div><b>Bolo</b><span>Heparina 1 % IV directa lenta por la luz de heparina o por una vía periférica; lavar con 10 ml de SF y registrar la hora.</span></div>
+    <div><b>Cambio</b><span>Bolsa o jeringa nueva cada 24 h. Doble chequeo de la preparación y de la programación de la bomba.</span></div>
+  </div>
+  <div class="tbl-wrap"><table class="dose">
+<thead><tr><th>Peso (kg)</th><th>Bolo ECMO 75 UI/kg<br><small>heparina 1 %</small></th><th>Bolo sin MCS 80 UI/kg<br><small>máx. 5.000 UI</small></th><th>6 UI/kg/h<br><small>Impella · ECPELLA</small></th><th>10 UI/kg/h<br><small>ECMO · BIAC</small></th><th>12 UI/kg/h</th><th>18 UI/kg/h<br><small>sin MCS</small></th></tr></thead>
+<tbody><tr><td class="num"><b>50</b></td><td class="num">3.750 UI · <b>3,8 ml</b></td><td class="num">4.000 UI · <b>4,0 ml</b></td><td class="num"><b>3,0</b></td><td class="num"><b>5,0</b></td><td class="num"><b>6,0</b></td><td class="num"><b>9,0</b></td></tr><tr><td class="num"><b>60</b></td><td class="num">4.500 UI · <b>4,5 ml</b></td><td class="num">4.800 UI · <b>4,8 ml</b></td><td class="num"><b>3,6</b></td><td class="num"><b>6,0</b></td><td class="num"><b>7,2</b></td><td class="num"><b>10,8</b></td></tr><tr><td class="num"><b>70</b></td><td class="num">5.250 UI · <b>5,2 ml</b></td><td class="num">5.000 UI · <b>5,0 ml</b></td><td class="num"><b>4,2</b></td><td class="num"><b>7,0</b></td><td class="num"><b>8,4</b></td><td class="num"><b>12,6</b></td></tr><tr><td class="num"><b>80</b></td><td class="num">6.000 UI · <b>6,0 ml</b></td><td class="num">5.000 UI · <b>5,0 ml</b></td><td class="num"><b>4,8</b></td><td class="num"><b>8,0</b></td><td class="num"><b>9,6</b></td><td class="num"><b>14,4</b></td></tr><tr><td class="num"><b>90</b></td><td class="num">6.750 UI · <b>6,8 ml</b></td><td class="num">5.000 UI · <b>5,0 ml</b></td><td class="num"><b>5,4</b></td><td class="num"><b>9,0</b></td><td class="num"><b>10,8</b></td><td class="num"><b>16,2</b></td></tr><tr><td class="num"><b>100</b></td><td class="num">7.500 UI · <b>7,5 ml</b></td><td class="num">5.000 UI · <b>5,0 ml</b></td><td class="num"><b>6,0</b></td><td class="num"><b>10,0</b></td><td class="num"><b>12,0</b></td><td class="num"><b>18,0</b></td></tr><tr><td class="num"><b>110</b></td><td class="num">8.250 UI · <b>8,2 ml</b></td><td class="num">5.000 UI · <b>5,0 ml</b></td><td class="num"><b>6,6</b></td><td class="num"><b>11,0</b></td><td class="num"><b>13,2</b></td><td class="num"><b>19,8</b></td></tr><tr><td class="num"><b>120</b></td><td class="num">9.000 UI · <b>9,0 ml</b></td><td class="num">5.000 UI · <b>5,0 ml</b></td><td class="num"><b>7,2</b></td><td class="num"><b>12,0</b></td><td class="num"><b>14,4</b></td><td class="num"><b>21,6</b></td></tr></tbody></table></div>
+<p class="note">Ritmos en <b>ml/h con 25.000 UI en 250 ml (100 UI/ml)</b>. Con 50 UI/ml, multiplicar por 2; con jeringa de 500 UI/ml, dividir por 5. Bolo con heparina 1 % (1.000 UI/ml): 1 ml = 1.000 UI. La dosis la prescribe el médico.</p>
+  <div class="no-print"><div class="ncalc" id="calcPrep">
+    <h3>Hoja de preparación: bomba y bolo según el peso</h3>
+    <div class="fields">
+      <label>Peso real (kg)<input type="number" id="e_peso" min="30" max="250" step="0.5" value="80"></label>
+      <label>Situación<select id="e_ind">
+        <option value="ecmo">ECMO VA (canulación)</option>
+        <option value="imp">Impella (sistémica + purga)</option>
+        <option value="ecp">ECPELLA</option>
+        <option value="biac">BIAC</option>
+        <option value="std">Sin MCS, dosis terapéutica</option>
+        <option value="custom">Personalizada</option>
+      </select></label>
+      <label>Bolo (UI/kg)<input type="number" id="e_bolo" min="0" max="150" step="5" value="75"></label>
+      <label>Bolo máximo (UI; 0 = sin límite)<input type="number" id="e_bmax" min="0" step="500" value="0"></label>
+      <label>Perfusión (UI/kg/h)<input type="number" id="e_perf" min="0" max="40" step="0.5" value="10"></label>
+      <label>Preparación<select id="e_prep">
+        <option value="250">25.000 UI en 250 ml → 100 UI/ml (bolsa)</option>
+        <option value="500">25.000 UI en 500 ml → 50 UI/ml (bolsa)</option>
+        <option value="50">25.000 UI en 50 ml → 500 UI/ml (jeringa)</option>
+      </select></label>
+      <label>Vial para preparar<select id="e_vial">
+        <option value="1000">Heparina 1 % (1.000 UI/ml)</option>
+        <option value="5000">Heparina 5 % (5.000 UI/ml)</option>
+      </select></label>
+      <label>Heparina por purga Impella (UI/h)<input type="number" id="e_purga" min="0" step="1" value="0"></label>
+    </div>
+    <div class="prep-out" id="e_out" aria-live="polite"></div>
+    <p class="note">Valores por defecto tomados de la tabla de dosis de inicio del protocolo. La dosis la prescribe el médico; esta hoja sirve para preparar, comprobar y registrar. Estabilidad de la dilución: 24 h a temperatura ambiente (<a href="https://www.comunidad.madrid/hospital/cruzroja/sites/cruzroja/files/2024-02/Guia%20de%20Administracion%20Parenteral%20mayo%202023.pdf">guía de administración parenteral, Comunidad de Madrid</a>).</p>
+  </div></div>
+  <h2 class="h2b"><span class="num">4</span>Nomograma de ajuste</h2>
+  <div class="nom2"><div><h4>Por anti-Xa (diana 0,30–0,50 UI/ml)</h4><div class="tbl-wrap"><table>
+    <thead><tr><th>Anti-Xa (UI/ml)</th><th>Bolo</th><th>Cambio de perfusión</th><th>Siguiente control</th></tr></thead>
+    <tbody>
+      <tr class="crit"><td class="num">&lt;0,10</td><td>25 UI/kg (omitir si sangrado o alto riesgo)</td><td>↑ 3 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="low"><td class="num">0,10–0,19</td><td>No</td><td>↑ 2 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="low"><td class="num">0,20–0,29</td><td>No</td><td>↑ 1 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="goal"><td class="num">0,30–0,50</td><td>—</td><td>Sin cambios (diana)</td><td>6 h; cada 12–24 h tras 2 consecutivos</td></tr>
+      <tr class="high"><td class="num">0,51–0,60</td><td>No</td><td>↓ 1 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="high"><td class="num">0,61–0,75</td><td>No</td><td>Parar 1 h, después ↓ 2 UI/kg/h</td><td>6 h tras reinicio</td></tr>
+      <tr class="crit"><td class="num">&gt;0,75</td><td>No</td><td>Parar 1 h, después ↓ 3 UI/kg/h y avisar al médico</td><td>6 h tras reinicio</td></tr>
+    </tbody>
+  </table></div></div><div><h4>Por ratio de TTPa (diana 1,5–2,0)</h4><div class="tbl-wrap"><table>
+    <thead><tr><th>Ratio de TTPa</th><th>Acción</th><th>Siguiente control</th></tr></thead>
+    <tbody>
+      <tr class="crit"><td class="num">&lt;1,2</td><td>Bolo 25 UI/kg (si no sangrado) y ↑ 3 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="low"><td class="num">1,2–1,49</td><td>↑ 2 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="goal"><td class="num">1,5–2,0</td><td>Sin cambios</td><td>6 h; cada 12–24 h tras 2 consecutivos</td></tr>
+      <tr class="high"><td class="num">2,01–2,5</td><td>↓ 1–2 UI/kg/h</td><td>6 h</td></tr>
+      <tr class="high"><td class="num">2,51–3,0</td><td>Parar 1 h, después ↓ 2 UI/kg/h</td><td>6 h tras reinicio</td></tr>
+      <tr class="crit"><td class="num">&gt;3,0</td><td>Parar 1 h, ↓ 3 UI/kg/h, avisar al médico, valorar anti-Xa</td><td>6 h tras reinicio</td></tr>
+    </tbody>
+  </table></div></div></div>
+  
+</section>
+
+<section class="sp" id="p3">
+  <h2><span class="num">5</span>Vía de administración y compatibilidad</h2>
+  <div class="via">
+    <div class="vcard v-per">
+      <span class="vtag">Aceptable</span><h4>Vía periférica</h4>
+      <ul>
+        <li>La HNF no es vesicante: puede ir por vía periférica como puente en el ingreso o si no hay catéter central.</li>
+        <li>Catéter de 20 G o mayor, <b>exclusivo para la heparina</b>.</li>
+        <li>Nunca extraer muestras de ese brazo (<a href="https://it.houstonmethodist.org/wp-content/uploads/2020/01/1768_HM_IP_HEPARIN_INFUSION_STANDARD_PROTOCOL.pdf">Houston Methodist</a>).</li>
+        <li>Inconvenientes en el shock: pérdida de la vía, hematoma en el punto de punción y retrasos en la perfusión.</li>
+      </ul>
+    </div>
+    <div class="vcard v-cen">
+      <span class="vtag">De elección</span><h4>Vía central: luz exclusiva</h4>
+      <svg viewBox="0 0 520 150" role="img" aria-label="Catéter venoso central de tres luces con la luz recomendada para la heparina">
+        <rect x="150" y="62" width="350" height="22" rx="11" fill="#e9e6e0" stroke="#8a8d94"/>
+        <circle cx="492" cy="73" r="6" fill="#6b4a2b"/><text x="492" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#6b4a2b">Distal</text>
+        <circle cx="400" cy="66" r="6" fill="#1f4f8a"/><text x="400" y="50" text-anchor="middle" font-size="11" font-weight="700" fill="#1f4f8a">Medial</text>
+        <circle cx="310" cy="80" r="6" fill="#fff" stroke="#5d6068" stroke-width="2"/><text x="310" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#5d6068">Proximal</text>
+        <path d="M150 73 C110 73 100 20 60 20" fill="none" stroke="#6b4a2b" stroke-width="5"/>
+        <path d="M150 73 C110 73 100 73 60 73" fill="none" stroke="#1f4f8a" stroke-width="5"/>
+        <path d="M150 73 C110 73 100 126 60 126" fill="none" stroke="#9aa0a8" stroke-width="5"/>
+        <rect x="6" y="8" width="54" height="24" rx="5" fill="#6b4a2b"/><text x="33" y="25" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">DIST</text>
+        <rect x="6" y="61" width="54" height="24" rx="5" fill="#1f4f8a"/><text x="33" y="78" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">MED</text>
+        <rect x="6" y="114" width="54" height="24" rx="5" fill="#fff" stroke="#5d6068"/><text x="33" y="131" text-anchor="middle" font-size="11" font-weight="800" fill="#1d1f23">PROX</text>
+        <rect x="64" y="61" width="74" height="24" rx="12" fill="#2d6a3e"/><text x="101" y="77" text-anchor="middle" font-size="10.5" font-weight="800" fill="#fff">HNF</text>
+        <rect x="64" y="8" width="80" height="24" rx="12" fill="#fbe5e6" stroke="#b4232c"/><text x="104" y="24" text-anchor="middle" font-size="10" font-weight="800" fill="#b4232c">NO HNF</text>
+      </svg>
+      <div class="lum">
+        <div class="lu lu-no"><b>Distal</b><span>No: se usa para PVC, volumen, hemoderivados y lavados, que empujarían bolos de heparina.</span></div>
+        <div class="lu lu-si"><b>Medial</b><span>Recomendada, en exclusiva, si no lleva nutrición parenteral.</span></div>
+        <div class="lu lu-alt"><b>Proximal</b><span>Alternativa exclusiva si la medial lleva nutrición parenteral; las extracciones se hacen por la línea arterial.</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout warn"><b>Reglas de la luz de heparina</b>Sin bolos ni lavados rápidos por esa luz, porque empujan la heparina del espacio muerto. Conectar en Y lo más cerca posible del catéter y nunca añadir fármacos a la bolsa o jeringa de heparina. No usar el introductor ni los puertos del catéter de Swan-Ganz, y no infundir en el circuito de ECMO salvo protocolo específico. Se recomienda un catéter de 4–5 luces en estos pacientes. La elección de la luz es una adaptación local que hay que validar según los colores de cada fabricante.</div>
+  <div class="compat">
+    <div class="cp cp-ok"><h4>Compatibles en Y</h4>
+      <div class="pills"><span>Noradrenalina</span><span>Adrenalina</span><span>Dopamina</span><span>Furosemida</span><span>Morfina</span><span>Fentanilo</span><span>Midazolam</span><span>ClK</span><span>Gluconato cálcico</span><span>Hidrocortisona</span><span>Lidocaína</span><span>Digoxina</span><span>Bicarbonato</span><span>Meropenem</span><span>Cefazolina</span><span>Fluconazol</span><span>NPT sin lípidos</span></div>
+      <p class="src">Fuente: guías de CHEO para <a href="https://outreach.cheo.on.ca/manual/1600">heparina</a> y <a href="https://outreach.cheo.on.ca/manual/1351">perfusión de heparina</a>.</p>
+    </div>
+    <div class="cp cp-no"><h4>Incompatibles: luz separada</h4>
+      <div class="pills"><span>Amiodarona</span><span>Dobutamina</span><span>Vancomicina</span><span>Gentamicina</span><span>Amikacina</span><span>Tobramicina</span><span>Ciprofloxacino</span><span>Eritromicina</span><span>Alteplasa</span><span>Diazepam</span><span>Fenitoína</span><span>Emulsiones lipídicas</span></div>
+      <p class="src">Amiodarona: precipita (<a href="https://www.anmfonline.org/wp-content/uploads/2023/09/Amiodarone_ANMFv1.0_20240815-1.pdf">ANMF</a>). Dobutamina: precipita en la misma línea (<a href="https://www.medicines.org.uk/emc/product/1681/smpc">ficha técnica, EMC</a>). Resto: <a href="https://outreach.cheo.on.ca/manual/1600">CHEO</a> y <a href="https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=56dc3074-f1c5-45a3-b923-f1d14858e06d">DailyMed</a>.</p>
+    </div>
+    <div class="cp cp-q"><h4>Sin dato concluyente: consultar con Farmacia</h4>
+      <div class="pills"><span>Milrinona</span><span>Levosimendán</span><span>Nitroglicerina</span><span>Nitroprusiato</span><span>Vasopresina</span><span>Insulina</span><span>Propofol</span><span>Dexmedetomidina</span><span>Remifentanilo</span><span>Cisatracurio</span></div>
+      <p class="src">Si no hay dato verificado, usar una luz separada. La compatibilidad depende de la concentración, del diluyente y de la marca (<a href="https://pdtm.vch.ca/Supporting%20Documents/IV%20Compatibility/Y-site%20Compatibility%20Critical%20Care%20Chart.pdf">tabla de compatibilidad de Vancouver Coastal Health</a>).</p>
+    </div>
+  </div>
+  
+</section>
+
+<section class="sp" id="p4">
+  <h2><span class="num">6</span>Controles de las primeras 24 h</h2>
+  <div class="tbl-wrap"><table class="m24">
+    <thead><tr><th>Control</th><th>Basal</th><th>Bolo / implante</th><th>1–4 h</th><th>6 h</th><th>12 h</th><th>18 h</th><th>24 h</th><th>Si está alterado</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="9">Analítica</td></tr>
+      <tr><td><b>Hemograma</b> (Hb, plaquetas)</td><td><i class="d"></i></td><td></td><td></td><td><i class="d"></i></td><td><i class="d"></i></td><td></td><td><i class="d"></i></td><td>Hb ↓ ≥2 g/dl, plaquetas &lt;100.000 o caída &gt;30 %: avisar</td></tr>
+      <tr><td><b>Coagulación</b> (TP, TTPa, fibrinógeno)</td><td><i class="d"></i></td><td></td><td></td><td></td><td><i class="d"></i></td><td></td><td><i class="d"></i></td><td>Fibrinógeno &lt;1,5 g/l con sangrado: avisar</td></tr>
+      <tr><td><b>Anti-Xa + TTPa</b></td><td><i class="d o"></i></td><td></td><td></td><td><i class="d k"></i></td><td><i class="d k"></i></td><td><i class="d k"></i></td><td><i class="d k"></i></td><td>Aplicar el <a href="#nomograma">nomograma</a>; repetir a las 6 h de cada cambio</td></tr>
+      <tr><td><b>ACT</b> (ECMO, Impella)</td><td></td><td><i class="d k"></i></td><td><i class="d"></i></td><td></td><td></td><td></td><td></td><td>3–5 min tras el bolo y cada 1–2 h en la fase inicial</td></tr>
+      <tr><td><b>Gasometría</b> con Hb y lactato</td><td><i class="d"></i></td><td></td><td><i class="d"></i></td><td><i class="d"></i></td><td><i class="d"></i></td><td><i class="d"></i></td><td><i class="d"></i></td><td>Hb en descenso: buscar sangrado y avisar</td></tr>
+      <tr><td><b>Hemólisis</b> (LDH, Hb libre, bilirrubina)</td><td><i class="d"></i></td><td></td><td></td><td><i class="d o"></i></td><td><i class="d"></i></td><td></td><td><i class="d"></i></td><td>Hb libre o LDH en aumento: avisar (posición del Impella, circuito)</td></tr>
+      <tr><td><b>Grupo y pruebas cruzadas</b>, función renal y hepática</td><td><i class="d"></i></td><td></td><td></td><td></td><td></td><td></td><td><i class="d"></i></td><td>Insuficiencia renal o hepática: riesgo de acumulación</td></tr>
+      <tr class="grp"><td colspan="9">Vigilancia de enfermería: cada hora las primeras 24 h</td></tr>
+      <tr><td><b>Bomba de HNF</b>: UI/h, ml/h, volumen restante y luz</td><td></td><td colspan="6"><span class="bar">Cada 1 h · doble chequeo en cada cambio de ritmo y de turno</span></td><td>Si no coincide con la prescripción: corregir y avisar</td></tr>
+      <tr><td><b>Puntos de inserción</b> y cánulas</td><td><i class="d"></i></td><td colspan="6"><span class="bar">Cada 1 h</span></td><td>Sangrado o hematoma en expansión: compresión y avisar</td></tr>
+      <tr><td><b>Perfusión distal</b> del miembro canulado (pulso o Doppler, color, temperatura, relleno capilar, NIRS)</td><td><i class="d"></i></td><td colspan="6"><span class="bar">Cada 1 h</span></td><td>Frialdad, palidez o pérdida de señal: avisar de inmediato</td></tr>
+      <tr><td><b>Neurológico</b> (pupilas, nivel de conciencia)</td><td><i class="d"></i></td><td colspan="6"><span class="bar">Cada 1 h</span></td><td>Anisocoria o deterioro: parar la HNF y avisar</td></tr>
+      <tr><td><b>Orina, drenajes y SNG</b> (volumen y color)</td><td></td><td colspan="6"><span class="bar">Cada 1 h</span></td><td>Hematuria u orina oscura (hemólisis): avisar</td></tr>
+      <tr><td><b>Impella</b>: flujo y presión de purga, posición, alarmas</td><td></td><td colspan="6"><span class="bar imp">Cada 1 h · registrar las UI/h de la purga</span></td><td>Presión de purga en aumento o alarma de posición: avisar</td></tr>
+      <tr><td><b>ECMO</b>: circuito revisado con linterna, ΔP del oxigenador</td><td></td><td colspan="6"><span class="bar ecmo">Cada 4 h y en cada turno</span></td><td>Coágulos o fibrina nuevos, ΔP en aumento: avisar</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note"><i class="d"></i> extracción programada · <i class="d k"></i> control clave para el ajuste de la HNF · <i class="d o"></i> según la situación (anticoagulación previa, Impella). Frecuencias basadas en la sección de monitorización del protocolo completo; las de hemograma, gasometría y circuito son adaptaciones locales.</p>
+  
+  <div class="grid-2">
+    <div class="box"><h4>Extracción correcta de muestras</h4><ul>
+      <li>Extraer por la línea arterial (lavado sin heparina), por el brazo contrario o por una luz que no lleve heparina (<a href="https://www.ahajournals.org/doi/10.1161/circulationaha.104.478222">Circulation</a>).</li>
+      <li>Nunca de la luz o del brazo por donde pasa la heparina.</li>
+      <li>Si no hay otra opción: parar la HNF, lavar la luz y desechar 10 ml de sangre antes de extraer (<a href="https://it.houstonmethodist.org/wp-content/uploads/2020/01/1768_HM_IP_HEPARIN_INFUSION_STANDARD_PROTOCOL.pdf">Houston Methodist</a>).</li>
+      <li>Llenar el tubo de citrato hasta la marca y extraerlo antes que la gasometría, que lleva heparina (<a href="https://www.lhsc.on.ca/critical-care-trauma-centre/blood-sampling-from-an-indwelling-line">LHSC</a>).</li>
+      <li>Anti-Xa &gt;1 UI/ml inesperado: sospechar contaminación y repetir por vía periférica (<a href="https://bpb-us-e1.wpmucdn.com/sites.uw.edu/dist/8/9473/files/2020/10/UW-Medicine-Heparin-Infusion-Algorithms-2019.pdf">UW Medicine</a>).</li>
+    </ul></div>
+    <div class="box"><h4>Registro en cada cambio</h4><ul>
+      <li>Hora exacta de la extracción y del resultado.</li>
+      <li>Ritmo anterior y nuevo en UI/kg/h, UI/h y ml/h.</li>
+      <li>Bolos (UI y hora): son necesarios para calcular la protamina.</li>
+      <li>UI/h de la purga del Impella y total de HNF en 24 h.</li>
+      <li>Firma de las dos enfermeras del doble chequeo.</li>
+      <li>Cambio de bolsa o jeringa cada 24 h aunque quede volumen.</li>
+    </ul></div>
+  </div>
+  <div class="srcs"><b>Fuentes principales:</b> Ministerio de Sanidad, uso seguro de medicamentos de alto riesgo (https://seguridaddelpaciente.sanidad.gob.es/practicasSeguras/usoSeguroMedicamentos/docs/Recomendaciones_uso_seguro_medicamentos_alto_riesgo.pdf) · Ficha técnica heparina sódica, CIMA (https://cima.aemps.es/cima/dochtml/ft/58693/FT_58693.html) · Nomograma anti-Xa, Anticoagulation Forum (https://acforum.org/web/scripts/viewPDF.php?id=1865) · Compatibilidad, CHEO (https://outreach.cheo.on.ca/manual/1600) · Amiodarona, ANMF (https://www.anmfonline.org/wp-content/uploads/2023/09/Amiodarone_ANMFv1.0_20240815-1.pdf) · Dobutamina, EMC (https://www.medicines.org.uk/emc/product/1681/smpc) · Extracción de muestras, Houston Methodist (https://it.houstonmethodist.org/wp-content/uploads/2020/01/1768_HM_IP_HEPARIN_INFUSION_STANDARD_PROTOCOL.pdf) · ELSO 2021 (https://pubmed.ncbi.nlm.nih.gov/35080509/). Documento derivado del protocolo completo de la unidad; las adaptaciones locales requieren validación.</div>
+</section>
+
+<section class="sp reg-sec">
+<div class="reg-page" id="registroHNF">
+    <h3>Hoja de registro de la heparina</h3>
+    <p class="note" style="margin-top:0">Rellenable en pantalla (se guarda en este navegador) o imprimible en blanco. Al introducir el ritmo y el resultado del anti-Xa o del ratio de TTPa, la hoja propone la acción del <a href="#nomograma">nomograma</a> (diana 0,30–0,50 / ratio 1,5–2,0) y la hora del siguiente control. El ACT solo se registra: su interpretación depende de la diana pautada. La decisión final corresponde a la prescripción médica.</p>
+    <div class="reg-head">
+      <label>Paciente (REF)<input id="r_ref" placeholder="REF-AAAAMMDD-XXXX"></label>
+      <label>Dispositivo<input id="r_dev" placeholder="ECMO / Impella / ECPELLA / BIAC"></label>
+      <label>Peso (kg)<input id="r_peso" type="number" step="0.5"></label>
+      <label>Concentración (UI/ml)<select id="r_conc"><option value="100">100</option><option value="50">50</option><option value="500">500</option></select></label>
+      <label>Diana pautada<input id="r_diana" placeholder="anti-Xa 0,3–0,5 · ACT 180–220"></label>
+      <label>Purga Impella (UI/h)<input id="r_purga" type="number" step="1"></label>
+    </div>
+    <div class="reg-key">
+      <span><b>Evento:</b> Inicio · Bolo · Control · Cambio · Parada · Reinicio · Fin</span>
+      <span><b>Acción:</b> <i class="ak k-m">= Mantener</i> <i class="ak k-u">↑ Aumentar</i> <i class="ak k-d">↓ Disminuir</i> <i class="ak k-s">■ Parar</i> <i class="ak k-b">+ Bolo</i></span>
+    </div>
+    <div class="tbl-wrap"><table class="reg" id="regTable">
+      <thead><tr>
+        <th>Fecha y hora</th><th>Evento</th><th>Bolo (UI)</th><th>Perfusión actual<br><small>UI/kg/h</small></th><th>Prueba</th><th>Resultado</th><th>Acción</th><th>Nueva perfusión<br><small>UI/kg/h · ml/h</small></th><th>Parada<br><small>min</small></th><th>Próximo control</th><th>Enfermera / comprobó</th><th class="no-print"></th>
+      </tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <div class="reg-actions no-print">
+      <button type="button" id="r_add">Añadir fila</button>
+      <button type="button" id="r_clear">Vaciar hoja</button>
+      <button type="button" class="btn-primary" onclick="window.print()">Imprimir</button>
+    </div>
+  </div>
+</section>
+
+</main>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const fmt=(n,d=1)=>Number(n).toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const fmt0=n=>Math.round(n).toLocaleString('es-ES');
+  /* Hoja de preparación enfermería */
+  const PRE={ecmo:[75,0,10],imp:[0,0,6],ecp:[0,0,6],biac:[0,0,10],std:[80,5000,18]};
+  const NOTE={ecmo:'Bolo en la canulación (50–100 UI/kg; 25–50 si sangrado o poscardiotomía). La perfusión se inicia sin bolo cuando el ACT baje de 220–250 s.',imp:'Sin bolo en la UCI (en el implante se titula por ACT ≥250 s). Perfusión sistémica 6–7 UI/kg/h solo si el anti-Xa es &lt;0,3 con la purga sola.',ecp:'Sin bolo en la UCI. HNF sistémica de inicio 6–7 UI/kg/h sumada a la purga del Impella.',biac:'Sin bolo. Estrategia selectiva: 10–12 UI/kg/h si hay indicación.',std:'Bolo 60–80 UI/kg (máximo 5.000 UI) y perfusión 12–18 UI/kg/h.',custom:'Dosis personalizada según la prescripción.'};
+  function prep(){
+    const w=+$('e_peso').value||0, bk=+$('e_bolo').value||0, bmax=+$('e_bmax').value||0, pk=+$('e_perf').value||0, vol=+$('e_prep').value, vc=+$('e_vial').value, pu=+$('e_purga').value||0, ind=$('e_ind').value;
+    const conc=25000/vol; let bol=bk*w; const cap=bmax>0&&bol>bmax; if(cap) bol=bmax;
+    const bml=bol/1000, nv=Math.ceil(bml/5-1e-9);
+    const uih=pk*w, mlh=uih/conc, hepml=25000/vc, nvp=Math.ceil(hepml/5-1e-9), dil=vol-hepml, dur=mlh>0?vol/mlh:0;
+    const pump=vol===50?'Bomba de jeringa (50 ml)':'Bomba volumétrica';
+    const tot=uih+pu;
+    $('e_out').innerHTML=`
+      <div class="po b"><h5>Bolo IV directo</h5>${bol>0?`<div class="big">${fmt0(bol)} UI = ${fmt(bml)} ml</div><div class="sm">De heparina <b>1 % (1.000 UI/ml)</b>: ${nv} vial${nv>1?'es':''} de 5 ml${cap?' · limitado al máximo pautado':''}. IV directo lento por la luz de heparina o una vía periférica; lavar con 10 ml de SF. Registrar la hora.</div>`:`<div class="big">Sin bolo</div><div class="sm">${NOTE[ind]}</div>`}</div>
+      <div class="po p"><h5>Perfusión continua</h5><div class="big">${fmt(mlh)} ml/h</div><div class="sm">${fmt0(uih)} UI/h (${fmt(pk)} UI/kg/h) a ${fmt0(conc)} UI/ml${pu?` · con purga: <b>${fmt0(tot)} UI/h</b> (${fmt(w?tot/w:0)} UI/kg/h)`:''} · ${fmt0(tot*24)} UI en 24 h</div></div>
+      <div class="po r"><h5>Preparación</h5><div class="big">${fmt(hepml)} ml de heparina ${vc===1000?'1 %':'5 %'}</div><div class="sm">${nvp} vial${nvp>1?'es':''} (25.000 UI). ${vol===50?`Completar hasta 50 ml con SF en jeringa (${fmt(dil)} ml de SF).`:`Retirar ${fmt(hepml)} ml del suero de ${vol} ml (SF o SG 5 %) e inyectar la heparina; mezclar invirtiendo.`} ${pump}. Duración: ${dur?fmt(Math.min(dur,999)):'—'} h${dur>24?'; cambiar a las 24 h':''}.</div></div>
+      <div class="label-hnf"><b class="t">HEPARINA SÓDICA</b><span>25.000 UI / ${vol} ml = <b>${fmt0(conc)} UI/ml</b></span><span>Peso ${fmt(w)} kg</span><span>${fmt(pk)} UI/kg/h = <b>${fmt(mlh)} ml/h</b></span><span>Preparó: ______ · Comprobó: ______ · Hora: ____</span></div>
+      ${ind!=='custom'?`<div class="sm" style="grid-column:1/-1;font-size:13px;color:var(--muted)">${NOTE[ind]}</div>`:''}`;
+  }
+  $('e_ind').addEventListener('change',()=>{const v=PRE[$('e_ind').value]; if(v){$('e_bolo').value=v[0];$('e_bmax').value=v[1];$('e_perf').value=v[2];} prep();});
+  ['e_peso','e_bolo','e_bmax','e_perf','e_prep','e_vial','e_purga'].forEach(id=>$(id).addEventListener('input',prep));
+  prep();
+
+
+  /* Registro de heparina */
+  const RK='hnfRegistro_v1';
+  const EV=['','Inicio','Bolo','Control','Cambio','Parada','Reinicio','Fin'];
+  const TS=['','Anti-Xa','Ratio TTPa','ACT'];
+  const AC=[['',''],['m','= Mantener'],['u','↑ Aumentar'],['d','↓ Disminuir'],['s','■ Parar'],['b','+ Bolo'],['ub','+ Bolo y ↑']];
+  const opt=(arr,v)=>arr.map(o=>{const [val,txt]=Array.isArray(o)?o:[o,o];return `<option value="${val}"${val===v?' selected':''}>${txt}</option>`}).join('');
+  const tb=document.querySelector('#regTable tbody');
+  function rowHTML(d={}){
+    return `<td><input type="datetime-local" required data-k="t" value="${d.t||''}"></td>
+    <td><select data-k="ev">${opt(EV,d.ev||'')}</select></td>
+    <td><input type="number" step="100" data-k="bol" value="${d.bol||''}" style="width:78px"></td>
+    <td class="nr"><input type="number" step="0.5" data-k="cur" value="${d.cur||''}" style="width:72px"><span class="ml" data-o="curml"></span></td>
+    <td><select data-k="ts">${opt(TS,d.ts||'')}</select></td>
+    <td><input type="number" step="0.01" data-k="res" value="${d.res||''}" style="width:72px"><span class="sug" data-o="sug"></span></td>
+    <td><select data-k="ac">${opt(AC,d.ac||'')}</select></td>
+    <td class="nr"><input type="number" step="0.5" data-k="nw" value="${d.nw||''}" style="width:72px"><span class="ml" data-o="nwml"></span></td>
+    <td><input type="number" step="5" data-k="st" value="${d.st||''}" style="width:56px"></td>
+    <td><input type="time" required data-k="nx" value="${d.nx||''}"></td>
+    <td><input data-k="nu" value="${d.nu||''}" placeholder="____ / ____" style="width:110px"></td>
+    <td class="no-print"><button type="button" class="rdel" title="Eliminar fila">×</button></td>`;
+  }
+  function suggest(ts,r,cur){
+    if(r===''||isNaN(r)) return null;
+    if(ts==='Anti-Xa'){
+      if(r<0.10) return ['ub',3,0,'Bolo 25 UI/kg si no sangra · ↑3 UI/kg/h · control 6 h'];
+      if(r<0.20) return ['u',2,0,'↑2 UI/kg/h · control 6 h'];
+      if(r<0.30) return ['u',1,0,'↑1 UI/kg/h · control 6 h'];
+      if(r<=0.50) return ['m',0,0,'En diana · control 6 h (12–24 h tras 2 en rango)'];
+      if(r<=0.60) return ['d',-1,0,'↓1 UI/kg/h · control 6 h'];
+      if(r<=0.75) return ['s',-2,60,'Parar 1 h · reiniciar con ↓2 UI/kg/h'];
+      return ['s',-3,60,'Parar 1 h · ↓3 UI/kg/h · avisar al médico'+(r>1?' · descartar contaminación':'')];
+    }
+    if(ts==='Ratio TTPa'){
+      if(r<1.2) return ['ub',3,0,'Bolo 25 UI/kg si no sangra · ↑3 UI/kg/h'];
+      if(r<1.5) return ['u',2,0,'↑2 UI/kg/h · control 6 h'];
+      if(r<=2.0) return ['m',0,0,'En diana · control 6 h'];
+      if(r<=2.5) return ['d',-1.5,0,'↓1–2 UI/kg/h · control 6 h'];
+      if(r<=3.0) return ['s',-2,60,'Parar 1 h · reiniciar con ↓2 UI/kg/h'];
+      return ['s',-3,60,'Parar 1 h · ↓3 UI/kg/h · avisar · valorar anti-Xa'];
+    }
+    if(ts==='ACT') return ['',null,0,'Comparar con la diana pautada'];
+    return null;
+  }
+  function calcRow(tr,touched){
+    const g=k=>tr.querySelector(`[data-k="${k}"]`);
+    const w=+$('r_peso').value||0, c=+$('r_conc').value||100;
+    const ml=v=>(w&&v!==''&&!isNaN(v))?`${fmt(v*w/c)} ml/h · ${fmt0(v*w)} UI/h`:'';
+    tr.querySelector('[data-o="curml"]').textContent=ml(g('cur').value===''?'':+g('cur').value);
+    const s=suggest(g('ts').value,g('res').value===''?'':+g('res').value,+g('cur').value);
+    tr.querySelector('[data-o="sug"]').textContent=s?s[3]:'';
+    if(s&&touched){
+      if(!g('ac').dataset.man&&s[0]) g('ac').value=s[0];
+      if(!g('nw').dataset.man&&s[1]!==null&&g('cur').value!=='') g('nw').value=Math.max(0,+g('cur').value+s[1]);
+      if(!g('st').dataset.man) g('st').value=s[2]||'';
+      if(!g('nx').dataset.man&&g('t').value&&s[1]!==null){const d=new Date(g('t').value);d.setMinutes(d.getMinutes()+(s[2]||0)+360);g('nx').value=d.toTimeString().slice(0,5);}
+    }
+    tr.querySelector('[data-o="nwml"]').textContent=ml(g('nw').value===''?'':+g('nw').value);
+    const a=g('ac').value; tr.className=a?('a-'+(a==='ub'?'b':a)):'';
+  }
+  function save(){
+    const rows=[...tb.rows].map(tr=>{const o={};tr.querySelectorAll('[data-k]').forEach(e=>o[e.dataset.k]=e.value);return o;});
+    const head={};['r_ref','r_dev','r_peso','r_conc','r_diana','r_purga'].forEach(id=>head[id]=$(id).value);
+    try{localStorage.setItem(RK,JSON.stringify({head,rows}));}catch(e){}
+  }
+  function addRow(d){const tr=document.createElement('tr');tr.innerHTML=rowHTML(d);tb.appendChild(tr);calcRow(tr,false);}
+  tb.addEventListener('input',e=>{const tr=e.target.closest('tr');const k=e.target.dataset.k;
+    if(['ac','nw','st','nx'].includes(k)) e.target.dataset.man='1';
+    calcRow(tr,['ts','res','cur','t'].includes(k)); save();});
+  tb.addEventListener('change',e=>{const tr=e.target.closest('tr');const k=e.target.dataset.k;if(['ac'].includes(k))e.target.dataset.man='1';calcRow(tr,['ts'].includes(k));save();});
+  tb.addEventListener('click',e=>{if(e.target.classList.contains('rdel')){e.target.closest('tr').remove();save();}});
+  ['r_ref','r_dev','r_peso','r_conc','r_diana','r_purga'].forEach(id=>$(id).addEventListener('input',()=>{[...tb.rows].forEach(tr=>calcRow(tr,false));save();}));
+  $('r_add').addEventListener('click',()=>{addRow();save();});
+  $('r_clear').addEventListener('click',()=>{if(confirm('¿Vaciar toda la hoja de registro?')){tb.innerHTML='';for(let i=0;i<12;i++)addRow();['r_ref','r_dev','r_peso','r_diana','r_purga'].forEach(id=>$(id).value='');try{localStorage.removeItem(RK)}catch(e){}}});
+  let st=null;try{st=JSON.parse(localStorage.getItem(RK)||'null')}catch(e){}
+  if(st&&st.head){Object.entries(st.head).forEach(([k,v])=>{if($(k))$(k).value=v;});}
+  const rr=(st&&st.rows&&st.rows.length)?st.rows:[];
+  rr.forEach(addRow); for(let i=rr.length;i<12;i++) addRow();
+  [...tb.rows].forEach(tr=>calcRow(tr,false));
+
+
+})();
+</script></body></html>
