@@ -1,7 +1,7 @@
 ﻿window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "revision": "20261013a",
+  "revision": "20261013b",
   "exportedAt": "2026-09-25T08:00:00.000Z",
   "tree": {
     "id": "f-1",
@@ -1027,7 +1027,7 @@
                 "id": "p-humidificador-6",
                 "type": "file",
                 "title": "Poster humidificador 6",
-                "path": "../biblioteca/assets/respiratorio/humidificador/poster-humidificador-6.pdf?v=20261013a",
+                "path": "../biblioteca/assets/respiratorio/humidificador/poster-humidificador-6.pdf?v=20261013b",
                 "ext": ".pdf",
                 "specialty": "Respiratorio",
                 "breadcrumb": "Respiratorio / Humidificador / Poster humidificador 6",

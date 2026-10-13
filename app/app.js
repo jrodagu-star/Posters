@@ -25,6 +25,13 @@ const CALCULADORAS = [
     title: 'Nutrición Clínica UCI',
     description: 'Dashboard de nutrición clínica en UCI.',
     url: 'https://icuconnect-nutricion.web.app'
+  },
+  {
+    id: 'ventilacion-mecanica-uci',
+    title: 'Ventilación mecánica UCI',
+    description: 'Calculadora de parámetros y ajuste de ventilación mecánica en UCI.',
+    path: '../biblioteca/assets/calculadoras/calculadora-ventilacion-mecanica-uci.html?v=20261013b',
+    audiences: ['medicina']
   }
 ];
 const FORMACION = [
@@ -166,7 +173,7 @@ const PROTOCOLOS = [
         id: 'protocolo',
         title: 'Protocolo de analgosedación en VM',
         description: 'Documento clínico de analgosedación en el paciente ventilado.',
-        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261013a',
+        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261013b',
         ext: '.html',
         view: 'document'
       }
@@ -182,7 +189,7 @@ const PROTOCOLOS = [
         id: 'protocolo',
         title: 'Protocolo VM · Cuidados integrales',
         description: 'Documento clínico de cuidados integrales en el paciente ventilado.',
-        path: '../biblioteca/assets/protocolos/vm-cuidados-integrales/protocolo-vm-cuidados-integrales.html?v=20261013a',
+        path: '../biblioteca/assets/protocolos/vm-cuidados-integrales/protocolo-vm-cuidados-integrales.html?v=20261013b',
         ext: '.html',
         view: 'document'
       }
@@ -198,7 +205,7 @@ const PROTOCOLOS = [
         id: 'protocolo-medicina',
         title: 'Protocolo clínico (Medicina)',
         description: 'Anticoagulación en shock cardiogénico y soporte extracorpóreo.',
-        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/protocolo-anticoagulacion-sec.html?v=20261013a',
+        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/protocolo-anticoagulacion-sec.html?v=20261013b',
         ext: '.html',
         view: 'document',
         audiences: ['medicina']
@@ -207,7 +214,7 @@ const PROTOCOLOS = [
         id: 'resumen-enfermeria',
         title: 'Resumen de enfermería',
         description: 'Resumen operativo de anticoagulación en shock cardiogénico para enfermería.',
-        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/resumen-enfermeria-anticoagulacion-sec.html?v=20261013a',
+        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/resumen-enfermeria-anticoagulacion-sec.html?v=20261013b',
         ext: '.html',
         view: 'document',
         audiences: ['enfermeria']
@@ -793,6 +800,14 @@ function showHome() {
     '</div>';
 }
 
+function visibleCalculadoras() {
+  const audience = state.audienceFilter || DEFAULT_AUDIENCE;
+  return CALCULADORAS.filter(calc => {
+    if (!Array.isArray(calc.audiences) || !calc.audiences.length) return true;
+    return calc.audiences.includes(audience);
+  });
+}
+
 function showCalculadoras() {
   closeLightbox().catch(() => {});
   closeHtmlLightbox().catch(() => {});
@@ -808,15 +823,18 @@ function showCalculadoras() {
   if (els.calculadorasBtn) els.calculadorasBtn.classList.add('active');
   els.selectedInfo.textContent = 'Selección actual: Calculadoras';
   els.title.textContent = 'Calculadoras';
-  els.meta.textContent = 'Dashboards de cálculo';
+  els.meta.textContent = 'Dashboards de cálculo · ' + filterLabel();
   els.crumbs.textContent = 'Calculadoras';
-  const cards = CALCULADORAS.map(calc =>
-    '<button type="button" class="calculadora-card" data-calc-id="' + escapeHtml(calc.id) + '">' +
-      '<span class="calculadora-card-title">' + escapeHtml(calc.title) + '</span>' +
-      '<span class="calculadora-card-desc">' + escapeHtml(calc.description) + '</span>' +
-      '<span class="calculadora-card-cta">Abrir</span>' +
-    '</button>'
-  ).join('');
+  const list = visibleCalculadoras();
+  const cards = list.length
+    ? list.map(calc =>
+      '<button type="button" class="calculadora-card" data-calc-id="' + escapeHtml(calc.id) + '">' +
+        '<span class="calculadora-card-title">' + escapeHtml(calc.title) + '</span>' +
+        '<span class="calculadora-card-desc">' + escapeHtml(calc.description) + '</span>' +
+        '<span class="calculadora-card-cta">Abrir</span>' +
+      '</button>'
+    ).join('')
+    : '<div class="empty"><strong>Calculadoras</strong>No hay calculadoras para ' + escapeHtml(filterLabel()) + '.</div>';
   els.viewer.innerHTML =
     '<div class="calculadoras-panel">' +
       '<div class="calculadoras-panel-head">' +
@@ -1819,6 +1837,10 @@ function refreshAfterFilterChange() {
   updateStats();
   if (els.protocolosBtn && els.protocolosBtn.classList.contains('active')) {
     showProtocolos();
+    return;
+  }
+  if (els.calculadorasBtn && els.calculadorasBtn.classList.contains('active')) {
+    showCalculadoras();
     return;
   }
   if (state.currentFile && !matchesAudienceFilter(state.currentFile)) {

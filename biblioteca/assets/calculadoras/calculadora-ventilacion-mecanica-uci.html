@@ -1,0 +1,2630 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ventilación mecánica UCI · Calculadora, evolución y PEEP trial</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f6e78'/%3E%3Cpath d='M4 22h5l3-12h6l2 8h8' stroke='white' stroke-width='3' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f1f2f3; --surface:#ffffff; --surface-2:#eff1ee; --border:#dde1dc; --text:#1c2422; --muted:#5f6b67; --faint:#8a948f;
+  --accent:#0f6e78; --accent-soft:#e2f0f0; --warn:#b26a00;
+  --below:#2f6fd6; --ok:#1f9d55; --above:#d64545;
+  --below-soft:#dbe7fb; --ok-soft:#d8f1e2; --above-soft:#fadcdc;
+  --curve:#0f6e78; --grid:#e6e9e5; --s2:#c46a1c; --s3:#7b5cc4;
+  --radius:10px; --shadow:0 1px 2px rgba(0,0,0,.05),0 2px 8px rgba(0,0,0,.04);
+  --font:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  --mono:"JetBrains Mono","SF Mono",Consolas,monospace;
+}
+[data-theme=dark]{
+  --bg:#3a3d40; --surface:#45494d; --surface-2:#4f5458; --border:#5c6166; --text:#e6ebe9; --muted:#a2adaa; --faint:#75807c;
+  --accent:#4fb3bd; --accent-soft:#1d3436; --warn:#e0a040;
+  --below:#5b93ec; --ok:#3cc47a; --above:#ef6b6b;
+  --below-soft:#1c2c47; --ok-soft:#173726; --above-soft:#46201f;
+  --curve:#4fb3bd; --grid:#283030; --s2:#e89a55; --s3:#a68cf0; --shadow:none;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+header{display:flex;align-items:center;gap:14px;padding:10px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:10px;font-weight:650;font-size:15px}
+.brand svg{color:var(--accent);flex:none}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.tabs{display:flex;gap:4px;margin-left:auto;background:var(--surface-2);padding:3px;border-radius:9px}
+.tabs button{border:0;background:none;padding:7px 14px;border-radius:7px;cursor:pointer;color:var(--muted);font-weight:550;white-space:nowrap}
+.tabs button[aria-selected=true]{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.iconbtn{border:1px solid var(--border);background:var(--surface);border-radius:8px;width:34px;height:34px;display:grid;place-items:center;cursor:pointer;color:var(--muted);flex:none}
+main{padding:16px 18px 40px;max-width:1680px;margin:0 auto}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.btn{border:1px solid var(--border);background:var(--surface-2);padding:7px 12px;border-radius:8px;cursor:pointer;font-weight:550;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--faint)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+[data-theme=dark] .btn.primary{color:#0b1514}
+.btn.sm{padding:4px 9px;font-size:12px}
+.btn.danger{color:var(--above)}
+/* layout calculadora */
+.layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:1000px){.layout{grid-template-columns:minmax(0,1fr)}}
+.inputs{position:sticky;top:70px;max-height:calc(100vh - 86px);overflow:auto;padding:4px 0 10px;
+  --bg:#111514; --surface:#161b1d; --surface-2:#222a2c; --border:#2e3739; --text:#e6ebe9; --muted:#a2adaa; --faint:#7a8682;
+  --accent:#4fb3bd; --accent-soft:#1d3436; --warn:#e0a040; --grid:#2f3a3c; --shadow:none;
+  background:var(--surface);color:var(--text);border-color:#2a3335;color-scheme:dark}
+.inputs .btn.primary{color:#0b1514}
+.inputs::-webkit-scrollbar{width:8px}.inputs::-webkit-scrollbar-thumb{background:#3a4547;border-radius:8px}
+@media (max-width:1000px){.inputs{position:static;max-height:none}}
+.inputs .actions{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px 6px}
+fieldset{border:0;margin:0;padding:10px 14px 4px;border-top:1px solid var(--border)}
+legend{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);padding:6px 0 4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}
+label.f{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+label.f span b{color:var(--text);font-weight:600}
+label.f input,label.f select{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:7px;background:var(--surface);font-variant-numeric:tabular-nums;font-size:14px}
+label.f input:focus,label.f select:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+label.f input.sim{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 9%,var(--surface))}
+.hint{font-size:11px;color:var(--faint);margin:6px 0 2px}
+.seg{display:flex;background:var(--surface-2);border-radius:8px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:none;padding:6px 8px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--surface);color:var(--accent);box-shadow:var(--shadow)}
+.only-vc,.only-pc{display:contents}
+body[data-mode=PC] .only-vc{display:none}
+body[data-mode=VC] .only-pc{display:none}
+.only-ti{display:none}
+body[data-mode=PC] .only-ti,body[data-mode=VC][data-af="1"] .only-ti{display:contents}
+body[data-af="1"] .only-flow{display:none}
+.sw{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);cursor:pointer;font-size:12.5px;color:var(--text)}
+.sw input{position:absolute;opacity:0;width:0;height:0}
+.sw .tg{flex:none;width:36px;height:20px;border-radius:99px;background:var(--grid);position:relative;transition:background .2s}
+.sw .tg::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s}
+.sw input:checked+.tg{background:var(--accent)}
+.sw input:checked+.tg::after{left:18px}
+.sw input:focus-visible+.tg{outline:2px solid var(--accent);outline-offset:2px}
+.sw small{display:block;color:var(--muted);font-size:11px}
+.center{display:flex;flex-direction:column;gap:16px;min-width:0}
+.graphrow{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.gstack{display:flex;flex-direction:column;gap:16px;min-width:0}
+@media (max-width:1350px){.graphrow{grid-template-columns:minmax(0,1fr)}}
+.card-h{display:flex;align-items:baseline;gap:10px;padding:13px 16px 0;flex-wrap:wrap}
+.card-h h2{font-size:15px;margin:0;font-weight:650}
+.card-h p{margin:0;color:var(--muted);font-size:12px}
+.card-h .sp{flex:1}
+.curvebox{padding:6px 10px 6px;overflow-x:auto}
+#curve{width:100%;min-width:700px;height:auto;display:block}
+svg text{font-family:var(--font)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;padding:0 16px 12px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* diales */
+.dials{padding:0 0 10px;display:flex;flex-direction:column}
+.knobs{display:grid;grid-template-columns:1fr 1fr;gap:4px 6px;padding:8px 10px 4px}
+@media (max-width:1350px){.knobs{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:640px){.knobs{grid-template-columns:repeat(2,1fr)}}
+.knob{display:flex;flex-direction:column;align-items:center;padding:6px 4px 6px;border-radius:9px;user-select:none;-webkit-user-select:none}
+.knob.dis{opacity:.38;pointer-events:none}
+.knob .kl{font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.03em}
+.knob svg{width:84px;height:72px;cursor:ns-resize;touch-action:none;outline:none}
+.knob svg:focus-visible{filter:drop-shadow(0 0 3px var(--accent))}
+.knob .kv{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:-30px;pointer-events:none;line-height:1}
+.knob .ku{font-size:10.5px;color:var(--faint);margin-top:12px}
+.knob .kd{font-size:10.5px;font-weight:600;min-height:14px;color:var(--warn);font-variant-numeric:tabular-nums}
+.knob .kb{display:flex;gap:4px;margin-top:2px}
+.knob .kb button{width:26px;height:22px;border:1px solid var(--border);background:var(--surface-2);border-radius:6px;cursor:pointer;font-weight:700;line-height:1;padding:0}
+.simbox{margin:4px 12px 0;padding:9px 11px;border-radius:8px;background:var(--surface-2);font-size:12px;color:var(--muted)}
+.simbox b{color:var(--text)}
+.simbox .row{display:flex;justify-content:space-between;gap:8px;font-variant-numeric:tabular-nums}
+.dials .acts{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px 0}
+/* protectora */
+.protect{padding:12px 14px 14px}
+.protect .head{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.protect .head h2{font-size:15px;margin:0}
+.verdict{font-weight:700;font-size:12.5px;padding:4px 11px;border-radius:99px}
+.verdict.ok{background:var(--ok-soft);color:var(--ok)}
+.verdict.bad{background:var(--above-soft);color:var(--above)}
+.verdict.na{background:var(--surface-2);color:var(--faint)}
+.ptiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:900px){.ptiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ptile{border:1px solid var(--border);border-radius:9px;padding:10px 11px;display:flex;flex-direction:column;gap:5px;border-left-width:4px}
+.ptile.ok{border-left-color:var(--ok)}.ptile.bad{border-left-color:var(--above)}.ptile.na{border-left-color:var(--border)}
+.ptile .t{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:600}
+.ptile .ic{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff}
+.ptile.ok .ic{background:var(--ok)}.ptile.bad .ic{background:var(--above)}.ptile.na .ic{background:var(--faint)}
+.ptile .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.ptile .v small{font-size:12px;color:var(--muted);font-weight:500;margin-left:3px}
+.ptile .c{font-size:11px;color:var(--muted)}
+/* filtros y grupos */
+.filters{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.filters .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.filters .lbl{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.chip{border:1px solid var(--border);background:var(--surface);border-radius:99px;padding:4px 11px;font-size:12px;cursor:pointer;font-weight:550;color:var(--muted)}
+.chip[aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.chk{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);cursor:pointer}
+.custom{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px 18px;padding:10px 2px 2px;border-top:1px dashed var(--border)}
+.custom h4{margin:0 0 4px;font-size:11.5px;color:var(--accent)}
+.custom label{display:flex;gap:6px;font-size:12px;color:var(--text);align-items:center;padding:1px 0;cursor:pointer}
+.groups{display:flex;flex-direction:column;gap:16px}
+.group{padding:0 0 14px;overflow:hidden;--gc:var(--accent);background:color-mix(in srgb,var(--gc) 8%,var(--surface));border-color:color-mix(in srgb,var(--gc) 32%,var(--border))}
+.group .res{border-color:color-mix(in srgb,var(--gc) 22%,var(--border))}
+.group .gh h3{color:color-mix(in srgb,var(--gc) 80%,var(--text))}
+.custom h4{color:var(--gc,var(--accent))}
+.chip.gchip[aria-pressed=true]{background:color-mix(in srgb,var(--gc) 14%,var(--surface));border-color:var(--gc);color:color-mix(in srgb,var(--gc) 85%,var(--text))}
+.chip.gchip::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gc);margin-right:6px;vertical-align:0}
+input[type=range].sl{width:100%;margin:5px 0 2px;-webkit-appearance:none;appearance:none;height:6px;border-radius:99px;background:linear-gradient(90deg,var(--accent) var(--p,50%),var(--grid) var(--p,50%));outline:none;cursor:pointer;padding:0;border:0}
+input[type=range].sl::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--surface);border:2.5px solid var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+input[type=range].sl::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--surface);border:2.5px solid var(--accent)}
+input[type=range].sl:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.slr{display:flex;justify-content:space-between;font-size:10px;color:var(--faint);font-variant-numeric:tabular-nums;margin-top:-1px}
+.group .gh{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid color-mix(in srgb,var(--gc) 30%,var(--border));background:color-mix(in srgb,var(--gc) 17%,var(--surface))}
+.group .gh h3{font-size:13px;font-weight:700;margin:0;letter-spacing:.01em}
+.group .gh .cnt{font-size:11px;color:var(--faint)}
+.group .gh .sum{display:flex;gap:4px;margin-left:auto}
+.group .gh .dot{width:9px;height:9px;border-radius:50%}
+.group .gh .gx{border:0;background:none;color:var(--faint);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px}
+.group .bar-acc{width:5px;align-self:stretch;border-radius:3px;background:var(--gc)}
+.cards{display:flex;flex-direction:column;gap:6px;padding:12px 14px 0}
+.cards .res{display:grid;grid-template-columns:minmax(200px,1.15fr) 130px minmax(170px,1.3fr) minmax(200px,1.3fr);align-items:center;column-gap:18px;row-gap:2px;padding:9px 14px}
+.cards .res .top{grid-column:1;grid-row:1/3}
+.cards .res .val{grid-column:2;grid-row:1/3}
+.cards .res .gauge{grid-column:3;grid-row:1/3;margin:0}
+.cards .res .formula{grid-column:4;grid-row:1}
+.cards .res .note{grid-column:4;grid-row:2}
+.cards .res.missing .val{grid-column:2/4}
+@media (max-width:860px){.cards .res{grid-template-columns:1fr 1fr}.cards .res .top{grid-column:1/3;grid-row:auto}.cards .res .val{grid-column:1;grid-row:auto}.cards .res .gauge{grid-column:1/3;grid-row:auto}.cards .res .formula,.cards .res .note{grid-column:1/3;grid-row:auto}.cards .res.missing .val{grid-column:1/3}}
+.res{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 12px 10px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.res .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.res .name{font-size:12.5px;font-weight:600}
+.res .abbr{font-size:11px;color:var(--faint)}
+.res .val{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1;white-space:nowrap}
+.res .val small{font-size:12px;font-weight:500;color:var(--muted);margin-left:3px}
+.res .formula{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--surface-2);padding:4px 6px;border-radius:5px;overflow-wrap:anywhere}
+.res.missing .val{color:var(--faint);font-size:13.5px;font-weight:500;white-space:normal}
+.badge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:99px;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
+.badge.below{background:var(--below-soft);color:var(--below)}
+.badge.ok{background:var(--ok-soft);color:var(--ok)}
+.badge.above{background:var(--above-soft);color:var(--above)}
+.badge.na{background:var(--surface-2);color:var(--faint)}
+.gauge{position:relative;padding-top:13px;margin-top:2px}
+.gauge .bar{display:flex;height:8px;border-radius:99px;overflow:hidden}
+.gauge .bar div{height:100%}
+.z-below{background:var(--below);opacity:.75}.z-ok{background:var(--ok);opacity:.85}.z-above{background:var(--above);opacity:.75}
+.gauge .arrow{position:absolute;top:0;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid var(--text);transition:left .25s ease}
+.gauge .ticks{position:relative;height:14px;font-size:10px;color:var(--faint);font-variant-numeric:tabular-nums;margin-top:2px}
+.gauge .ticks span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.gauge .ticks span.l{transform:none}.gauge .ticks span.r{transform:translateX(-100%)}
+.res .note{font-size:11px;color:var(--faint)}
+.est{font-size:10px;color:var(--accent);font-weight:600;margin-left:4px}
+.sim-tag{font-size:10px;color:var(--warn);font-weight:700;margin-left:4px}
+/* evolución y PEEP */
+.sheet{display:flex;flex-direction:column;gap:16px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;padding:12px 14px}
+.toolbar label.f{min-width:150px}
+.tw{overflow-x:auto}
+table.data{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+table.data th,table.data td{padding:6px 9px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
+table.data th{background:var(--surface-2);font-size:11.5px;font-weight:650;color:var(--muted);position:sticky;top:0}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data td.below{color:var(--below);font-weight:650}
+table.data td.above{color:var(--above);font-weight:650}
+table.data td.ok{color:var(--ok);font-weight:600}
+table.data input{width:70px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--surface);text-align:right}
+table.data tr.best td{background:var(--ok-soft)}
+.charts{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;padding:0 14px 14px}
+.chart{border:1px solid var(--border);border-radius:9px;padding:8px 8px 4px}
+.chart h4{margin:2px 6px 2px;font-size:12.5px;display:flex;justify-content:space-between}
+.chart h4 span{color:var(--faint);font-weight:500}
+.chart svg{width:100%;height:auto;display:block}
+.empty{padding:30px;text-align:center;color:var(--faint)}
+.peepgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:1100px){.peepgrid{grid-template-columns:1fr}}
+.result{margin:0 14px 14px;padding:12px 14px;border-radius:9px;background:var(--ok-soft);color:var(--text)}
+.result b{color:var(--ok)}
+.ptset{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 12px}
+.ptset div{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+.ptset span{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+.ptset b{font-size:13.5px;color:var(--text);font-weight:650}
+.ptset small{display:block;font-size:11px;color:var(--faint);margin-top:2px}
+.pt-h{}@media(max-width:560px){.ptset{grid-template-columns:repeat(2,1fr)}}
+.pt-h{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:4px 14px 8px;margin:0}
+.aop-intro{padding:8px 16px 4px;font-size:13px;color:var(--text);line-height:1.5}
+.aop-intro p{margin:0 0 8px}
+.aop-req{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:12.5px;color:var(--muted)}
+.aop-m{border-top:4px solid var(--gc)}
+.acc-h{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:13px 16px;cursor:pointer;text-align:left;color:var(--text);font:inherit;border-radius:var(--radius)}
+.acc-h:hover{background:color-mix(in srgb,var(--gc) 6%,transparent)}
+.acc-h:focus-visible{outline:2px solid var(--gc);outline-offset:-2px}
+.acc-t{flex:1;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.acc-t b{font-size:15px;font-weight:650}
+.acc-t small{color:var(--muted);font-size:12px}
+.acc-s{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.acc-s:empty{display:none}
+.acc-s.closed{background:var(--above-soft);color:var(--above)}
+.acc-s.open{background:var(--ok-soft);color:var(--ok)}
+.acc-i{flex:none;color:var(--gc);transition:transform .2s}
+.acc-h[aria-expanded=true] .acc-i{transform:rotate(180deg)}
+.acc-h[aria-expanded=true]{border-bottom:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0}
+.acc-b{padding-top:8px}
+.aop-m .pt-h{color:var(--gc)}
+.formula-box{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:8px 14px 12px}
+.formula-box div{border-left:3px solid var(--gc);background:color-mix(in srgb,var(--gc) 8%,var(--surface));padding:7px 10px;border-radius:0 8px 8px 0}
+.formula-box span{display:block;font-size:11px;color:var(--muted)}
+.formula-box b{font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:600}
+.aopf{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 10px;padding:0 14px 10px}
+.aopf .f select{width:100%}
+.aoptiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:4px 14px 12px}
+.aoptiles div{border:1px solid var(--border);border-radius:9px;padding:8px 10px;background:var(--surface-2)}
+.aoptiles div.ok{border-color:var(--ok);background:var(--ok-soft)}
+.aoptiles div.bad{border-color:var(--above);background:var(--above-soft)}
+.aoptiles span{display:block;font-size:11px;color:var(--muted)}
+.aoptiles b{font-size:20px;font-weight:700}
+.aoptiles small{display:block;font-size:11px;color:var(--muted)}
+.steps.chkl{display:block;list-style:none;padding-left:14px;font-size:12.5px}
+.steps.chkl li{margin:3px 0}
+.steps.chkl label{display:flex;gap:8px;align-items:flex-start;cursor:pointer;color:var(--text)}
+.steps.chkl input{margin-top:3px;accent-color:var(--accent)}
+.steps.chkl input:checked+*{opacity:.6}
+.steps.src li{margin:4px 0}
+.steps.src a{color:var(--accent)}
+@media(max-width:700px){.aopf{grid-template-columns:repeat(2,1fr)}.aoptiles{grid-template-columns:repeat(2,1fr)}.formula-box{grid-template-columns:1fr}}
+.steps{margin:0;padding:4px 14px 14px 32px;color:var(--muted);font-size:12.5px}
+.steps li{margin:3px 0}
+/* referencia */
+.ref{padding:8px 28px 30px;max-width:1100px;margin:0 auto}
+.ref h2{font-size:18px;margin:28px 0 10px;padding-top:16px;border-top:1px solid var(--border);color:var(--accent)}
+.ref h2:first-child{border-top:0}
+.ref h3{font-size:15px;margin:18px 0 8px}
+.ref hr{display:none}
+.ref p,.ref li{max-width:85ch}
+.ref a{color:var(--accent)}
+.ref .tw{margin:8px 0 14px;border:1px solid var(--border);border-radius:8px}
+.ref table{border-collapse:collapse;width:100%;font-size:13px}
+.ref th,.ref td{padding:7px 10px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+.ref th{background:var(--surface-2);font-weight:650;font-size:12px}
+.ref tr:last-child td{border-bottom:0}
+.ref td:nth-child(2){font-family:var(--mono);font-size:12px}
+.disclaimer{font-size:11.5px;color:var(--faint);text-align:center;margin-top:20px}
+[hidden]{display:none!important}
+@media (max-width:700px){header{flex-wrap:wrap;padding:10px 12px;gap:10px}.brand small{display:none}.tabs{margin-left:0;order:3;width:100%;overflow-x:auto}.tabs button{flex:1;padding:7px 8px}.iconbtn{margin-left:auto}main{padding:12px 10px 30px}.ref{padding:4px 14px 20px}}
+@media print{header .tabs,header .iconbtn,.inputs .actions,.dials .acts,.filters{display:none}header{position:static}.inputs{position:static;max-height:none}body{background:#fff}.res,.panel{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body data-mode="VC">
+<header>
+  <div class="brand">
+    <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-label="Logotipo curva presión-tiempo">
+      <rect x="1" y="1" width="30" height="30" rx="7" stroke="currentColor" stroke-width="2"/>
+      <path d="M5 22h4l2.5-12 1.5 0 1 4h5l1.5 8H27" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+    </svg>
+    <div>Ventilación mecánica UCI<small>Calculadora, evolución, PEEP trial y referencia</small></div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="calc">Calculadora</button>
+    <button role="tab" aria-selected="false" data-tab="evo">Evolución</button>
+    <button role="tab" aria-selected="false" data-tab="peep">PEEP trial</button>
+    <button role="tab" aria-selected="false" data-tab="aop">Presión de apertura</button>
+    <button role="tab" aria-selected="false" data-tab="ref">Referencia</button>
+  </nav>
+  <button class="iconbtn" id="theme" aria-label="Cambiar tema claro/oscuro" title="Tema claro/oscuro">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</header>
+
+<main>
+<!-- ================= CALCULADORA ================= -->
+<section id="tab-calc">
+<div class="layout">
+  <aside class="panel inputs" aria-label="Datos de entrada">
+    <div class="actions">
+      <button class="btn primary" id="example">Cargar ejemplo</button>
+      <button class="btn" id="clear">Limpiar</button>
+      <button class="btn" id="toEvo" title="Guarda los datos actuales como un registro de la hoja de evolución">+ Evolución</button>
+    </div>
+    <fieldset>
+      <legend>Paciente</legend>
+      <div class="grid2">
+        <label class="f"><span>Sexo</span><select id="sex"><option value="M">Hombre</option><option value="F">Mujer</option></select></label>
+        <label class="f"><span>Talla <b>cm</b></span><input id="height" inputmode="decimal"></label>
+        <label class="f"><span>Edad <b>años</b></span><input id="age" inputmode="decimal"></label>
+        <label class="f"><span>Vt objetivo <b>mL/kg</b></span><input id="mlkg" inputmode="decimal" value="6"></label>
+      </div>
+      <p class="hint" id="linkHint">Vt objetivo y Vt programado están enlazados: al cambiar uno se recalcula el otro según el peso predicho.</p>
+    </fieldset>
+    <fieldset>
+      <legend>Programación</legend>
+      <div class="seg" role="group" aria-label="Modo">
+        <button data-mode="VC" aria-pressed="true">Volumen control</button>
+        <button data-mode="PC" aria-pressed="false">Presión control</button>
+      </div>
+      <div class="grid2" style="margin-top:8px">
+        <div class="only-vc"><label class="f"><span>Vt programado <b>mL</b></span><input id="vt" inputmode="decimal"></label></div>
+        <div class="only-pc"><label class="f"><span>Pinsp sobre PEEP <b>cmH₂O</b></span><input id="pinsp" inputmode="decimal"></label></div>
+        <label class="f"><span>FR <b>rpm</b></span><input id="rr" inputmode="decimal"></label>
+        <label class="f"><span>PEEP <b>cmH₂O</b></span><input id="peep" inputmode="decimal"></label>
+        <label class="f"><span>FiO₂ <b>%</b></span><input id="fio2" inputmode="decimal"></label>
+        <div class="only-vc"><label class="sw" for="af"><input type="checkbox" id="af"><span class="tg"></span><span><b>AutoFlow</b><small id="afHint">Desactivado: flujo constante programado</small></span></label></div>
+        <div class="only-vc only-flow">
+          <label class="f"><span>Flujo insp. <b>L/min</b></span><input id="flow" inputmode="decimal"></label>
+          <label class="f"><span>Pausa insp. <b>s</b></span><input id="pause" inputmode="decimal"></label>
+        </div>
+        <div class="only-ti"><label class="f"><span>Ti <b>s</b></span><input id="ti" inputmode="decimal"></label></div>
+        <label class="f"><span>Rampa <b>s</b></span><input id="rise" inputmode="decimal"></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Presiones medidas</legend>
+      <div class="grid2">
+        <label class="f"><span>Ppico <b>cmH₂O</b></span><input id="ppeak" inputmode="decimal"></label>
+        <label class="f"><span>Pplat <b>cmH₂O</b></span><input id="pplat" inputmode="decimal"></label>
+        <label class="f"><span>PEEP total <b>cmH₂O</b></span><input id="peeptot" inputmode="decimal"></label>
+        <label class="f"><span>Pmedia <b>cmH₂O</b></span><input id="pmean" inputmode="decimal"></label>
+        <label class="f"><span>AOP <b>cmH₂O</b></span><input id="aop" inputmode="decimal" placeholder="si cierre"></label>
+      </div>
+      <p class="hint">Pplat: pausa teleinspiratoria. PEEP total: pausa teleespiratoria. AOP: presión de apertura de la vía aérea (pestaña «Presión de apertura»); si supera la PEEP total, corrige ΔP y Cstat.</p>
+    </fieldset>
+    <fieldset>
+      <legend>Volúmenes medidos</legend>
+      <div class="grid2">
+        <label class="f"><span>VTi <b>mL</b></span><input id="vti" inputmode="decimal"></label>
+        <label class="f"><span>VTe <b>mL</b></span><input id="vte" inputmode="decimal"></label>
+        <label class="f"><span>VM espirado <b>L/min</b></span><input id="vem" inputmode="decimal"></label>
+        <label class="f"><span>EtCO₂ <b>mmHg</b></span><input id="etco2" inputmode="decimal"></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Gasometría</legend>
+      <div class="grid2">
+        <label class="f"><span>PaO₂ <b>mmHg</b></span><input id="pao2" inputmode="decimal"></label>
+        <label class="f"><span>PaCO₂ <b>mmHg</b></span><input id="paco2" inputmode="decimal"></label>
+        <label class="f"><span>SpO₂ <b>%</b></span><input id="spo2" inputmode="decimal"></label>
+        <label class="f"><span>FiO₂ en gasometría <b>%</b></span><input id="fio2g" inputmode="decimal" placeholder="= FiO₂"></label>
+        <label class="f"><span>P. barométrica <b>mmHg</b></span><input id="patm" inputmode="decimal" value="705"></label>
+      </div>
+      <p class="hint">Madrid ≈ 705 mmHg; nivel del mar 760. Si FiO₂ de la gasometría está vacía se usa la programada.</p>
+    </fieldset>
+    <fieldset>
+      <legend>Avanzado (opcional)</legend>
+      <div class="grid2">
+        <label class="f"><span>Pes teleinsp. <b>cmH₂O</b></span><input id="pesi" inputmode="decimal"></label>
+        <label class="f"><span>Pes teleesp. <b>cmH₂O</b></span><input id="pese" inputmode="decimal"></label>
+        <label class="f"><span>P0.1 <b>cmH₂O</b></span><input id="p01" inputmode="decimal"></label>
+        <label class="f"><span>ΔPocc <b>cmH₂O</b></span><input id="pocc" inputmode="decimal"></label>
+      </div>
+    </fieldset>
+  </aside>
+
+  <div class="center">
+    <div class="graphrow">
+      <div class="gstack">
+      <section class="panel" aria-label="Curva presión-tiempo">
+        <div class="card-h"><h2>Curva presión–tiempo</h2><p id="curve-sub"></p></div>
+        <div class="curvebox"><svg id="curve" viewBox="0 0 900 400" role="img" aria-label="Curva presión-tiempo con parámetros"></svg></div>
+        <div class="legend">
+          <span><i style="background:var(--below)"></i>Por debajo</span>
+          <span><i style="background:var(--ok)"></i>En rango</span>
+          <span><i style="background:var(--above)"></i>Por encima</span>
+          <span><i style="background:var(--warn)"></i>Campo de entrada simulado con los diales</span>
+        </div>
+      </section>
+      <section class="panel protect" aria-label="Ventilación protectora">
+      <div class="head"><h2>Ventilación protectora</h2><span class="verdict na" id="verdict">Sin datos</span><span class="hint" style="margin:0">Vt ≤ 8 mL/kg PBW (ideal 6) · Pplat ≤ 30 · ΔP ≤ 15 cmH₂O</span></div>
+      <div class="ptiles" id="ptiles"></div>
+      </section>
+      </div>
+      <section class="panel dials" aria-label="Diales de programación">
+        <div class="card-h"><h2>Diales</h2><p>Arrastra arriba/abajo, rueda o ±</p></div>
+        <div class="knobs" id="knobs"></div>
+        <div class="simbox" id="simbox"></div>
+        <div class="acts"><button class="btn sm" id="simReset">Restablecer valores iniciales</button><button class="btn sm" id="simFix" title="Toma los valores actuales como nuevos valores iniciales">Fijar como iniciales</button></div>
+      </section>
+    </div>
+
+    <section class="panel filters" aria-label="Selección de apartados">
+      <div class="row"><span class="lbl">Apartados visibles</span><span id="chips" style="display:contents"></span></div>
+      <div class="row">
+        <button class="btn sm" id="allOn">Mostrar todos</button>
+        <button class="btn sm" id="allOff">Ocultar todos</button>
+        <button class="btn sm" id="customBtn" aria-expanded="false">Personalizar parámetros</button>
+        <label class="chk"><input type="checkbox" id="hideEmpty"> Ocultar parámetros sin datos</label>
+      </div>
+      <div class="custom" id="custom" hidden></div>
+    </section>
+
+    <div class="groups" id="groups"></div>
+    <p class="disclaimer">Herramienta docente de apoyo. Los rangos son orientativos y la simulación es un modelo simplificado (compliancia y resistencia constantes); la ventilación debe individualizarse y confirmarse con mediciones y gasometría.</p>
+  </div>
+</div>
+</section>
+
+<!-- ================= EVOLUCIÓN ================= -->
+<section id="tab-evo" hidden>
+<div class="sheet">
+  <section class="panel">
+    <div class="card-h"><h2>Hoja de evolución</h2><p>Registros guardados desde la calculadora con fecha y hora</p></div>
+    <div class="toolbar">
+      <label class="f"><span>Fecha y hora del registro</span><input type="datetime-local" id="evoTime"></label>
+      <label class="f" style="flex:1;min-width:200px"><span>Comentario</span><input id="evoNote" placeholder="p. ej. tras maniobra de reclutamiento"></label>
+      <button class="btn primary" id="evoAdd">Añadir datos actuales de la calculadora</button>
+      <button class="btn" id="evoDemo">Cargar evolución de ejemplo</button>
+      <button class="btn" id="evoCsv">Exportar CSV</button>
+      <button class="btn" id="evoJson">Exportar JSON</button>
+      <label class="btn" style="cursor:pointer">Importar JSON<input type="file" id="evoImport" accept=".json,application/json" hidden></label>
+      <button class="btn danger" id="evoClear">Borrar todo</button>
+    </div>
+    <div class="filters" style="padding-top:0"><div class="row"><span class="lbl">Parámetros</span><span id="evoChips" style="display:contents"></span></div></div>
+  </section>
+  <section class="panel">
+    <div class="card-h"><h2>Gráficas de evolución</h2><p>Banda verde: rango objetivo · puntos coloreados según el estado</p></div>
+    <div id="evoCharts" class="charts" style="padding-top:12px"></div>
+  </section>
+  <section class="panel">
+    <div class="card-h"><h2>Tabla de registros</h2><p>Pulsa «Cargar» para volver a ver un registro en la calculadora</p></div>
+    <div class="tw" style="padding:10px 14px 14px"><div id="evoTable"></div></div>
+  </section>
+</div>
+</section>
+
+<!-- ================= PEEP TRIAL ================= -->
+<section id="tab-peep" hidden>
+<div class="peepgrid">
+  <div class="sheet">
+    <section class="panel">
+      <div class="card-h"><h2>PEEP trial decremental</h2><p>Titulación por mejor compliancia / menor driving pressure</p></div>
+      <div class="toolbar">
+        <label class="f" style="min-width:90px"><span>Vt <b>mL/kg PBW</b></span><input id="ptKg" inputmode="decimal" value="6"></label>
+        <label class="f"><span>Vt del trial <b>mL</b></span><input id="ptVt" inputmode="decimal"></label>
+        <label class="f" style="min-width:90px"><span>PEEP inicial</span><input id="ptStart" inputmode="decimal" value="20"></label>
+        <label class="f" style="min-width:90px"><span>PEEP final</span><input id="ptEnd" inputmode="decimal" value="6"></label>
+        <label class="f" style="min-width:80px"><span>Paso</span><input id="ptStep" inputmode="decimal" value="2"></label>
+        <label class="f" style="min-width:110px"><span>Aviso caída SpO₂ <b>%</b></span><input id="ptDrop" inputmode="decimal" value="2"></label>
+        <button class="btn primary" id="ptGen">Generar pasos</button>
+        <button class="btn" id="ptDemo">Rellenar ejemplo</button>
+        <button class="btn" id="ptDefaults">Valores por defecto</button>
+      </div>
+      <h3 class="pt-h">Programación inicial del trial</h3>
+      <div class="ptset">
+        <div><span>Modo</span><b>Volumen control</b><small>Flujo cuadrado, sin AutoFlow</small></div>
+        <div><span>Vt</span><b id="ptSetVt">6 mL/kg PBW</b><small>Fijo durante todo el trial</small></div>
+        <div><span>FR</span><b>20 rpm</b><small>Ajustar según pH y PaCO₂</small></div>
+        <div><span>Flujo inspiratorio</span><b>30–40 L/min</b><small>Constante (ART: 30 L/min)</small></div>
+        <div><span>Pausa inspiratoria</span><b>2 s</b><small>Solo en la respiración de medida</small></div>
+        <div><span>FiO₂</span><b>Estable</b><small>100 % o ajustada a SpO₂ ≈ 92 %</small></div>
+        <div><span>PEEP</span><b>20 → 6 cmH₂O</b><small>Escalones de 2 cmH₂O</small></div>
+        <div><span>Duración de cada paso</span><b>30 s – 3 min</b><small>Mínimo 10 ciclos</small></div>
+        <div><span>Criterio</span><b>Mejor Cstat + 2</b><small>Volver al paso previo si SpO₂ cae ≥ 2 %</small></div>
+      </div>
+      <ol class="steps">
+        <li>Paciente pasivo (sedación profunda o bloqueo neuromuscular), hemodinámicamente estable, en volumen control con Vt 6 mL/kg PBW y FiO₂ estable.</li>
+        <li>Evitar maniobras de reclutamiento prolongadas (≥ 35 cmH₂O durante ≥ 1 min; ESICM 2023, ATS 2024).</li>
+        <li>Empezar con PEEP 20 y bajar de 2 en 2 cmH₂O hasta 6, manteniendo cada paso 30 s – 3 min (mínimo 10 ciclos).</li>
+        <li>En cada paso medir Pplat (pausa inspiratoria) y PEEP total (pausa espiratoria); anotar SpO₂ y tensión arterial.</li>
+        <li>Elegir la PEEP de mejor compliancia (menor ΔP) y, en la estrategia decremental, programar +2 cmH₂O tras re-reclutar.</li>
+      </ol>
+    </section>
+    <section class="panel">
+      <div class="card-h"><h2>Pasos</h2><p>ΔP = Pplat − PEEP · Cstat = Vt / ΔP · Cdyn = Vt / (Ppico − PEEP)</p></div>
+      <div class="tw" style="padding:10px 14px 14px"><div id="ptTable"></div></div>
+    </section>
+  </div>
+  <div class="sheet">
+    <section class="panel">
+      <div class="card-h"><h2>Curva compliancia / driving pressure según PEEP</h2></div>
+      <div style="padding:8px 10px 4px"><svg id="ptChart" viewBox="0 0 640 380" style="width:100%;height:auto"></svg></div>
+      <div class="legend">
+        <span><i style="background:var(--accent)"></i>Cstat (mL/cmH₂O)</span>
+        <span><i style="background:var(--s2)"></i>ΔP (cmH₂O)</span>
+      </div>
+      <div id="ptResult"></div>
+      <div id="ptSpo" style="padding:0 10px 10px"></div>
+    </section>
+  </div>
+</div>
+</section>
+
+<!-- ================= REFERENCIA ================= -->
+<!-- ================= PRESIÓN DE APERTURA ================= -->
+<section id="tab-aop" hidden>
+<div class="peepgrid">
+  <div class="sheet">
+    <section class="panel">
+      <div class="card-h"><h2>Presión de apertura de la vía aérea (AOP)</h2><p>Detección de cierre completo de la vía aérea</p></div>
+      <div class="aop-intro">
+        <p>Con cierre completo de la vía aérea, el gas no entra en el pulmón hasta que la presión supera la <b>AOP</b>. Por debajo de ese umbral solo se presuriza el circuito, así que una PEEP menor que la AOP no llega al alvéolo. Si no se tiene en cuenta, la driving pressure se sobreestima y la compliancia se infraestima. Aparece en torno al 25–40 % de los pacientes con SDRA ventilados con PEEP 5.</p>
+        <div class="aop-req"><b>Requisitos comunes:</b> paciente pasivo (sedación profunda ± bloqueo neuromuscular), sin fugas, hemodinámica estable, FiO₂ sin cambios y curvas presión-tiempo visibles en pantalla con la opción de congelar y usar el cursor.</div>
+      </div>
+      <div class="toolbar" style="padding-top:4px">
+        <button class="btn" id="aopFromCalc">Usar datos de la calculadora</button>
+        <button class="btn" id="aopDemo">Rellenar ejemplo</button>
+        <button class="btn" id="aopReset">Limpiar</button>
+      </div>
+    </section>
+
+    <section class="panel aop-m acc" id="acc-lf" data-m="lf" style="--gc:#d0453f">
+      <button type="button" class="acc-h" aria-expanded="false" aria-controls="accb-lf"><span class="acc-t"><b>Método 1 · Inflado a flujo lento</b><small>Método de referencia (5 L/min)</small></span><span class="acc-s" id="accs-lf"></span><svg class="acc-i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="acc-b" id="accb-lf" hidden>
+      <h3 class="pt-h">Programación para la maniobra</h3>
+      <div class="ptset">
+        <div><span>Modo</span><b>Volumen control</b><small>Flujo constante (cuadrado), sin AutoFlow</small></div>
+        <div><span>Flujo inspiratorio</span><b>5 L/min</b><small>Hace despreciable la presión resistiva</small></div>
+        <div><span>Vt</span><b id="lfVtTxt">6 mL/kg PBW</b><small>Algunos protocolos usan 8 mL/kg</small></div>
+        <div><span>PEEP</span><b>5 cmH₂O</b><small>Por debajo de la AOP sospechada</small></div>
+        <div><span>FR</span><b>5 rpm</b><small>Permite espiración completa</small></div>
+        <div><span>Ti resultante</span><b id="lfTiTxt">—</b><small>Vt / flujo; ajustar Ti o pausa para que quepa</small></div>
+      </div>
+      <h3 class="pt-h">Pasos en la cabecera</h3>
+      <ol class="steps chkl" id="lfSteps">
+        <li><label><input type="checkbox"><span>Anotar la programación actual para restaurarla después. Si el ventilador lo permite, dejar los cambios preseleccionados.</span></label></li>
+        <li><label><input type="checkbox"><span>Confirmar que el paciente está pasivo: sin disparos ni esfuerzos en la curva de presión.</span></label></li>
+        <li><label><input type="checkbox"><span>Programar VC, flujo 5 L/min, el Vt indicado, PEEP 5 cmH₂O y FR 5 rpm.</span></label></li>
+        <li><label><input type="checkbox"><span>Hacer una espiración prolongada de 15–20 s, o una pausa espiratoria, para minimizar la auto-PEEP.</span></label></li>
+        <li><label><input type="checkbox"><span>Registrar una sola insuflación lenta y congelar la curva presión-tiempo (o presión-volumen).</span></label></li>
+        <li><label><input type="checkbox"><span>Buscar el cambio brusco de pendiente: primero una rampa muy pendiente (solo el circuito) y luego otra más tendida, con oscilaciones cardiacas, cuando el pulmón empieza a llenarse.</span></label></li>
+        <li><label><input type="checkbox"><span>Medir con el cursor la presión en el punto de inflexión: esa es la AOP. Anotar también el tiempo hasta la inflexión.</span></label></li>
+        <li><label><input type="checkbox"><span>Restaurar la programación previa enseguida y comprobar que la SpO₂ vuelve al valor basal.</span></label></li>
+      </ol>
+      <h3 class="pt-h">Datos medidos</h3>
+      <div class="aopf">
+        <label class="f"><span>PEEP de la maniobra <b>cmH₂O</b></span><input id="lfPeep" inputmode="decimal" placeholder="5"></label>
+        <label class="f"><span>Flujo <b>L/min</b></span><input id="lfFlow" inputmode="decimal" placeholder="5"></label>
+        <label class="f"><span>Vt insuflado <b>mL</b></span><input id="lfVt" inputmode="decimal"></label>
+        <label class="f"><span>Presión en la inflexión <b>cmH₂O</b></span><input id="lfAop" inputmode="decimal"></label>
+        <label class="f"><span>Tiempo hasta la inflexión <b>s</b></span><input id="lfTinf" inputmode="decimal" placeholder="opcional"></label>
+        <label class="f"><span>Presión al final del inflado <b>cmH₂O</b></span><input id="lfPend" inputmode="decimal" placeholder="opcional"></label>
+        <label class="f"><span>C del circuito ocluido <b>mL/cmH₂O</b></span><input id="lfCcirc" inputmode="decimal" placeholder="2"></label>
+      </div>
+      <div class="chart" style="margin:4px 14px 10px"><h4>Curva presión-tiempo a flujo lento<span>esquema según los datos</span></h4><svg id="lfSvg" viewBox="0 0 640 270" style="width:100%;height:auto"></svg></div>
+      <div id="lfRes"></div>
+    </div>
+    </section>
+
+    <section class="panel aop-m acc" id="acc-pc" data-m="pc" style="--gc:#8e44ad">
+      <button type="button" class="acc-h" aria-expanded="false" aria-controls="accb-pc"><span class="acc-t"><b>Método 2 · Presión conductiva (Pcond)</b><small>Sin flujo lento, con flujo constante habitual</small></span><span class="acc-s" id="accs-pc"></span><svg class="acc-i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="acc-b" id="accb-pc" hidden>
+      <div class="aop-intro"><p>Al inicio de cada insuflación en VC con flujo constante, la presión sube de golpe hasta un primer cambio de pendiente. Ese salto sobre la PEEP es la <b>presión conductiva (Pcond)</b>. Sin cierre de la vía aérea, la Pcond coincide con la presión resistiva (Pres = Ppico − Pplat). Con cierre, la Pcond incluye además el tramo necesario para alcanzar la AOP.</p></div>
+      <div class="formula-box">
+        <div><span>Presión conductiva</span><b>Pcond = P<sub>cambio de pendiente</sub> − PEEP</b></div>
+        <div><span>Presión resistiva</span><b>Pres = Ppico − Pplat</b></div>
+        <div><span>Presión de apertura</span><b>AOP = PEEP + (Pcond − Pres)</b></div>
+        <div><span>Cierre de la vía aérea</span><b>Pcond − Pres &gt; 1 cmH₂O</b></div>
+      </div>
+      <h3 class="pt-h">Programación para la medida</h3>
+      <div class="ptset">
+        <div><span>Modo</span><b>Volumen control</b><small>Flujo constante (cuadrado)</small></div>
+        <div><span>Flujo</span><b>60 L/min</b><small>Flujo habitual estable</small></div>
+        <div><span>PEEP</span><b>5 cmH₂O</b><small>Como en la validación</small></div>
+        <div><span>FR</span><b>20 rpm</b><small>Bajarla si hay auto-PEEP en el flujo espiratorio</small></div>
+        <div><span>Pausa inspiratoria</span><b>≥ 0,3 s</b><small>Para medir Pplat y Pres</small></div>
+        <div><span>Vt</span><b>El habitual</b><small>Sin cambios durante la medida</small></div>
+      </div>
+      <h3 class="pt-h">Pasos en la cabecera</h3>
+      <ol class="steps chkl" id="pcSteps">
+        <li><label><input type="checkbox"><span>Paciente pasivo en VC con flujo constante de 60 L/min y PEEP 5 cmH₂O.</span></label></li>
+        <li><label><input type="checkbox"><span>Comprobar en la curva de flujo que la espiración llega a cero (sin auto-PEEP). Si no, bajar la FR.</span></label></li>
+        <li><label><input type="checkbox"><span>Hacer una pausa inspiratoria de al menos 0,3 s y anotar la Ppico y la Pplat.</span></label></li>
+        <li><label><input type="checkbox"><span>Congelar la curva presión-tiempo y ampliar el inicio de la insuflación.</span></label></li>
+        <li><label><input type="checkbox"><span>Medir con el cursor la presión en el primer cambio brusco de pendiente, tras el salto vertical inicial.</span></label></li>
+        <li><label><input type="checkbox"><span>Introducir los valores: la AOP se calcula automáticamente. Si sale &gt; PEEP + 1, confirmar con flujo lento cuando sea posible.</span></label></li>
+      </ol>
+      <h3 class="pt-h">Datos medidos</h3>
+      <div class="aopf">
+        <label class="f"><span>PEEP <b>cmH₂O</b></span><input id="pcPeep" inputmode="decimal" placeholder="5"></label>
+        <label class="f"><span>Presión en el cambio de pendiente <b>cmH₂O</b></span><input id="pcInf" inputmode="decimal"></label>
+        <label class="f"><span>Ppico <b>cmH₂O</b></span><input id="pcPpk" inputmode="decimal"></label>
+        <label class="f"><span>Pplat <b>cmH₂O</b></span><input id="pcPpl" inputmode="decimal"></label>
+        <label class="f"><span>Flujo <b>L/min</b></span><input id="pcFlow" inputmode="decimal" placeholder="60"></label>
+        <label class="f"><span>Vt <b>mL</b></span><input id="pcVt" inputmode="decimal"></label>
+      </div>
+      <div class="chart" style="margin:4px 14px 10px"><h4>Curva presión-tiempo con flujo constante<span>esquema según los datos</span></h4><svg id="pcSvg" viewBox="0 0 640 270" style="width:100%;height:auto"></svg></div>
+      <div id="pcRes"></div>
+    </div>
+    </section>
+  </div>
+
+  <div class="sheet">
+    <section class="panel aop-m" style="--gc:#c98500">
+      <div class="card-h"><h2>Driving pressure y compliancia corregidas</h2><p>Usando la AOP cuando supera la PEEP</p></div>
+      <div class="formula-box">
+        <div><span>ΔP clásica</span><b>Pplat − PEEP total</b></div>
+        <div><span>ΔP corregida</span><b>Pplat − máx(PEEP prog., PEEP total, AOP)</b></div>
+        <div><span>Cstat corregida</span><b>Vt / ΔP corregida</b></div>
+      </div>
+      <div class="aopf">
+        <label class="f"><span>Vt <b>mL</b></span><input id="cxVt" inputmode="decimal"></label>
+        <label class="f"><span>Pplat <b>cmH₂O</b></span><input id="cxPpl" inputmode="decimal"></label>
+        <label class="f"><span>PEEP programada <b>cmH₂O</b></span><input id="cxPeep" inputmode="decimal"></label>
+        <label class="f"><span>PEEP total <b>cmH₂O</b></span><input id="cxPeeptot" inputmode="decimal" placeholder="= PEEP"></label>
+        <label class="f"><span>Origen de la AOP</span><select id="cxSrc"><option value="lf">Método 1 · flujo lento</option><option value="pc">Método 2 · Pcond</option><option value="man">Manual</option></select></label>
+        <label class="f"><span>AOP <b>cmH₂O</b></span><input id="cxAop" inputmode="decimal"></label>
+      </div>
+      <div class="aoptiles" id="cxTiles"></div>
+      <div id="cxRes"></div>
+      <div class="toolbar" style="padding-top:0">
+        <button class="btn primary" id="cxApply">Aplicar AOP a la calculadora</button>
+      </div>
+      <p class="hint" style="padding:0 14px 14px;margin:0">Al aplicarla, la calculadora usa Pplat − máx(PEEP total, AOP) para la driving pressure, la Cstat y la Cdyn. El campo AOP está en «Presiones medidas».</p>
+    </section>
+
+    <section class="panel">
+      <div class="card-h"><h2>Interpretación y límites</h2></div>
+      <ul class="steps" style="list-style:disc">
+        <li><b>Cierre completo:</b> antes de la inflexión, la pendiente equivale a la compliancia del circuito ocluido (1,5–2,5 mL/cmH₂O) y no hay oscilaciones cardiacas. Por encima de la AOP aparecen las oscilaciones y la compliancia aumenta de golpe.</li>
+        <li><b>PEEP:</b> la AOP marca el límite inferior de la PEEP; por debajo, la PEEP no se transmite al alvéolo. Algunos autores proponen programar AOP + 2 cmH₂O.</li>
+        <li><b>Auto-PEEP:</b> con cierre de la vía aérea, la pausa espiratoria puede infraestimar la presión alveolar. Usar el valor más alto entre PEEP programada, PEEP total y AOP.</li>
+        <li><b>Pcond:</b> en el estudio original, frente a flujo lento: sesgo 0 cmH₂O, límites de acuerdo de −3 a +4 cmH₂O, sensibilidad 93 % y especificidad 91 %. Asume flujo y resistencia constantes; se midió fuera de línea y depende de la presurización del ventilador y de la resolución de la pantalla.</li>
+        <li><b>Seguridad:</b> la maniobra de flujo lento dura un solo ciclo con FR 5. Restaurar la programación enseguida y no subir la FiO₂ al 100 %, porque favorece el desreclutamiento a PEEP baja.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <div class="card-h"><h2>Fuentes</h2></div>
+      <ul class="steps src" style="list-style:none;padding-left:14px">
+        <li><a href="https://academic.oup.com/ajrccm/article/197/1/132/8498132" target="_blank" rel="noopener">Chen L et al. Airway closure in ARDS. Am J Respir Crit Care Med 2018</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10329375/" target="_blank" rel="noopener">Haudebourg AF et al. Método de la presión conductiva. Crit Care 2023</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10476380/" target="_blank" rel="noopener">Mecánica respiratoria avanzada: ΔP y Crs con AOP (PMC10476380)</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11642134/" target="_blank" rel="noopener">Valoración del sistema respiratorio a pie de cama (PMC11642134)</a></li>
+        <li><a href="https://practicalplatform.org/assets/images/uploads/doc/2025-05-26_Practical_MOP_Basic_mechanics_and_Non-invasive_drive_and_effort_v1.2_FC_.pdf" target="_blank" rel="noopener">PRACTICAL Platform: manual de procedimientos de mecánica</a></li>
+        <li><a href="https://link.springer.com/article/10.1007/s00134-020-06144-w" target="_blank" rel="noopener">Airway closure, more harmful than atelectasis? Intensive Care Med 2020</a></li>
+        <li><a href="https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1807478/full" target="_blank" rel="noopener">Titulación de PEEP en SDRA. Front Med 2026</a></li>
+      </ul>
+    </section>
+  </div>
+</div>
+</section>
+
+<section id="tab-ref" hidden>
+  <article class="panel ref"><p>Referencia práctica para pacientes adultos intubados/traqueostomizados. Unidades habituales: presiones en cmH₂O, volúmenes en mL o L, flujo en L/min o L/s, compliancia en mL/cmH₂O.</p>
+<hr />
+<h2>1. Peso corporal ideal (predicho) y volumen tidal</h2>
+<p>El volumen tidal (Vt) se calcula SIEMPRE sobre el peso predicho (PBW), nunca sobre el peso real.</p>
+<table>
+<thead>
+<tr>
+<th>Sexo</th>
+<th>Fórmula (talla en cm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hombre</td>
+<td>PBW (kg) = 50 + 0,91 × (talla − 152,4)</td>
+</tr>
+<tr>
+<td>Mujer</td>
+<td>PBW (kg) = 45,5 + 0,91 × (talla − 152,4)</td>
+</tr>
+</tbody>
+</table>
+<p>Fuente: fórmulas ARDSNet (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6025863/">PMC6025863</a>; <a href="https://societymechanicalventilation.org/wp-content/uploads/2026/05/Lung-Volumes-PFT.pdf">Society of Mechanical Ventilation</a>).</p>
+<p><strong>Volumen tidal objetivo</strong></p>
+<ul>
+<li>Vt (mL) = PBW × 6 mL/kg (rango 4–8 mL/kg; en SDRA 6 mL/kg, bajar hasta 4 si Pplat &gt; 30).</li>
+<li>El ensayo ARMA (6 vs 12 mL/kg PBW) redujo la mortalidad del 39,8 % al 31 % (<a href="https://societymechanicalventilation.org/wp-content/uploads/2026/05/Lung-Volumes-PFT.pdf">Society of Mechanical Ventilation</a>).</li>
+</ul>
+<p><strong>Ejemplos</strong></p>
+<table>
+<thead>
+<tr>
+<th>Paciente</th>
+<th>PBW</th>
+<th>Vt 6 mL/kg</th>
+<th>Vt 8 mL/kg</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hombre 175 cm</td>
+<td>50 + 0,91 × 22,6 = 70,6 kg</td>
+<td>424 mL</td>
+<td>565 mL</td>
+</tr>
+<tr>
+<td>Mujer 160 cm</td>
+<td>45,5 + 0,91 × 7,6 = 52,4 kg</td>
+<td>314 mL</td>
+<td>419 mL</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>2. Parámetros de programación del respirador</h2>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Abreviatura</th>
+<th>Fórmula / relación</th>
+<th>Valor inicial orientativo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Volumen tidal</td>
+<td>Vt</td>
+<td>PBW × 6–8 mL/kg</td>
+<td>6 mL/kg (SDRA), 6–8 mL/kg (resto)</td>
+</tr>
+<tr>
+<td>Frecuencia respiratoria</td>
+<td>FR</td>
+<td>Ajuste por PaCO₂: FR nueva = FR actual × (PaCO₂ actual / PaCO₂ deseada)</td>
+<td>14–20 rpm (SDRA hasta 35)</td>
+</tr>
+<tr>
+<td>Volumen minuto</td>
+<td>VE</td>
+<td>VE = Vt × FR</td>
+<td>6–10 L/min (≈ 0,1 L/kg/min)</td>
+</tr>
+<tr>
+<td>Fracción inspirada de O₂</td>
+<td>FiO₂</td>
+<td>Ajustar a SpO₂ 92–96 % (88–95 % en SDRA)</td>
+<td>1,0 al inicio y descender</td>
+</tr>
+<tr>
+<td>PEEP</td>
+<td>PEEP</td>
+<td>Según tabla PEEP/FiO₂, compliancia, Ptp o ecografía/EIT</td>
+<td>5 cmH₂O; SDRA ≥ 8–10</td>
+</tr>
+<tr>
+<td>Flujo inspiratorio (VC)</td>
+<td>V̇</td>
+<td>V̇ (L/s) = Vt (L) / Ti (s); V̇ (L/min) = V̇ (L/s) × 60</td>
+<td>40–60 L/min (onda cuadrada o decelerada)</td>
+</tr>
+<tr>
+<td>Presión inspiratoria (PC)</td>
+<td>Pinsp / ΔPinsp</td>
+<td>Presión sobre PEEP; Ppico ≈ PEEP + ΔPinsp</td>
+<td>La necesaria para el Vt objetivo</td>
+</tr>
+<tr>
+<td>Tiempo inspiratorio</td>
+<td>Ti</td>
+<td>Ti = Vt / V̇ (VC con flujo cuadrado)</td>
+<td>0,8–1,2 s</td>
+</tr>
+<tr>
+<td>Tiempo de ciclo total</td>
+<td>Ttot</td>
+<td>Ttot = 60 / FR</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Tiempo espiratorio</td>
+<td>Te</td>
+<td>Te = Ttot − Ti</td>
+<td>≥ 3τ para evitar auto-PEEP</td>
+</tr>
+<tr>
+<td>Relación I:E</td>
+<td>I:E</td>
+<td>I:E = Ti / Te</td>
+<td>1:2 a 1:3 (EPOC 1:4–1:5)</td>
+</tr>
+<tr>
+<td>Ti/Ttot (ciclo de trabajo)</td>
+<td>Ti/Ttot</td>
+<td>Ti / (Ti + Te)</td>
+<td>0,25–0,33</td>
+</tr>
+<tr>
+<td>Pausa teleinspiratoria</td>
+<td>Tpausa</td>
+<td>0,3–0,5 s para medir Pplat</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Trigger (disparo)</td>
+<td>Trig</td>
+<td>Flujo (L/min) o presión (cmH₂O)</td>
+<td>Flujo 1–3 L/min; presión −1 a −2</td>
+</tr>
+<tr>
+<td>Rampa / rise time</td>
+<td>Tslope</td>
+<td>Tiempo hasta alcanzar la presión objetivo</td>
+<td>0,1–0,2 s</td>
+</tr>
+<tr>
+<td>Ciclado espiratorio (PSV)</td>
+<td>ETS / Ecycle</td>
+<td>% del flujo pico inspiratorio</td>
+<td>25 % (EPOC 40–50 %)</td>
+</tr>
+<tr>
+<td>Presión de soporte</td>
+<td>PS</td>
+<td>Presión sobre PEEP en respiraciones espontáneas</td>
+<td>5–15 cmH₂O</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ejemplo de cálculo de tiempos (VC):</strong> Vt 0,42 L, flujo 60 L/min (= 1 L/s), FR 20 rpm → Ti = 0,42 s; Ttot = 3 s; Te = 2,58 s; I:E ≈ 1:6.</p>
+<h3>Tabla PEEP/FiO₂ ARDSNet (PEEP baja)</h3>
+<table>
+<thead>
+<tr>
+<th>FiO₂</th>
+<th>0,3</th>
+<th>0,4</th>
+<th>0,4</th>
+<th>0,5</th>
+<th>0,5</th>
+<th>0,6</th>
+<th>0,7</th>
+<th>0,7</th>
+<th>0,7</th>
+<th>0,8</th>
+<th>0,9</th>
+<th>0,9</th>
+<th>0,9</th>
+<th>1,0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PEEP</td>
+<td>5</td>
+<td>5</td>
+<td>8</td>
+<td>8</td>
+<td>10</td>
+<td>10</td>
+<td>10</td>
+<td>12</td>
+<td>14</td>
+<td>14</td>
+<td>14</td>
+<td>16</td>
+<td>18</td>
+<td>18–24</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. Modos ventilatorios</h2>
+<h3>Modos controlados (mandatorios continuos, CMV / A-C)</h3>
+<table>
+<thead>
+<tr>
+<th>Modo</th>
+<th>Variable controlada</th>
+<th>Variable resultante</th>
+<th>Programación</th>
+<th>Claves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Volumen control (VC-CMV, A/C-VC)</td>
+<td>Volumen y flujo</td>
+<td>Presión (Ppico, Pplat)</td>
+<td>Vt, FR, flujo/onda, PEEP, FiO₂, trigger, pausa</td>
+<td>Permite medir Pplat, Raw y Cstat; vigilar Ppico/Pplat</td>
+</tr>
+<tr>
+<td>Presión control (PC-CMV, A/C-PC)</td>
+<td>Presión</td>
+<td>Volumen (depende de C y R)</td>
+<td>Pinsp, Ti o I:E, FR, PEEP, FiO₂, rampa</td>
+<td>Flujo decelerado; vigilar Vt espirado</td>
+</tr>
+<tr>
+<td>Volumen regulado por presión (PRVC, VC+, AutoFlow, APV)</td>
+<td>Presión adaptativa respiración a respiración</td>
+<td>Vt objetivo garantizado</td>
+<td>Vt objetivo, FR, Ti, PEEP, FiO₂, límite de presión</td>
+<td>Si el paciente hace esfuerzo intenso, el ventilador baja la presión</td>
+</tr>
+</tbody>
+</table>
+<h3>Modos mixtos / sincronizados</h3>
+<table>
+<thead>
+<tr>
+<th>Modo</th>
+<th>Descripción</th>
+<th>Programación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SIMV-VC / SIMV-PC (+PS)</td>
+<td>Respiraciones mandatorias sincronizadas + espontáneas (con o sin PS) entre ellas</td>
+<td>Vt o Pinsp, FR mandatoria, PS, PEEP, FiO₂</td>
+</tr>
+<tr>
+<td>BIPAP / BiLevel / DuoPAP</td>
+<td>Dos niveles de presión con respiración espontánea libre en ambos</td>
+<td>Palta, Pbaja, Talta, Tbaja, PS</td>
+</tr>
+<tr>
+<td>APRV</td>
+<td>Presión alta prolongada con liberaciones breves</td>
+<td>Palta (≈ Pplat 20–30), Pbaja 0, Talta 4–6 s, Tbaja 0,4–0,8 s (finalizar al 50–75 % del flujo espiratorio pico)</td>
+</tr>
+</tbody>
+</table>
+<h3>Modos espontáneos / de soporte</h3>
+<table>
+<thead>
+<tr>
+<th>Modo</th>
+<th>Descripción</th>
+<th>Programación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Presión de soporte (PSV)</td>
+<td>Disparado y ciclado por el paciente; presión constante</td>
+<td>PS, PEEP, FiO₂, trigger, ETS, rampa</td>
+</tr>
+<tr>
+<td>CPAP</td>
+<td>Presión continua sin soporte inspiratorio</td>
+<td>PEEP/CPAP, FiO₂</td>
+</tr>
+<tr>
+<td>Volume Support (VS)</td>
+<td>PSV con Vt objetivo</td>
+<td>Vt objetivo, PEEP, FiO₂</td>
+</tr>
+<tr>
+<td>Compensación del tubo (ATC/TC)</td>
+<td>Compensa la resistencia del tubo endotraqueal</td>
+<td>Diámetro de tubo, % de compensación</td>
+</tr>
+</tbody>
+</table>
+<h3>Modos avanzados / proporcionales / de lazo cerrado</h3>
+<table>
+<thead>
+<tr>
+<th>Modo</th>
+<th>Principio</th>
+<th>Variable clave</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PAV+</td>
+<td>Soporte proporcional al esfuerzo (ecuación de movimiento)</td>
+<td>% de asistencia; estima C, R y WOB</td>
+</tr>
+<tr>
+<td>NAVA</td>
+<td>Soporte proporcional a la actividad eléctrica diafragmática (Edi)</td>
+<td>Nivel NAVA (cmH₂O/µV)</td>
+</tr>
+<tr>
+<td>ASV / INTELLiVENT-ASV</td>
+<td>Lazo cerrado que ajusta Vt/FR para VE objetivo minimizando trabajo</td>
+<td>% VE (100 % ≈ 0,1 L/kg/min)</td>
+</tr>
+<tr>
+<td>SmartCare/PS</td>
+<td>Destete automático de la PS</td>
+<td>Objetivos de FR, Vt y EtCO₂</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4. Ecuación de movimiento del sistema respiratorio</h2>
+<p>Paw + Pmus = (Vt / Crs) + (Raw × V̇) + PEEPtot</p>
+<ul>
+<li>Componente elástico = Vt / Crs (= Pplat − PEEPtot)</li>
+<li>Componente resistivo = Raw × V̇ (= Ppico − Pplat en VC con flujo constante)</li>
+<li>Elastancia: Ers = 1 / Crs (cmH₂O/L)</li>
+</ul>
+<hr />
+<h2>5. Presiones medidas</h2>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Fórmula / cómo se mide</th>
+<th>Objetivo / normalidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Presión pico (Ppico, PIP)</td>
+<td>Presión máxima en vía aérea durante la inspiración</td>
+<td>&lt; 35–40 cmH₂O</td>
+</tr>
+<tr>
+<td>Presión meseta (Pplat)</td>
+<td>Pausa teleinspiratoria 0,3–0,5 s sin esfuerzo del paciente</td>
+<td>≤ 30 cmH₂O (ideal &lt; 27–28)</td>
+</tr>
+<tr>
+<td>Componente resistivo</td>
+<td>Ppico − Pplat</td>
+<td>&lt; 5–10 cmH₂O; ↑ = broncoespasmo, secreciones, tubo acodado</td>
+</tr>
+<tr>
+<td>PEEP externa (PEEPe)</td>
+<td>Programada</td>
+<td>Según patología</td>
+</tr>
+<tr>
+<td>PEEP total (PEEPtot)</td>
+<td>Pausa teleespiratoria 0,5–2 s</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Auto-PEEP / PEEP intrínseca</td>
+<td>PEEPi = PEEPtot − PEEPe</td>
+<td>0 cmH₂O (sospechar si el flujo espiratorio no llega a cero)</td>
+</tr>
+<tr>
+<td>Driving pressure (ΔP)</td>
+<td>ΔP = Pplat − PEEPtot = Vt / Crs</td>
+<td>≤ 13–15 cmH₂O</td>
+</tr>
+<tr>
+<td>Presión media vía aérea (Pmedia)</td>
+<td>PC: Pmedia ≈ (Ppico − PEEP) × (Ti/Ttot) + PEEP; VC (flujo cuadrado): Pmedia ≈ 0,5 × (Ppico − PEEP) × (Ti/Ttot) + PEEP</td>
+<td>10–20 cmH₂O (determinante de oxigenación)</td>
+</tr>
+<tr>
+<td>Presión esofágica (Pes)</td>
+<td>Balón esofágico; estimador de la presión pleural</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Presión transpulmonar (PL)</td>
+<td>PL = Paw − Pes</td>
+<td>PL teleinspiratoria &lt; 20–25; PL teleespiratoria 0 a +2</td>
+</tr>
+<tr>
+<td>PL inspiratoria por elastancias</td>
+<td>PL,insp = Pplat × (EL / Ers); EL = Ers − Ecw; Ecw = ΔPes / Vt</td>
+<td>&lt; 20–25 cmH₂O</td>
+</tr>
+<tr>
+<td>Driving pressure transpulmonar</td>
+<td>ΔPL = ΔP − ΔPes</td>
+<td>&lt; 10–12 cmH₂O</td>
+</tr>
+<tr>
+<td>Presión de oclusión P0.1</td>
+<td>Caída de presión en los primeros 100 ms de una inspiración ocluida</td>
+<td>1–3,5 cmH₂O (&gt; 3,5–4 esfuerzo excesivo; &lt; 1 sobreasistencia)</td>
+</tr>
+<tr>
+<td>Presión de oclusión espiratoria (ΔPocc)</td>
+<td>Oclusión teleespiratoria durante un esfuerzo; Pmus ≈ 0,75 × │ΔPocc│</td>
+<td>Pmus 5–10 cmH₂O</td>
+</tr>
+<tr>
+<td>Driving transpulmonar dinámico estimado</td>
+<td>ΔPL,dyn ≈ (Ppico − PEEP) + 0,66 × │ΔPocc│</td>
+<td>&lt; 15–20 cmH₂O</td>
+</tr>
+<tr>
+<td>Presión del neumotaponamiento</td>
+<td>Manómetro de cuff</td>
+<td>20–30 cmH₂O</td>
+</tr>
+</tbody>
+</table>
+<p>Amato et al. demostraron que la driving pressure (ΔP = Vt/Crs) fue la variable ventilatoria más asociada a la supervivencia en SDRA: cada aumento de 1 DE (≈ 7 cmH₂O) se asoció a un RR de muerte de 1,41 (<a href="https://pubmed.ncbi.nlm.nih.gov/25693014/">NEJM 2015, PubMed</a>). Una ΔP &lt; 14 cmH₂O se asoció a menor mortalidad hospitalaria en SDRA moderado y grave (<a href="https://www.hamilton-medical.com/en_US/Resource-center/Article-page~knowledge-base~09161a01-6223-4668-8fa8-d906319d64f9~.html">Hamilton Medical</a>).</p>
+<hr />
+<h2>6. Volúmenes y flujos</h2>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Fórmula</th>
+<th>Normalidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Volumen tidal inspirado/espirado</td>
+<td>Vti / Vte (medido)</td>
+<td>Vte ≈ Vti</td>
+</tr>
+<tr>
+<td>Fuga (%)</td>
+<td>Fuga = (Vti − Vte) / Vti × 100</td>
+<td>&lt; 10 %</td>
+</tr>
+<tr>
+<td>Volumen minuto espirado</td>
+<td>VE = Vte × FR</td>
+<td>6–10 L/min</td>
+</tr>
+<tr>
+<td>Ventilación alveolar</td>
+<td>VA = (Vt − VD) × FR</td>
+<td>≈ 4–6 L/min</td>
+</tr>
+<tr>
+<td>Relación PaCO₂–VA</td>
+<td>PaCO₂ = 0,863 × VCO₂ (mL/min) / VA (L/min)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Espacio muerto (Bohr)</td>
+<td>VD/Vt = (PACO₂ − PĒCO₂) / PACO₂</td>
+<td>0,25–0,35</td>
+</tr>
+<tr>
+<td>Espacio muerto (Enghoff)</td>
+<td>VD/Vt = (PaCO₂ − PĒCO₂) / PaCO₂</td>
+<td>0,25–0,35 (&gt; 0,6 = mal pronóstico en SDRA)</td>
+</tr>
+<tr>
+<td>Ratio ventilatorio (VR)</td>
+<td>VR = (VE [mL/min] × PaCO₂) / (PBW × 100 × 37,5)</td>
+<td>≈ 1 (&gt; 2 = espacio muerto elevado)</td>
+</tr>
+<tr>
+<td>Flujo pico inspiratorio / espiratorio</td>
+<td>Medido en la curva flujo-tiempo</td>
+<td>El flujo espiratorio debe volver a 0</td>
+</tr>
+<tr>
+<td>Gradiente PaCO₂ − EtCO₂</td>
+<td>PaCO₂ − EtCO₂</td>
+<td>2–5 mmHg (↑ espacio muerto)</td>
+</tr>
+</tbody>
+</table>
+<p>PĒCO₂ = presión de CO₂ espirada mixta (capnografía volumétrica).</p>
+<hr />
+<h2>7. Complianzas, resistencias y constantes de tiempo</h2>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Fórmula</th>
+<th>Normalidad en paciente intubado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compliancia estática (Cstat, Crs)</td>
+<td>Cstat = Vt / (Pplat − PEEPtot) = Vt / ΔP</td>
+<td>50–100 mL/cmH₂O (SDRA &lt; 40)</td>
+</tr>
+<tr>
+<td>Compliancia dinámica (Cdyn)</td>
+<td>Cdyn = Vt / (Ppico − PEEPtot)</td>
+<td>40–80 mL/cmH₂O (incluye resistencia)</td>
+</tr>
+<tr>
+<td>Elastancia sistema respiratorio</td>
+<td>Ers = ΔP / Vt (L) = 1 / Crs</td>
+<td>10–20 cmH₂O/L</td>
+</tr>
+<tr>
+<td>Elastancia pared torácica</td>
+<td>Ecw = ΔPes / Vt</td>
+<td>≈ 5 cmH₂O/L</td>
+</tr>
+<tr>
+<td>Elastancia pulmonar</td>
+<td>EL = Ers − Ecw = ΔPL / Vt</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Compliancia específica</td>
+<td>Crs / PBW</td>
+<td>≈ 1 mL/cmH₂O/kg</td>
+</tr>
+<tr>
+<td>Resistencia inspiratoria (Raw)</td>
+<td>Raw = (Ppico − Pplat) / V̇ (L/s), en VC con flujo constante</td>
+<td>5–10 cmH₂O/L/s (&gt; 15–20 obstructivo)</td>
+</tr>
+<tr>
+<td>Constante de tiempo (τ)</td>
+<td>τ = Raw × Crs (C en L/cmH₂O)</td>
+<td>0,3–0,6 s; 3τ = 95 % del vaciado</td>
+</tr>
+<tr>
+<td>Te mínimo para evitar atrapamiento</td>
+<td>Te ≥ 3–5 τ</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Recruitment-to-inflation ratio (R/I)</td>
+<td>Crec / Crs a PEEP baja; Crec = ΔVrec / ΔPEEP</td>
+<td>&gt; 0,5 alta reclutabilidad</td>
+</tr>
+<tr>
+<td>Stress index (SI)</td>
+<td>Curva presión-tiempo en VC flujo constante: P = a·tᵇ + c</td>
+<td>b 0,9–1,1 adecuado; &lt; 0,9 reclutamiento tidal; &gt; 1,1 sobredistensión</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ejemplo:</strong> Vt 420 mL, Ppico 28, Pplat 22, PEEP 8, flujo 60 L/min (1 L/s) → ΔP = 14; Cstat = 420/14 = 30 mL/cmH₂O; Cdyn = 420/20 = 21 mL/cmH₂O; Raw = 6 cmH₂O/L/s; τ = 6 × 0,030 = 0,18 s.</p>
+<hr />
+<h2>8. Potencia mecánica y trabajo respiratorio</h2>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Fórmula</th>
+<th>Referencia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Potencia mecánica (VC, Gattinoni simplificada)</td>
+<td>MP (J/min) = 0,098 × FR × Vt (L) × [Ppico − ½ (Pplat − PEEP)]</td>
+<td>&lt; 12–17 J/min</td>
+</tr>
+<tr>
+<td>Potencia mecánica sin Pplat (Giosa, "surrogate")</td>
+<td>MP = VE × (Ppico + PEEP + V̇/6) / 20</td>
+<td>V̇ en L/min</td>
+</tr>
+<tr>
+<td>Potencia mecánica (PC, Becher simplificada)</td>
+<td>MP = 0,098 × FR × Vt × (ΔPinsp + PEEP)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Trabajo respiratorio (WOB)</td>
+<td>WOB = ∫ P × dV (J/L)</td>
+<td>0,3–0,7 J/L (medido en PAV+/Pes)</td>
+</tr>
+<tr>
+<td>Producto presión-tiempo (PTP)</td>
+<td>PTPes = ∫ Pmus dt por minuto</td>
+<td>50–150 cmH₂O·s/min</td>
+</tr>
+</tbody>
+</table>
+<p>Fórmulas de potencia mecánica: <a href="https://link.springer.com/article/10.1186/s13054-020-03116-w">Critical Care — cálculo a pie de cama</a> y <a href="https://link.springer.com/article/10.1186/s40635-019-0276-8">Intensive Care Med Exp — surrogate</a>. Supervivencia superior con ΔP ≤ 13, MP ≤ 12 J/min y Pplat &lt; 23 en una cohorte de SDRA (<a href="https://onlinelibrary.wiley.com/doi/full/10.1155/ccrp/8857930">Critical Care Research and Practice</a>).</p>
+<hr />
+<h2>9. Oxigenación e intercambio gaseoso</h2>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Fórmula</th>
+<th>Interpretación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PaO₂/FiO₂ (P/F)</td>
+<td>PaO₂ / FiO₂</td>
+<td>SDRA (Berlín, PEEP ≥ 5): leve 200–300; moderado 100–200; grave ≤ 100</td>
+</tr>
+<tr>
+<td>SpO₂/FiO₂ (S/F)</td>
+<td>SpO₂ / FiO₂ (válido con SpO₂ ≤ 97 %)</td>
+<td>S/F 315 ≈ P/F 300</td>
+</tr>
+<tr>
+<td>PAO₂ (ecuación del gas alveolar)</td>
+<td>PAO₂ = FiO₂ × (Patm − 47) − PaCO₂ / 0,8</td>
+<td>Madrid (~660 m): Patm ≈ 705 mmHg</td>
+</tr>
+<tr>
+<td>Gradiente alveolo-arterial</td>
+<td>A-a = PAO₂ − PaO₂</td>
+<td>Normal ≈ (edad / 4) + 4</td>
+</tr>
+<tr>
+<td>Índice de oxigenación (IO)</td>
+<td>IO = (FiO₂ × Pmedia × 100) / PaO₂</td>
+<td>&gt; 25–40 = grave; valorar ECMO</td>
+</tr>
+<tr>
+<td>Índice de saturación de oxígeno (OSI)</td>
+<td>OSI = (FiO₂ × Pmedia × 100) / SpO₂</td>
+<td>Alternativa no invasiva al IO</td>
+</tr>
+<tr>
+<td>Contenido arterial de O₂</td>
+<td>CaO₂ = 1,34 × Hb × SaO₂ + 0,003 × PaO₂</td>
+<td>18–20 mL/dL</td>
+</tr>
+<tr>
+<td>Shunt (Qs/Qt)</td>
+<td>(CcO₂ − CaO₂) / (CcO₂ − CvO₂)</td>
+<td>&lt; 5 %</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>10. Índices de destete y esfuerzo del paciente</h2>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Fórmula</th>
+<th>Umbral</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Índice de respiración rápida y superficial (RSBI, Tobin)</td>
+<td>RSBI = FR / Vt (L)</td>
+<td>&lt; 105 favorable</td>
+</tr>
+<tr>
+<td>P0.1</td>
+<td>Ver sección 5</td>
+<td>1–3,5 cmH₂O</td>
+</tr>
+<tr>
+<td>Pmus estimada (oclusión)</td>
+<td>Pmus ≈ 0,75 × │ΔPocc│</td>
+<td>5–10 cmH₂O</td>
+</tr>
+<tr>
+<td>Fuerza inspiratoria negativa (NIF / PImax)</td>
+<td>Oclusión 20 s</td>
+<td>&lt; −20 a −30 cmH₂O</td>
+</tr>
+<tr>
+<td>CROP</td>
+<td>(Cdyn × PImax × PaO₂/PAO₂) / FR</td>
+<td>&gt; 13 mL/resp/min</td>
+</tr>
+<tr>
+<td>Prueba de fuga del neumotaponamiento</td>
+<td>(Vti − Vte con cuff desinflado)</td>
+<td>&gt; 110 mL o &gt; 12–24 %</td>
+</tr>
+<tr>
+<td>Excursión diafragmática / fracción de engrosamiento (eco)</td>
+<td>DTF = (grosor insp − grosor esp) / grosor esp × 100</td>
+<td>DTF 15–30 % adecuado; &gt; 30–35 % sugiere sobreesfuerzo</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>11. Resumen de objetivos de ventilación protectora</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Objetivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vt</td>
+<td>6 mL/kg PBW (4–8)</td>
+</tr>
+<tr>
+<td>Pplat</td>
+<td>≤ 30 cmH₂O (ideal &lt; 27–28)</td>
+</tr>
+<tr>
+<td>Driving pressure</td>
+<td>≤ 13–15 cmH₂O</td>
+</tr>
+<tr>
+<td>PEEP</td>
+<td>Según tabla PEEP/FiO₂ o titulación individual (Crs, Ptp, EIT)</td>
+</tr>
+<tr>
+<td>Potencia mecánica</td>
+<td>&lt; 12–17 J/min</td>
+</tr>
+<tr>
+<td>PL teleinspiratoria</td>
+<td>&lt; 20–25 cmH₂O</td>
+</tr>
+<tr>
+<td>SpO₂ / PaO₂</td>
+<td>88–95 % / 55–80 mmHg (SDRA)</td>
+</tr>
+<tr>
+<td>pH / PaCO₂</td>
+<td>pH ≥ 7,25–7,30 (hipercapnia permisiva)</td>
+</tr>
+<tr>
+<td>Auto-PEEP</td>
+<td>0 cmH₂O</td>
+</tr>
+</tbody>
+</table>
+<h2>12. Presión de apertura de la vía aérea (AOP)</h2>
+<p>Con cierre completo de la vía aérea, el gas no entra en el pulmón hasta que la presión supera la AOP. Si no se tiene en cuenta, la driving pressure se sobreestima y la compliancia se infraestima (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10329375/">Haudebourg et al., Crit Care 2023</a>). Aparece en alrededor del 25 % de los pacientes ventilados con PEEP 5 (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10476380/">PMC10476380</a>).</p>
+<table>
+<thead>
+<tr>
+<th>Método</th>
+<th>Programación</th>
+<th>Cálculo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inflado a flujo lento (referencia)</td>
+<td>VC, flujo 5 L/min, PEEP 5, FR 5, Vt 6–8 mL/kg PBW, tras espiración prolongada de 15–20 s</td>
+<td>AOP = presión en el cambio brusco de pendiente de la curva presión-tiempo o presión-volumen</td>
+</tr>
+<tr>
+<td>Presión conductiva (Pcond)</td>
+<td>VC, flujo constante 60 L/min, PEEP 5, FR 20, pausa inspiratoria ≥ 0,3 s</td>
+<td>Pcond = P en el primer cambio de pendiente − PEEP; Pres = Ppico − Pplat; AOP = PEEP + (Pcond − Pres); cierre si Pcond − Pres &gt; 1 cmH₂O</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Antes de la AOP, la pendiente equivale a la compliancia del circuito ocluido (1,5–2,5 mL/cmH₂O) y no hay oscilaciones cardiacas (<a href="https://link.springer.com/article/10.1007/s00134-020-06144-w">Intensive Care Med 2020</a>).</li>
+<li><strong>Driving pressure corregida</strong> = Pplat − máx(PEEP programada, PEEP total, AOP) (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11642134/">PMC11642134</a>; <a href="https://practicalplatform.org/assets/images/uploads/doc/2025-05-26_Practical_MOP_Basic_mechanics_and_Non-invasive_drive_and_effort_v1.2_FC_.pdf">PRACTICAL Platform</a>). <strong>Cstat corregida</strong> = Vt / ΔP corregida.</li>
+<li>El método Pcond, frente a flujo lento, tuvo un sesgo de 0 cmH₂O (límites de acuerdo de −3 a +4), sensibilidad del 93 % y especificidad del 91 % (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10329375/">Haudebourg et al.</a>).</li>
+<li>La AOP marca el límite inferior de la PEEP; algunos autores proponen AOP + 2 cmH₂O (<a href="https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1807478/full">Front Med 2026</a>).</li>
+</ul>
+<hr />
+<p>Documento de referencia docente. La ventilación debe individualizarse según la fisiopatología, la mecánica medida y la evolución clínica de cada paciente.</p></article>
+</section>
+</main>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const memStore={_:{},getItem(k){return k in this._?this._[k]:null},setItem(k,v){this._[k]=v}};
+const IDS=['sex','height','age','mlkg','vt','pinsp','rr','peep','fio2','flow','pause','ti','rise','ppeak','pplat','peeptot','pmean','vti','vte','vem','etco2','pao2','paco2','spo2','fio2g','patm','pesi','pese','p01','pocc','aop'];
+const MEAS=['ppeak','pplat','peeptot','pmean','vti','vte','vem','etco2','paco2'];
+const EXAMPLE={sex:'M',height:175,age:62,mlkg:6,vt:420,pinsp:15,rr:22,peep:10,fio2:60,flow:50,pause:0.3,ti:0.9,rise:0.1,ppeak:31,pplat:25,peeptot:12,pmean:'',vti:425,vte:405,vem:'',etco2:38,pao2:78,paco2:48,spo2:94,fio2g:'',patm:705,pesi:'',pese:'',p01:'',pocc:''};
+let mode='VC';
+const ST='vmcalc2-';
+const store={get(k,d){try{const v=memStore.getItem(ST+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{memStore.setItem(ST+k,JSON.stringify(v))}catch(e){}}};
+
+const fmt=(v,d)=>v==null||!isFinite(v)?'—':v.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pnum=v=>{if(v==null)return null;const s=String(v).trim().replace(',','.');if(s==='')return null;const n=parseFloat(s);return isFinite(n)?n:null};
+let af=false;
+function readInputs(){const o={};IDS.forEach(k=>o[k]=$(k).value);o.__af=af;return o}
+function writeInputs(o){IDS.forEach(k=>{if(o[k]!==undefined)$(k).value=o[k]});setAF(!!o.__af,true)}
+function setAF(v,silent){af=v;$('af').checked=v;document.body.dataset.af=v?'1':'0';$('afHint').textContent=v?'Activado: flujo decelerado regulado por el respirador; se programa Ti':'Desactivado: flujo constante programado';if(!silent)update(true)}
+const r1=(v,s)=>Math.round(v/s)*s;
+
+/* ================= CÁLCULO (puro) ================= */
+function compute(raw,md){
+  const d={};IDS.forEach(k=>d[k]=k==='sex'?raw[k]:pnum(raw[k]));
+  const AF=md==='VC'&&(raw.__af===true||raw.__af==='1'||raw.__af==='true');
+  const r={est:{},d,mode:md,af:AF};
+  if(d.height!=null) r.pbw=(d.sex==='F'?45.5:50)+0.91*(d.height-152.4);
+  if(r.pbw&&d.mlkg) r.vtTarget=r.pbw*d.mlkg;
+  r.rr=d.rr; r.peep=d.peep; r.rise=d.rise;
+  r.fio2=d.fio2!=null?(d.fio2>1?d.fio2/100:d.fio2):null;
+  const fg=d.fio2g!=null?(d.fio2g>1?d.fio2g/100:d.fio2g):r.fio2; r.fio2g=fg;
+  // volúmenes
+  r.vtSet=md==='VC'?d.vt:null;
+  r.vt=md==='VC'?(d.vt??d.vti??d.vte):(d.vte??d.vti);
+  r.vti=d.vti; if(r.vti==null&&md==='VC'&&d.vt!=null){r.vti=d.vt;r.est.vti=true}
+  r.vte=d.vte;
+  if(r.vti&&r.vte!=null) r.leak=(r.vti-r.vte)/r.vti*100;
+  if(r.vt&&r.pbw) r.vtkg=r.vt/r.pbw;
+  if(d.vem!=null) r.ve=d.vem; else if(r.rr&&(r.vte||r.vt)){r.ve=(r.vte||r.vt)*r.rr/1000;r.est.ve=true}
+  if(r.rr) r.ttot=60/r.rr;
+  // presiones
+  r.ppeak=d.ppeak; r.pplat=d.pplat; r.pinsp=d.pinsp;
+  if(AF){
+    if(r.ppeak==null&&r.pplat!=null){r.ppeak=r.pplat;r.est.ppeak=true}
+    if(r.pplat==null&&r.ppeak!=null){r.pplat=r.ppeak;r.est.pplat=true}
+  }
+  if(md==='PC'&&d.pinsp!=null&&r.peep!=null){
+    if(r.ppeak==null){r.ppeak=r.peep+d.pinsp;r.est.ppeak=true}
+    if(r.pplat==null){r.pplat=r.peep+d.pinsp;r.est.pplat=true}
+  }
+  r.peeptot=d.peeptot!=null?d.peeptot:r.peep;
+  if(d.peeptot!=null&&r.peep!=null) r.autopeep=d.peeptot-r.peep;
+  // tiempos
+  if(AF){ r.ti=d.ti; }
+  else if(md==='VC'){ const v=d.vt??r.vt; r.pause=d.pause||0; r.flowLs=d.flow?d.flow/60:null; if(v&&d.flow){r.tflow=(v/1000)/r.flowLs; r.ti=r.tflow+r.pause;} }
+  else r.ti=d.ti;
+  if(r.ti&&r.ttot){r.te=r.ttot-r.ti; r.ie=r.te/r.ti; r.duty=r.ti/r.ttot;}
+  // mecánica
+  r.aop=d.aop; r.peepRef=r.peeptot!=null&&r.aop!=null&&r.aop>r.peeptot?r.aop:r.peeptot; r.aopCorr=r.peepRef!==r.peeptot;
+  if(r.pplat!=null&&r.peepRef!=null) r.dp=r.pplat-r.peepRef;
+  if(r.aopCorr&&r.pplat!=null) r.dpRaw=r.pplat-r.peeptot;
+  if(r.vt&&r.dp>0) r.cstat=r.vt/r.dp;
+  if(r.vt&&r.ppeak!=null&&r.peepRef!=null&&r.ppeak-r.peepRef>0) r.cdyn=r.vt/(r.ppeak-r.peepRef);
+  if(md==='VC'&&r.ppeak!=null&&r.pplat!=null&&r.flowLs) r.raw=(r.ppeak-r.pplat)/r.flowLs;
+  if(r.raw!=null&&r.cstat) r.tau=r.raw*r.cstat/1000;
+  if(r.rr&&r.vt){
+    if(AF&&r.ppeak!=null&&r.peep!=null){r.mp=0.098*r.rr*(r.vt/1000)*r.ppeak;r.mpF='Becher'}
+    else if(md==='VC'&&r.ppeak!=null&&r.pplat!=null&&r.peep!=null){r.mp=0.098*r.rr*(r.vt/1000)*(r.ppeak-0.5*(r.pplat-r.peep));r.mpF='Gattinoni'}
+    else if(md==='VC'&&r.ppeak!=null&&r.peep!=null&&d.flow&&r.ve){r.mp=r.ve*(r.ppeak+r.peep+d.flow/6)/20;r.mpF='Giosa'}
+    else if(md==='PC'&&d.pinsp!=null&&r.peep!=null){r.mp=0.098*r.rr*(r.vt/1000)*(d.pinsp+r.peep);r.mpF='Becher'}
+  }
+  if(d.pmean!=null) r.pmean=d.pmean;
+  else if(r.ppeak!=null&&r.peep!=null&&r.duty){r.pmean=(md==='PC'||AF)?(r.ppeak-r.peep)*r.duty+r.peep:0.5*(r.ppeak-r.peep)*r.duty+r.peep;r.est.pmean=true}
+  // gases
+  r.pao2=d.pao2;r.paco2=d.paco2;r.spo2=d.spo2;r.etco2=d.etco2;
+  if(r.pao2&&fg) r.pf=r.pao2/fg;
+  if(r.spo2&&fg) r.sf=r.spo2/fg;
+  if(fg&&r.pmean!=null&&r.pao2) r.oi=fg*r.pmean*100/r.pao2;
+  if(fg&&r.pmean!=null&&r.spo2) r.osi=fg*r.pmean*100/r.spo2;
+  if(fg&&r.paco2!=null&&d.patm){r.pAO2=fg*(d.patm-47)-r.paco2/0.8;if(r.pao2){r.aa=r.pAO2-r.pao2;r.aA=r.pao2/r.pAO2}}
+  if(r.ve&&r.paco2&&r.pbw) r.vr=(r.ve*1000*r.paco2)/(r.pbw*100*37.5);
+  if(r.paco2!=null&&r.etco2!=null) r.gco2=r.paco2-r.etco2;
+  if(r.rr&&r.vt) r.rsbi=r.rr/(r.vt/1000);
+  r.p01=d.p01;
+  if(d.pocc!=null){const o=Math.abs(d.pocc);r.pmus=0.75*o;if(r.ppeak!=null&&r.peep!=null)r.dpldyn=(r.ppeak-r.peep)+0.66*o}
+  if(d.pesi!=null&&r.pplat!=null) r.pli=r.pplat-d.pesi;
+  if(d.pese!=null&&r.peeptot!=null) r.ple=r.peeptot-d.pese;
+  if(d.pesi!=null&&d.pese!=null&&r.dp!=null) r.dpl=r.dp-(d.pesi-d.pese);
+  r.age=d.age;
+  return r;
+}
+
+/* ================= PARÁMETROS ================= */
+const vtRange=r=>r.pbw?[0,4*r.pbw,8*r.pbw,12*r.pbw]:null;
+const GROUPS=[
+ {id:'vol',c:'#0f8a8a',t:'Peso predicho y volúmenes',items:[
+  {k:'pbw',n:'Peso corporal predicho',a:'PBW',u:'kg',dec:1,f:'H: 50 + 0,91×(talla−152,4) · M: 45,5 + 0,91×(talla−152,4)',need:'talla y sexo',note:r=>r.vtTarget?`Vt a ${fmt(r.d.mlkg,1)} mL/kg: ${fmt(r.vtTarget,0)} mL · 4–8 mL/kg: ${fmt(r.pbw*4,0)}–${fmt(r.pbw*8,0)} mL`:''},
+  {k:'vtkg',n:'Vt por peso predicho',a:'Vt/PBW',u:'mL/kg',dec:1,range:[2,4,8,12],f:'Vt / PBW',need:'Vt (o VTe en PC) y talla',note:()=>'Objetivo 6 mL/kg en SDRA'},
+  {k:'vti',n:'Volumen tidal inspirado',a:'VTi',u:'mL',dec:0,range:vtRange,f:'Medido en rama inspiratoria',need:'VTi y talla (rango)'},
+  {k:'vte',n:'Volumen tidal espirado',a:'VTe',u:'mL',dec:0,range:vtRange,f:'Medido en rama espiratoria',need:'VTe y talla (rango)'},
+  {k:'ve',n:'Volumen minuto',a:'VM',u:'L/min',dec:1,range:[0,5,10,20],f:'VM = VTe × FR',need:'VM medido o VTe/Vt y FR'},
+  {k:'leak',n:'Porcentaje de fuga',a:'Fuga',u:'%',dec:1,range:[0,0,10,40],f:'(VTi − VTe) / VTi × 100',need:'VTi y VTe',note:r=>r.leak<0?'VTe > VTi: revisar calibración o esfuerzo espiratorio activo':'> 10 %: revisar neumotaponamiento, circuito o fístula'},
+ ]},
+ {id:'time',c:'#4f5bd5',t:'Tiempos del ciclo',items:[
+  {k:'ti',n:'Tiempo inspiratorio',a:'Ti',u:'s',dec:2,range:[0,0.6,1.2,2.5],f:'VC: Vt/flujo + pausa · PC y AutoFlow: programado',need:'Vt y flujo (VC) o Ti (PC / AutoFlow)'},
+  {k:'te',n:'Tiempo espiratorio',a:'Te',u:'s',dec:2,range:[0,1,4,6],f:'60/FR − Ti',need:'FR y Ti',note:r=>r.tau?`Te/τ = ${fmt(r.te/r.tau,1)} (objetivo ≥ 3–5 τ)`:''},
+  {k:'ie',n:'Relación I:E',a:'I:E',u:'',dec:1,range:[0,1.5,4,8],f:'Te / Ti → 1:x',need:'FR y Ti',show:v=>ieTxt(v),note:()=>'Habitual 1:1,5–1:4 (EPOC 1:4–1:5)'},
+ ]},
+ {id:'pres',c:'#d0453f',t:'Presiones',items:[
+  {k:'ppeak',n:'Presión pico',a:'Ppico',u:'cmH₂O',dec:0,range:[0,0,35,50],f:'Medida (máxima inspiratoria)',need:'Ppico'},
+  {k:'pplat',n:'Presión meseta',a:'Pplat',u:'cmH₂O',dec:0,range:[0,0,30,45],f:'Pausa teleinspiratoria 0,3–0,5 s',need:'Pplat',note:()=>'Ideal < 27–28'},
+  {k:'dp',n:'Driving pressure',a:'ΔP',u:'cmH₂O',dec:0,range:[0,0,15,30],f:r=>r.aopCorr?'Pplat − AOP (AOP > PEEP total)':'Pplat − máx(PEEP total, AOP) = Vt / Crs',need:'Pplat y PEEP',note:r=>r.aopCorr?`Corregida por AOP ${fmt(r.aop,0)} · sin corregir ${fmt(r.dpRaw,0)}`:'Objetivo ≤ 13–15'},
+  {k:'autopeep',n:'Auto-PEEP',a:'PEEPi',u:'cmH₂O',dec:1,range:[0,0,1,10],f:'PEEP total − PEEP externa',need:'PEEP total (pausa espiratoria)'},
+  {k:'pmean',n:'Presión media vía aérea',a:'Pmedia',u:'cmH₂O',dec:1,range:[0,10,20,35],f:'VC: ½(Ppico−PEEP)·Ti/Ttot + PEEP · PC: (Ppico−PEEP)·Ti/Ttot + PEEP',need:'Ppico, PEEP, FR y Ti'},
+ ]},
+ {id:'mec',c:'#8e44ad',t:'Mecánica respiratoria',items:[
+  {k:'cstat',n:'Compliancia estática',a:'Cstat',u:'mL/cmH₂O',dec:0,range:[0,50,100,140],f:'Vt / (Pplat − PEEP total)',need:'Vt, Pplat y PEEP',note:r=>r.pbw?`Específica ${fmt(r.cstat/r.pbw,2)} mL/cmH₂O/kg · Ers ${fmt(1000/r.cstat,1)} cmH₂O/L`:''},
+  {k:'cdyn',n:'Compliancia dinámica',a:'Cdyn',u:'mL/cmH₂O',dec:0,range:[0,40,80,120],f:'Vt / (Ppico − PEEP total)',need:'Vt, Ppico y PEEP'},
+  {k:'raw',n:'Resistencia vía aérea',a:'Raw',u:'cmH₂O/L/s',dec:1,range:[0,0,10,30],f:'(Ppico − Pplat) / flujo (L/s)',need:'VC con flujo constante (no con AutoFlow), Ppico, Pplat y flujo'},
+  {k:'tau',n:'Constante de tiempo',a:'τ',u:'s',dec:2,range:[0,0.3,0.6,1.5],f:'Raw × Cstat (L/cmH₂O)',need:'Raw y Cstat'},
+ ]},
+ {id:'mp',c:'#c98500',t:'Potencia mecánica',items:[
+  {k:'mp',n:'Potencia mecánica',a:'MP',u:'J/min',dec:1,range:[0,0,17,40],need:'FR, Vt y presiones',f:r=>r.mpF==='Giosa'?'VM × (Ppico + PEEP + flujo/6) / 20':r.mpF==='Becher'?(r.af?'0,098 × FR × Vt × Ppico (ΔPinsp + PEEP)':'0,098 × FR × Vt × (ΔPinsp + PEEP)'):'0,098 × FR × Vt × [Ppico − ½(Pplat − PEEP)]',note:r=>r.mpF?`Fórmula de ${r.mpF} · ideal ≤ 12 J/min`:''},
+ ]},
+ {id:'oxy',c:'#2a7fd4',t:'Oxigenación',items:[
+  {k:'pf',n:'PaO₂/FiO₂',a:'P/F',u:'mmHg',dec:0,range:[0,300,600,600],f:'PaO₂ / FiO₂',need:'PaO₂ y FiO₂',note:r=>r.pf<=100?'SDRA grave (≤ 100)':r.pf<=200?'SDRA moderado (100–200)':r.pf<=300?'SDRA leve (200–300)':'Sin criterio de SDRA'},
+  {k:'sf',n:'SpO₂/FiO₂',a:'S/F',u:'',dec:0,range:[0,315,476,476],f:'SpO₂ / FiO₂',need:'SpO₂ y FiO₂',note:r=>r.spo2>97?'Poco fiable con SpO₂ > 97 %':'S/F 315 ≈ P/F 300'},
+  {k:'oi',n:'Índice de oxigenación',a:'IO',u:'',dec:1,range:[0,0,25,50],f:'FiO₂ × Pmedia × 100 / PaO₂',need:'FiO₂, Pmedia y PaO₂',note:()=>'> 25–40 grave; valorar ECMO'},
+  {k:'osi',n:'Índice de saturación',a:'OSI',u:'',dec:1,range:[0,0,12,30],f:'FiO₂ × Pmedia × 100 / SpO₂',need:'FiO₂, Pmedia y SpO₂'},
+  {k:'aA',n:'Cociente arterio-alveolar',a:'PaO₂/PAO₂',u:'',dec:2,range:[0,0.75,1,1],f:'PAO₂ = FiO₂×(Patm−47) − PaCO₂/0,8',need:'PaO₂, PaCO₂ y FiO₂',note:r=>`PAO₂ ${fmt(r.pAO2,0)} · Gradiente A-a ${fmt(r.aa,0)} mmHg`+(r.age?` (normal con FiO₂ 0,21 ≈ ${fmt(r.age/4+4,0)})`:'')},
+ ]},
+ {id:'co2',c:'#2e9e5b',t:'Ventilación y CO₂',items:[
+  {k:'paco2',n:'PaCO₂',a:'PaCO₂',u:'mmHg',dec:0,range:[20,35,45,80],f:'Gasometría arterial',need:'PaCO₂',note:()=>'Hipercapnia permisiva aceptable si pH ≥ 7,25'},
+  {k:'etco2',n:'CO₂ espirado final',a:'EtCO₂',u:'mmHg',dec:0,range:[15,35,45,70],f:'Capnografía',need:'EtCO₂'},
+  {k:'gco2',n:'Gradiente PaCO₂ − EtCO₂',a:'Pa-EtCO₂',u:'mmHg',dec:0,range:[0,0,5,25],f:'PaCO₂ − EtCO₂',need:'PaCO₂ y EtCO₂',note:()=>'Aumenta con el espacio muerto'},
+  {k:'vr',n:'Ratio ventilatorio',a:'VR',u:'',dec:2,range:[0,0,2,4],f:'(VM·PaCO₂) / (PBW×100×37,5)',need:'VM, PaCO₂ y talla',note:()=>'≈ 1 normal; > 2 espacio muerto elevado'},
+ ]},
+ {id:'wean',c:'#c2477f',t:'Esfuerzo y destete',items:[
+  {k:'rsbi',n:'Índice de Tobin',a:'RSBI',u:'rpm/L',dec:0,range:[0,0,105,200],f:'FR / Vt (L)',need:'FR y Vt',note:()=>'Válido en respiración espontánea / PS mínima'},
+  {k:'p01',n:'Presión de oclusión',a:'P0.1',u:'cmH₂O',dec:1,range:[0,1,3.5,8],f:'Caída de presión a 100 ms',need:'P0.1'},
+  {k:'pmus',n:'Presión muscular estimada',a:'Pmus',u:'cmH₂O',dec:1,range:[0,5,10,25],f:'0,75 × |ΔPocc|',need:'ΔPocc'},
+  {k:'dpldyn',n:'ΔPL dinámica estimada',a:'ΔPL,dyn',u:'cmH₂O',dec:1,range:[0,0,20,35],f:'(Ppico − PEEP) + 0,66 × |ΔPocc|',need:'ΔPocc, Ppico y PEEP'},
+ ]},
+ {id:'tp',c:'#8a6a3b',t:'Presión transpulmonar',items:[
+  {k:'pli',n:'PL teleinspiratoria',a:'PL,insp',u:'cmH₂O',dec:1,range:[0,0,20,35],f:'Pplat − Pes teleinsp.',need:'Pes teleinspiratoria'},
+  {k:'ple',n:'PL teleespiratoria',a:'PL,esp',u:'cmH₂O',dec:1,range:[-10,0,2,10],f:'PEEP total − Pes teleesp.',need:'Pes teleespiratoria'},
+  {k:'dpl',n:'Driving transpulmonar',a:'ΔPL',u:'cmH₂O',dec:1,range:[0,0,12,25],f:'ΔP − ΔPes',need:'Pes insp. y esp.'},
+ ]},
+];
+const ALLP={};GROUPS.forEach(g=>g.items.forEach(it=>{ALLP[it.k]={...it,g:g.id}}));
+// series extra para evolución
+const EXTRA=[{k:'peep',n:'PEEP programada',a:'PEEP',u:'cmH₂O',dec:0},{k:'fio2p',n:'FiO₂ programada',a:'FiO₂',u:'%',dec:0},{k:'rr',n:'FR',a:'FR',u:'rpm',dec:0},{k:'vt',n:'Vt',a:'Vt',u:'mL',dec:0,range:vtRange}];
+EXTRA.forEach(e=>ALLP[e.k]={...e,g:'prog'});
+const valOf=(r,k)=>k==='fio2p'?(r.fio2!=null?r.fio2*100:null):r[k];
+function ieTxt(x){return x>=1?'1:'+fmt(x,1):fmt(1/x,1)+':1'}
+const rangeOf=(it,r)=>typeof it.range==='function'?it.range(r):it.range;
+function status(v,rg){if(!rg||v==null||!isFinite(v))return null;const[,lo,hi]=rg;if(v<lo-1e-9)return'below';if(v>hi+1e-9)return'above';return'ok'}
+const LBL={below:'Por debajo',ok:'En rango',above:'Por encima'};
+
+function gaugeHTML(v,rg){
+  const[mn,lo,hi,mx]=rg;const span=mx-mn;
+  const wB=(lo-mn)/span*100,wO=(hi-lo)/span*100,wA=(mx-hi)/span*100;
+  const pos=Math.max(0,Math.min(100,(v-mn)/span*100));
+  const ad=x=>fmt(x,Math.abs(x)<10&&Math.abs(x%1)>1e-9?(Math.abs(x)<1?2:1):0);
+  const tk=[`<span class="l" style="left:0">${ad(mn)}</span>`];
+  if(lo>mn&&wB>8)tk.push(`<span style="left:${wB}%">${ad(lo)}</span>`);
+  if(hi<mx&&wA>8)tk.push(`<span style="left:${wB+wO}%">${ad(hi)}</span>`);
+  tk.push(`<span class="r" style="left:100%">${ad(mx)}${v>mx?'+':''}</span>`);
+  return `<div class="gauge"><div class="arrow" style="left:${pos}%"></div><div class="bar">${wB>0?`<div class="z-below" style="width:${wB}%"></div>`:''}${wO>0?`<div class="z-ok" style="width:${wO}%"></div>`:''}${wA>0?`<div class="z-above" style="width:${wA}%"></div>`:''}</div><div class="ticks">${tk.join('')}</div></div>`;
+}
+
+/* ================= VISIBILIDAD ================= */
+let vis=store.get('vis',{groups:{},params:{},hideEmpty:false});
+const gOn=id=>vis.groups[id]!==false, pOn=k=>vis.params[k]!==false;
+function buildFilters(){
+  $('chips').innerHTML=GROUPS.map(g=>`<button class="chip gchip" style="--gc:${g.c}" data-g="${g.id}" aria-pressed="${gOn(g.id)}">${g.t}</button>`).join('');
+  $('custom').innerHTML=GROUPS.map(g=>`<div style="--gc:${g.c}"><h4>${g.t}</h4>${g.items.map(it=>`<label><input type="checkbox" data-p="${it.k}" ${pOn(it.k)?'checked':''}> ${it.n} <span style="color:var(--faint)">(${it.a})</span></label>`).join('')}</div>`).join('');
+  $('hideEmpty').checked=!!vis.hideEmpty;
+}
+$('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;vis.groups[b.dataset.g]=!gOn(b.dataset.g);store.set('vis',vis);buildFilters();renderGroups(cur)});
+$('custom').addEventListener('change',e=>{const c=e.target.closest('input[data-p]');if(!c)return;vis.params[c.dataset.p]=c.checked;store.set('vis',vis);renderGroups(cur)});
+$('allOn').onclick=()=>{vis.groups={};vis.params={};store.set('vis',vis);buildFilters();renderGroups(cur)};
+$('allOff').onclick=()=>{GROUPS.forEach(g=>vis.groups[g.id]=false);store.set('vis',vis);buildFilters();renderGroups(cur)};
+$('customBtn').onclick=()=>{const c=$('custom');c.hidden=!c.hidden;$('customBtn').setAttribute('aria-expanded',!c.hidden)};
+$('hideEmpty').onchange=e=>{vis.hideEmpty=e.target.checked;store.set('vis',vis);renderGroups(cur)};
+
+/* ================= RENDER GRUPOS ================= */
+let cur=null;
+function cardHTML(it,r){
+  const v=r[it.k];const has=v!=null&&isFinite(v);
+  const f=typeof it.f==='function'?it.f(r):it.f;
+  if(!has) return `<div class="res missing"><div class="top"><div><div class="name">${it.n}</div><div class="abbr">${it.a}</div></div><span class="badge na">Sin datos</span></div><div class="val">Necesita: ${it.need}</div><div class="formula">${f}</div></div>`;
+  const rg=rangeOf(it,r);const st=status(v,rg);
+  const shown=it.show?it.show(v):fmt(v,it.dec);
+  const tag=(r.est[it.k]?'<span class="est">estimada</span>':'')+(simKeys.has(it.k)?'<span class="sim-tag">simulado</span>':'');
+  const note=it.note?it.note(r):'';
+  return `<div class="res"><div class="top"><div><div class="name">${it.n}${tag}</div><div class="abbr">${it.a}</div></div>${st?`<span class="badge ${st}">${LBL[st]}</span>`:''}</div>
+   <div class="val" style="${st&&st!=='ok'?`color:var(--${st})`:''}">${shown}<small>${it.u}</small></div>${rg?gaugeHTML(v,rg):''}<div class="formula">${f}</div>${note?`<div class="note">${note}</div>`:''}</div>`;
+}
+function renderGroups(r){
+  const html=GROUPS.filter(g=>gOn(g.id)).map(g=>{
+    let items=g.items.filter(it=>pOn(it.k));
+    if(vis.hideEmpty) items=items.filter(it=>r[it.k]!=null&&isFinite(r[it.k]));
+    if(!items.length) return '';
+    const dots=items.map(it=>{const st=status(r[it.k],rangeOf(it,r));return st?`<span class="dot" title="${it.a}: ${LBL[st]}" style="background:var(--${st})"></span>`:''}).join('');
+    return `<section class="panel group" style="--gc:${g.c}"><div class="gh"><span class="bar-acc"></span><h3>${g.t}</h3><span class="cnt">${items.length} parámetro${items.length>1?'s':''}</span><span class="sum">${dots}</span><button class="gx" data-hide="${g.id}" title="Ocultar apartado" aria-label="Ocultar apartado ${g.t}">×</button></div><div class="cards">${items.map(it=>cardHTML(it,r)).join('')}</div></section>`;
+  }).join('');
+  $('groups').innerHTML=html||'<div class="panel empty">No hay apartados visibles. Actívalos arriba.</div>';
+}
+$('groups').addEventListener('click',e=>{const b=e.target.closest('[data-hide]');if(!b)return;vis.groups[b.dataset.hide]=false;store.set('vis',vis);buildFilters();renderGroups(cur)});
+
+/* ================= VENTILACIÓN PROTECTORA ================= */
+function renderProtect(r){
+  const tiles=[];
+  const t=(ok,title,val,unit,crit,gauge)=>{const c=ok==null?'na':ok?'ok':'bad';tiles.push({c,html:`<div class="ptile ${c}"><div class="t">${title}<span class="ic">${c==='ok'?'✓':c==='bad'?'✕':'?'}</span></div><div class="v">${val}<small>${unit}</small></div>${gauge||''}<div class="c">${crit}</div></div>`})};
+  const vr=vtRange(r);
+  t(r.vt!=null&&r.pbw?r.vt<=8*r.pbw:null,'Volumen tidal',fmt(r.vt,0),'mL',r.pbw?`Objetivo ${fmt(r.vtTarget||6*r.pbw,0)} mL (${fmt(r.d.mlkg||6,1)} mL/kg) · máx. ${fmt(8*r.pbw,0)} mL`:'Introduce la talla para calcular el objetivo',r.vt!=null&&vr?gaugeHTML(r.vt,vr):'');
+  t(r.vtkg!=null?r.vtkg<=8:null,'Vt según peso ideal',fmt(r.vtkg,1),'mL/kg',r.pbw?`PBW ${fmt(r.pbw,1)} kg · ideal 6, aceptable 4–8`:'Necesita talla y sexo',r.vtkg!=null?gaugeHTML(r.vtkg,[2,4,8,12]):'');
+  t(r.pplat!=null?r.pplat<=30:null,'Presión meseta',fmt(r.pplat,0),'cmH₂O','≤ 30 cmH₂O (ideal < 28)'+(r.est.pplat?' · estimada':''),r.pplat!=null?gaugeHTML(r.pplat,[0,0,30,45]):'');
+  t(r.dp!=null?r.dp<=15:null,'Driving pressure',fmt(r.dp,0),'cmH₂O','≤ 15 cmH₂O (ideal ≤ 13)'+(r.aopCorr?` · corregida por AOP ${fmt(r.aop,0)}`:''),r.dp!=null?gaugeHTML(r.dp,[0,0,15,30]):'');
+  $('ptiles').innerHTML=tiles.map(x=>x.html).join('');
+  const cs=tiles.map(x=>x.c);const v=$('verdict');
+  if(cs.includes('bad')){v.className='verdict bad';v.textContent=`No cumple (${cs.filter(c=>c==='bad').length} de 4 criterios fuera)`}
+  else if(cs.every(c=>c==='ok')){v.className='verdict ok';v.textContent='Cumple ventilación protectora'}
+  else{v.className='verdict na';v.textContent=`Datos incompletos (${cs.filter(c=>c==='ok').length}/4 en rango)`}
+}
+
+/* ================= CURVA ================= */
+function drawCurve(r){
+  const svg=$('curve');const W=900,H=400,L=58,R=170,T=26,B=78,pw=W-L-R,ph=H-T-B;
+  const peep=r.peep,ppk=r.ppeak,rr=r.rr;
+  if(peep==null||ppk==null||!rr){svg.innerHTML=`<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--faint)" font-size="15">Introduce al menos FR, PEEP y Ppico${mode==='PC'?' (o Pinsp)':''} para dibujar la curva</text>`;$('curve-sub').textContent='';return}
+  const ttot=r.ttot;let ti=r.ti,tiEst=false;if(!ti){ti=ttot/3;tiEst=true}
+  const warnTi=ti>ttot*0.85; ti=Math.min(ti,ttot*0.85);
+  const peept=r.peeptot!=null?r.peeptot:peep, pplat=r.pplat, rise=Math.max(0.02,r.rise||0.05);
+  const tEnd=ttot+Math.min(0.6,ttot*0.25);
+  const pMax=Math.max(35,Math.ceil((ppk+5)/5)*5);
+  const x=t=>L+t/tEnd*pw,y=p=>T+ph-(p/pMax)*ph;
+  const auto=(r.autopeep||0)>0.4;
+  let tflow=ti,pauseT=0;
+  const VCs=mode==='VC'&&!r.af;
+  if(VCs){pauseT=pplat!=null?(r.pause>0?Math.min(r.pause,ti*0.6):Math.min(0.3,ti*0.3)):0;tflow=Math.max(0.1,ti-pauseT)}
+  const resC=pplat!=null?ppk-pplat:Math.max(2,(ppk-peept)*0.25);
+  const top=pplat!=null?pplat:ppk-resC;
+  const expPause=auto?Math.min(0.6,(ttot-ti)*0.35):0;
+  const P=t=>{
+    const nb=t>ttot;const tc=nb?t-ttot:t;const base=peept;
+    if(tc<=ti){
+      if(VCs){if(tc<=tflow){const j=1-Math.exp(-3*tc/Math.min(rise,tflow*0.6));return base+resC*j+(top-base)*(tc/tflow)}return top+resC*Math.exp(-(tc-tflow)/0.035)}
+      const tgt=(r.af&&pplat!=null&&pplat<ppk)?ppk-(ppk-pplat)*Math.max(0,(tc-ti*0.7)/(ti*0.3)):ppk;
+      return base+(tgt-base)*(1-Math.exp(-3*tc/rise));
+    }
+    if(nb) return peep;
+    const sp=VCs?(pauseT>0?top:top+resC*Math.exp(-(ti-tflow)/0.035)):(r.af&&pplat!=null?pplat:ppk);
+    if(auto&&t>ttot-expPause){const k=(t-(ttot-expPause))/expPause;return peep+(peept-peep)*(1-Math.exp(-k*5))}
+    return peep+(sp-peep)*Math.exp(-(tc-ti)/0.09);
+  };
+  const pts=[];const N=700;for(let i=0;i<=N;i++){const t=i/N*tEnd;pts.push([x(t),y(P(t))])}
+  const path='M'+pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' L');
+  const area=path+` L${x(tEnd).toFixed(1)},${y(0)} L${x(0)},${y(0)} Z`;
+  const col=k=>{const it=ALLP[k];if(!it)return'var(--muted)';const st=status(r[k],rangeOf(it,r));return st?`var(--${st})`:'var(--muted)'};
+  let s=`<defs><linearGradient id="ga" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--curve)" stop-opacity=".22"/><stop offset="1" stop-color="var(--curve)" stop-opacity=".03"/></linearGradient><marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>`;
+  s+=`<rect x="${x(0)}" y="${T}" width="${x(ti)-x(0)}" height="${ph}" fill="var(--accent-soft)" opacity=".55"/><rect x="${x(ttot)}" y="${T}" width="${x(tEnd)-x(ttot)}" height="${ph}" fill="var(--surface-2)" opacity=".8"/>`;
+  for(let p=0;p<=pMax;p+=5)s+=`<line x1="${L}" x2="${L+pw}" y1="${y(p)}" y2="${y(p)}" stroke="var(--grid)"/><text x="${L-8}" y="${y(p)+4}" font-size="11" text-anchor="end" fill="var(--faint)">${p}</text>`;
+  const step=tEnd>6?2:tEnd>3?1:0.5;
+  for(let t=0;t<=tEnd+1e-6;t+=step)s+=`<line x1="${x(t)}" x2="${x(t)}" y1="${y(0)}" y2="${y(0)+5}" stroke="var(--faint)"/><text x="${x(t)}" y="${y(0)+17}" font-size="11" text-anchor="middle" fill="var(--faint)">${fmt(t,step<1?1:0)}</text>`;
+  s+=`<text x="${L-40}" y="${T+ph/2}" font-size="11" fill="var(--muted)" transform="rotate(-90 ${L-40} ${T+ph/2})" text-anchor="middle">Presión (cmH₂O)</text><text x="${L+pw+6}" y="${y(0)+17}" font-size="11" fill="var(--muted)">t (s)</text>`;
+  s+=`<path d="${area}" fill="url(#ga)"/><path d="${path}" fill="none" stroke="var(--curve)" stroke-width="2.6" stroke-linejoin="round"/>`;
+  const lines=[{p:ppk,l:`Ppico ${fmt(ppk,0)}`,c:col('ppeak')}];
+  if(pplat!=null&&(VCs||Math.abs(pplat-ppk)>0.5))lines.push({p:pplat,l:`Pplat ${fmt(pplat,0)}`,c:col('pplat')});
+  if(r.pmean!=null)lines.push({p:r.pmean,l:`Pmedia ${fmt(r.pmean,1)}${r.est.pmean?' (est.)':''}`,c:'var(--accent)',dash:'2 3'});
+  if(auto)lines.push({p:peept,l:`PEEP total ${fmt(peept,0)}`,c:col('autopeep')});
+  lines.push({p:peep,l:`PEEP ${fmt(peep,0)}`,c:'var(--muted)'});
+  const ls=lines.map(o=>({...o,ty:y(o.p)})).sort((a,b)=>a.ty-b.ty);
+  for(let i=1;i<ls.length;i++)if(ls[i].ty-ls[i-1].ty<15)ls[i].ty=ls[i-1].ty+15;
+  ls.forEach(o=>{s+=`<line x1="${L}" x2="${L+pw}" y1="${y(o.p)}" y2="${y(o.p)}" stroke="${o.c}" stroke-width="1.2" stroke-dasharray="${o.dash||'4 4'}"/><path d="M${L+pw},${y(o.p)} L${L+pw+10},${o.ty}" stroke="${o.c}" fill="none"/><rect x="${L+pw+12}" y="${o.ty-9}" width="${R-18}" height="18" rx="4" fill="var(--surface)" stroke="${o.c}"/><text x="${L+pw+18}" y="${o.ty+4}" font-size="11.5" font-weight="600" fill="${o.c}">${o.l}</text>`});
+  const lab=(lx,ly,t1,c,t2,a)=>`<text x="${lx}" y="${ly}" font-size="12" font-weight="700" fill="${c}" text-anchor="${a||'start'}" paint-order="stroke" stroke="var(--surface)" stroke-width="4">${t1}</text>`+(t2?`<text x="${lx}" y="${ly+14}" font-size="10.5" fill="var(--muted)" text-anchor="${a||'start'}" paint-order="stroke" stroke="var(--surface)" stroke-width="4">${t2}</text>`:'');
+  if(pplat!=null&&r.dp!=null){const bx=VCs?x(tflow+pauseT/2):x(r.af?ti*0.5:ti*0.62);s+=`<g color="${col('dp')}"><line x1="${bx}" x2="${bx}" y1="${y(peept)-2}" y2="${y(pplat)+2}" stroke="currentColor" stroke-width="1.8" marker-start="url(#ar)" marker-end="url(#ar)"/></g>`+lab(bx+8,(y(peept)+y(pplat))/2,`ΔP ${fmt(r.dp,0)}`,col('dp'),r.cstat?`Cstat ${fmt(r.cstat,0)} mL/cmH₂O`:'')}
+  if(VCs&&pplat!=null&&ppk-pplat>0.5){const bx=x(tflow)-6;s+=`<g color="${col('raw')}"><line x1="${bx}" x2="${bx}" y1="${y(pplat)}" y2="${y(ppk)}" stroke="currentColor" stroke-width="1.8" marker-start="url(#ar)" marker-end="url(#ar)"/></g>`+lab(bx+16,y(ppk)-4,`Ppico−Pplat ${fmt(ppk-pplat,0)}`,col('raw'),r.raw!=null?`Raw ${fmt(r.raw,1)} cmH₂O/L/s`:'')}
+  if(auto){const bx=x(ttot)-8;s+=`<text x="${x(ttot-expPause/2)}" y="${y(peept)-8}" font-size="10.5" text-anchor="middle" fill="var(--muted)">pausa esp.</text><line x1="${bx}" x2="${bx}" y1="${y(peep)}" y2="${y(peept)}" stroke="${col('autopeep')}" stroke-width="1.6"/>`+lab(bx-6,y(peept)+16,`Auto-PEEP ${fmt(r.autopeep,1)}`,col('autopeep'),'','end')}
+  if(r.rise&&r.rise>0.02){s+=`<text x="${x(Math.min(rise,ti))+4}" y="${y(peept)-6}" font-size="10" fill="var(--muted)">rampa ${fmt(r.rise,2)} s</text>`}
+  const hbr=(x1,x2,yy,t,c)=>`<path d="M${x1+1},${yy-5} V${yy} H${x2-1} V${yy-5}" fill="none" stroke="${c}" stroke-width="1.4"/><text x="${(x1+x2)/2}" y="${yy+13}" font-size="11" font-weight="600" text-anchor="middle" fill="${c}">${t}</text>`;
+  const by=y(0)+36;
+  s+=hbr(x(0),x(ti),by,`Ti ${fmt(ti,2)} s${tiEst?' (supuesto)':''}${VCs&&pauseT>0&&pplat!=null?` · pausa ${fmt(pauseT,2)}`:''}`,col('ti'));
+  s+=hbr(x(ti),x(ttot),by,`Te ${fmt(ttot-ti,2)} s · I:E ${ieTxt((ttot-ti)/ti)}`,col('te'));
+  s+=hbr(x(0),x(ttot),by+22,`Ciclo 60/FR = ${fmt(ttot,2)} s (FR ${fmt(rr,0)})`,'var(--muted)');
+  const info=[];
+  if(r.vt)info.push(`Vt ${fmt(r.vt,0)} mL${r.vtkg?` · ${fmt(r.vtkg,1)} mL/kg`:''}`);
+  if(r.ve)info.push(`VM ${fmt(r.ve,1)} L/min`);
+  if(r.fio2!=null)info.push(`FiO₂ ${fmt(r.fio2*100,0)} %`);
+  if(r.mp!=null)info.push(`MP ${fmt(r.mp,1)} J/min`);
+  info.forEach((t,i)=>s+=`<text x="${L+10}" y="${T+16+i*16}" font-size="12" fill="var(--text)" font-weight="${i===0?650:500}" paint-order="stroke" stroke="var(--surface)" stroke-width="3">${t}</text>`);
+  s+=`<text x="${x(ti/2)}" y="${T+ph-6}" font-size="10.5" text-anchor="middle" fill="var(--accent)" font-weight="600">INSP.</text><text x="${x((ti+ttot)/2)}" y="${T+ph-6}" font-size="10.5" text-anchor="middle" fill="var(--muted)" font-weight="600">ESPIRACIÓN</text>`;
+  if(warnTi)s+=`<text x="${L+pw/2}" y="${T+14}" font-size="12" font-weight="700" text-anchor="middle" fill="var(--above)">Ti excesivo para la FR programada</text>`;
+  svg.innerHTML=s;
+  $('curve-sub').textContent=(mode==='VC'?(r.af?'Volumen control con AutoFlow · flujo decelerado':'Volumen control · flujo constante'):'Presión control · flujo decelerado')+(simKeys.size?' — con cambios simulados':'');
+}
+
+/* ================= SIMULACIÓN (diales) ================= */
+let base=null;           // entradas iniciales (última edición manual)
+let simKeys=new Set();   // claves de parámetros calculados que están simulados
+function setBase(){base=readInputs();base.__mode=mode;clearSimMarks()}
+function clearSimMarks(){MEAS.forEach(k=>$(k).classList.remove('sim'));simKeys=new Set()}
+function tauModel(vt,te,C,tau){if(!tau||!C||te<=0)return 0;const e=Math.exp(-te/tau);return (vt/C)*e/(1-e)}
+function simulate(){
+  const b=compute(base,mode);const cur0=readInputs();const n=compute(cur0,mode);
+  const out={};const C=b.cstat;const autoB=b.autopeep||0;
+  if(C){
+    if(mode==='VC'){
+      const vt=n.d.vt,flowLs=n.flowLs;
+      const autoN=Math.max(0,autoB+tauModel(vt,n.te,C,b.tau)-tauModel(b.d.vt,b.te,C,b.tau));
+      const peept=n.peep+autoN;const pplat=peept+vt/C;
+      const resid=b.raw!=null&&flowLs?b.raw*flowLs:(b.ppeak!=null&&b.pplat!=null?b.ppeak-b.pplat:null);
+      if(base.pplat!=='')out.pplat=pplat;
+      if(resid!=null)out.ppeak=pplat+resid;
+      if(base.peeptot!==''||autoN>0.4)out.peeptot=peept;
+      const leakF=b.leak!=null?b.leak/100:0;
+      if(base.vti!=='')out.vti=vt; if(base.vte!=='')out.vte=vt*(1-leakF);
+      if(base.vem!=='')out.vem=vt*(1-leakF)*n.rr/1000;
+      out.__vt=vt;
+    }else{
+      const vt=C*Math.max(0,(n.d.pinsp??0)-autoB);
+      out.ppeak=n.peep+(n.d.pinsp??0); if(base.pplat!=='')out.pplat=out.ppeak;
+      if(base.peeptot!=='')out.peeptot=n.peep+autoB;
+      const leakF=b.leak!=null?b.leak/100:0;
+      out.vte=vt*(1-leakF); if(base.vti!=='')out.vti=vt; if(base.vem!=='')out.vem=out.vte*n.rr/1000;
+      out.__vt=out.vte;
+    }
+  }
+  // Pmedia medida: desplaza según la estimación
+  if(base.pmean!==''&&b.pmean!=null){
+    const tmpB={...base,pmean:''},tmpN={...cur0,pmean:'',...Object.fromEntries(Object.entries(out).filter(([k])=>!k.startsWith('__')).map(([k,v])=>[k,String(+v.toFixed(1))]))};
+    const eb=compute(tmpB,mode).pmean,en=compute(tmpN,mode).pmean;
+    if(eb!=null&&en!=null)out.pmean=pnum(base.pmean)+(en-eb);
+  }
+  // CO2 según ventilación alveolar (VD ≈ 2,2 mL/kg PBW)
+  const vtB=b.vt,vtN=out.__vt??n.vt;
+  if(vtB&&vtN&&b.rr&&n.rr){
+    const VD=b.pbw?2.2*b.pbw:150;const vaB=Math.max(1,(vtB-VD))*b.rr,vaN=Math.max(1,(vtN-VD))*n.rr;
+    if(base.paco2!=='')out.paco2=pnum(base.paco2)*vaB/vaN;
+    if(base.etco2!=='')out.etco2=pnum(base.etco2)*vaB/vaN;
+  }
+  // escribir
+  const map={pplat:'pplat',ppeak:'ppeak',peeptot:'peeptot',vti:'vti',vte:'vte',vem:'ve',pmean:'pmean',paco2:'paco2',etco2:'etco2'};
+  MEAS.forEach(k=>$(k).classList.remove('sim'));simKeys=new Set();
+  Object.entries(out).forEach(([k,v])=>{if(k.startsWith('__'))return;const dec=['vti','vte'].includes(k)?0:1;$(k).value=String(+v.toFixed(dec)).replace('.',',');
+    const changed=Math.abs(v-(pnum(base[k])??NaN))>0.05||base[k]==='';if(changed){$(k).classList.add('sim');simKeys.add(map[k]||k)}});
+  // claves derivadas afectadas
+  if(simKeys.size){['dp','cstat','cdyn','raw','tau','mp','autopeep','leak','vtkg','oi','osi','vr','gco2','aA','rsbi'].forEach(k=>{const nb=compute(base,mode)[k],nn=compute(readInputs(),mode)[k];if(nb!=null&&nn!=null&&Math.abs(nb-nn)>Math.max(0.02,Math.abs(nb)*0.02))simKeys.add(k)})}
+}
+
+/* ================= DIALES ================= */
+const KN=[
+ {k:'vt',l:'VT',u:'mL',min:150,max:900,step:10,dec:0},
+ {k:'rr',l:'FR',u:'rpm',min:6,max:40,step:1,dec:0},
+ {k:'ie',l:'I:E',u:'',min:0.5,max:6,step:0.1,dec:1},
+ {k:'peep',l:'PEEP',u:'cmH₂O',min:0,max:24,step:1,dec:0},
+ {k:'fio2',l:'FiO₂',u:'%',min:21,max:100,step:1,dec:0},
+ {k:'rise',l:'Rampa',u:'s',min:0,max:0.4,step:0.01,dec:2},
+ {k:'flow',l:'Flujo',u:'L/min',min:15,max:120,step:1,dec:0,vc:true},
+ {k:'pinsp',l:'Pinsp',u:'cmH₂O',min:4,max:40,step:1,dec:0,pc:true},
+ {k:'ti',l:'T insp',u:'s',min:0.3,max:3,step:0.05,dec:2},
+];
+function knobVal(k,r){
+  switch(k){case'vt':return r.vt;case'rr':return r.rr;case'ie':return r.ie;case'peep':return r.peep;case'fio2':return r.fio2!=null?r.fio2*100:null;case'rise':return r.rise??0;case'flow':return r.d.flow;case'pinsp':return r.d.pinsp;case'ti':return r.ti}
+}
+function arc(cx,cy,rad,a0,a1){const p=a=>[cx+rad*Math.cos(a),cy+rad*Math.sin(a)];const[x0,y0]=p(a0),[x1,y1]=p(a1);return `M${x0.toFixed(2)},${y0.toFixed(2)} A${rad},${rad} 0 ${a1-a0>Math.PI?1:0} 1 ${x1.toFixed(2)},${y1.toFixed(2)}`}
+function buildKnobs(){
+  $('knobs').innerHTML=KN.map(o=>`<div class="knob" data-k="${o.k}"><div class="kl">${o.l}</div><svg viewBox="0 0 84 72" tabindex="0" role="slider" aria-label="${o.l}" aria-valuemin="${o.min}" aria-valuemax="${o.max}"><path class="trk" fill="none" stroke="var(--grid)" stroke-width="7" stroke-linecap="round"/><path class="val" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round"/><circle class="thumb" r="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/></svg><div class="kv">—</div><div class="ku">${o.u}</div><div class="kd"></div><div class="kb"><button data-d="-1" aria-label="Bajar ${o.l}">−</button><button data-d="1" aria-label="Subir ${o.l}">+</button></div></div>`).join('');
+  document.querySelectorAll('.knob').forEach(el=>{
+    const o=KN.find(x=>x.k===el.dataset.k);const sv=el.querySelector('svg');
+    let sy=0,sv0=0,drag=false;
+    sv.addEventListener('pointerdown',e=>{const v=knobVal(o.k,cur);if(v==null)return;drag=true;sy=e.clientY;sv0=v;sv.setPointerCapture(e.pointerId);e.preventDefault()});
+    sv.addEventListener('pointermove',e=>{if(!drag)return;const dv=(sy-e.clientY)*(o.max-o.min)/180;dial(o,sv0+dv)});
+    const end=()=>{drag=false};sv.addEventListener('pointerup',end);sv.addEventListener('pointercancel',end);
+    sv.addEventListener('wheel',e=>{e.preventDefault();const v=knobVal(o.k,cur);if(v==null)return;dial(o,v+(e.deltaY<0?o.step:-o.step))},{passive:false});
+    sv.addEventListener('keydown',e=>{const v=knobVal(o.k,cur);if(v==null)return;if(['ArrowUp','ArrowRight'].includes(e.key)){dial(o,v+o.step);e.preventDefault()}if(['ArrowDown','ArrowLeft'].includes(e.key)){dial(o,v-o.step);e.preventDefault()}});
+    el.querySelectorAll('.kb button').forEach(b=>b.onclick=()=>{const v=knobVal(o.k,cur);if(v==null)return;dial(o,v+o.step*(+b.dataset.d))});
+  });
+}
+function paintKnobs(r){
+  const rb=base?compute(base,mode):r;
+  document.querySelectorAll('.knob').forEach(el=>{
+    const o=KN.find(x=>x.k===el.dataset.k);
+    const hid=(o.vc&&(mode!=='VC'||af))||(o.pc&&mode!=='PC');
+    const dis=hid||(o.k==='vt'&&mode==='PC'&&!rb.cstat);
+    el.classList.toggle('dis',!!dis);el.hidden=hid;
+    const v=knobVal(o.k,r);const sv=el.querySelector('svg');
+    const a0=Math.PI*0.75,a1=Math.PI*2.25,cx=42,cy=40,rad=30;
+    sv.querySelector('.trk').setAttribute('d',arc(cx,cy,rad,a0,a1));
+    if(v==null){sv.querySelector('.val').setAttribute('d','');sv.querySelector('.thumb').setAttribute('cx',-20);el.querySelector('.kv').textContent='—';el.querySelector('.kd').textContent='';return}
+    const fr=Math.max(0,Math.min(1,(v-o.min)/(o.max-o.min)));const a=a0+(a1-a0)*fr;
+    sv.querySelector('.val').setAttribute('d',fr>0.005?arc(cx,cy,rad,a0,a):'');
+    sv.querySelector('.thumb').setAttribute('cx',cx+rad*Math.cos(a));sv.querySelector('.thumb').setAttribute('cy',cy+rad*Math.sin(a));
+    sv.setAttribute('aria-valuenow',v);
+    el.querySelector('.kv').textContent=o.k==='ie'?ieTxt(v):fmt(v,o.dec);
+    const v0=knobVal(o.k,rb);const dd=v0!=null?v-v0:0;
+    el.querySelector('.kd').textContent=Math.abs(dd)>o.step/2?(o.k==='ie'?`antes ${ieTxt(v0)}`:`${dd>0?'+':''}${fmt(dd,o.dec)} (antes ${fmt(v0,o.dec)})`):'';
+  });
+  // resumen de simulación
+  const rows=[];const add=(lbl,k,dec,u)=>{const a=rb[k],b=r[k];if(b==null)return;const ch=a!=null&&Math.abs(a-b)>Math.pow(10,-dec)/2;rows.push(`<div class="row"><span>${lbl}</span><span>${ch?`${fmt(a,dec)} → `:''}<b>${fmt(b,dec)}</b> ${u}</span></div>`)};
+  add('Pplat','pplat',0,'cmH₂O');add('ΔP','dp',0,'cmH₂O');add('Ppico','ppeak',0,'cmH₂O');add('Auto-PEEP','autopeep',1,'');add('VM','ve',1,'L/min');add('PaCO₂ prevista','paco2',0,'mmHg');add('MP','mp',1,'J/min');
+  const note=!rb.cstat?'<div style="margin-top:6px;color:var(--warn)">Introduce Vt, Pplat y PEEP para simular presiones al mover los diales.</div>':'<div style="margin-top:6px">Modelo con compliancia y resistencia constantes. PaO₂ no se simula: confirmar con gasometría.</div>';
+  $('simbox').innerHTML=(rows.join('')||'')+note;
+}
+function dial(o,v){
+  v=Math.max(o.min,Math.min(o.max,r1(v,o.step)));
+  if(!base)setBase();
+  const r=compute(readInputs(),mode);const rb=compute(base,mode);
+  const setF=(id,val,dec)=>{$(id).value=String(+(+val).toFixed(dec??2)).replace('.',',')};
+  const vtNow=r.d.vt??r.vt;const pause=r.pause||0;
+  if(o.k==='vt'){ if(mode==='VC')setF('vt',v,0); else if(rb.cstat){setF('pinsp',Math.max(0,v/rb.cstat+(rb.autopeep||0)),1)} }
+  else if(o.k==='rr')setF('rr',v,0);
+  else if(o.k==='peep')setF('peep',v,0);
+  else if(o.k==='fio2')setF('fio2',v,0);
+  else if(o.k==='rise')setF('rise',v,2);
+  else if(o.k==='pause')setF('pause',v,2);
+  else if(o.k==='flow')setF('flow',v,0);
+  else if(o.k==='pinsp')setF('pinsp',v,0);
+  else if(o.k==='ti'||o.k==='ie'){
+    let ti=o.k==='ti'?v:(60/(r.rr||15))/(1+v);
+    if(mode==='VC'&&!af){if(vtNow){const tf=Math.max(0.15,ti-pause);setF('flow',Math.max(10,Math.min(150,(vtNow/1000)/tf*60)),0)}}
+    else setF('ti',ti,2);
+  }
+  simulate();
+  update(false);
+}
+$('simReset').onclick=()=>{if(!base)return;const m=base.__mode;writeInputs(base);setMode(m,true);clearSimMarks();update(true)};
+$('simFix').onclick=()=>{setBase();update(true)};
+
+/* ================= DESLIZADORES DEL LATERAL ================= */
+const SL=[{k:'mlkg',min:4,max:10,step:0.1},{k:'vt',min:150,max:900,step:10},{k:'pinsp',min:4,max:40,step:1},{k:'rr',min:6,max:40,step:1},{k:'peep',min:0,max:24,step:1},{k:'fio2',min:21,max:100,step:1},{k:'flow',min:15,max:120,step:1},{k:'pause',min:0,max:1,step:0.05},{k:'ti',min:0.3,max:3,step:0.05},{k:'rise',min:0,max:0.4,step:0.01}];
+function buildSliders(){
+  SL.forEach(o=>{const inp=$(o.k);const lab=inp.closest('label');
+    const sl=document.createElement('input');sl.type='range';sl.className='sl';sl.id='sl-'+o.k;sl.min=o.min;sl.max=o.max;sl.step=o.step;sl.setAttribute('aria-label','Deslizador '+o.k);
+    const rg=document.createElement('div');rg.className='slr';rg.innerHTML=`<span>${fmt(o.min,o.step<1?(o.step<0.1?2:1):0)}</span><span>${fmt(o.max,o.step<1?(o.step<0.1?2:1):0)}</span>`;
+    lab.appendChild(sl);lab.appendChild(rg);
+    sl.addEventListener('input',()=>{if(o.k==='mlkg'){$('mlkg').value=String(+sl.value).replace('.',',');if(base)base.mlkg=$('mlkg').value;if(!linkFromTarget())update(true);return}dial(o,+sl.value)});
+  });
+}
+function syncSliders(){SL.forEach(o=>{const sl=$('sl-'+o.k);if(!sl)return;const v=pnum($(o.k).value);const val=v==null?o.min:Math.max(o.min,Math.min(o.max,v));if(document.activeElement!==sl)sl.value=val;const p=(( (document.activeElement===sl?+sl.value:val)-o.min)/(o.max-o.min))*100;sl.style.setProperty('--p',p+'%');sl.style.opacity=v==null?.45:1})}
+
+/* ================= ACTUALIZACIÓN ================= */
+function update(manual){
+  if(manual){setBase()}
+  cur=compute(readInputs(),mode);syncTarget();
+  renderProtect(cur);renderGroups(cur);drawCurve(cur);paintKnobs(cur);syncSliders();
+  store.set('inputs',{...readInputs(),__mode:mode});
+  ptAutoVt();
+}
+$('af').addEventListener('change',e=>{const on=e.target.checked;if(on&&!pnum($('ti').value)){const r=compute(readInputs(),mode);$('ti').value=String(r.ti?Math.round(r.ti*20)/20:1).replace('.',',')}setAF(on)});
+function setMode(m,silent){mode=m;document.body.dataset.mode=m;document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));if(!silent)update(true)}
+document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+IDS.forEach(k=>$(k).addEventListener('input',()=>{
+  if(['mlkg','height','sex'].includes(k)){if(base)base[k]=$(k).value;if(linkFromTarget())return}
+  update(true)}));
+/* Vt objetivo (mL/kg) <-> Vt programado */
+function linkFromTarget(){
+  const r=compute(readInputs(),mode);const m=pnum($('mlkg').value);
+  if(!r.pbw||!m)return false;
+  const v=Math.round(r.pbw*m);
+  if(mode==='VC'){dial({k:'vt',min:100,max:1500,step:1},v);return true}
+  if(base&&compute(base,mode).cstat){dial({k:'vt',min:100,max:1500,step:1},v);return true}
+  return false;
+}
+function syncTarget(){
+  if(!cur.pbw)return;const ae=document.activeElement;if(ae===$('mlkg')||ae===$('sl-mlkg'))return;
+  const v=mode==='VC'?cur.d.vt:cur.vt;if(!v)return;
+  const m=v/cur.pbw;const cm=pnum($('mlkg').value);
+  if(cm==null||Math.abs(cm-m)>0.05){$('mlkg').value=String(+m.toFixed(1)).replace('.',',');if(base)base.mlkg=$('mlkg').value;cur=compute(readInputs(),mode)}
+}
+$('example').onclick=()=>{writeInputs(EXAMPLE);setMode('VC',true);update(true)};
+$('clear').onclick=()=>{IDS.forEach(k=>$(k).value=k==='sex'?'M':k==='mlkg'?6:k==='patm'?705:'');update(true)};
+
+/* ================= TABS / TEMA ================= */
+document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  ['calc','evo','peep','aop','ref'].forEach(t=>$('tab-'+t).hidden=b.dataset.tab!==t);
+  if(b.dataset.tab==='evo')renderEvo(); if(b.dataset.tab==='peep')renderPT(); if(b.dataset.tab==='aop')renderAOP();
+  window.scrollTo(0,0);
+}));
+document.documentElement.dataset.theme=store.get('theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+$('theme').onclick=()=>{const n=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=n;store.set('theme',n)};
+
+/* ================= GRÁFICO GENÉRICO ================= */
+function lineChart(o){
+  // o:{w,h,xs,series:[{vals,color,axis,dash,label,status}],xFmt,yL:{label,min,max,band},yR:{label},marks:[{x,label,color}],best:{i,axis}}
+  const W=o.w||560,H=o.h||230,L=46,R=o.yR?46:30,T=14,B=34,pw=W-L-R,ph=H-T-B;
+  const xs=o.xs;let x0=Math.min(...xs),x1=Math.max(...xs);if(x0===x1){x0-=1;x1+=1}
+  const padx=(x1-x0)*0.04;x0-=padx;x1+=padx;
+  const ax=side=>{const vals=o.series.filter(s=>(s.axis||'L')===side).flatMap(s=>s.vals).filter(v=>v!=null&&isFinite(v));const cfg=side==='L'?o.yL:o.yR;if(!cfg)return null;
+    let mn=Math.min(...vals,...(cfg.band?[cfg.band[0],cfg.band[1]]:[])),mx=Math.max(...vals,...(cfg.band?[cfg.band[0],cfg.band[1]]:[]));
+    if(cfg.clamp){mn=Math.max(mn,cfg.clamp[0]);mx=Math.min(mx,cfg.clamp[1])}
+    if(!isFinite(mn)){mn=0;mx=1}if(mn===mx){mn-=1;mx+=1}const p=(mx-mn)*0.12;mn-=p;mx+=p;if(cfg.min!=null)mn=cfg.min;if(cfg.max!=null)mx=cfg.max;
+    return{mn,mx,y:v=>T+ph-(v-mn)/(mx-mn)*ph}};
+  const A={L:ax('L'),R:ax('R')};const X=v=>L+(v-x0)/(x1-x0)*pw;
+  let s='';
+  const nice=(mn,mx)=>{const span=mx-mn;const st=Math.pow(10,Math.floor(Math.log10(span/4)));const m=[1,2,2.5,5,10].find(k=>span/(st*k)<=5)*st;const out=[];for(let v=Math.ceil(mn/m)*m;v<=mx+1e-9;v+=m)out.push(+v.toFixed(6));return out};
+  if(o.yL&&o.yL.band&&A.L){const[lo,hi]=o.yL.band;const yt=A.L.y(Math.min(hi,A.L.mx)),yb=A.L.y(Math.max(lo,A.L.mn));if(yb>yt)s+=`<rect x="${L}" y="${yt}" width="${pw}" height="${yb-yt}" fill="var(--ok)" opacity=".12"/>`;
+    [lo,hi].forEach(v=>{if(v>A.L.mn&&v<A.L.mx)s+=`<line x1="${L}" x2="${L+pw}" y1="${A.L.y(v)}" y2="${A.L.y(v)}" stroke="var(--ok)" stroke-dasharray="3 3" opacity=".7"/>`})}
+  if(A.L)nice(A.L.mn,A.L.mx).forEach(v=>{s+=`<line x1="${L}" x2="${L+pw}" y1="${A.L.y(v)}" y2="${A.L.y(v)}" stroke="var(--grid)"/><text x="${L-6}" y="${A.L.y(v)+4}" font-size="10" text-anchor="end" fill="var(--faint)">${fmt(v,Math.abs(v)<10&&v%1?1:0)}</text>`});
+  if(A.R)nice(A.R.mn,A.R.mx).forEach(v=>{s+=`<text x="${L+pw+6}" y="${A.R.y(v)+4}" font-size="10" fill="var(--s2)">${fmt(v,v%1?1:0)}</text>`});
+  if(o.yL&&o.yL.label)s+=`<text x="12" y="${T+ph/2}" font-size="10.5" fill="var(--muted)" transform="rotate(-90 12 ${T+ph/2})" text-anchor="middle">${o.yL.label}</text>`;
+  if(o.yR&&o.yR.label)s+=`<text x="${W-8}" y="${T+ph/2}" font-size="10.5" fill="var(--s2)" transform="rotate(90 ${W-8} ${T+ph/2})" text-anchor="middle">${o.yR.label}</text>`;
+  s+=`<line x1="${L}" x2="${L+pw}" y1="${T+ph}" y2="${T+ph}" stroke="var(--faint)"/>`;
+  (o.xTicks||xs).forEach((v,i)=>{s+=`<line x1="${X(v)}" x2="${X(v)}" y1="${T+ph}" y2="${T+ph+4}" stroke="var(--faint)"/><text x="${X(v)}" y="${T+ph+16}" font-size="10" text-anchor="middle" fill="var(--faint)">${o.xFmt?o.xFmt(v,i):v}</text>`});
+  if(o.xLabel)s+=`<text x="${L+pw/2}" y="${H-2}" font-size="10.5" text-anchor="middle" fill="var(--muted)">${o.xLabel}</text>`;
+  (o.marks||[]).forEach(m=>{s+=`<line x1="${X(m.x)}" x2="${X(m.x)}" y1="${T}" y2="${T+ph}" stroke="${m.color}" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${X(m.x)+4}" y="${T+11}" font-size="11" font-weight="700" fill="${m.color}">${m.label}</text>`});
+  o.series.forEach(se=>{const a=A[se.axis||'L'];if(!a)return;const pts=xs.map((xv,i)=>[xv,se.vals[i]]).filter(p=>p[1]!=null&&isFinite(p[1]));if(!pts.length)return;
+    s+=`<path d="M${pts.map(p=>X(p[0]).toFixed(1)+','+a.y(p[1]).toFixed(1)).join(' L')}" fill="none" stroke="${se.color}" stroke-width="2.2" ${se.dash?`stroke-dasharray="${se.dash}"`:''}/>`;
+    pts.forEach(p=>{const st=se.status?se.status(p[1]):null;const c=st?`var(--${st})`:se.color;s+=`<circle cx="${X(p[0])}" cy="${a.y(p[1])}" r="4" fill="${c}" stroke="var(--surface)" stroke-width="1.5"><title>${fmt(p[1],se.dec??1)}</title></circle>`});
+  });
+  if(o.best){const se=o.series[o.best.s];const a=A[se.axis||'L'];const v=se.vals[o.best.i];if(v!=null)s+=`<circle cx="${X(xs[o.best.i])}" cy="${a.y(v)}" r="9" fill="none" stroke="var(--ok)" stroke-width="2.5"/>`}
+  return `<svg viewBox="0 0 ${W} ${H}">${s}</svg>`;
+}
+
+/* ================= EVOLUCIÓN ================= */
+let evo=store.get('evo',[]);
+let evoSel=store.get('evoSel',['vtkg','pplat','dp','cstat','peep','fio2p','pf','paco2']);
+const nowLocal=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*60000).toISOString().slice(0,16)};
+$('evoTime').value=nowLocal();
+function addEvo(){const t=$('evoTime').value||nowLocal();evo.push({id:Date.now()+Math.random(),t,note:$('evoNote').value,mode,inp:readInputs()});evo.sort((a,b)=>a.t.localeCompare(b.t));store.set('evo',evo);$('evoNote').value='';$('evoTime').value=nowLocal();renderEvo()}
+$('evoAdd').onclick=addEvo;
+$('toEvo').onclick=()=>{$('evoTime').value=nowLocal();addEvo();const b=$('toEvo');b.textContent='Guardado ✓';setTimeout(()=>b.textContent='+ Evolución',1400)};
+$('evoClear').onclick=()=>{if(evo.length&&confirm('¿Borrar todos los registros de evolución?')){evo=[];store.set('evo',evo);renderEvo()}};
+$('evoDemo').onclick=()=>{
+  const d0=new Date();d0.setHours(8,0,0,0);d0.setDate(d0.getDate()-3);
+  const steps=[{h:0,vt:480,rr:18,peep:8,fio2:80,ppeak:36,pplat:31,peeptot:9,pao2:62,paco2:44,spo2:89,etco2:35,vti:485,vte:470},{h:6,vt:420,rr:22,peep:12,fio2:70,ppeak:33,pplat:27,peeptot:13,pao2:70,paco2:50,spo2:92,etco2:39,vti:425,vte:410},{h:24,vt:420,rr:24,peep:14,fio2:60,ppeak:32,pplat:26,peeptot:14,pao2:82,paco2:52,spo2:94,etco2:40,vti:425,vte:405},{h:48,vt:420,rr:22,peep:12,fio2:45,ppeak:29,pplat:23,peeptot:12,pao2:88,paco2:46,spo2:95,etco2:38,vti:425,vte:400},{h:72,vt:430,rr:20,peep:10,fio2:35,ppeak:26,pplat:20,peeptot:10,pao2:92,paco2:42,spo2:96,etco2:36,vti:430,vte:390}];
+  evo=steps.map((s,i)=>{const t=new Date(d0.getTime()+s.h*3600000);const lt=new Date(t-t.getTimezoneOffset()*60000).toISOString().slice(0,16);return{id:i+1,t:lt,note:i===0?'Ingreso':'',mode:'VC',inp:{...EXAMPLE,...Object.fromEntries(Object.entries(s).filter(([k])=>k!=='h').map(([k,v])=>[k,String(v)])),pmean:''}}});
+  store.set('evo',evo);renderEvo();
+};
+function evoFmt(t){const d=new Date(t);return d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}
+function renderEvo(){
+  const keys=[...EXTRA.map(e=>e.k),...Object.keys(ALLP).filter(k=>ALLP[k].g!=='prog'&&k!=='pbw')];
+  $('evoChips').innerHTML=keys.map(k=>`<button class="chip" data-k="${k}" aria-pressed="${evoSel.includes(k)}">${ALLP[k].a}</button>`).join('');
+  if(!evo.length){$('evoCharts').innerHTML='<div class="empty" style="grid-column:1/-1">Sin registros. Pulsa «Añadir datos actuales» o «+ Evolución» en la calculadora, o carga la evolución de ejemplo.</div>';$('evoTable').innerHTML='';return}
+  const rs=evo.map(e=>compute(e.inp,e.mode));
+  const xs=evo.map(e=>new Date(e.t).getTime());
+  const nT=Math.min(4,xs.length);const xT=nT===1?xs:Array.from({length:nT},(_,i)=>xs[0]+(xs[xs.length-1]-xs[0])*i/(nT-1));
+  $('evoCharts').innerHTML=evoSel.map(k=>{const it=ALLP[k];if(!it)return'';const vals=rs.map(r=>valOf(r,k));const last=rs[rs.length-1];const rg=it.range?rangeOf(it,last):null;
+    const lastV=[...vals].reverse().find(v=>v!=null);
+    return `<div class="chart"><h4>${it.n} (${it.a})<span>${lastV!=null?(it.show?it.show(lastV):fmt(lastV,it.dec))+' '+it.u:'sin datos'}</span></h4>${vals.some(v=>v!=null)?lineChart({w:380,h:200,xs,xTicks:xT,xFmt:v=>evoFmt(v),series:[{vals,color:'var(--accent)',dec:it.dec,status:rg?v=>status(v,rg):null}],yL:{band:rg?[rg[1],rg[2]]:null,clamp:rg?[rg[0],rg[3]]:null}}):'<div class="empty">Sin datos en los registros</div>'}</div>`}).join('');
+  const cols=evoSel.map(k=>ALLP[k]).filter(Boolean);
+  $('evoTable').innerHTML=`<table class="data"><thead><tr><th>Fecha y hora</th><th>Modo</th>${cols.map(c=>`<th>${c.a}${c.u?` <span style="font-weight:400">(${c.u})</span>`:''}</th>`).join('')}<th style="text-align:left">Comentario</th><th></th></tr></thead><tbody>${evo.map((e,i)=>{const r=rs[i];return `<tr><td>${evoFmt(e.t)}</td><td>${e.mode}${e.inp&&e.inp.__af&&e.mode==='VC'?' AutoFlow':''}</td>${cols.map(c=>{const v=valOf(r,c.k);const st=c.range?status(v,rangeOf(c,r)):null;return `<td class="${st||''}">${v==null?'—':(c.show?c.show(v):fmt(v,c.dec))}</td>`}).join('')}<td style="text-align:left;white-space:normal;min-width:140px">${(e.note||'').replace(/</g,'&lt;')}</td><td><button class="btn sm" data-load="${i}">Cargar</button> <button class="btn sm danger" data-del="${i}" aria-label="Borrar registro">×</button></td></tr>`}).join('')}</tbody></table>`;
+}
+$('evoChips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;const k=b.dataset.k;evoSel=evoSel.includes(k)?evoSel.filter(x=>x!==k):[...evoSel,k];store.set('evoSel',evoSel);renderEvo()});
+$('evoTable').addEventListener('click',e=>{const l=e.target.closest('[data-load]'),d=e.target.closest('[data-del]');
+  if(l){const ev=evo[+l.dataset.load];writeInputs(ev.inp);setMode(ev.mode,true);update(true);document.querySelector('.tabs button[data-tab=calc]').click()}
+  if(d){evo.splice(+d.dataset.del,1);store.set('evo',evo);renderEvo()}});
+function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+$('evoCsv').onclick=()=>{if(!evo.length)return;const keys=['vt','rr','peep','fio2p',...Object.keys(ALLP).filter(k=>ALLP[k].g!=='prog')];const head=['fecha_hora','modo',...keys.map(k=>ALLP[k].a),'comentario'];
+  const rows=evo.map(e=>{const r=compute(e.inp,e.mode);return[e.t,e.mode,...keys.map(k=>{const v=valOf(r,k);return v==null?'':String(+v.toFixed(3)).replace('.',',')}),'"'+(e.note||'').replace(/"/g,'""')+'"'].join(';')});
+  dl('evolucion_ventilacion.csv','\ufeff'+head.join(';')+'\n'+rows.join('\n'),'text/csv')};
+$('evoJson').onclick=()=>{if(!evo.length)return;dl('evolucion_ventilacion.json',JSON.stringify({version:1,registros:evo},null,1),'application/json')};
+$('evoImport').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const j=JSON.parse(rd.result);const reg=j.registros||j;if(Array.isArray(reg)){evo=reg;evo.sort((a,b)=>a.t.localeCompare(b.t));store.set('evo',evo);renderEvo()}}catch(err){alert('Archivo no válido')}};rd.readAsText(f);e.target.value=''};
+
+/* ================= PEEP TRIAL ================= */
+let pt=store.get('pt',[]);
+let ptVtManual=false;
+function ptAutoVt(){const kg=pnum($('ptKg').value)||6;const pbw=cur&&cur.pbw;$('ptSetVt').textContent=fmt(kg,Number.isInteger(kg)?0:1)+' mL/kg PBW'+(pbw?' = '+Math.round(pbw*kg)+' mL':'');if(!ptVtManual&&pbw){$('ptVt').value=Math.round(pbw*kg)}else if(!ptVtManual&&!$('ptVt').value&&cur&&cur.vt){$('ptVt').value=Math.round(cur.vt)}}
+const PT_DEF={ptKg:'6',ptStart:'20',ptEnd:'6',ptStep:'2',ptDrop:'2'};
+(function(){const s=store.get('ptcfg',null);if(s)Object.keys(PT_DEF).forEach(k=>{if(s[k]!=null)$(k).value=s[k]});if(s&&s.ptVt){$('ptVt').value=s.ptVt;ptVtManual=!!s.man}})();
+function ptSave(){const o={};Object.keys(PT_DEF).forEach(k=>o[k]=$(k).value);o.ptVt=$('ptVt').value;o.man=ptVtManual;store.set('ptcfg',o)}
+Object.keys(PT_DEF).forEach(k=>$(k).addEventListener('input',()=>{if(k==='ptKg'){ptVtManual=false;ptAutoVt()}ptSave();renderPT()}));
+$('ptDefaults').onclick=()=>{Object.entries(PT_DEF).forEach(([k,v])=>$(k).value=v);ptVtManual=false;$('ptVt').value='';ptAutoVt();ptSave();renderPT()};
+function genPT(){const a=pnum($('ptStart').value)??20,b=pnum($('ptEnd').value)??6,st=Math.abs(pnum($('ptStep').value)||2);pt=[];if(a>=b){for(let p=a;p>=b-1e-9;p-=st)pt.push({peep:+p.toFixed(1),pplat:'',ppeak:'',spo2:''})}else{for(let p=a;p<=b+1e-9;p+=st)pt.push({peep:+p.toFixed(1),pplat:'',ppeak:'',spo2:''})}store.set('pt',pt);renderPT()}
+$('ptGen').onclick=genPT;
+$('ptDemo').onclick=()=>{if(!pt.length)genPT();const vt=pnum($('ptVt').value)||420;const Cmax=Math.max(30,(cur&&cur.cstat?cur.cstat*1.25:40)),Po=12,w=8;
+  pt=pt.map(r=>{const C=Cmax*Math.exp(-Math.pow((r.peep-Po)/w,2))*0.92+Cmax*0.08;const pl=r.peep+vt/C;return{...r,pplat:(+pl.toFixed(0)).toString(),ppeak:(+(pl+5).toFixed(0)).toString(),spo2:String(Math.round(Math.min(99,86+10*Math.exp(-Math.pow((r.peep-15)/8,2)))))}});store.set('pt',pt);renderPT()};
+$('ptVt').addEventListener('input',()=>{ptVtManual=true;ptSave();renderPT()});
+function ptCalc(){const vt=pnum($('ptVt').value);return pt.map(r=>{const pe=pnum(r.peep),pl=pnum(r.pplat),pk=pnum(r.ppeak);const dp=pe!=null&&pl!=null?pl-pe:null;return{...r,pe,pl,pk,sp:pnum(r.spo2),dp,cs:vt&&dp>0?vt/dp:null,cd:vt&&pk!=null&&pe!=null&&pk-pe>0?vt/(pk-pe):null}})}
+function renderPT(){
+  const rows=ptCalc();
+  let best=-1;rows.forEach((r,i)=>{if(r.cs!=null&&(best<0||r.cs>rows[best].cs+0.5||(Math.abs(r.cs-rows[best].cs)<=0.5&&r.dp<rows[best].dp)))best=i});
+  const drop=Math.abs(pnum($('ptDrop').value)||2);let dropI=-1,dropAmt=0,dropRef=-1;{let mx=null,mi=-1;rows.forEach((r,i)=>{if(dropI>=0||r.sp==null)return;if(mx!=null&&mx-r.sp>=drop){dropI=i;dropAmt=mx-r.sp;dropRef=mi;return}if(mx==null||r.sp>mx){mx=r.sp;mi=i}})}
+  if(!rows.length){$('ptTable').innerHTML='<div class="empty">Genera los pasos del trial.</div>';$('ptChart').innerHTML='';$('ptResult').innerHTML='';return}
+  $('ptTable').innerHTML=`<table class="data"><thead><tr><th>Paso</th><th>PEEP</th><th>Pplat</th><th>Ppico</th><th>SpO₂</th><th>ΔP</th><th>Cstat</th><th>Cdyn</th><th></th></tr></thead><tbody>${rows.map((r,i)=>`<tr class="${i===best?'best':''}"><td>${i+1}</td><td><input data-i="${i}" data-f="peep" value="${r.peep}" inputmode="decimal"></td><td><input data-i="${i}" data-f="pplat" value="${r.pplat}" inputmode="decimal"></td><td><input data-i="${i}" data-f="ppeak" value="${r.ppeak}" inputmode="decimal"></td><td><input data-i="${i}" data-f="spo2" value="${r.spo2}" inputmode="decimal"></td>
+   <td class="${r.dp==null?'':r.dp>15?'above':'ok'}">${fmt(r.dp,0)}</td><td class="${i===best?'ok':''}">${fmt(r.cs,1)}</td><td>${fmt(r.cd,1)}</td><td>${r.pl>30?'<span class="badge above">Pplat > 30</span>':''}${i===dropI?`<span class="badge below">SpO₂ −${fmt(dropAmt,0)} %</span>`:''}<button class="btn sm danger" data-del="${i}" aria-label="Borrar paso">×</button></td></tr>`).join('')}</tbody></table>
+   <div style="margin-top:8px"><button class="btn sm" id="ptAddRow">+ Añadir paso</button></div>`;
+  const valid=rows.filter(r=>r.pe!=null);
+  if(valid.length<1){$('ptChart').innerHTML='';return}
+  const order=[...rows.keys()].filter(i=>rows[i].pe!=null).sort((a,b)=>rows[a].pe-rows[b].pe);
+  const xs=order.map(i=>rows[i].pe);
+  const hasSp=order.some(i=>rows[i].sp!=null);
+  const marks=[];let res='';
+  if(best>=0){const b=rows[best];const rec=b.pe+2;marks.push({x:b.pe,label:`Mejor Cstat: PEEP ${fmt(b.pe,0)}`,color:'var(--ok)'});
+    res=`<div class="result">Mejor compliancia con <b>PEEP ${fmt(b.pe,0)} cmH₂O</b>: Cstat ${fmt(b.cs,1)} mL/cmH₂O, ΔP ${fmt(b.dp,0)} cmH₂O, Pplat ${fmt(b.pl,0)}.<br>PEEP sugerida en estrategia decremental (mejor Cstat + 2): <b>${fmt(rec,0)} cmH₂O</b>. Comprobar Pplat ≤ 30, ΔP ≤ 15, oxigenación y tolerancia hemodinámica.<div style="margin-top:8px"><button class="btn sm primary" id="ptApply">Aplicar PEEP ${fmt(rec,0)} en la calculadora</button></div></div>`}
+  const bi=order.indexOf(best);
+  $('ptChart').outerHTML=`<svg id="ptChart" viewBox="0 0 640 380" style="width:100%;height:auto">${lineChart({w:640,h:380,xs,xLabel:'PEEP (cmH₂O)',xFmt:v=>fmt(v,0),series:[{vals:order.map(i=>rows[i].cs),color:'var(--accent)',axis:'L',dec:1},{vals:order.map(i=>rows[i].dp),color:'var(--s2)',axis:'R',dec:0,status:v=>v>15?'above':null}],yL:{label:'Cstat (mL/cmH₂O)'},yR:{label:'ΔP (cmH₂O)'},marks,best:bi>=0?{s:0,i:bi}:null}).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</svg>`;
+  if(dropI>=0){const prev=dropI>0?rows[dropI-1]:null;res+=`<div class="result" style="border-color:var(--below);background:var(--below-soft)">Caída de SpO₂ de ${fmt(dropAmt,0)} % al bajar a <b>PEEP ${fmt(rows[dropI].pe,0)}</b> (máxima ${fmt(rows[dropRef].sp,0)} % a PEEP ${fmt(rows[dropRef].pe,0)}): desreclutamiento probable.${prev&&prev.pe!=null?` Criterio por oxigenación: volver al paso previo, <b>PEEP ${fmt(prev.pe,0)} cmH₂O</b>.`:''}</div>`}
+  $('ptResult').innerHTML=res;
+  $('ptSpo').innerHTML=hasSp?`<div class="chart"><h4>SpO₂ en cada paso<span>%</span></h4>${lineChart({w:640,h:190,xs,xLabel:'PEEP (cmH₂O)',xFmt:v=>fmt(v,0),series:[{vals:order.map(i=>rows[i].sp),color:'var(--s3)',dec:0,status:v=>status(v,[80,92,100,100])}],yL:{band:[92,100],clamp:[70,100]},marks:[...(best>=0?[{x:rows[best].pe,label:'',color:'var(--ok)'}]:[]),...(dropI>=0&&rows[dropI].pe!=null?[{x:rows[dropI].pe,label:'Caída SpO₂',color:'var(--below)'}]:[])]})}</div>`:'';
+  const ap=$('ptApply');if(ap)ap.onclick=()=>{$('peep').value=rows[best].pe+2;update(true);document.querySelector('.tabs button[data-tab=calc]').click()};
+  const ad=$('ptAddRow');if(ad)ad.onclick=()=>{const last=pt[pt.length-1];pt.push({peep:last?Math.max(0,pnum(last.peep)-2):10,pplat:'',ppeak:'',spo2:''});store.set('pt',pt);renderPT()};
+}
+$('ptTable').addEventListener('change',e=>{const i=e.target.dataset.i;if(i==null)return;pt[+i][e.target.dataset.f]=e.target.value;store.set('pt',pt);renderPT()});
+$('ptTable').addEventListener('click',e=>{const d=e.target.closest('[data-del]');if(!d)return;pt.splice(+d.dataset.del,1);store.set('pt',pt);renderPT()});
+
+/* ================= INICIO ================= */
+buildFilters();buildKnobs();buildSliders();
+const saved=store.get('inputs',null);
+writeInputs(saved||EXAMPLE);setMode((saved&&saved.__mode)||'VC',true);
+update(true);
+/* ================= PRESIÓN DE APERTURA ================= */
+const AOPF=['lfPeep','lfFlow','lfVt','lfAop','lfTinf','lfPend','lfCcirc','pcPeep','pcInf','pcPpk','pcPpl','pcFlow','pcVt','cxVt','cxPpl','cxPeep','cxPeeptot','cxSrc','cxAop'];
+(function(){const s=store.get('aop',null);if(s){AOPF.forEach(k=>{if(s[k]!=null)$(k).value=s[k]});(s.chk||[]).forEach((v,i)=>{const c=document.querySelectorAll('#tab-aop .chkl input')[i];if(c)c.checked=v})}})();
+function aopSave(){const o={};AOPF.forEach(k=>o[k]=$(k).value);o.chk=[...document.querySelectorAll('#tab-aop .chkl input')].map(c=>c.checked);store.set('aop',o)}
+function aopCalc(){
+  const g=k=>pnum($(k).value);
+  const L={peep:g('lfPeep')??5,flow:g('lfFlow')??5,vt:g('lfVt'),aop:g('lfAop'),tinf:g('lfTinf'),pend:g('lfPend'),cc:g('lfCcirc')??2};
+  L.fs=L.flow*1000/60; L.ti=L.vt?L.vt/L.fs:null;
+  if(L.aop!=null){L.closed=L.aop-L.peep>1; if(L.tinf){L.v0=L.fs*L.tinf; L.c0=L.aop>L.peep?L.v0/(L.aop-L.peep):null}
+    if(L.pend!=null&&L.vt&&L.pend>L.aop){L.crs=(L.vt-(L.v0||0))/(L.pend-L.aop)}}
+  const P={peep:g('pcPeep')??5,inf:g('pcInf'),ppk:g('pcPpk'),ppl:g('pcPpl'),flow:g('pcFlow')??60,vt:g('pcVt')};
+  if(P.inf!=null)P.pcond=P.inf-P.peep; if(P.ppk!=null&&P.ppl!=null)P.pres=P.ppk-P.ppl;
+  if(P.pcond!=null&&P.pres!=null){P.diff=P.pcond-P.pres;P.closed=P.diff>1;P.aop=P.peep+P.diff;P.raw=P.pres/(P.flow/60)}
+  return{L,P};
+}
+function aopSvgLF(L){
+  const W=640,H=270,m={l:46,r:16,t:16,b:34};
+  const vt=L.vt||420, fs=L.fs, ti=vt/fs, peep=L.peep;
+  const aop=L.aop??peep, closed=L.aop!=null&&L.aop-peep>1;
+  const tinf=closed?(L.tinf||Math.max(0.05,(aop-peep)*L.cc/fs)):0;
+  const crs=L.crs||(cur&&cur.cstat)||40;
+  const pend=L.pend??(aop+(vt-fs*tinf)/crs);
+  const T=ti+1.2, Pmax=Math.max(pend,aop)+6;
+  const x=t=>m.l+(t/T)*(W-m.l-m.r), y=p=>H-m.b-(p/Pmax)*(H-m.t-m.b);
+  let s=`<rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="none" stroke="var(--grid)"/>`;
+  for(let p=0;p<=Pmax;p+=5)s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(p)}" y2="${y(p)}" stroke="var(--grid)" stroke-width=".6"/><text x="${m.l-6}" y="${y(p)+4}" text-anchor="end" font-size="10" fill="var(--muted)">${p}</text>`;
+  for(let t=0;t<=T;t+=1)s+=`<text x="${x(t)}" y="${H-m.b+14}" text-anchor="middle" font-size="10" fill="var(--muted)">${t}</text>`;
+  s+=`<text x="${W-m.r}" y="${H-6}" text-anchor="end" font-size="10" fill="var(--muted)">t (s)</text><text x="12" y="${m.t+(H-m.t-m.b)/2}" transform="rotate(-90 12 ${m.t+(H-m.t-m.b)/2})" text-anchor="middle" font-size="10" fill="var(--muted)">Paw (cmH₂O)</text>`;
+  let d=`M${x(0)},${y(peep)}`;const N=160;
+  for(let i=1;i<=N;i++){const t=ti*i/N;let p;if(t<=tinf)p=peep+(aop-peep)*t/tinf;else{p=aop+(pend-aop)*(t-tinf)/(ti-tinf)+0.35*Math.sin(2*Math.PI*1.3*(t-tinf))*Math.min(1,(t-tinf)/0.3)}d+=` L${x(t)},${y(p)}`}
+  d+=` L${x(ti+0.05)},${y(pend-0.5)} L${x(ti+0.4)},${y(pend-0.8)}`;
+  for(let i=1;i<=30;i++){const t=ti+0.4+0.8*i/30;d+=` L${x(t)},${y(peep+(pend-0.8-peep)*Math.exp(-(t-ti-0.4)/0.15))}`}
+  s+=`<path d="${d}" fill="none" stroke="#d0453f" stroke-width="2.2" stroke-linejoin="round"/>`;
+  s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(peep)}" y2="${y(peep)}" stroke="var(--muted)" stroke-dasharray="3 3"/><text x="${W-m.r-4}" y="${y(peep)-4}" text-anchor="end" font-size="11" fill="var(--muted)">PEEP ${fmt(peep,0)}</text>`;
+  if(closed){
+    s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(aop)}" y2="${y(aop)}" stroke="#d0453f" stroke-dasharray="5 3"/><circle cx="${x(tinf)}" cy="${y(aop)}" r="5" fill="none" stroke="#d0453f" stroke-width="2"/>`;
+    s+=`<text x="${x(tinf)+10}" y="${y(aop)-8}" font-size="12" font-weight="700" fill="#d0453f">AOP ${fmt(aop,0)} cmH₂O</text>`;
+    s+=`<text x="${x(tinf/2)+6}" y="${y((peep+aop)/2)+20}" font-size="10" fill="var(--muted)">1ª pendiente: circuito (C ≈ ${fmt(L.c0??L.cc,1)})</text>`;
+  }else if(L.aop!=null){s+=`<text x="${x(0.2)}" y="${y(peep)-10}" font-size="11" fill="var(--ok)">Sin inflexión por encima de PEEP + 1</text>`}
+  s+=`<text x="${x(tinf+(ti-tinf)*0.35)}" y="${y(aop+(pend-aop)*0.35)+22}" font-size="10" fill="var(--muted)" text-anchor="start">2ª pendiente: Crs ${fmt(crs,0)} mL/cmH₂O, con oscilaciones cardiacas</text>`;
+  s+=`<text x="${x(ti)}" y="${y(pend)-8}" text-anchor="middle" font-size="11" fill="var(--text)">${fmt(pend,0)}</text>`;
+  s+=`<text x="${x(ti/2)}" y="${H-m.b-6}" text-anchor="middle" font-size="10" fill="var(--muted)">Insuflación ${fmt(ti,1)} s a ${fmt(L.flow,0)} L/min</text>`;
+  return s;
+}
+function aopSvgPC(P){
+  const W=640,H=270,m={l:46,r:16,t:16,b:34};
+  const peep=P.peep, ppk=P.ppk??(peep+20), ppl=P.ppl??(ppk-5), pres=ppk-ppl, inf=P.inf??(peep+pres);
+  const vt=P.vt||(cur&&cur.vt)||420, fs=P.flow*1000/60, tfl=Math.max(0.2,vt/fs), T=tfl+1.6, Pmax=ppk+6;
+  const x=t=>m.l+(t/T)*(W-m.l-m.r), y=p=>H-m.b-(p/Pmax)*(H-m.t-m.b);
+  let s=`<rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="none" stroke="var(--grid)"/>`;
+  for(let p=0;p<=Pmax;p+=5)s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(p)}" y2="${y(p)}" stroke="var(--grid)" stroke-width=".6"/><text x="${m.l-6}" y="${y(p)+4}" text-anchor="end" font-size="10" fill="var(--muted)">${p}</text>`;
+  for(let t=0;t<=T+1e-9;t+=0.5)s+=`<text x="${x(t)}" y="${H-m.b+14}" text-anchor="middle" font-size="10" fill="var(--muted)">${fmt(t,1)}</text>`;
+  s+=`<text x="${W-m.r}" y="${H-6}" text-anchor="end" font-size="10" fill="var(--muted)">t (s)</text><text x="12" y="${m.t+(H-m.t-m.b)/2}" transform="rotate(-90 12 ${m.t+(H-m.t-m.b)/2})" text-anchor="middle" font-size="10" fill="var(--muted)">Paw (cmH₂O)</text>`;
+  const t0=0.04, pause=0.4;
+  let d=`M${x(0)},${y(peep)} L${x(t0)},${y(inf)} L${x(tfl)},${y(ppk)} L${x(tfl+0.04)},${y(ppl)} L${x(tfl+pause)},${y(ppl)}`;
+  for(let i=1;i<=30;i++){const t=tfl+pause+1.1*i/30;d+=` L${x(t)},${y(peep+(ppl-peep)*Math.exp(-(t-tfl-pause)/0.2))}`}
+  s+=`<path d="${d}" fill="none" stroke="#8e44ad" stroke-width="2.2" stroke-linejoin="round"/>`;
+  s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(peep)}" y2="${y(peep)}" stroke="var(--muted)" stroke-dasharray="3 3"/><text x="${W-m.r-4}" y="${y(peep)-4}" text-anchor="end" font-size="11" fill="var(--muted)">PEEP ${fmt(peep,0)}</text>`;
+  const br=(xx,p1,p2,txt,c,anchor)=>`<g color="${c}"><line x1="${xx}" x2="${xx}" y1="${y(p1)}" y2="${y(p2)}" stroke="currentColor" stroke-width="1.8"/><line x1="${xx-4}" x2="${xx+4}" y1="${y(p1)}" y2="${y(p1)}" stroke="currentColor"/><line x1="${xx-4}" x2="${xx+4}" y1="${y(p2)}" y2="${y(p2)}" stroke="currentColor"/><text x="${anchor==='end'?xx-7:xx+7}" y="${(y(p1)+y(p2))/2+4}" text-anchor="${anchor||'start'}" font-size="11.5" font-weight="700" fill="currentColor">${txt}</text></g>`;
+  s+=`<circle cx="${x(t0)}" cy="${y(inf)}" r="4.5" fill="none" stroke="#8e44ad" stroke-width="2"/>`;
+  s+=br(x(t0)-8,peep,inf,'Pcond '+fmt(inf-peep,0),'#8e44ad','end').replace('text-anchor="end"','text-anchor="start"').replace(`x="${x(t0)-8-7}"`,`x="${x(t0)+10}"`);
+  s+=br(x(tfl)+10,ppl,ppk,'Pres '+fmt(pres,0),'#4f5bd5');
+  s+=`<text x="${x(tfl)}" y="${y(ppk)-6}" text-anchor="middle" font-size="11" fill="var(--text)">Ppico ${fmt(ppk,0)}</text><text x="${x(tfl+pause/2)+30}" y="${y(ppl)-6}" font-size="11" fill="var(--text)">Pplat ${fmt(ppl,0)}</text>`;
+  if(P.closed){s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(P.aop)}" y2="${y(P.aop)}" stroke="#d0453f" stroke-dasharray="5 3"/><text x="${W-m.r-6}" y="${y(P.aop)-5}" text-anchor="end" font-size="12" font-weight="700" fill="#d0453f">AOP ${fmt(P.aop,0)} = PEEP + (Pcond − Pres)</text>`}
+  s+=`<text x="${x(tfl+pause+0.55)}" y="${H-m.b-6}" text-anchor="middle" font-size="10" fill="var(--muted)">Flujo constante ${fmt(P.flow,0)} L/min · pausa ≥ 0,3 s</text>`;
+  return s;
+}
+function renderAOP(){
+  const {L,P}=aopCalc();
+  const kg=6,pbw=cur&&cur.pbw;$('lfVtTxt').textContent='6 mL/kg PBW'+(pbw?' = '+Math.round(pbw*kg)+' mL':'');
+  const vtl=L.vt||(pbw?pbw*6:null);$('lfTiTxt').textContent=vtl?fmt(vtl/(L.fs),1)+' s ('+fmt(vtl,0)+' mL a '+fmt(L.flow,0)+' L/min)':'—';
+  $('lfSvg').innerHTML=aopSvgLF(L); $('pcSvg').innerHTML=aopSvgPC(P);
+  let r1='';
+  if(L.aop!=null){
+    if(L.closed){r1=`<div class="result" style="background:var(--above-soft)">Cierre de la vía aérea: <b>AOP ${fmt(L.aop,0)} cmH₂O</b>, ${fmt(L.aop-L.peep,0)} cmH₂O por encima de la PEEP de la maniobra.`;
+      if(L.c0!=null)r1+=` Volumen antes de la inflexión ${fmt(L.v0,0)} mL; compliancia inicial ${fmt(L.c0,1)} mL/cmH₂O ${L.c0<=L.cc*1.5?'<b>≈ circuito ocluido</b>: compatible con cierre completo.':'<b>mayor que la del circuito</b> (C<sub>circ</sub> '+fmt(L.cc,1)+'): sugiere cierre parcial o inflexión sin cierre completo.'}`;
+      if(L.crs!=null)r1+=` Crs por encima de la AOP ${fmt(L.crs,0)} mL/cmH₂O.`;
+      r1+=`</div>`}
+    else r1=`<div class="result">Sin cierre completo: inflexión a ${fmt(L.aop,0)} cmH₂O, ≤ PEEP + 1. No hace falta corregir la driving pressure.</div>`}
+  else r1='<div class="empty" style="margin:0 14px 14px">Introduce la presión en la inflexión para calcular.</div>';
+  $('lfRes').innerHTML=r1;
+  const bs=(id,o)=>{const e=$(id);if(o.closed==null){e.textContent='';e.className='acc-s';return}e.className='acc-s '+(o.closed?'closed':'open');e.textContent=o.closed?'AOP '+fmt(o.aop,0)+' cmH₂O':'Sin cierre'};
+  bs('accs-lf',L.aop!=null?{closed:L.closed,aop:L.aop}:{});
+  let r2='';
+  if(P.diff!=null){r2=`<div class="aoptiles" style="padding-top:0">${[['Pcond',P.pcond,'cmH₂O'],['Pres',P.pres,'cmH₂O'],['Pcond − Pres',P.diff,'cmH₂O'],['AOP',P.closed?P.aop:null,P.closed?'cmH₂O':'no detectada']].map(([a,v,u])=>`<div><span>${a}</span><b>${fmt(v,0)}</b><small>${u}</small></div>`).join('')}</div>`+
+    (P.closed?`<div class="result" style="background:var(--above-soft)">Cierre de la vía aérea (Pcond − Pres = ${fmt(P.diff,0)} &gt; 1): <b>AOP = ${fmt(P.peep,0)} + (${fmt(P.pcond,0)} − ${fmt(P.pres,0)}) = ${fmt(P.aop,0)} cmH₂O</b>. Raw estimada ${fmt(P.raw,1)} cmH₂O/L/s.</div>`:`<div class="result">Pcond ≈ Pres (diferencia ${fmt(P.diff,0)} ≤ 1): sin cierre de la vía aérea detectable. Raw ${fmt(P.raw,1)} cmH₂O/L/s.</div>`)}
+  else r2='<div class="empty" style="margin:0 14px 14px">Introduce PEEP, presión en el cambio de pendiente, Ppico y Pplat.</div>';
+  $('pcRes').innerHTML=r2;
+  bs('accs-pc',P.diff!=null?{closed:P.closed,aop:P.aop}:{});
+  // corrección
+  const src=$('cxSrc').value;
+  if(src!=='man'){const a=src==='lf'?(L.aop!=null?(L.closed?L.aop:null):undefined):(P.diff!=null?(P.closed?P.aop:null):undefined);if(a!==undefined)$('cxAop').value=a==null?'':String(+a.toFixed(1)).replace('.',',')}
+  $('cxAop').readOnly=src!=='man';
+  const vt=pnum($('cxVt').value),ppl=pnum($('cxPpl').value),pe=pnum($('cxPeep').value),pt=pnum($('cxPeeptot').value)??pe,aop=pnum($('cxAop').value);
+  const ref=Math.max(...[pe,pt,aop].filter(v=>v!=null)),dpC=ppl!=null&&pt!=null?ppl-pt:null,dpX=ppl!=null&&isFinite(ref)?ppl-ref:null;
+  const csC=vt&&dpC>0?vt/dpC:null,csX=vt&&dpX>0?vt/dpX:null;
+  const st=v=>v==null?'na':v<=15?'ok':'bad';
+  $('cxTiles').innerHTML=[['ΔP clásica',dpC,'cmH₂O',st(dpC)],['ΔP corregida',dpX,'cmH₂O',st(dpX)],['Cstat clásica',csC,'mL/cmH₂O','na'],['Cstat corregida',csX,'mL/cmH₂O','na']].map(([a,v,u,c])=>`<div class="${c}"><span>${a}</span><b>${fmt(v,0)}</b><small>${u}</small></div>`).join('');
+  let r3='';
+  if(dpC!=null&&dpX!=null){const used=aop!=null&&aop>=Math.max(pe??-1,pt??-1)?'AOP':pt!=null&&pt>=(pe??-1)?'PEEP total':'PEEP programada';
+    r3=aop!=null&&aop>Math.max(pe??-1,pt??-1)?`<div class="result" style="background:var(--above-soft)">La AOP (${fmt(aop,0)}) supera la PEEP total (${fmt(pt,0)}): la ΔP clásica sobreestima en <b>${fmt(dpC-dpX,0)} cmH₂O</b> la presión de distensión real, y la Cstat clásica la infraestima (${fmt(csC,0)} frente a ${fmt(csX,0)} mL/cmH₂O). La PEEP actual no llega al alvéolo: valorar PEEP ≥ AOP (por ejemplo, AOP + 2 = ${fmt(aop+2,0)} cmH₂O) si la Pplat y la hemodinámica lo permiten.</div>`
+    :`<div class="result">Referencia espiratoria: ${used} (${fmt(ref,0)}). ${aop!=null?'La AOP no supera la PEEP total, así que no hay corrección.':'Sin AOP: la ΔP corregida coincide con la clásica.'}</div>`}
+  $('cxRes').innerHTML=r3;
+  $('cxApply').disabled=aop==null;
+}
+document.querySelectorAll('#tab-aop input,#tab-aop select').forEach(el=>el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',()=>{aopSave();renderAOP()}));
+$('aopFromCalc').onclick=()=>{const r=cur||{};const set=(k,v,d)=>{if(v!=null&&isFinite(v))$(k).value=String(+v.toFixed(d)).replace('.',',')};
+  set('cxVt',r.vt,0);set('cxPpl',r.pplat,1);set('cxPeep',r.peep,1);set('cxPeeptot',r.peeptot,1);set('pcVt',r.vt,0);set('pcPpk',r.ppeak,1);set('pcPpl',r.pplat,1);set('pcPeep',r.peep,1);if(mode==='VC'&&r.d&&r.d.flow)set('pcFlow',r.d.flow,0);if(r.pbw)set('lfVt',r.pbw*6,0);aopSave();renderAOP()};
+$('aopDemo').onclick=()=>{const v={lfPeep:'5',lfFlow:'5',lfVt:'420',lfAop:'12',lfTinf:'0,17',lfPend:'22',lfCcirc:'2',pcPeep:'5',pcInf:'18',pcPpk:'30',pcPpl:'24',pcFlow:'60',pcVt:'420',cxVt:'420',cxPpl:'24',cxPeep:'5',cxPeeptot:'5',cxSrc:'lf'};Object.entries(v).forEach(([k,x])=>$(k).value=x);aopSave();renderAOP()};
+$('aopReset').onclick=()=>{AOPF.forEach(k=>{if(k==='cxSrc')$(k).value='lf';else $(k).value=''});document.querySelectorAll('#tab-aop .chkl input').forEach(c=>c.checked=false);aopSave();renderAOP()};
+
+function accOpen(k,save){document.querySelectorAll('#tab-aop .acc').forEach(s=>{const on=s.dataset.m===k;s.querySelector('.acc-h').setAttribute('aria-expanded',on);s.querySelector('.acc-b').hidden=!on});
+  if(k&&$('cxSrc').value!=='man'&&$('cxSrc').value!==k){$('cxSrc').value=k;renderAOP()}
+  if(save!==false)store.set('aopOpen',k||'')}
+document.querySelectorAll('#tab-aop .acc-h').forEach(b=>b.addEventListener('click',()=>{const s=b.closest('.acc');accOpen(b.getAttribute('aria-expanded')==='true'?'':s.dataset.m)}));
+$('cxSrc').addEventListener('change',()=>{const v=$('cxSrc').value;if(v!=='man')accOpen(v)});
+accOpen(store.get('aopOpen',''),false);
+$('cxApply').onclick=()=>{const a=pnum($('cxAop').value);if(a==null)return;$('aop').value=String(a).replace('.',',');update(true);document.querySelector('.tabs button[data-tab=calc]').click()};
+
+})();
+</script>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  const DEFAULT_LINE_HEIGHT = 16;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  const PICK_CAPABILITIES = ["pick"];
+  const PICK_CHAIN_LENGTH = 4;
+  const PICK_MAX_TEXT_CHARS = 120;
+  const PICK_MAX_HTML_CHARS = 300;
+
+  function truncate(value, maxChars) {
+    return value.length > maxChars ? value.slice(0, maxChars - 1) + "…" : value;
+  }
+
+  function isPickableElement(element) {
+    return (
+      element instanceof Element &&
+      element !== document.documentElement &&
+      element !== document.body
+    );
+  }
+
+  function resolvePickTarget(x, y) {
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    const element = document.elementFromPoint(x, y);
+    return isPickableElement(element) ? element.closest("svg") || element : null;
+  }
+
+  function pickLabel(element) {
+    if (element.id) return element.localName + "#" + element.id;
+    return [element.localName].concat(Array.from(element.classList).slice(0, 2)).join(".");
+  }
+
+  // Only attributes that help find the element in source. data-* values and URL
+  // query strings or fragments can carry tokens.
+  const PICK_ATTRIBUTES = new Set([
+    "id",
+    "class",
+    "name",
+    "type",
+    "role",
+    "alt",
+    "aria-label",
+    "href",
+    "src",
+  ]);
+
+  function pickAttributeValue(attribute) {
+    return attribute.name === "href" || attribute.name === "src"
+      ? attribute.value.split(/[?#]/)[0]
+      : attribute.value;
+  }
+
+  function describePickElement(element) {
+    const chain = [];
+    for (
+      let current = element;
+      isPickableElement(current) && chain.length < PICK_CHAIN_LENGTH;
+      current = current.parentElement
+    ) {
+      chain.unshift(current);
+    }
+    const attributes = Array.from(element.attributes)
+      .filter((attribute) => PICK_ATTRIBUTES.has(attribute.name))
+      .map((attribute) => ` ${attribute.name}="${pickAttributeValue(attribute).replace(/"/g, "&quot;")}"`)
+      .join("");
+    const text = (element.innerText || element.textContent || "").replace(/\s+/g, " ").trim();
+    return {
+      chain: chain.map(pickLabel),
+      html: truncate(`<${element.localName}${attributes}>`, PICK_MAX_HTML_CHARS),
+      text: text ? truncate(text, PICK_MAX_TEXT_CHARS) : undefined,
+    };
+  }
+
+  // Hover asks once per frame, and innerText on a large section forces layout,
+  // so only the rect is re-read while the pointer stays on the same element.
+  // Clicks ask for fresh details since the page may have changed the element.
+  let lastPick = null;
+
+  function describePickTarget(element, fresh) {
+    if (fresh || lastPick?.element !== element) {
+      lastPick = { element, details: describePickElement(element) };
+    }
+    const rect = element.getBoundingClientRect();
+    return {
+      rect: { x: rect.left, y: rect.top, width: rect.width, height: rect.height },
+      ...lastPick.details,
+    };
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+      capabilities: PICK_CAPABILITIES,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_PICK") {
+      const element = resolvePickTarget(event.data.x, event.data.y);
+      postToTrustedTop({
+        type: "INLINE_EDIT_PICK_RESULT",
+        seq: event.data.seq,
+        target: element ? describePickTarget(element, event.data.fresh === true) : null,
+      });
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_BY") {
+      const { deltaX, deltaY, deltaMode } = event.data;
+      if (!scrollForwarding || !Number.isFinite(deltaX) || !Number.isFinite(deltaY)) return;
+      if (deltaMode !== 0 && deltaMode !== 1 && deltaMode !== 2) return;
+      const lineHeight =
+        parseFloat(getComputedStyle(document.documentElement).lineHeight) || DEFAULT_LINE_HEIGHT;
+      const scaleX = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerWidth : 1;
+      const scaleY = deltaMode === 1 ? lineHeight : deltaMode === 2 ? window.innerHeight : 1;
+      // The selection overlay receives the wheel event instead of this iframe.
+      // Instant scrolling preserves trackpad deltas even on smooth-scroll sites.
+      window.scrollBy({ left: deltaX * scaleX, top: deltaY * scaleY, behavior: "instant" });
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>
