@@ -30,7 +30,7 @@ const CALCULADORAS = [
     id: 'ventilacion-mecanica-uci',
     title: 'Ventilación mecánica UCI',
     description: 'Calculadora de parámetros y ajuste de ventilación mecánica en UCI.',
-    path: '../biblioteca/assets/calculadoras/calculadora-ventilacion-mecanica-uci.html?v=20261013b',
+    path: '../biblioteca/assets/calculadoras/calculadora-ventilacion-mecanica-uci.html?v=20261014a',
     audiences: ['medicina']
   }
 ];
@@ -173,7 +173,7 @@ const PROTOCOLOS = [
         id: 'protocolo',
         title: 'Protocolo de analgosedación en VM',
         description: 'Documento clínico de analgosedación en el paciente ventilado.',
-        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261013b',
+        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261014a',
         ext: '.html',
         view: 'document'
       }
@@ -189,7 +189,7 @@ const PROTOCOLOS = [
         id: 'protocolo',
         title: 'Protocolo VM · Cuidados integrales',
         description: 'Documento clínico de cuidados integrales en el paciente ventilado.',
-        path: '../biblioteca/assets/protocolos/vm-cuidados-integrales/protocolo-vm-cuidados-integrales.html?v=20261013b',
+        path: '../biblioteca/assets/protocolos/vm-cuidados-integrales/protocolo-vm-cuidados-integrales.html?v=20261014a',
         ext: '.html',
         view: 'document'
       }
@@ -205,7 +205,7 @@ const PROTOCOLOS = [
         id: 'protocolo-medicina',
         title: 'Protocolo clínico (Medicina)',
         description: 'Anticoagulación en shock cardiogénico y soporte extracorpóreo.',
-        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/protocolo-anticoagulacion-sec.html?v=20261013b',
+        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/protocolo-anticoagulacion-sec.html?v=20261014a',
         ext: '.html',
         view: 'document',
         audiences: ['medicina']
@@ -214,7 +214,7 @@ const PROTOCOLOS = [
         id: 'resumen-enfermeria',
         title: 'Resumen de enfermería',
         description: 'Resumen operativo de anticoagulación en shock cardiogénico para enfermería.',
-        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/resumen-enfermeria-anticoagulacion-sec.html?v=20261013b',
+        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/resumen-enfermeria-anticoagulacion-sec.html?v=20261014a',
         ext: '.html',
         view: 'document',
         audiences: ['enfermeria']
