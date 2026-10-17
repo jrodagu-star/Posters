@@ -30,7 +30,7 @@ const CALCULADORAS = [
     id: 'ventilacion-mecanica-uci',
     title: 'Ventilación mecánica UCI',
     description: 'Calculadora de parámetros y ajuste de ventilación mecánica en UCI.',
-    path: '../biblioteca/assets/calculadoras/calculadora-ventilacion-mecanica-uci.html?v=20261014a',
+    path: '../biblioteca/assets/calculadoras/calculadora-ventilacion-mecanica-uci.html?v=20261017a',
     audiences: ['medicina']
   }
 ];
@@ -58,7 +58,7 @@ const PROTOCOLOS = [
   {
     id: 'dds',
     title: 'DDS (Descontaminación Digestiva)',
-    description: 'Guía rápida y protocolo detallado de descontaminación digestiva selectiva en UCI.',
+    description: 'Guía rápida, protocolo detallado y hoja de control/registro de DDS en UCI.',
     audiences: ['medicina', 'enfermeria'],
     parts: [
       {
@@ -75,6 +75,13 @@ const PROTOCOLOS = [
         path: '../biblioteca/assets/protocolos/dds/protocolo-detallado.html?v=20260814l',
         ext: '.html',
         view: 'document'
+      },
+      {
+        id: 'hoja-control',
+        title: 'Hoja de control y registro',
+        description: 'Hoja de control y registro de DDS en UCI.',
+        path: '../biblioteca/assets/protocolos/dds/hoja-control-registro-dds.pdf?v=20261017a',
+        ext: '.pdf'
       }
     ]
   },
@@ -173,7 +180,7 @@ const PROTOCOLOS = [
         id: 'protocolo',
         title: 'Protocolo de analgosedación en VM',
         description: 'Documento clínico de analgosedación en el paciente ventilado.',
-        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261014a',
+        path: '../biblioteca/assets/protocolos/analgosedacion-vm/protocolo-analgosedacion-vm.html?v=20261017a',
         ext: '.html',
         view: 'document'
       }
@@ -189,7 +196,7 @@ const PROTOCOLOS = [
         id: 'protocolo',
         title: 'Protocolo VM · Cuidados integrales',
         description: 'Documento clínico de cuidados integrales en el paciente ventilado.',
-        path: '../biblioteca/assets/protocolos/vm-cuidados-integrales/protocolo-vm-cuidados-integrales.html?v=20261014a',
+        path: '../biblioteca/assets/protocolos/vm-cuidados-integrales/protocolo-vm-cuidados-integrales.html?v=20261017a',
         ext: '.html',
         view: 'document'
       }
@@ -205,7 +212,7 @@ const PROTOCOLOS = [
         id: 'protocolo-medicina',
         title: 'Protocolo clínico (Medicina)',
         description: 'Anticoagulación en shock cardiogénico y soporte extracorpóreo.',
-        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/protocolo-anticoagulacion-sec.html?v=20261014a',
+        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/protocolo-anticoagulacion-sec.html?v=20261017a',
         ext: '.html',
         view: 'document',
         audiences: ['medicina']
@@ -214,7 +221,7 @@ const PROTOCOLOS = [
         id: 'resumen-enfermeria',
         title: 'Resumen de enfermería',
         description: 'Resumen operativo de anticoagulación en shock cardiogénico para enfermería.',
-        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/resumen-enfermeria-anticoagulacion-sec.html?v=20261014a',
+        path: '../biblioteca/assets/protocolos/anticoagulacion-sec/resumen-enfermeria-anticoagulacion-sec.html?v=20261017a',
         ext: '.html',
         view: 'document',
         audiences: ['enfermeria']

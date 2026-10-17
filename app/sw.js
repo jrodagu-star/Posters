@@ -6,11 +6,11 @@ const CACHE_VERSION = 'posters-v20261017a';
 const SHELL_URLS = [
   './',
   './index.html',
-  './styles.css?v=20261014a',
+  './styles.css?v=20261017a',
   './app.js?v=20261017a',
-  './sw-register.js?v=20261014a',
+  './sw-register.js?v=20261017a',
   './manifest.webmanifest',
-  '../biblioteca/biblioteca.js?v=20261014a'
+  '../biblioteca/biblioteca.js?v=20261017a'
 ];
 
 self.addEventListener('install', (event) => {
