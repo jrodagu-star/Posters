@@ -238,6 +238,11 @@ const ICUCONNECT = {
   description: 'Gestión de pacientes en UCI.',
   url: 'https://icu-connect.web.app'
 };
+const CONTROL_UCI = {
+  title: 'Control UCI',
+  description: 'Registro de carga asistencial y dotación de enfermería.',
+  url: 'https://control-uci.web.app'
+};
 const HERRAMIENTAS = [
   {
     id: 'dutydoctor',
@@ -251,6 +256,13 @@ const HERRAMIENTAS = [
     title: ICUCONNECT.title,
     description: ICUCONNECT.description,
     url: ICUCONNECT.url,
+    action: 'external-tab'
+  },
+  {
+    id: 'control-uci',
+    title: CONTROL_UCI.title,
+    description: CONTROL_UCI.description,
+    url: CONTROL_UCI.url,
     action: 'external-tab'
   },
   {
