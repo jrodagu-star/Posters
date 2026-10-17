@@ -1,7 +1,7 @@
 ﻿window.BIBLIOTECA_DATA = {
   "kind": "dashboard_medicina_biblioteca",
   "version": 2,
-  "revision": "20261017a",
+  "revision": "20261017c",
   "exportedAt": "2026-09-25T08:00:00.000Z",
   "tree": {
     "id": "f-1",
@@ -215,9 +215,39 @@
             "breadcrumb": "Cardiologia / Hipertension Pulmonar",
             "source": "asset",
             "audience": "medicina"
+          },
+          {
+            "id": "f-icc",
+            "type": "folder",
+            "title": "ICC",
+            "children": [
+              {
+                "id": "p-hfpef-enfoque-practico",
+                "type": "file",
+                "title": "HFpEF enfoque practico",
+                "path": "../biblioteca/assets/cardiologia/icc/hfpef-enfoque-practico.jpg",
+                "ext": ".jpg",
+                "specialty": "Cardiologia",
+                "breadcrumb": "Cardiologia / ICC / HFpEF enfoque practico",
+                "source": "asset",
+                "audience": "medicina"
+              },
+              {
+                "id": "p-icc-tratamiento",
+                "type": "file",
+                "title": "ICC tratamiento",
+                "path": "../biblioteca/assets/cardiologia/icc/icc-tratamiento.jpg",
+                "ext": ".jpg",
+                "specialty": "Cardiologia",
+                "breadcrumb": "Cardiologia / ICC / ICC tratamiento",
+                "source": "asset",
+                "audience": "medicina"
+              }
+            ],
+            "file_count": 2
           }
         ],
-        "file_count": 15
+        "file_count": 17
       },
       {
         "id": "f-15",
@@ -712,9 +742,20 @@
             "breadcrumb": "Nefrologia / Acidosis tubular Renal",
             "source": "asset",
             "audience": "medicina"
+          },
+          {
+            "id": "p-hiponatremia-hipernatremia",
+            "type": "file",
+            "title": "Hiponatremia e Hipernatremia",
+            "path": "../biblioteca/assets/nefrologia/hiponatremia-hipernatremia.jpg",
+            "ext": ".jpg",
+            "specialty": "Nefrologia",
+            "breadcrumb": "Nefrologia / Hiponatremia e Hipernatremia",
+            "source": "asset",
+            "audience": "medicina"
           }
         ],
-        "file_count": 6
+        "file_count": 7
       },
       {
         "id": "f-37",
@@ -800,9 +841,20 @@
             "breadcrumb": "Neurologia / TOFF",
             "source": "asset",
             "audience": "medicina"
+          },
+          {
+            "id": "p-ondas-pic",
+            "type": "file",
+            "title": "Ondas PIC",
+            "path": "../biblioteca/assets/neurologia/ondas-pic.jpg",
+            "ext": ".jpg",
+            "specialty": "Neurologia",
+            "breadcrumb": "Neurologia / Ondas PIC",
+            "source": "asset",
+            "audiences": ["medicina", "enfermeria"]
           }
         ],
-        "file_count": 7
+        "file_count": 8
       },
       {
         "id": "f-44",
@@ -1027,7 +1079,7 @@
                 "id": "p-humidificador-6",
                 "type": "file",
                 "title": "Poster humidificador 6",
-                "path": "../biblioteca/assets/respiratorio/humidificador/poster-humidificador-6.pdf?v=20261017a",
+                "path": "../biblioteca/assets/respiratorio/humidificador/poster-humidificador-6.pdf?v=20261017c",
                 "ext": ".pdf",
                 "specialty": "Respiratorio",
                 "breadcrumb": "Respiratorio / Humidificador / Poster humidificador 6",
@@ -1077,9 +1129,20 @@
             "breadcrumb": "Respiratorio / Tubo torácico",
             "source": "asset",
             "audience": "medicina"
+          },
+          {
+            "id": "p-tep-clasificacion",
+            "type": "file",
+            "title": "TEP clasificacion",
+            "path": "../biblioteca/assets/respiratorio/tep-clasificacion.png",
+            "ext": ".png",
+            "specialty": "Respiratorio",
+            "breadcrumb": "Respiratorio / TEP clasificacion",
+            "source": "asset",
+            "audience": "enfermeria"
           }
         ],
-        "file_count": 21
+        "file_count": 22
       },
       {
         "id": "f-6hyg0pre-mrtm320x",
@@ -1262,6 +1325,6 @@
         "file_count": 2
       }
     ],
-    "file_count": 96
+    "file_count": 101
   }
 };
