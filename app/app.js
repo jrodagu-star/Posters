@@ -227,6 +227,22 @@ const PROTOCOLOS = [
         audiences: ['enfermeria']
       }
     ]
+  },
+  {
+    id: 'meduri',
+    title: 'Protocolo Meduri',
+    description: 'Protocolo Meduri de metilprednisolona en SDRA tardío.',
+    audiences: ['medicina', 'enfermeria'],
+    parts: [
+      {
+        id: 'protocolo',
+        title: 'Protocolo Meduri',
+        description: 'Documento clínico Meduri · SDRA tardío · metilprednisolona.',
+        path: '../biblioteca/assets/protocolos/meduri/protocolo-meduri.html?v=20261023a',
+        ext: '.html',
+        view: 'document'
+      }
+    ]
   }
 ];
 const FORMULARIO_BADGE_SVG =
