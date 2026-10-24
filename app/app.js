@@ -289,6 +289,13 @@ const HERRAMIENTAS = [
     action: 'external-tab'
   },
   {
+    id: 'ucc-cardiologicos',
+    title: 'UCC Cardiológicos',
+    description: 'Protocolos de la unidad de cuidados críticos cardiológicos.',
+    url: 'https://jrodagu-star.github.io/UCCC/app/',
+    action: 'external-tab'
+  },
+  {
     id: 'edicion',
     title: 'Edición',
     description: 'Gestionar carpetas, pósteres y guardar la biblioteca.',
