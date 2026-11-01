@@ -243,6 +243,21 @@ const PROTOCOLOS = [
         view: 'document'
       }
     ]
+  },
+  {
+    id: 'decubito-prono',
+    title: 'Decúbito prono',
+    description: 'Protocolo de decúbito prono en UCI.',
+    audiences: ['medicina', 'enfermeria', 'tcae'],
+    parts: [
+      {
+        id: 'protocolo',
+        title: 'Decúbito prono',
+        description: 'Protocolo A4 de decúbito prono en UCI.',
+        path: '../biblioteca/assets/protocolos/decubito-prono/protocolo-decubito-prono.pdf?v=20261101a',
+        ext: '.pdf'
+      }
+    ]
   }
 ];
 const FORMULARIO_BADGE_SVG =
