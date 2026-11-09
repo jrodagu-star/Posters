@@ -67,58 +67,100 @@
   .resultado { font-weight: 700; color: #c0392b; background: #fff5e6; padding: 4px 8px; border-radius: 4px; display: inline-block; min-width: 60px; text-align: center; }
   .unidad { color: #666; font-size: 12px; }
 
-  .mix-cell .pres-note { font-size: 11px; color: #555; margin-bottom: 8px; line-height: 1.35; }
+  .mix-cell .pres-note { font-size: 10px; color: #555; margin-bottom: 4px; line-height: 1.3; }
   .mix-panel {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    background: #f3f7fb; border: 1px solid #d5e3f2; border-radius: 8px; padding: 10px;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px;
+    background: #f3f7fb; border: 1px solid #d5e3f2; border-radius: 6px; padding: 6px 7px;
   }
   .mix-drug-title {
-    font-weight: 800; font-size: 14px; margin-bottom: 6px; color: inherit;
+    font-weight: 800; font-size: 13px; margin-bottom: 4px; color: inherit;
   }
-  td.mix-cell { min-width: 280px; vertical-align: top; }
+  .mix-drug-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    margin-bottom: 4px; flex-wrap: nowrap;
+  }
+  .mix-drug-head .mix-drug-title { margin-bottom: 0; min-width: 0; }
+  .mix-drug-head .mode-toggle { flex-shrink: 0; }
+  td.mix-cell { min-width: 210px; max-width: 320px; vertical-align: top; }
   .mix-row {
-    display: flex; flex-direction: column; gap: 5px;
-    width: 100%;
+    display: flex; flex-direction: column; gap: 3px;
+    width: 100%; min-width: 0;
   }
   .mix-row-head {
-    display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+    display: flex; align-items: center; justify-content: space-between; gap: 4px; flex-wrap: nowrap;
   }
-  .mix-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #3a5f86; }
-  .mode-toggle { display: flex; gap: 3px; }
+  .mix-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: #3a5f86; white-space: nowrap; }
+  .mode-toggle { display: flex; gap: 2px; flex-shrink: 1; min-width: 0; }
   .mode-btn {
     border: 1px solid #9bb4d0; background: #fff; color: #1a4a7a;
-    border-radius: 999px; padding: 2px 7px; font-size: 10px; font-weight: 700; cursor: pointer;
+    border-radius: 999px; padding: 1px 5px; font-size: 9px; font-weight: 700; cursor: pointer;
+    white-space: nowrap;
   }
   .mode-btn.active { background: #1a4a7a; color: #fff; border-color: #1a4a7a; }
   .mix-progress-wrap {
-    display: grid; grid-template-columns: 28px 1fr 28px; gap: 6px; align-items: center;
+    display: grid; grid-template-columns: 22px minmax(0, 1fr) 22px; gap: 3px; align-items: center;
   }
   .mix-progress-wrap button {
-    width: 28px; height: 28px; border-radius: 6px; border: 1px solid #9bb4d0;
-    background: #eef4fa; color: #1a4a7a; font-weight: 800; cursor: pointer; line-height: 1;
+    width: 22px; height: 22px; border-radius: 5px; border: 1px solid #9bb4d0;
+    background: #eef4fa; color: #1a4a7a; font-weight: 800; cursor: pointer; line-height: 1; font-size: 12px; padding: 0;
   }
   .mix-progress-wrap button:hover { background: #dceaf8; }
   .mix-progress {
-    -webkit-appearance: none; appearance: none; width: 100%; height: 12px;
+    -webkit-appearance: none; appearance: none; width: 100%; height: 8px;
     border-radius: 999px; outline: none; cursor: pointer;
     background: linear-gradient(90deg, #9ec9ef, #1a4a7a);
   }
   .mix-progress::-webkit-slider-thumb {
-    -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
-    background: #fff; border: 3px solid #0d355c; box-shadow: 0 1px 4px rgba(0,0,0,.25); cursor: grab;
+    -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+    background: #fff; border: 2px solid #0d355c; box-shadow: 0 1px 3px rgba(0,0,0,.25); cursor: grab;
   }
   .mix-progress::-moz-range-thumb {
-    width: 20px; height: 20px; border-radius: 50%;
-    background: #fff; border: 3px solid #0d355c; box-shadow: 0 1px 4px rgba(0,0,0,.25); cursor: grab;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #fff; border: 2px solid #0d355c; box-shadow: 0 1px 3px rgba(0,0,0,.25); cursor: grab;
   }
   .mix-readout {
-    font-size: 12px; font-weight: 800; color: #1a4a7a; text-align: right; min-width: 72px;
+    font-size: 10px; font-weight: 800; color: #1a4a7a; text-align: right; min-width: 0; white-space: nowrap;
   }
   .conc-out {
-    margin-top: 8px; font-size: 12px; background: #e8f5e9; border: 1px solid #a5d6a7;
-    border-radius: 6px; padding: 5px 8px; text-align: center; color: #1b5e20;
+    margin-top: 5px; font-size: 11px; background: #e8f5e9; border: 1px solid #a5d6a7;
+    border-radius: 5px; padding: 4px 6px; text-align: center; color: #1b5e20;
   }
-  .conc-out b { font-size: 13px; }
+  .conc-out b { font-size: 12px; }
+  .prep-summary {
+    margin-top: 4px; font-size: 10px; color: #35506e; background: #eef4fa;
+    border: 1px solid #d5e3f2; border-radius: 5px; padding: 4px 6px; line-height: 1.35; text-align: center;
+  }
+  .fixed-prep-note {
+    font-size: 11px; color: #555; background: #f3f7fb; border: 1px solid #d5e3f2;
+    border-radius: 6px; padding: 8px; line-height: 1.4;
+  }
+  .dose-bar-head {
+    display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-bottom: 4px;
+  }
+  .zones-lock {
+    border: 1px solid #9bb4d0; background: #eef4fa; color: #1a4a7a;
+    border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 700; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px; line-height: 1.2;
+  }
+  .zones-lock[aria-pressed="false"] {
+    background: #fff3cd; border-color: #e0a800; color: #7a5b00;
+  }
+  .dose-bar.editable { cursor: default; }
+  .zone-handle {
+    position: absolute; top: -4px; bottom: -4px; width: 10px; margin-left: -5px;
+    z-index: 3; cursor: ew-resize; touch-action: none;
+    display: none;
+  }
+  .dose-bar.editable .zone-handle { display: block; }
+  .zone-handle::before {
+    content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+    transform: translateX(-50%); background: #0d355c; box-shadow: 0 0 0 1px #fff;
+  }
+  .zone-handle::after {
+    content: attr(data-val); position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+    font-size: 9px; font-weight: 700; color: #0d355c; background: #fff; border: 1px solid #9bb4d0;
+    border-radius: 3px; padding: 0 3px; white-space: nowrap; pointer-events: none;
+  }
 
   .rate-wheel {
     width: 84px; user-select: none; touch-action: none;
@@ -162,7 +204,7 @@
   .rate-btns button:hover { background: #dceaf8; }
 
   /* Barra gráfica */
-  .dose-bar-wrap { width: 100%; min-width: 200px; }
+  .dose-bar-wrap { width: 100%; min-width: 180px; }
   .dose-bar {
     position: relative;
     height: 28px;
@@ -244,7 +286,7 @@
 <body>
 
 <h1>Calculadora de perfusión continua — Sedación, analgesia y control de agitación en UCI</h1>
-<p style="font-size:13px;color:#555;">Fármacos agrupados según su efecto principal. Ajusta el peso, la <b>cantidad de fármaco</b> (viales o mg/µg) y la <b>dilución</b> (saltos de 50 ml) con las barras; la concentración y la dosis se calculan al instante. La velocidad (ml/h) se regula con la rueda. Los valores se guardan localmente en este navegador.</p>
+<p style="font-size:13px;color:#555;">Fármacos agrupados según su efecto principal. Ajusta el peso, la <b>cantidad de fármaco</b> y la <b>dilución</b> (Propofol va fijo a 20 mg/ml). La concentración, el resumen de preparación y la dosis se calculan al instante. Los límites de la barra de efecto se pueden desbloquear y arrastrar. La velocidad (ml/h) se regula con la rueda. Los valores se guardan localmente en este navegador.</p>
 
 <div class="peso-box">
   <div class="peso-top">
@@ -273,9 +315,9 @@
 <table class="sedante">
 <thead>
 <tr>
-  <th style="width:28%">Fármaco / presentación y dilución</th>
+  <th style="width:24%">Fármaco / presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
-  <th style="width:32%">Efecto según dosis</th>
+  <th style="width:36%">Efecto según dosis</th>
   <th style="width:12%">Velocidad (ml/h)</th>
   <th style="width:10%">Dosis</th>
   <th style="width:14%">Efectos adversos clave</th>
@@ -287,17 +329,14 @@
   <td class="mix-cell fcol" data-drug="propofol" data-name="Propofol 2%" data-label="Fármaco / dilución"></td>
   <td>0,3–3 mg/kg/h<br>(5–50 µg/kg/min)<br><span class="alerta">Máx 4 mg/kg/h si &gt;48 h</span></td>
   <td>
-    <div class="dose-bar-wrap">
-      <div class="dose-bar">
-        <div class="dose-seg seg-green"   style="flex:1">Ligera</div>
-        <div class="dose-seg seg-yellow"  style="flex:1">Moderada</div>
-        <div class="dose-seg seg-orange"  style="flex:1">Profunda</div>
-        <div class="dose-seg seg-redlight" style="flex:1">Dosis altas</div>
-        <div class="dose-seg seg-red"     style="flex:2">⚠️ PRIS</div>
-        <div class="dose-seg seg-darkred" style="flex:2">⚠️ Dosis excesivas</div>
+    <div class="dose-bar-wrap" data-zones="propofol">
+      <div class="dose-bar-head">
+        <button type="button" class="zones-lock" id="lock_propofol" aria-pressed="true" title="Desbloquear para ajustar límites">🔒 Límites</button>
+      </div>
+      <div class="dose-bar" id="bar_propofol">
         <div class="marker" id="mk_propofol" style="left:0%"></div>
       </div>
-      <div class="axis"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>6</span><span>8+</span></div>
+      <div class="axis" id="axis_propofol"></div>
     </div>
   </td>
   <td data-label="Velocidad">
@@ -319,15 +358,14 @@
   <td class="mix-cell fcol" data-drug="midazolam" data-name="Midazolam" data-label="Fármaco / dilución"></td>
   <td>0,02–0,1 mg/kg/h<br>(1,4–7 mg/h en 70 kg)</td>
   <td>
-    <div class="dose-bar-wrap">
-      <div class="dose-bar">
-        <div class="dose-seg seg-green"  style="flex:2">Ansiolisis</div>
-        <div class="dose-seg seg-yellow" style="flex:3">Sed. ligera</div>
-        <div class="dose-seg seg-orange" style="flex:3">Sed. profunda</div>
-        <div class="dose-seg seg-red"    style="flex:2">Acumulación</div>
+    <div class="dose-bar-wrap" data-zones="midazolam">
+      <div class="dose-bar-head">
+        <button type="button" class="zones-lock" id="lock_midazolam" aria-pressed="true" title="Desbloquear para ajustar límites">🔒 Límites</button>
+      </div>
+      <div class="dose-bar" id="bar_midazolam">
         <div class="marker" id="mk_midazolam" style="left:0%"></div>
       </div>
-      <div class="axis"><span>0</span><span>0,04</span><span>0,07</span><span>0,1</span><span>0,15+</span></div>
+      <div class="axis" id="axis_midazolam"></div>
     </div>
   </td>
   <td data-label="Velocidad">
@@ -349,15 +387,14 @@
   <td class="mix-cell fcol" data-drug="ketamina" data-name="Ketamina" data-label="Fármaco / dilución"></td>
   <td>0,1–0,5 mg/kg/h (analg.)<br>1–3 mg/kg/h (sedación)</td>
   <td>
-    <div class="dose-bar-wrap">
-      <div class="dose-bar">
-        <div class="dose-seg seg-green"  style="flex:1">Analgesia</div>
-        <div class="dose-seg seg-yellow" style="flex:2">Sed. ligera</div>
-        <div class="dose-seg seg-orange" style="flex:2">Sed. disociativa</div>
-        <div class="dose-seg seg-red"    style="flex:1">Emergencia/HTA</div>
+    <div class="dose-bar-wrap" data-zones="ketamina">
+      <div class="dose-bar-head">
+        <button type="button" class="zones-lock" id="lock_ketamina" aria-pressed="true" title="Desbloquear para ajustar límites">🔒 Límites</button>
+      </div>
+      <div class="dose-bar" id="bar_ketamina">
         <div class="marker" id="mk_ketamina" style="left:0%"></div>
       </div>
-      <div class="axis"><span>0</span><span>0,5</span><span>1,5</span><span>3</span><span>4+</span></div>
+      <div class="axis" id="axis_ketamina"></div>
     </div>
   </td>
   <td data-label="Velocidad">
@@ -386,9 +423,9 @@
 <table class="analgesico">
 <thead>
 <tr>
-  <th style="width:28%">Fármaco / presentación y dilución</th>
+  <th style="width:24%">Fármaco / presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
-  <th style="width:32%">Efecto según dosis</th>
+  <th style="width:36%">Efecto según dosis</th>
   <th style="width:12%">Velocidad (ml/h)</th>
   <th style="width:10%">Dosis</th>
   <th style="width:14%">Efectos adversos clave</th>
@@ -400,14 +437,14 @@
   <td class="mix-cell fcol" data-drug="fentanilo" data-name="Fentanilo" data-label="Fármaco / dilución"></td>
   <td>1–3 µg/kg/h<br>(70–210 µg/h en 70 kg)</td>
   <td>
-    <div class="dose-bar-wrap">
-      <div class="dose-bar">
-        <div class="dose-seg seg-green"  style="flex:10">Analgesia</div>
-        <div class="dose-seg seg-orange" style="flex:7">Analgesia alta</div>
-        <div class="dose-seg seg-red"    style="flex:23">⚠️ Riesgo: sed. profunda / rigidez tor.</div>
+    <div class="dose-bar-wrap" data-zones="fentanilo">
+      <div class="dose-bar-head">
+        <button type="button" class="zones-lock" id="lock_fentanilo" aria-pressed="true" title="Desbloquear para ajustar límites">🔒 Límites</button>
+      </div>
+      <div class="dose-bar" id="bar_fentanilo">
         <div class="marker" id="mk_fentanilo" style="left:0%"></div>
       </div>
-      <div class="axis"><span>0</span><span>1</span><span>1,7</span><span>3</span><span>4+</span></div>
+      <div class="axis" id="axis_fentanilo"></div>
     </div>
   </td>
   <td data-label="Velocidad">
@@ -429,15 +466,14 @@
   <td class="mix-cell fcol" data-drug="remi" data-name="Remifentanilo" data-label="Fármaco / dilución"></td>
   <td>0,025–0,2 µg/kg/min<br>(habitual 0,05–0,1 en VM)<br><span class="alerta">&gt;0,05 inhibe respiración</span></td>
   <td>
-    <div class="dose-bar-wrap">
-      <div class="dose-bar">
-        <div class="dose-seg seg-green"  style="flex:1">Analg. sin apnea</div>
-        <div class="dose-seg seg-yellow" style="flex:1">Analgosedación</div>
-        <div class="dose-seg seg-orange" style="flex:2">Apnea / bradi.</div>
-        <div class="dose-seg seg-red"    style="flex:1">Rigidez / hipoT</div>
+    <div class="dose-bar-wrap" data-zones="remi">
+      <div class="dose-bar-head">
+        <button type="button" class="zones-lock" id="lock_remi" aria-pressed="true" title="Desbloquear para ajustar límites">🔒 Límites</button>
+      </div>
+      <div class="dose-bar" id="bar_remi">
         <div class="marker" id="mk_remi" style="left:0%"></div>
       </div>
-      <div class="axis"><span>0</span><span>0,05</span><span>0,1</span><span>0,2</span><span>0,3+</span></div>
+      <div class="axis" id="axis_remi"></div>
     </div>
   </td>
   <td data-label="Velocidad">
@@ -459,15 +495,14 @@
   <td class="mix-cell fcol" data-drug="morfina" data-name="Cloruro mórfico" data-label="Fármaco / dilución"></td>
   <td>1–12 mg/h<br>(0,015–0,15 mg/kg/h)</td>
   <td>
-    <div class="dose-bar-wrap">
-      <div class="dose-bar">
-        <div class="dose-seg seg-green"  style="flex:1">Analgesia</div>
-        <div class="dose-seg seg-yellow" style="flex:2">Analg+sed</div>
-        <div class="dose-seg seg-orange" style="flex:2">Sed. profunda</div>
-        <div class="dose-seg seg-red"    style="flex:1">Depres. resp.</div>
+    <div class="dose-bar-wrap" data-zones="morfina">
+      <div class="dose-bar-head">
+        <button type="button" class="zones-lock" id="lock_morfina" aria-pressed="true" title="Desbloquear para ajustar límites">🔒 Límites</button>
+      </div>
+      <div class="dose-bar" id="bar_morfina">
         <div class="marker" id="mk_morfina" style="left:0%"></div>
       </div>
-      <div class="axis"><span>0</span><span>3</span><span>6</span><span>10</span><span>12+</span></div>
+      <div class="axis" id="axis_morfina"></div>
     </div>
   </td>
   <td data-label="Velocidad">
@@ -496,9 +531,9 @@
 <table class="agitacion">
 <thead>
 <tr>
-  <th style="width:28%">Fármaco / presentación y dilución</th>
+  <th style="width:24%">Fármaco / presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
-  <th style="width:32%">Efecto según dosis</th>
+  <th style="width:36%">Efecto según dosis</th>
   <th style="width:12%">Velocidad (ml/h)</th>
   <th style="width:10%">Dosis</th>
   <th style="width:14%">Efectos adversos clave</th>
@@ -510,15 +545,14 @@
   <td class="mix-cell fcol" data-drug="dexme" data-name="Dexmedetomidina" data-label="Fármaco / dilución"></td>
   <td>0,2–1,4 µg/kg/h<br><span class="alerta">Sin bolo de carga</span></td>
   <td>
-    <div class="dose-bar-wrap">
-      <div class="dose-bar">
-        <div class="dose-seg seg-green"  style="flex:2">Ligera cooperativa</div>
-        <div class="dose-seg seg-yellow" style="flex:3">Moderada</div>
-        <div class="dose-seg seg-orange" style="flex:2">Profunda</div>
-        <div class="dose-seg seg-red"    style="flex:1">↑Brad/HipoT</div>
+    <div class="dose-bar-wrap" data-zones="dexme">
+      <div class="dose-bar-head">
+        <button type="button" class="zones-lock" id="lock_dexme" aria-pressed="true" title="Desbloquear para ajustar límites">🔒 Límites</button>
+      </div>
+      <div class="dose-bar" id="bar_dexme">
         <div class="marker" id="mk_dexme" style="left:0%"></div>
       </div>
-      <div class="axis"><span>0</span><span>0,4</span><span>0,7</span><span>1,2</span><span>1,4+</span></div>
+      <div class="axis" id="axis_dexme"></div>
     </div>
   </td>
   <td data-label="Velocidad">
@@ -565,9 +599,9 @@
 <table class="relajante">
 <thead>
 <tr>
-  <th style="width:28%">Fármaco / presentación y dilución</th>
+  <th style="width:24%">Fármaco / presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
-  <th style="width:32%">Efecto según dosis</th>
+  <th style="width:36%">Efecto según dosis</th>
   <th style="width:12%">Velocidad (ml/h)</th>
   <th style="width:10%">Dosis</th>
   <th style="width:14%">Efectos adversos clave</th>
@@ -579,15 +613,14 @@
   <td class="mix-cell fcol" data-drug="cisatracurio" data-name="Cisatracurio" data-label="Fármaco / dilución"></td>
   <td>0,5–10 µg/kg/min<br>(habitual 1–3 µg/kg/min)<br>Bolo inicial: 0,15–0,2 mg/kg</td>
   <td>
-    <div class="dose-bar-wrap">
-      <div class="dose-bar">
-        <div class="dose-seg seg-green"  style="flex:1">Parcial</div>
-        <div class="dose-seg seg-yellow" style="flex:2">Eficaz</div>
-        <div class="dose-seg seg-orange" style="flex:3">Profundo</div>
-        <div class="dose-seg seg-red"    style="flex:4">Sobre-bloqueo</div>
+    <div class="dose-bar-wrap" data-zones="cisatracurio">
+      <div class="dose-bar-head">
+        <button type="button" class="zones-lock" id="lock_cisatracurio" aria-pressed="true" title="Desbloquear para ajustar límites">🔒 Límites</button>
+      </div>
+      <div class="dose-bar" id="bar_cisatracurio">
         <div class="marker" id="mk_cisatracurio" style="left:0%"></div>
       </div>
-      <div class="axis"><span>0</span><span>1</span><span>3</span><span>6</span><span>10+</span></div>
+      <div class="axis" id="axis_cisatracurio"></div>
     </div>
   </td>
   <td data-label="Velocidad">
@@ -609,15 +642,14 @@
   <td class="mix-cell fcol" data-drug="rocuronio" data-name="Rocuronio" data-label="Fármaco / dilución"></td>
   <td>5–12 µg/kg/min<br>(0,3–0,6 mg/kg/h)<br>Bolo IOT: 0,6–1,2 mg/kg</td>
   <td>
-    <div class="dose-bar-wrap">
-      <div class="dose-bar">
-        <div class="dose-seg seg-green"  style="flex:1">Parcial</div>
-        <div class="dose-seg seg-yellow" style="flex:2">Eficaz</div>
-        <div class="dose-seg seg-orange" style="flex:2">Profundo</div>
-        <div class="dose-seg seg-red"    style="flex:2">Acumulación</div>
+    <div class="dose-bar-wrap" data-zones="rocuronio">
+      <div class="dose-bar-head">
+        <button type="button" class="zones-lock" id="lock_rocuronio" aria-pressed="true" title="Desbloquear para ajustar límites">🔒 Límites</button>
+      </div>
+      <div class="dose-bar" id="bar_rocuronio">
         <div class="marker" id="mk_rocuronio" style="left:0%"></div>
       </div>
-      <div class="axis"><span>0</span><span>5</span><span>10</span><span>15</span><span>20+</span></div>
+      <div class="axis" id="axis_rocuronio"></div>
     </div>
   </td>
   <td data-label="Velocidad">
@@ -673,12 +705,13 @@
 <script>
 const MIX = {
   propofol: {
-    presentacion: 'Vial 2% = 20 mg/ml (p. ej. vial 50 ml = 1000 mg). Puede usarse sin diluir o diluido.',
+    presentacion: 'Vial 2% = 20 mg/ml. Preparación fija (sin diluir).',
+    fixedPrep: true, fixedConc: 20,
     vialAmount: 1000, vialLabel: 'viales', amountUnit: 'mg', modes: ['viales', 'mg'],
     defaultMode: 'viales', defaultVials: 1, defaultAmt: 1000, defaultVol: 50,
     volMin: 50, volMax: 500, doseKind: 'mg_kg_h',
     max: 8, unit: 'mg/kg/h', decimals: 2,
-    zones: [{lim:1, name:'Sedación ligera', color:'#5fb55f'}, {lim:2, name:'Sedación moderada', color:'#f5c542'}, {lim:3, name:'Sedación profunda', color:'#f08a3c'}, {lim:4, name:'Dosis altas', color:'#e8806e'}, {lim:6, name:'⚠️ PRIS', color:'#d94c4c'}, {lim:8, name:'⚠️ Dosis excesivas', color:'#8b1a1a'}]
+    zones: [{lim:1, name:'Ligera', color:'#5fb55f'}, {lim:2, name:'Moderada', color:'#f5c542'}, {lim:3, name:'Profunda', color:'#f08a3c'}, {lim:4, name:'Dosis altas', color:'#e8806e'}, {lim:6, name:'⚠️ PRIS', color:'#d94c4c'}, {lim:8, name:'⚠️ Dosis excesivas', color:'#8b1a1a'}]
   },
   midazolam: {
     presentacion: 'Vial 50 mg/10 ml. Mezcla habitual: 250 mg en 250 ml SSF.',
@@ -816,10 +849,198 @@ function getVolume(id) {
 }
 
 function getConcentration(id) {
+  const cfg = MIX[id];
+  if (cfg.fixedPrep && cfg.fixedConc != null) return cfg.fixedConc;
   const vol = getVolume(id);
   const amount = getDrugAmount(id);
   if (!vol) return 0;
   return amount / vol;
+}
+
+function formatAmountValue(amount, unit) {
+  const u = unitLabel(unit);
+  if (amount >= 100) return Math.round(amount) + ' ' + u;
+  if (amount >= 10) return amount.toFixed(1).replace(/\.0$/, '') + ' ' + u;
+  return amount.toFixed(unit === 'ug' ? 0 : 1).replace(/\.0$/, '') + ' ' + u;
+}
+
+function formatVialCount(n, label) {
+  const rounded = Math.round(n * 100) / 100;
+  const txt = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+  return txt + ' ' + label;
+}
+
+function formatPrepSummary(id) {
+  const cfg = MIX[id];
+  if (cfg.fixedPrep) return 'Vial 2% sin diluir';
+  const amount = getDrugAmount(id);
+  const vol = getVolume(id);
+  const vials = cfg.vialAmount ? amount / cfg.vialAmount : 0;
+  return formatAmountValue(amount, cfg.amountUnit) + ' · ' + formatVialCount(vials, cfg.vialLabel) + ' en ' + vol + ' ml';
+}
+
+function zoneStep(cfg) {
+  const max = cfg.max || 1;
+  if (max <= 0.5) return 0.01;
+  if (max <= 2) return 0.05;
+  if (max <= 10) return 0.1;
+  return 0.5;
+}
+
+function formatZoneLim(v, cfg) {
+  const step = zoneStep(cfg);
+  if (step < 0.05) return v.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+  if (step < 0.5) return v.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+  return (Math.round(v * 10) / 10).toString();
+}
+
+const zoneLocks = {};
+Object.keys(MIX).forEach(id => { zoneLocks[id] = true; });
+
+function syncCfgMax(id) {
+  const cfg = MIX[id];
+  if (!cfg.zones || !cfg.zones.length) return;
+  cfg.max = cfg.zones[cfg.zones.length - 1].lim;
+}
+
+function buildDoseBar(id) {
+  const cfg = MIX[id];
+  const bar = document.getElementById('bar_' + id);
+  const axis = document.getElementById('axis_' + id);
+  const lockBtn = document.getElementById('lock_' + id);
+  if (!bar || !cfg.zones) return;
+
+  const unlocked = zoneLocks[id] === false;
+  bar.classList.toggle('editable', unlocked);
+  if (lockBtn) {
+    lockBtn.setAttribute('aria-pressed', unlocked ? 'false' : 'true');
+    lockBtn.textContent = unlocked ? '🔓 Ajustar' : '🔒 Límites';
+    lockBtn.title = unlocked ? 'Bloquear límites' : 'Desbloquear para ajustar límites';
+  }
+
+  const marker = document.getElementById('mk_' + id);
+  const markerHtml = marker ? marker.outerHTML : '<div class="marker" id="mk_' + id + '" style="left:0%"></div>';
+  let prev = 0;
+  let segs = '';
+  cfg.zones.forEach((z, i) => {
+    const width = Math.max(0.0001, z.lim - prev);
+    segs += '<div class="dose-seg" style="flex:' + width + ';background:' + z.color + (i >= cfg.zones.length - 2 ? ';color:#fff;text-shadow:none' : '') + '">' + z.name + '</div>';
+    prev = z.lim;
+  });
+
+  let handles = '';
+  if (unlocked) {
+    for (let i = 0; i < cfg.zones.length; i++) {
+      const lim = cfg.zones[i].lim;
+      const left = (lim / cfg.max) * 100;
+      handles += '<div class="zone-handle" data-drug="' + id + '" data-idx="' + i + '" data-val="' + formatZoneLim(lim, cfg) + '" style="left:' + left + '%"></div>';
+    }
+  }
+
+  bar.innerHTML = segs + handles + markerHtml;
+
+  if (axis) {
+    let axisHtml = '<span>0</span>';
+    cfg.zones.forEach(z => {
+      axisHtml += '<span>' + formatZoneLim(z.lim, cfg) + (z === cfg.zones[cfg.zones.length - 1] ? '+' : '') + '</span>';
+    });
+    axis.innerHTML = axisHtml;
+  }
+
+  if (unlocked) {
+    bar.querySelectorAll('.zone-handle').forEach(handle => {
+      handle.addEventListener('pointerdown', onZoneHandleDown);
+    });
+  }
+}
+
+function applyZoneWidths(id) {
+  const cfg = MIX[id];
+  const bar = document.getElementById('bar_' + id);
+  if (!bar || !cfg.zones) return;
+  const segs = bar.querySelectorAll('.dose-seg');
+  let prev = 0;
+  cfg.zones.forEach((z, i) => {
+    const width = Math.max(0.0001, z.lim - prev);
+    if (segs[i]) segs[i].style.flex = String(width);
+    prev = z.lim;
+  });
+  bar.querySelectorAll('.zone-handle').forEach(h => {
+    const i = parseInt(h.getAttribute('data-idx'), 10);
+    const lim = cfg.zones[i].lim;
+    h.style.left = ((lim / cfg.max) * 100) + '%';
+    h.setAttribute('data-val', formatZoneLim(lim, cfg));
+  });
+  const axis = document.getElementById('axis_' + id);
+  if (axis) {
+    let axisHtml = '<span>0</span>';
+    cfg.zones.forEach(z => {
+      axisHtml += '<span>' + formatZoneLim(z.lim, cfg) + (z === cfg.zones[cfg.zones.length - 1] ? '+' : '') + '</span>';
+    });
+    axis.innerHTML = axisHtml;
+  }
+}
+
+function onZoneHandleDown(e) {
+  const handle = e.currentTarget;
+  const id = handle.getAttribute('data-drug');
+  const idx = parseInt(handle.getAttribute('data-idx'), 10);
+  if (zoneLocks[id]) return;
+  const cfg = MIX[id];
+  const bar = document.getElementById('bar_' + id);
+  if (!bar) return;
+  e.preventDefault();
+  handle.setPointerCapture(e.pointerId);
+
+  const step = zoneStep(cfg);
+  const minGap = step;
+  // Escala fija durante el arrastre del último límite (permite ampliar el máximo)
+  const scaleMax = Math.max(cfg.max, cfg.zones[cfg.zones.length - 1].lim);
+
+  function move(ev) {
+    const rect = bar.getBoundingClientRect();
+    let pct = (ev.clientX - rect.left) / rect.width;
+    pct = Math.min(1.15, Math.max(0, pct));
+    let val = pct * scaleMax;
+    val = Math.round(val / step) * step;
+
+    const prevLim = idx === 0 ? 0 : cfg.zones[idx - 1].lim;
+    const nextLim = idx === cfg.zones.length - 1 ? Infinity : cfg.zones[idx + 1].lim;
+    const minVal = prevLim + minGap;
+    const maxVal = idx === cfg.zones.length - 1 ? scaleMax * 1.15 : nextLim - minGap;
+    val = Math.min(maxVal, Math.max(minVal, val));
+    cfg.zones[idx].lim = val;
+    syncCfgMax(id);
+    applyZoneWidths(id);
+    recalcular();
+  }
+
+  function up(ev) {
+    handle.releasePointerCapture(ev.pointerId);
+    handle.removeEventListener('pointermove', move);
+    handle.removeEventListener('pointerup', up);
+    handle.removeEventListener('pointercancel', up);
+    buildDoseBar(id);
+    recalcular();
+    guardarEstado();
+  }
+
+  handle.addEventListener('pointermove', move);
+  handle.addEventListener('pointerup', up);
+  handle.addEventListener('pointercancel', up);
+  move(e);
+}
+
+function bindZoneLocks() {
+  Object.keys(MIX).forEach(id => {
+    const btn = document.getElementById('lock_' + id);
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      zoneLocks[id] = !zoneLocks[id];
+      buildDoseBar(id);
+      guardarEstado();
+    });
+  });
 }
 
 function doseFromRate(id, mlh, peso) {
@@ -861,22 +1082,31 @@ function buildMixCell(id) {
   const cfg = MIX[id];
   const cell = document.querySelector('.mix-cell[data-drug="' + id + '"]');
   if (!cell) return;
+  const drugTitle = cell.getAttribute('data-name') || id;
+
+  if (cfg.fixedPrep) {
+    cell.innerHTML =
+      '<div class="mix-drug-title">' + drugTitle + '</div>' +
+      '<div class="conc-out">Concentración fija: <b id="conc_' + id + '">—</b> <span style="font-weight:600;opacity:.85">(vial 2% sin diluir)</span></div>';
+    return;
+  }
+
   const modeBtns = cfg.modes.map(m => {
     const label = m === 'viales' ? cfg.vialLabel : unitLabel(m === 'ug' ? 'ug' : 'mg');
     return '<button type="button" class="mode-btn" data-drug="' + id + '" data-mode="' + m + '">' + label + '</button>';
   }).join('');
-  const drugTitle = cell.getAttribute('data-name') || id;
   cell.innerHTML =
-    '<div class="mix-drug-title">' + drugTitle + '</div>' +
-    '<div class="pres-note">' + cfg.presentacion + '</div>' +
+    '<div class="mix-drug-head">' +
+      '<div class="mix-drug-title">' + drugTitle + '</div>' +
+      '<div class="mode-toggle">' + modeBtns + '</div>' +
+    '</div>' +
+    '<input type="hidden" id="mode_' + id + '" value="' + cfg.defaultMode + '">' +
     '<div class="mix-panel">' +
       '<div class="mix-row">' +
         '<div class="mix-row-head">' +
           '<div class="mix-label">Fármaco</div>' +
-          '<div class="mode-toggle">' + modeBtns + '</div>' +
           '<div class="mix-readout"><span id="amt_' + id + '_txt">' + cfg.defaultVials + '</span> <span id="amt_' + id + '_unit">' + cfg.vialLabel + '</span></div>' +
         '</div>' +
-        '<input type="hidden" id="mode_' + id + '" value="' + cfg.defaultMode + '">' +
         '<div class="mix-progress-wrap">' +
           '<button type="button" onclick="stepMixByStep(\'amt_' + id + '\',-1)" aria-label="Menos fármaco">−</button>' +
           '<input type="range" class="mix-progress" id="amt_' + id + '" min="1" max="20" step="1" value="' + cfg.defaultVials + '" aria-label="Cantidad fármaco ' + id + '" oninput="onAmountInput(\'' + id + '\')">' +
@@ -895,11 +1125,11 @@ function buildMixCell(id) {
         '</div>' +
       '</div>' +
     '</div>' +
-    '<div class="conc-out">Concentración: <b id="conc_' + id + '">—</b></div>';
+    '<div class="conc-out">Concentración: <b id="conc_' + id + '">—</b></div>' +
+    '<div class="prep-summary" id="prep_' + id + '"></div>';
 
   cell.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      // convert current amount to dataset before switching
       syncAmountDataset(id);
       setMode(id, btn.getAttribute('data-mode'));
       recalcular();
@@ -989,6 +1219,8 @@ function recalcular() {
     }
     const conc = getConcentration(id);
     if (concEl) concEl.textContent = formatConc(conc, cfg.amountUnit);
+    const prepEl = document.getElementById('prep_' + id);
+    if (prepEl) prepEl.textContent = formatPrepSummary(id);
 
     if (!peso && id !== 'morfina') {
       doseEl.textContent = '—';
@@ -1023,6 +1255,8 @@ function guardarEstado() {
     Object.keys(MIX).forEach(id => {
       const amt = document.getElementById('amt_' + id);
       if (amt && amt.dataset.mgValue) estado['amtbase_' + id] = amt.dataset.mgValue;
+      estado['zones_' + id] = MIX[id].zones.map(z => z.lim);
+      estado['lock_' + id] = zoneLocks[id] !== false;
     });
     localStorage.setItem('calc_sedacion_uci_v3', JSON.stringify(estado));
   } catch(e) {}
@@ -1034,20 +1268,27 @@ function cargarEstado() {
     if (raw) {
       const estado = JSON.parse(raw);
       Object.keys(MIX).forEach(id => {
-        if (estado['mode_' + id]) setMode(id, estado['mode_' + id]);
-        if (estado['amtbase_' + id]) {
+        if (estado['mode_' + id] && !MIX[id].fixedPrep) setMode(id, estado['mode_' + id]);
+        if (estado['amtbase_' + id] && !MIX[id].fixedPrep) {
           const amt = document.getElementById('amt_' + id);
           if (amt) amt.dataset.mgValue = estado['amtbase_' + id];
           setMode(id, estado['mode_' + id] || getMode(id));
-        } else if (estado['amt_' + id] !== undefined) {
+        } else if (estado['amt_' + id] !== undefined && !MIX[id].fixedPrep) {
           const amt = document.getElementById('amt_' + id);
           if (amt) amt.value = estado['amt_' + id];
           syncAmountDataset(id);
         }
-        if (estado['vol_' + id] !== undefined) {
+        if (estado['vol_' + id] !== undefined && !MIX[id].fixedPrep) {
           const vol = document.getElementById('vol_' + id);
           if (vol) vol.value = estado['vol_' + id];
         }
+        if (Array.isArray(estado['zones_' + id]) && MIX[id].zones) {
+          estado['zones_' + id].forEach((lim, i) => {
+            if (MIX[id].zones[i] && isFinite(lim) && lim > 0) MIX[id].zones[i].lim = lim;
+          });
+          syncCfgMax(id);
+        }
+        if (estado['lock_' + id] !== undefined) zoneLocks[id] = !!estado['lock_' + id];
       });
       CAMPOS.forEach(id => { if (estado[id] !== undefined) { const el = document.getElementById(id); if (el) el.value = estado[id]; } });
       return;
@@ -1113,6 +1354,8 @@ function bindWheels() {
 
 Object.keys(MIX).forEach(buildMixCell);
 cargarEstado();
+Object.keys(MIX).forEach(buildDoseBar);
+bindZoneLocks();
 bindWheels();
 recalcular();
 </script>
