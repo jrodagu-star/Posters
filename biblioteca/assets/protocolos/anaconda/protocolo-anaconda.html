@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="genspark-artifact-type" content="poster">
+<title>Sedación inhalada con AnaConDa — Póster A3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#d9dcdc; }
+  :root{
+    --slate:#1d2a33; --slate2:#2a3a44; --ink:#1c2328; --muted:#56636b;
+    --paper:#eef1f1; --card:#ffffff; --line:#dfe4e5;
+    --red:oklch(0.56 0.17 25); --teal:oklch(0.56 0.09 195); --blue:oklch(0.52 0.12 250);
+    --green:oklch(0.56 0.12 150); --amber:oklch(0.8 0.15 78); --amberDk:oklch(0.45 0.09 70);
+  }
+  *{ box-sizing:border-box; }
+  /* .wrap permite que el visor de Posters mida y escale el póster */
+  .wrap{
+    width:1188px; margin:0 auto; background:#d9dcdc;
+  }
+  .poster-canvas{
+    position:relative;
+    width:1188px; height:1680px; /* A3 297×420 mm @ 4 px/mm */
+    overflow:hidden;
+    background:var(--paper); color:var(--ink);
+    font-family:'Barlow', sans-serif; font-size:15.5px; line-height:1.32;
+  }
+  .composition{ position:absolute; inset:0; display:flex; flex-direction:column; }
+  .cond{ font-family:'Barlow Condensed', sans-serif; text-transform:uppercase; letter-spacing:.02em; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  /* ---------- Header ---------- */
+  .head{ background:linear-gradient(180deg,var(--slate) 0%, #17323a 100%); color:#eef4f4;
+         display:grid; grid-template-columns:1fr 430px; gap:36px; padding:36px 48px 32px; }
+  .eyebrow{ font-family:'Barlow Condensed'; font-weight:600; font-size:20px; letter-spacing:.18em;
+            text-transform:uppercase; color:oklch(0.82 0.08 195); display:flex; gap:12px; align-items:center; }
+  .eyebrow i{ width:6px; height:6px; background:currentColor; border-radius:50%; display:inline-block; opacity:.7; }
+  h1{ margin:18px 0 0; font-family:'Barlow Condensed'; font-weight:800; text-transform:uppercase;
+      font-size:92px; line-height:.9; letter-spacing:.005em; }
+  h1 em{ font-style:normal; color:oklch(0.8 0.1 195); }
+  h1 small{ display:block; font-size:42px; font-weight:600; color:#b9c7ca; letter-spacing:.04em; margin-top:10px; }
+  .head-meta{ margin-top:22px; display:flex; gap:10px; flex-wrap:wrap; }
+  .tag{ font-family:'Barlow Condensed'; font-weight:600; font-size:17px; letter-spacing:.08em; text-transform:uppercase;
+        padding:5px 12px; border:1.5px solid rgba(255,255,255,.28); border-radius:3px; color:#dfe9ea; }
+
+  /* ---------- Placeholders ---------- */
+  .ph{ position:relative; border-radius:6px; overflow:hidden;
+       background:repeating-linear-gradient(135deg,#e7ecec 0 9px,#dde3e4 9px 18px);
+       border:1.5px dashed #a9b5b8; display:flex; align-items:flex-end; }
+  .ph.dark{ background:repeating-linear-gradient(135deg,rgba(255,255,255,.07) 0 9px,rgba(255,255,255,.03) 9px 18px);
+            border-color:rgba(255,255,255,.35); }
+  .ph span{ font-family:'IBM Plex Mono'; font-size:11.5px; line-height:1.3; color:#4f5d62; background:rgba(255,255,255,.85);
+            padding:4px 7px; margin:7px; border-radius:3px; letter-spacing:.01em; }
+  .ph.dark span{ background:rgba(10,25,30,.75); color:#cfe0e2; }
+  .ph b{ font-weight:500; text-transform:uppercase; display:block; }
+
+  /* ---------- Body grid ---------- */
+  .body{ flex:1; display:grid; gap:14px; padding:20px 32px 0;
+         grid-template-columns:1fr 1fr; align-content:start; }
+  .card{ background:var(--card); border-radius:8px; border-top:7px solid var(--c);
+         padding:18px 22px 20px; box-shadow:0 1px 0 rgba(0,0,0,.04), 0 6px 18px -12px rgba(20,40,50,.25); min-width:0; }
+  .card.full{ grid-column:1 / -1; }
+  .sec-h{ display:flex; align-items:baseline; gap:12px; margin:0 0 12px; }
+  .sec-n{ font-family:'Barlow Condensed'; font-weight:800; font-size:38px; line-height:.8; color:var(--c); }
+  .sec-t{ font-family:'Barlow Condensed'; font-weight:700; font-size:29px; line-height:1; text-transform:uppercase; letter-spacing:.02em; }
+  .sub{ font-family:'Barlow Condensed'; font-weight:700; text-transform:uppercase; font-size:17px; letter-spacing:.1em;
+        color:var(--c); margin:0 0 6px; display:flex; align-items:center; gap:8px; }
+  .sub::after{ content:""; flex:1; height:1.5px; background:var(--line); }
+  ul.l{ list-style:none; margin:0; padding:0; }
+  ul.l li{ position:relative; padding-left:16px; margin:0 0 5px; text-wrap:pretty; }
+  ul.l li::before{ content:""; position:absolute; left:2px; top:.55em; width:6px; height:6px; background:var(--c); border-radius:1px; transform:rotate(45deg); }
+  ul.l.soft li::before{ background:transparent; border:1.5px solid var(--c); }
+  strong{ font-weight:700; }
+  .note{ color:var(--muted); font-size:14px; }
+
+  /* chips */
+  .chip{ display:inline-block; font-family:'Barlow Condensed'; font-weight:700; font-size:14px; letter-spacing:.08em;
+         text-transform:uppercase; padding:1px 7px 0; border-radius:3px; margin-right:6px; vertical-align:1px; color:#fff; line-height:1.35; }
+  .chip.no{ background:var(--red); }
+  .chip.never{ background:#1d2a33; }
+  .chip.only{ background:var(--blue); }
+  .chip.pos{ background:var(--teal); }
+  .chip.out{ background:var(--green); }
+
+  /* 01 */
+  .ci-grid{ display:grid; grid-template-columns:1fr; gap:12px; }
+
+  /* 02 material */
+  .thumbs{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+  .thumbs .ph{ height:104px; }
+
+  /* partes */
+  .parts{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px 14px; }
+  .part{ display:grid; grid-template-columns:30px 62px 1fr; gap:10px; align-items:center; background:#f3f6f8; border-radius:6px; padding:7px 10px; }
+  .pn{ width:28px; height:28px; border-radius:50%; background:var(--teal); color:#fff; display:grid; place-items:center;
+       font-family:'Barlow Condensed'; font-weight:800; font-size:19px; }
+  .pn.x{ background:#9aa7ac; }
+  .part .ph{ height:50px; border-width:1px; }
+  .part .ph span{ font-size:9.5px; padding:1px 4px; margin:3px; }
+  .pt{ font-family:'Barlow Condensed'; font-weight:700; font-size:18px; text-transform:uppercase; letter-spacing:.02em; line-height:1.05; }
+  .pt em{ font-style:normal; font-weight:600; font-size:12px; letter-spacing:.08em; color:var(--muted); border:1px solid #c3ccd0; border-radius:3px; padding:0 4px; vertical-align:2px; }
+  .part p{ margin:2px 0 0; font-size:13.5px; line-height:1.25; text-wrap:pretty; }
+
+  /* 03 montaje */
+  .mont{ display:grid; grid-template-columns:300px 1fr; gap:20px; }
+  .mont-ph{ display:grid; grid-template-rows:1fr 1fr; gap:8px; }
+  .steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; counter-reset:s; }
+  .step{ background:#f3f6f8; border-radius:6px; padding:12px 14px 12px; position:relative; }
+  .step .k{ font-family:'Barlow Condensed'; font-weight:800; font-size:34px; line-height:.85; color:var(--c); display:block; margin-bottom:6px; }
+  .step p{ margin:0; font-size:15px; text-wrap:pretty; }
+  .red-dot{ display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--red); vertical-align:0; margin:0 2px; }
+
+  /* alert */
+  .alert{ grid-column:1 / -1; background:var(--amber); border-radius:8px; display:grid; grid-template-columns:auto 1fr auto;
+          align-items:center; gap:22px; padding:14px 24px; color:#2a2007; }
+  .alert .badge{ font-family:'Barlow Condensed'; font-weight:800; font-size:30px; letter-spacing:.06em; text-transform:uppercase;
+                 background:#2a2007; color:var(--amber); padding:6px 14px 4px; border-radius:4px; white-space:nowrap; }
+  .alert .msg{ font-family:'Barlow Condensed'; font-weight:700; font-size:30px; text-transform:uppercase; line-height:1; letter-spacing:.01em; }
+  .alert .msg span{ font-weight:600; font-size:19px; letter-spacing:.04em; display:block; margin-top:5px; text-transform:none; font-family:'Barlow'; }
+  .alert .x{ font-family:'Barlow Condensed'; font-weight:800; font-size:24px; text-transform:uppercase; border:2.5px solid #2a2007;
+             padding:4px 12px 2px; border-radius:4px; white-space:nowrap; }
+
+  /* 04 dosificación */
+  .dose{ display:grid; grid-template-columns:1fr; gap:10px; }
+  .dose-row{ display:grid; grid-template-columns:150px 1fr; gap:12px; align-items:center; padding:8px 0; border-top:1.5px solid var(--line); }
+  .dose-row:first-of-type{ border-top:0; }
+  .dv{ font-family:'Barlow Condensed'; font-weight:800; font-size:30px; line-height:.95; color:var(--c); }
+  .dv small{ display:block; font-size:14px; font-weight:600; color:var(--muted); letter-spacing:.06em; }
+  .reval{ display:flex; gap:12px; align-items:center; background:#f0f6f6; border-radius:6px; padding:9px 12px; }
+  .reval .big{ font-family:'Barlow Condensed'; font-weight:800; font-size:34px; color:var(--c); line-height:.9; white-space:nowrap; }
+
+  /* 06 */
+  .rec{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; }
+  .rec > div{ padding:4px 18px; border-left:1.5px solid var(--line); }
+  .rec > div:first-child{ border-left:0; padding-left:0; }
+  .rec .what{ font-family:'Barlow Condensed'; font-weight:700; text-transform:uppercase; font-size:17px; letter-spacing:.08em; color:var(--muted); }
+  .rec .when{ font-family:'Barlow Condensed'; font-weight:800; font-size:34px; line-height:1; color:var(--slate); margin:2px 0 4px; }
+  .rec p{ margin:0; font-size:14.5px; text-wrap:pretty; }
+
+  /* footer */
+  .foot{ display:flex; justify-content:space-between; align-items:center; padding:14px 32px 18px; color:var(--muted);
+         font-size:14px; }
+  .foot .disc{ font-family:'Barlow Condensed'; font-weight:600; text-transform:uppercase; letter-spacing:.1em; font-size:16px; color:var(--slate2); }
+
+  /* ---- A3 fit overrides ---- */
+  .poster-canvas{ font-size:14px; line-height:1.3; }
+  .head{ grid-template-columns:1fr 420px; padding:30px 40px 28px; gap:30px; }
+  .eyebrow{ font-size:17px; }
+  h1{ font-size:74px; margin-top:12px; }
+  h1 small{ font-size:28px; margin-top:8px; }
+  .head-meta{ margin-top:16px; }
+  .tag{ font-size:15px; padding:3px 10px; }
+  .body{ grid-template-columns:repeat(6,1fr); gap:12px; padding:16px 26px 0; }
+  .card{ grid-column:span 3; padding:14px 18px 16px; border-top-width:6px; }
+  .card.s2{ grid-column:span 2; } .card.s4{ grid-column:span 4; } .card.full{ grid-column:1 / -1; }
+  .sec-h{ margin-bottom:9px; } .sec-n{ font-size:32px; } .sec-t{ font-size:24px; }
+  .sub{ font-size:15px; }
+  ul.l li{ margin-bottom:3px; }
+  .ci-grid{ gap:8px; }
+  .dose{ gap:8px; } .dose-row{ grid-template-columns:118px 1fr; padding:5px 0; } .dv{ font-size:25px; }
+  .reval{ padding:7px 10px; } .reval .big{ font-size:28px; }
+  .parts{ gap:7px 10px; } .part{ padding:6px 8px; grid-template-columns:26px 54px 1fr; gap:8px; }
+  .part .ph{ height:44px; } .pn{ width:24px; height:24px; font-size:16px; } .pt{ font-size:16px; } .part p{ font-size:12.5px; }
+  .mont{ grid-template-columns:250px 1fr; gap:14px; }
+  .step{ padding:9px 12px; } .step .k{ font-size:28px; margin-bottom:3px; } .step p{ font-size:14px; }
+  .alert{ padding:10px 22px; } .alert .badge{ font-size:25px; } .alert .msg{ font-size:26px; } .alert .msg span{ font-size:16px; } .alert .x{ font-size:21px; }
+  .rec{ grid-template-columns:1fr 1fr; gap:12px 0; }
+  .rec > div:nth-child(3){ border-left:0; padding-left:0; }
+  .rec .what{ font-size:15px; } .rec .when{ font-size:28px; } .rec p{ font-size:13px; }
+  .foot{ padding:8px 26px 10px; }
+  [data-layer-id=s02] > .ph{ height:84px !important; margin-bottom:9px !important; }
+  [data-layer-id=s04] .ph{ height:100px !important; }
+  .head .ph{ min-height:200px !important; }
+  .mont{ grid-template-columns:470px 1fr !important; }
+  .mont-ph{ grid-template-rows:none; grid-template-columns:1fr 1fr; gap:8px; }
+  .mimg{ margin:0; position:relative; border-radius:6px; overflow:hidden; background:#cfd8da; min-height:190px; }
+  .mimg img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .mimg figcaption{ position:absolute; left:0; right:0; bottom:0; padding:16px 10px 7px; background:linear-gradient(transparent, rgba(15,30,38,.85));
+    color:#fff; font-family:'Barlow Condensed'; font-weight:700; text-transform:uppercase; letter-spacing:.05em; font-size:16px; display:flex; align-items:center; gap:7px; }
+  .mimg figcaption b{ background:var(--blue); width:22px; height:22px; border-radius:50%; display:grid; place-items:center; font-size:14px; }
+  .steps{ gap:8px; }
+  .head{ grid-template-columns:1fr 330px !important; align-items:center; }
+  .esq{ background:#fff; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center; padding:4px; height:230px; }
+  .body{ gap:10px !important; padding-top:14px !important; }
+  .head{ padding:22px 40px 20px !important; }
+  .head h1{ font-size:68px; margin-top:8px; }
+  .head .head-meta{ margin-top:12px; }
+  .esq{ height:210px; }
+  .part{ padding:4px 8px !important; }
+  .step{ padding:7px 12px !important; }
+  .esq img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .pimg{ height:44px; background:#fff; border-radius:4px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .pimg img{ max-width:100%; max-height:100%; object-fit:contain; mix-blend-mode:multiply; }
+  [data-layer-id=s04] .ph{ height:72px !important; }
+  [data-layer-id=s04] .dose{ gap:6px; }
+  .dtab{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  .dtab th{ font-family:'Barlow Condensed'; font-weight:700; text-transform:uppercase; letter-spacing:.06em; font-size:13px; color:var(--c); text-align:left; padding:0 4px 2px; border-bottom:1.5px solid var(--line); }
+  .dtab td{ padding:1px 4px; border-bottom:1px solid var(--line); line-height:1.15; }
+  .dtab td:first-child{ font-family:'Barlow Condensed'; font-weight:700; text-transform:uppercase; font-size:12.5px; letter-spacing:.04em; color:var(--muted); white-space:nowrap; }
+  .dtab b{ font-family:'Barlow Condensed'; font-weight:800; font-size:17px; color:var(--ink); }
+  .dtab small{ font-size:10.5px; color:var(--muted); margin-left:4px; }
+  .nomo{ margin:0; background:#f6f9f9; border-radius:6px; padding:4px 6px 2px; }
+  .nomo figcaption{ font-family:'Barlow Condensed'; font-weight:700; text-transform:uppercase; font-size:13px; letter-spacing:.06em; color:var(--ink); }
+  .nomo figcaption span{ font-weight:600; color:var(--muted); text-transform:none; letter-spacing:.02em; margin-left:4px; }
+  .nomo svg{ display:block; width:100%; height:auto; font-family:'Barlow'; }
+  .nomo .grid line{ stroke:#d9e1e2; stroke-width:.7; }
+  .nomo .ax{ fill:none; stroke:#7d8b90; stroke-width:1; }
+  .nomo .ty, .nomo .tx{ font-size:10px; fill:#56636b; }
+  .nomo .cv{ fill:none; stroke:var(--teal); stroke-width:2.2; stroke-dasharray:6 3; stroke-linecap:round; }
+  .nomo .ex{ fill:none; stroke:#56636b; stroke-width:.9; stroke-dasharray:2 2; }
+  .nomo .pt{ fill:var(--teal); stroke:#fff; stroke-width:1; }
+  .nomo .lbl{ font-size:10.5px; font-weight:600; fill:var(--ink); }
+  .nomo .axl{ font-size:8.5px; fill:#56636b; }
+  .adj{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .adj > div{ display:flex; flex-direction:column; border-left:3px solid var(--c); padding-left:7px; font-size:12px; line-height:1.2; }
+  .adj .dv{ font-size:18px; }
+  .adj > div{ font-size:11.5px; }
+  [data-layer-id=s04] .reval{ padding:5px 9px; font-size:12px; line-height:1.2; }
+  [data-layer-id=s04] .reval .big{ font-size:22px; }
+  .mimg{ min-height:172px !important; }
+  .card{ padding-top:11px !important; padding-bottom:12px !important; }
+  .partes-wrap{ display:grid; grid-template-columns:300px 1fr; gap:12px; align-items:center; }
+  .corte{ margin:0; background:#fff; border:1.5px solid var(--line); border-radius:6px; padding:6px; }
+  .corte img{ width:100%; display:block; }
+  .partes-wrap .parts{ grid-template-columns:repeat(3,1fr); gap:6px; }
+  .partes-wrap .part{ grid-template-columns:22px 44px 1fr; gap:6px; padding:4px 6px !important; }
+  .partes-wrap .pn{ width:22px; height:22px; font-size:14px; }
+  .partes-wrap .pimg{ height:38px; }
+  .partes-wrap .pt{ font-size:14.5px; }
+  .partes-wrap .pt em{ font-size:10px; }
+  .partes-wrap .part p{ font-size:11.5px; }
+  [data-layer-id=s-partes] .sec-h{ margin-bottom:6px; }
+  .card.s3{ grid-column:span 3; }
+  [data-layer-id=s-disp] .mont-ph{ display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:1fr 1fr; height:222px; gap:6px; grid-template-rows:none; gap:8px; }
+  [data-layer-id=s-disp] .mimg{ min-height:0 !important; height:auto; }
+  [data-layer-id=s-disp] .mimg.split, [data-layer-id=s-disp] .mimg.wide{ grid-column:span 2; }
+  .disp-cap{ display:none; }
+  [data-layer-id=s-disp] .mimg{ background:#e6ecee; }
+  [data-layer-id=s-disp] .mimg{ display:grid; grid-template-columns:1fr; grid-template-rows:minmax(0,1fr) auto; }
+  [data-layer-id=s-disp] .mimg.split{ grid-template-columns:1fr 1fr; column-gap:2px; }
+  [data-layer-id=s-disp] .mimg > img{ position:static !important; inset:auto !important; width:100%; height:100%; min-width:0; min-height:0; object-fit:contain; }
+  [data-layer-id=s-disp] .mimg figcaption{ position:static; grid-column:1 / -1; background:rgba(15,30,38,.88); padding:2px 6px; white-space:nowrap; font-size:11px; line-height:1.1; gap:5px; }
+  [data-layer-id=s-disp] .mimg figcaption b{ width:16px !important; height:16px !important; font-size:10px !important; }
+  [data-layer-id=s-disp] .mimg figcaption b{ flex:none; }
+  [data-layer-id=s03] .steps{ grid-template-columns:1fr 1fr; gap:7px; }
+  [data-layer-id=s03] .step{ display:grid; grid-template-columns:28px 1fr; gap:8px; align-items:center; padding:7px 10px !important; }
+  [data-layer-id=s03] .step .k{ margin:0; font-size:30px; }
+  [data-layer-id=s03] .step p{ font-size:13.5px; }
+  .itab{ width:100%; border-collapse:collapse; font-size:12.5px; line-height:1.2; }
+  .itab th{ font-family:'Barlow Condensed'; font-weight:700; text-transform:uppercase; letter-spacing:.06em; font-size:13px; color:var(--c); text-align:left; padding:0 6px 3px 0; border-bottom:1.5px solid var(--line); }
+  .itab td{ padding:5px 6px 5px 0; border-bottom:1px solid var(--line); vertical-align:top; text-wrap:pretty; }
+  .itab td:last-child{ color:var(--muted); width:38%; font-size:12px; }
+  .itab-n{ margin:6px 0 0; font-size:11.5px !important; }
+  [data-layer-id=s03] .steps{ grid-template-columns:repeat(3,1fr) !important; gap:6px; }
+  [data-layer-id=s03] .step{ grid-template-columns:24px 1fr !important; align-items:start !important; }
+  [data-layer-id=s03] .step .k{ font-size:26px !important; }
+  [data-layer-id=s03] .step p{ font-size:12.5px !important; line-height:1.22; }
+  .alerts{ grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .alerts .alert{ grid-column:auto; grid-template-columns:auto 1fr auto; grid-template-rows:auto; gap:14px; padding:10px 16px; align-items:center; }
+  .alerts .alert .badge{ justify-self:start; }
+  .alerts .alert .msg{ grid-column:auto; }
+  .alerts .alert .x{ grid-row:auto; grid-column:auto; justify-self:end; white-space:nowrap; }
+  [data-layer-id=s03]{ grid-column:1 / -1 !important; }
+  [data-layer-id=s03][style*="hidden"]{ display:none !important; }
+  .body [data-layer-id=s-disp] .mont-ph{ height:250px !important; grid-template-rows:1fr 1fr !important; }
+  .body [data-layer-id=s-disp] .mimg{ min-height:0; overflow:hidden; }
+  /* 06 fusionada (material + montaje), ocupa alto de 05 + avisos */
+  .body > [data-layer-id=s02]{ grid-row:span 2; display:flex; flex-direction:column; }
+  [data-layer-id=s02] .sub-h{ font-family:'Barlow Condensed'; font-weight:700; text-transform:uppercase; letter-spacing:.06em; font-size:14px; color:var(--blue); margin:7px 0 5px; padding-top:6px; border-top:1.5px solid var(--line); }
+  [data-layer-id=s02] .m-steps{ --c:var(--blue); display:grid; grid-template-columns:1fr; gap:3px; grid-auto-rows:auto; }
+  [data-layer-id=s02] .m-steps .step{ display:grid; grid-template-columns:22px 1fr; gap:7px; align-items:center; padding:2px 8px !important; }
+  [data-layer-id=s02] .m-steps .step .k{ margin:0; font-size:24px; }
+  [data-layer-id=s02] .m-steps .step p{ font-size:12px !important; line-height:1.2; }
+  /* avisos bajo 05, en 4 columnas */
+  .alerts{ grid-column:span 4 !important; gap:10px !important; }
+  .alerts .alert{ grid-template-columns:auto 1fr !important; grid-template-rows:auto auto; gap:5px 10px !important; padding:9px 12px !important; align-items:center; }
+  .alerts .alert .badge{ grid-row:1; grid-column:1; }
+  .alerts .alert .x{ grid-row:1 !important; grid-column:2 !important; justify-self:end; }
+  .alerts .alert .msg{ grid-row:2; grid-column:1 / -1 !important; font-size:19px !important; }
+  .body > .alerts{ align-self:stretch; }
+  .alerts .alert{ align-content:center !important; gap:10px 10px !important; }
+  [data-layer-id=s02] .l li{ margin-bottom:2px; font-size:13px; line-height:1.3; }
+  [data-layer-id=s02] .m-steps .step p{ font-size:11.8px !important; line-height:1.18; }
+  [data-layer-id=s03] .steps{ grid-template-columns:repeat(6,1fr) !important; }
+  .alerts .alert .badge{ font-size:19px; padding:4px 9px 2px; }
+  .alerts .alert .msg{ font-size:20px; }
+  .alerts .alert .msg span{ font-size:13.5px; margin-top:3px; }
+  .alerts .alert .x{ font-size:16px; padding:3px 8px 1px; }
+  .alert.hme{ background:var(--red); color:#fff; }
+  .alert.hme .badge{ background:#fff; color:var(--red); }
+  .alert.hme .x{ border-color:#fff; }
+  .esq{ height:170px !important; }
+  [data-layer-id=s-disp] .mont-ph{ height:196px !important; }
+  [data-layer-id=s06] .rec{ grid-template-columns:1fr !important; gap:0 !important; }
+  [data-layer-id=s06] .rec > div{ border-left:0 !important; padding:4px 0 !important; border-top:1px solid var(--line); display:grid; grid-template-columns:96px 1fr; column-gap:10px; align-items:baseline; }
+  [data-layer-id=s06] .rec > div:first-child{ border-top:0; }
+  [data-layer-id=s06] .rec .what{ grid-column:1; grid-row:1; font-size:13px; }
+  [data-layer-id=s06] .rec .when{ grid-column:2; grid-row:1; font-size:22px; margin:0; }
+  [data-layer-id=s06] .rec p{ grid-column:1 / -1; font-size:12px; line-height:1.2; }
+  [data-layer-id=s06] .rec > div{ padding:2px 0 !important; }
+  .head h1{ font-size:56px !important; margin-top:6px !important; }
+  .head h1 small{ font-size:24px; margin-top:4px; }
+  .head .head-meta{ margin-top:10px !important; gap:5px !important; flex-wrap:nowrap; }
+  .head .tag{ font-size:12px !important; padding:2px 6px !important; letter-spacing:.05em !important; white-space:nowrap; }
+  .head{ padding:18px 40px 16px !important; }
+</style>
+</head><body>
+<div class="wrap">
+<div class="poster-canvas">
+<div class="composition">
+
+  <!-- HEADER -->
+  <header class="head" data-layer-id="header" data-layer-type="html" data-layer-name="Cabecera">
+    <div>
+      <div class="eyebrow">UCI <i></i> Cuidados críticos <i></i> Guía de actuación de enfermería</div>
+      <h1>Sedación inhalada<br>con <em>AnaConDa</em><small>(Sedaconda) · isoflurano / sevoflurano</small></h1>
+      <div class="head-meta">
+        <span class="tag">Indicaciones</span><span class="tag">Contraindicaciones</span><span class="tag">Dosificación</span>
+        <span class="tag">Partes del sistema</span><span class="tag">Disposición</span><span class="tag">Material y montaje</span><span class="tag">Cuidados</span><span class="tag">Recambios</span>
+      </div>
+    </div>
+    <div class="esq" data-layer-id="esquema-img" data-layer-type="html" data-layer-name="Esquema del sistema"><img src="assets/esquema.png" alt="Esquema del sistema AnaConDa"></div>
+  </header>
+
+  <main class="body">
+
+    <!-- INDICACIONES -->
+    <section class="card s2" style="--c:var(--green)" data-layer-id="s-ind" data-layer-type="html" data-layer-name="01 Indicaciones">
+      <div class="sec-h"><span class="sec-n">01</span><span class="sec-t">Indicaciones</span></div>
+      <table class="itab">
+        <thead><tr><th>Situación clínica</th><th>Beneficio</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Sedación difícil</strong> con altas dosis de sedantes IV</td><td>Ahorro de hipnóticos y opiáceos</td></tr>
+          <tr><td><strong>Tolerancia / taquifilaxia</strong> o politoxicomanía</td><td>Sedación eficaz por otra vía</td></tr>
+          <tr><td><strong>Ventanas neurológicas</strong> frecuentes</td><td>Despertar rápido y predecible</td></tr>
+          <tr><td><strong>Broncoespasmo</strong> grave / estatus asmático</td><td>Efecto broncodilatador</td></tr>
+          <tr><td><strong>Destete</strong> de la VM / posoperatorio cardiaco</td><td>Extubación precoz · cardioprotección</td></tr>
+          <tr><td><strong>Efectos adversos</strong> de sedación IV (p. ej. propofol)</td><td>Alternativa sin acumulación</td></tr>
+        </tbody>
+      </table>
+      <p class="note itab-n">Siempre con VM invasiva y según protocolo del centro.</p>
+    </section>
+
+    <!-- 01 -->
+    <section class="card s2" style="--c:var(--red)" data-layer-id="s01" data-layer-type="html" data-layer-name="02 Contraindicaciones">
+      <div class="sec-h"><span class="sec-n">02</span><span class="sec-t">Contraindicaciones</span></div>
+      <div class="ci-grid">
+        <div>
+          <p class="sub">Absolutas</p>
+          <ul class="l">
+            <li>Hipersensibilidad a <strong>isoflurano / sevoflurano</strong>.</li>
+            <li><strong>Hipertermia maligna</strong> (antecedente personal o familiar).</li>
+            <li>Fístula broncopleural con fuga <strong>&gt; 200 ml/h</strong>.</li>
+            <li>Distrofia muscular.</li>
+            <li>Sedación ligera alcanzable por vía IV.</li>
+            <li>TCE con PIC <strong>no monitorizada</strong> o HTIC no controlada.</li>
+          </ul>
+        </div>
+        <div>
+          <p class="sub">Relativas</p>
+          <ul class="l soft">
+            <li>Fracaso hepático · insuficiencia renal.</li>
+            <li>TCE con PIC monitorizada.</li>
+            <li>Antecedentes de convulsiones.</li>
+            <li>Exceso de secreciones <span class="note">(no formal: colmata la membrana reflectora).</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- 04 -->
+    <section class="card s2" style="--c:var(--teal)" data-layer-id="s04" data-layer-type="html" data-layer-name="03 Dosificación">
+      <div class="sec-h"><span class="sec-n">03</span><span class="sec-t">Dosificación</span></div>
+      <div class="dose">
+        <table class="dtab">
+          <thead><tr><th></th><th>Isoflurano</th><th>Sevoflurano</th></tr></thead>
+          <tbody>
+            <tr><td>Inicio</td><td><b>3</b> ml/h</td><td><b>5</b> ml/h</td></tr>
+            <tr><td>Rango estándar</td><td><b>2–7</b> ml/h<small>hasta 15</small></td><td><b>4–10</b> ml/h<small>hasta 20</small></td></tr>
+            <tr><td>Fet objetivo</td><td><b>0,2–0,7</b> %</td><td><b>0,5–1,4</b> %</td></tr>
+          </tbody>
+        </table>
+        <figure class="nomo" data-layer-id="nomograma" data-layer-type="html" data-layer-name="Nomograma de dosificación">
+          <figcaption>Nomograma · Fet 0,5 % <span>ml/h vs. vol. minuto (L/min)</span></figcaption>
+          <svg viewBox="0 0 324 92" aria-label="Nomograma de dosificación para Fet 0,5 %">
+            <g class="grid"><line x1="22" y1="66" x2="318" y2="66"/><line x1="22" y1="56" x2="318" y2="56"/><line x1="22" y1="46" x2="318" y2="46"/><line x1="22" y1="36" x2="318" y2="36"/><line x1="22" y1="26" x2="318" y2="26"/><line x1="22" y1="16" x2="318" y2="16"/><line x1="22" y1="6" x2="318" y2="6"/><line x1="59" y1="6" x2="59" y2="76"/><line x1="96" y1="6" x2="96" y2="76"/><line x1="133" y1="6" x2="133" y2="76"/><line x1="170" y1="6" x2="170" y2="76"/><line x1="207" y1="6" x2="207" y2="76"/><line x1="244" y1="6" x2="244" y2="76"/><line x1="281" y1="6" x2="281" y2="76"/><line x1="318" y1="6" x2="318" y2="76"/></g>
+            <path class="ax" d="M22 6V76H318"/>
+            <g class="ty" text-anchor="end"><text x="17" y="79.5">0</text><text x="17" y="59.5">2</text><text x="17" y="39.5">4</text><text x="17" y="19.5">6</text></g>
+            <g class="tx" text-anchor="middle"><text x="22" y="89">3</text><text x="59" y="89">4</text><text x="96" y="89">5</text><text x="133" y="89">6</text><text x="170" y="89">7</text><text x="207" y="89">8</text><text x="244" y="89">9</text><text x="281" y="89">10</text><text x="318" y="89">11</text></g>
+            <path class="ex" d="M22 41.5H188.5V76"/>
+            <path class="cv" d="M22 69C46 66 71 62 96 58.5S145 50 170 46S219 35 244 30S293 18 318 10"/>
+            <circle class="pt" cx="188.5" cy="41.5" r="3"/>
+            <text class="lbl" x="194" y="56">7,5 L/min → ≈ 3,5 ml/h</text>
+          </svg>
+        </figure>
+        <div class="adj">
+          <div><span class="dv">±0,5–1 ml/h</span><span>Ajuste según clínica y hemodinamia.</span></div>
+          <div><span class="dv">0,3–0,5 ml</span><span>Bolo si <strong>hemodinámicamente estable</strong>.</span></div>
+        </div>
+        <div class="reval"><span class="big">c/30 min</span><span>Dosis guiada por la <strong>clínica</strong>: <strong>RASS</strong>, <strong>BIS</strong> y <strong>Fet</strong>. El equilibrio puede tardar más.</span></div>
+      </div>
+    </section>
+
+    <!-- 03 PARTES -->
+    <section class="card full" style="--c:var(--slate2)" data-layer-id="s-partes" data-layer-type="html" data-layer-name="04 Partes del sistema">
+      <div class="sec-h"><span class="sec-n">04</span><span class="sec-t">Partes del sistema</span><span class="note" style="margin-left:auto">Los números corresponden al esquema de la cabecera</span></div>
+      <div class="partes-wrap">
+        <figure class="corte" data-layer-id="corte-img" data-layer-type="html" data-layer-name="Corte del dispositivo"><img src="assets/anaconda-corte.png" alt="Corte del dispositivo AnaConDa: reflector, filtro, puerto de muestreo"></figure>
+      <div class="parts">
+        <div class="part"><span class="pn">1</span><div class="pimg"><img src="assets/parte-1.png" alt=""></div><div><div class="pt">AnaConDa-S</div><p>Un solo paciente. Recambio: <strong>24 h mín. – 48 h máx.</strong></p></div></div>
+        <div class="part"><span class="pn">2</span><div class="pimg"><img src="assets/parte-2.png" alt=""></div><div><div class="pt">Línea de Nafion <em>opcional</em></div><p>Un solo paciente. Solo si hay <strong>monitor de gases anestésicos</strong>.</p></div></div>
+        <div class="part"><span class="pn">3</span><div class="pimg"><img src="assets/parte-3.png" alt=""></div><div><div class="pt">Línea de muestreo de gas <em>opcional</em></div><p>Un solo paciente. Solo si hay <strong>monitor de gases anestésicos</strong>.</p></div></div>
+        <div class="part"><span class="pn">4</span><div class="pimg"><img src="assets/parte-4.png" alt=""></div><div><div class="pt">Jeringa AnaConDa</div><p>Llenar <strong>siempre a 50 ml</strong>. Rotular el agente. Reutilizable <strong>máx. 3 veces</strong>.</p></div></div>
+        <div class="part"><span class="pn">5</span><div class="pimg"><img src="assets/parte-5.png" alt=""></div><div><div class="pt">Filtro FlurAbsorb</div><p>Capacidad <strong>500 ml</strong> (10 jeringas de 50 ml).</p></div></div>
+        <div class="part"><span class="pn">5</span><div class="pimg"><img src="assets/parte-6.png" alt=""></div><div><div class="pt">Filtro FlurAbsorb-S</div><p>Capacidad <strong>150 ml</strong> (3 jeringas de 50 ml).</p></div></div>
+        <div class="part"><span class="pn">6</span><div class="pimg"><img src="assets/parte-7.png" alt=""></div><div><div class="pt">Kit de conexión del filtro</div><p>Un solo paciente (<strong>tratamiento completo</strong>).</p></div></div>
+        <div class="part"><span class="pn x">–</span><div class="pimg"><img src="assets/parte-8.png" alt=""></div><div><div class="pt">Adaptador de llenado</div><p>Uno por <strong>botella</strong> de sevo/isoflurano (desechable).</p></div></div>
+        <div class="part"><span class="pn x">–</span><div class="pimg"><img src="assets/parte-9.png" alt=""></div><div><div class="pt">Soporte para filtro</div><p><strong>Reutilizable.</strong></p></div></div>
+      </div>
+      </div>
+    </section>
+
+    <!-- 05 DISPOSICIÓN -->
+    <section class="card s4" style="--c:var(--teal)" data-layer-id="s-disp" data-layer-type="html" data-layer-name="05 Disposición del dispositivo">
+      <div class="sec-h"><span class="sec-n">05</span><span class="sec-t">Disposición del dispositivo</span></div>
+      <div class="mont-ph">
+          <figure class="mimg" data-layer-id="montaje-estandar" data-layer-type="html" data-layer-name="Foto disposición estándar"><img src="assets/montaje-estandar.png" alt="Disposición estándar del AnaConDa"><figcaption><b>A</b>Estándar</figcaption></figure>
+          <figure class="mimg split" data-layer-id="montaje-alternativa" data-layer-type="html" data-layer-name="Foto disposición alternativa"><img src="assets/montaje-alternativa.png" alt="Disposición alternativa — lado paciente"><img src="assets/montaje-alternativa-2.png" alt="Disposición alternativa — lado respirador"><figcaption><b>B</b>Alternativa</figcaption></figure>
+          <figure class="mimg" data-layer-id="montaje-aerogen" data-layer-type="html" data-layer-name="Foto configuración con Aerogen"><img src="assets/montaje-aerogen.png" alt="Configuración del AnaConDa con nebulizador Aerogen"><figcaption><b>C</b>Con Aerogen</figcaption></figure>
+          <figure class="mimg" data-layer-id="monitor-gases" data-layer-type="html" data-layer-name="Foto monitor de gases"><img src="assets/monitor-gases.png" alt="Monitor de gases anestésicos Sedana AMG-06"><figcaption><b>D</b>Monitor gases</figcaption></figure>
+          <figure class="mimg" data-layer-id="sistema-absorcion" data-layer-type="html" data-layer-name="Foto sistema de absorción"><img src="assets/sistema-absorcion.png" alt="Sistema de absorción FlurAbsorb Pro-L"><figcaption><b>E</b>Sistema absorción</figcaption></figure>
+          <figure class="mimg wide" data-layer-id="bomba-jeringa" data-layer-type="html" data-layer-name="Foto bomba de jeringa"><img src="assets/bomba-jeringa.png" alt="Bomba de jeringa con jeringa AnaConDa de 50 ml"><figcaption><b>F</b>Bomba de jeringa</figcaption></figure>
+      </div>
+      <div class="disp-cap"><span><b>A</b> Estándar</span><span><b>B</b> Alternativa</span><span><b>C</b> Con Aerogen</span><span><b>D</b> Monitor gases</span><span><b>E</b> Sistema absorción</span><span><b>F</b> Bomba de jeringa</span></div>
+    </section>
+
+    <!-- 06 MATERIAL -->
+    <section class="card s2" style="--c:var(--teal)" data-layer-id="s02" data-layer-type="html" data-layer-name="06 Material">
+      <div class="sec-h"><span class="sec-n">06</span><span class="sec-t">Material, montaje y cebado</span></div>
+      <ul class="l">
+        <li><span class="chip pos">Posición</span><strong>Dispositivo conservador</strong> entre pieza en Y y TET.</li>
+        <li><strong>Jeringa específica de 50 ml</strong> con adaptador de carga <span class="note">(no tirarlo entre cargas)</span>.</li>
+        <li><strong>Bomba de jeringa dedicada</strong>.</li>
+        <li><strong>Analizador de gases</strong> con trampa de agua: Fet<sub>ISO</sub>/Fet<sub>SEVO</sub> y EtCO<sub>2</sub>.</li>
+        <li><strong>Filtro depurador FluAbsorb / FlurAbsorb</strong> en la salida exhalatoria.</li>
+      </ul>
+      <div class="sub-h">Montaje y cebado · 6 pasos</div>
+      <div class="steps m-steps">
+        <div class="step"><span class="k">1</span><p><strong>Carga de 50 ml</strong> de agente con el adaptador de carga.</p></div>
+        <div class="step"><span class="k">2</span><p>Jeringa en <strong>bomba dedicada</strong>; conexión al <strong>Luer-Lock rojo</strong> <span class="red-dot"></span>.</p></div>
+        <div class="step"><span class="k">3</span><p><strong>Retirar el HME</strong> convencional e insertar el AnaConDa entre <strong>pieza en Y</strong> y <strong>aspiración cerrada</strong>.</p></div>
+        <div class="step"><span class="k">4</span><p><strong>Línea de muestreo</strong> al puerto superior del dispositivo y a la <strong>trampa de agua</strong>.</p></div>
+        <div class="step"><span class="k">5</span><p>Tubo del <strong>FluAbsorb</strong> a la <strong>salida exhalatoria</strong> del respirador.</p></div>
+        <div class="step"><span class="k">6</span><p><strong>Cebado electrónico:</strong> purga de <strong>1,5 ml</strong> al inicio y <strong>1,2 ml</strong> en cada recambio.</p></div>
+      </div>
+    </section>
+
+    <!-- ALERTAS -->
+    <div class="alerts" data-layer-id="alertas" data-layer-type="html" data-layer-name="Bandas de alerta">
+    <div class="alert" data-layer-id="alerta" data-layer-type="html" data-layer-name="Banda de alerta">
+      <span class="badge">Regla de oro</span>
+      <div class="msg">Cebado siempre electrónico<span>Usar el botón de purga / bolus de la bomba.</span></div>
+      <span class="x">Jamás manual</span>
+    </div>
+      <div class="alert hme" data-layer-id="alerta-hme" data-layer-type="html" data-layer-name="Alerta humidificación">
+        <span class="badge">Aviso</span>
+        <div class="msg">No usar humidificación activa<span>El AnaConDa ya actúa como filtro HME.</span></div>
+        <span class="x">Ni HME extra</span>
+      </div>
+    </div>
+
+
+
+    <!-- 05 -->
+    <section class="card s4" style="--c:var(--green)" data-layer-id="s05" data-layer-type="html" data-layer-name="08 Cuidados de enfermería">
+      <div class="sec-h"><span class="sec-n">07</span><span class="sec-t">Cuidados de enfermería</span></div>
+      <ul class="l">
+        <li><span class="chip only">Solo</span>Aspiración con <strong>sistema cerrado</strong>. Si se desconecta el circuito, <strong>parar antes la bomba</strong>.</li>
+        <li><span class="chip pos">Posición</span>Nebulizador <strong>entre el AnaConDa y el tubo traqueal</strong>.</li>
+        <li><span class="chip never">Nunca</span>Nebulizar <strong>N-acetilcisteína</strong> ni <strong>anfotericina B</strong>.</li>
+        <li style="margin-top:10px"><span class="chip out">Retirada</span>Opiáceos IV al <strong>50 %</strong>, y después:
+          <ul class="l soft" style="margin-top:6px">
+            <li><strong>Despertar lento:</strong> reducción progresiva. Delirium hiperactivo → <strong>dexmedetomidina IV</strong>.</li>
+            <li><strong>Ultrarrápido:</strong> apagar bomba y retirar el dispositivo. Sevoflurano <strong>5–10 min</strong> · isoflurano <strong>10–40 min</strong>.</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 06 -->
+    <section class="card s2" style="--c:var(--slate)" data-layer-id="s06" data-layer-type="html" data-layer-name="09 Recambio de fungibles">
+      <div class="sec-h"><span class="sec-n">08</span><span class="sec-t">Recambio de fungibles</span></div>
+      <div class="rec">
+        <div><div class="what">Dispositivo</div><div class="when">24–48 h</div><p>O antes si se impregna de secreciones. Cebado de <strong>1,2 ml</strong>.</p></div>
+        <div><div class="what">Jeringa</div><div class="when">Al agotarse</div><p>Desechar <strong>con el tapón puesto</strong>.</p></div>
+        <div><div class="what">Filtro FluAbsorb</div><div class="when">8 jeringas</div><p>Sustituir tras la octava jeringa.</p></div>
+        <div><div class="what">Trampa de agua</div><div class="when">28 días</div><p>Del analizador de gases.</p></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot" data-layer-id="footer" data-layer-type="html" data-layer-name="Pie">
+    <span class="disc">Documento de apoyo · No sustituye el protocolo del centro</span>
+    <span class="mono" style="font-size:12px">AnaConDa / Sedaconda® · Sedana Medical</span>
+  </footer>
+
+</div>
+</div>
+</div>
+<script>
+(function(){
+  // Solo escala a pantalla completa cuando se abre fuera del visor embebido
+  if (window.self !== window.top) return;
+  var canvas = document.querySelector('.poster-canvas');
+  var wrap = document.querySelector('.wrap');
+  if (!canvas || !wrap) return;
+  var W = 1188, H = 1680;
+  function fit(){
+    var s = Math.min(window.innerWidth / W, window.innerHeight / H);
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.body.style.height = '100%';
+    wrap.style.width = '100%';
+    wrap.style.height = '100%';
+    canvas.style.position = 'fixed';
+    canvas.style.top = '50%';
+    canvas.style.left = '50%';
+    canvas.style.transformOrigin = 'center center';
+    canvas.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  }
+  fit();
+  window.addEventListener('resize', fit);
+})();
+</script>
+</body></html>

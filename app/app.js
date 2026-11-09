@@ -245,6 +245,21 @@ const PROTOCOLOS = [
     ]
   },
   {
+    id: 'anaconda',
+    title: 'Sedación inhalada AnaConDa',
+    description: 'Póster A3 de sedación inhalada con AnaConDa (isoflurano / sevoflurano).',
+    audiences: ['medicina', 'enfermeria'],
+    parts: [
+      {
+        id: 'poster',
+        title: 'Sedación inhalada AnaConDa',
+        description: 'Póster clínico A3 · miniatura ampliable.',
+        path: '../biblioteca/assets/protocolos/anaconda/protocolo-anaconda.html?v=20261024b',
+        ext: '.html'
+      }
+    ]
+  },
+  {
     id: 'decubito-prono',
     title: 'Decúbito prono',
     description: 'Protocolo de decúbito prono en UCI.',

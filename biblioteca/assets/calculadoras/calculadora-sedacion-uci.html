@@ -69,23 +69,51 @@
 
   .mix-cell .pres-note { font-size: 11px; color: #555; margin-bottom: 8px; line-height: 1.35; }
   .mix-panel {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    background: #f3f7fb; border: 1px solid #d5e3f2; border-radius: 8px; padding: 8px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    background: #f3f7fb; border: 1px solid #d5e3f2; border-radius: 8px; padding: 10px;
   }
-  .mix-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .mix-drug-title {
+    font-weight: 800; font-size: 14px; margin-bottom: 6px; color: inherit;
+  }
+  td.mix-cell { min-width: 280px; vertical-align: top; }
+  .mix-row {
+    display: flex; flex-direction: column; gap: 5px;
+    width: 100%;
+  }
+  .mix-row-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+  }
   .mix-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #3a5f86; }
-  .mode-toggle { display: flex; gap: 3px; margin-bottom: 2px; }
+  .mode-toggle { display: flex; gap: 3px; }
   .mode-btn {
     border: 1px solid #9bb4d0; background: #fff; color: #1a4a7a;
     border-radius: 999px; padding: 2px 7px; font-size: 10px; font-weight: 700; cursor: pointer;
   }
   .mode-btn.active { background: #1a4a7a; color: #fff; border-color: #1a4a7a; }
-  .mix-wheel.rate-wheel { width: 72px; }
-  .mix-wheel .rate-face { width: 72px; height: 72px; }
-  .mix-wheel .rate-pointer { height: 24px; transform-origin: 50% 28px; top: 7px; }
-  .mix-wheel .rate-face::after { inset: 24px; }
-  .mix-wheel .rate-readout { font-size: 12px; }
-  .mix-wheel .rate-btns button { width: 24px; height: 22px; font-size: 12px; }
+  .mix-progress-wrap {
+    display: grid; grid-template-columns: 28px 1fr 28px; gap: 6px; align-items: center;
+  }
+  .mix-progress-wrap button {
+    width: 28px; height: 28px; border-radius: 6px; border: 1px solid #9bb4d0;
+    background: #eef4fa; color: #1a4a7a; font-weight: 800; cursor: pointer; line-height: 1;
+  }
+  .mix-progress-wrap button:hover { background: #dceaf8; }
+  .mix-progress {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 12px;
+    border-radius: 999px; outline: none; cursor: pointer;
+    background: linear-gradient(90deg, #9ec9ef, #1a4a7a);
+  }
+  .mix-progress::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+    background: #fff; border: 3px solid #0d355c; box-shadow: 0 1px 4px rgba(0,0,0,.25); cursor: grab;
+  }
+  .mix-progress::-moz-range-thumb {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #fff; border: 3px solid #0d355c; box-shadow: 0 1px 4px rgba(0,0,0,.25); cursor: grab;
+  }
+  .mix-readout {
+    font-size: 12px; font-weight: 800; color: #1a4a7a; text-align: right; min-width: 72px;
+  }
   .conc-out {
     margin-top: 8px; font-size: 12px; background: #e8f5e9; border: 1px solid #a5d6a7;
     border-radius: 6px; padding: 5px 8px; text-align: center; color: #1b5e20;
@@ -216,7 +244,7 @@
 <body>
 
 <h1>Calculadora de perfusión continua — Sedación, analgesia y control de agitación en UCI</h1>
-<p style="font-size:13px;color:#555;">Fármacos agrupados según su efecto principal. Ajusta el peso, la <b>cantidad de fármaco</b> (viales o mg/µg) y la <b>dilución</b> (saltos de 50 ml) con las ruedas; la concentración y la dosis se calculan al instante. Los valores se guardan localmente en este navegador.</p>
+<p style="font-size:13px;color:#555;">Fármacos agrupados según su efecto principal. Ajusta el peso, la <b>cantidad de fármaco</b> (viales o mg/µg) y la <b>dilución</b> (saltos de 50 ml) con las barras; la concentración y la dosis se calculan al instante. La velocidad (ml/h) se regula con la rueda. Los valores se guardan localmente en este navegador.</p>
 
 <div class="peso-box">
   <div class="peso-top">
@@ -245,8 +273,7 @@
 <table class="sedante">
 <thead>
 <tr>
-  <th style="width:10%">Fármaco</th>
-  <th style="width:14%">Presentación y dilución</th>
+  <th style="width:28%">Fármaco / presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
   <th style="width:32%">Efecto según dosis</th>
   <th style="width:12%">Velocidad (ml/h)</th>
@@ -257,8 +284,7 @@
 <tbody>
 
 <tr>
-  <td class="fcol">Propofol 2%</td>
-  <td class="mix-cell" data-drug="propofol" data-label="Presentación y dilución"></td>
+  <td class="mix-cell fcol" data-drug="propofol" data-name="Propofol 2%" data-label="Fármaco / dilución"></td>
   <td>0,3–3 mg/kg/h<br>(5–50 µg/kg/min)<br><span class="alerta">Máx 4 mg/kg/h si &gt;48 h</span></td>
   <td>
     <div class="dose-bar-wrap">
@@ -290,8 +316,7 @@
 </tr>
 
 <tr>
-  <td class="fcol">Midazolam</td>
-  <td class="mix-cell" data-drug="midazolam" data-label="Presentación y dilución"></td>
+  <td class="mix-cell fcol" data-drug="midazolam" data-name="Midazolam" data-label="Fármaco / dilución"></td>
   <td>0,02–0,1 mg/kg/h<br>(1,4–7 mg/h en 70 kg)</td>
   <td>
     <div class="dose-bar-wrap">
@@ -321,8 +346,7 @@
 </tr>
 
 <tr>
-  <td class="fcol">Ketamina</td>
-  <td class="mix-cell" data-drug="ketamina" data-label="Presentación y dilución"></td>
+  <td class="mix-cell fcol" data-drug="ketamina" data-name="Ketamina" data-label="Fármaco / dilución"></td>
   <td>0,1–0,5 mg/kg/h (analg.)<br>1–3 mg/kg/h (sedación)</td>
   <td>
     <div class="dose-bar-wrap">
@@ -362,8 +386,7 @@
 <table class="analgesico">
 <thead>
 <tr>
-  <th style="width:10%">Fármaco</th>
-  <th style="width:14%">Presentación y dilución</th>
+  <th style="width:28%">Fármaco / presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
   <th style="width:32%">Efecto según dosis</th>
   <th style="width:12%">Velocidad (ml/h)</th>
@@ -374,8 +397,7 @@
 <tbody>
 
 <tr>
-  <td class="fcol">Fentanilo</td>
-  <td class="mix-cell" data-drug="fentanilo" data-label="Presentación y dilución"></td>
+  <td class="mix-cell fcol" data-drug="fentanilo" data-name="Fentanilo" data-label="Fármaco / dilución"></td>
   <td>1–3 µg/kg/h<br>(70–210 µg/h en 70 kg)</td>
   <td>
     <div class="dose-bar-wrap">
@@ -404,8 +426,7 @@
 </tr>
 
 <tr>
-  <td class="fcol">Remifentanilo</td>
-  <td class="mix-cell" data-drug="remi" data-label="Presentación y dilución"></td>
+  <td class="mix-cell fcol" data-drug="remi" data-name="Remifentanilo" data-label="Fármaco / dilución"></td>
   <td>0,025–0,2 µg/kg/min<br>(habitual 0,05–0,1 en VM)<br><span class="alerta">&gt;0,05 inhibe respiración</span></td>
   <td>
     <div class="dose-bar-wrap">
@@ -435,8 +456,7 @@
 </tr>
 
 <tr>
-  <td class="fcol">Cloruro mórfico</td>
-  <td class="mix-cell" data-drug="morfina" data-label="Presentación y dilución"></td>
+  <td class="mix-cell fcol" data-drug="morfina" data-name="Cloruro mórfico" data-label="Fármaco / dilución"></td>
   <td>1–12 mg/h<br>(0,015–0,15 mg/kg/h)</td>
   <td>
     <div class="dose-bar-wrap">
@@ -476,8 +496,7 @@
 <table class="agitacion">
 <thead>
 <tr>
-  <th style="width:10%">Fármaco</th>
-  <th style="width:14%">Presentación y dilución</th>
+  <th style="width:28%">Fármaco / presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
   <th style="width:32%">Efecto según dosis</th>
   <th style="width:12%">Velocidad (ml/h)</th>
@@ -488,8 +507,7 @@
 <tbody>
 
 <tr>
-  <td class="fcol">Dexmedetomidina</td>
-  <td class="mix-cell" data-drug="dexme" data-label="Presentación y dilución"></td>
+  <td class="mix-cell fcol" data-drug="dexme" data-name="Dexmedetomidina" data-label="Fármaco / dilución"></td>
   <td>0,2–1,4 µg/kg/h<br><span class="alerta">Sin bolo de carga</span></td>
   <td>
     <div class="dose-bar-wrap">
@@ -519,8 +537,7 @@
 </tr>
 
 <tr>
-  <td class="fcol">Quetiapina <span class="vo-tag">VO/SNG</span></td>
-  <td>Comp. 25, 100, 200 mg<br><span class="dilucion">Vía oral o por sonda</span></td>
+  <td class="fcol">Quetiapina <span class="vo-tag">VO/SNG</span><br><span class="dilucion">Comp. 25, 100, 200 mg — Vía oral o por sonda</span></td>
   <td>25–50 mg/12 h inicio<br>Titular 50–200 mg/día<br>Máx 400 mg/día</td>
   <td>
     <div class="dose-bar-wrap" style="padding: 10px 0; color: #555; font-style: italic; font-size: 12px;">
@@ -548,8 +565,7 @@
 <table class="relajante">
 <thead>
 <tr>
-  <th style="width:10%">Fármaco</th>
-  <th style="width:14%">Presentación y dilución</th>
+  <th style="width:28%">Fármaco / presentación y dilución</th>
   <th style="width:12%">Rango habitual</th>
   <th style="width:32%">Efecto según dosis</th>
   <th style="width:12%">Velocidad (ml/h)</th>
@@ -560,8 +576,7 @@
 <tbody>
 
 <tr>
-  <td class="fcol">Cisatracurio</td>
-  <td class="mix-cell" data-drug="cisatracurio" data-label="Presentación y dilución"></td>
+  <td class="mix-cell fcol" data-drug="cisatracurio" data-name="Cisatracurio" data-label="Fármaco / dilución"></td>
   <td>0,5–10 µg/kg/min<br>(habitual 1–3 µg/kg/min)<br>Bolo inicial: 0,15–0,2 mg/kg</td>
   <td>
     <div class="dose-bar-wrap">
@@ -591,8 +606,7 @@
 </tr>
 
 <tr>
-  <td class="fcol">Rocuronio</td>
-  <td class="mix-cell" data-drug="rocuronio" data-label="Presentación y dilución"></td>
+  <td class="mix-cell fcol" data-drug="rocuronio" data-name="Rocuronio" data-label="Fármaco / dilución"></td>
   <td>5–12 µg/kg/min<br>(0,3–0,6 mg/kg/h)<br>Bolo IOT: 0,6–1,2 mg/kg</td>
   <td>
     <div class="dose-bar-wrap">
@@ -649,7 +663,7 @@
   <li>Cisatracurio: <span class="formula">3 mg/ml</span> (300 mg en 100 ml SSF)</li>
   <li>Rocuronio: <span class="formula">5 mg/ml</span> (500 mg en 100 ml SSF)</li>
 </ul>
-<p><b>Fórmula general:</b> <span class="formula">concentración = cantidad fármaco / volumen dilución</span>; <span class="formula">dosis = (ml/h × concentración) / peso</span> (ajustando unidades y tiempo). Las ruedas controlan cantidad, dilución (saltos de 50 ml) y ml/h.</p>
+<p><b>Fórmula general:</b> <span class="formula">concentración = cantidad fármaco / volumen dilución</span>; <span class="formula">dosis = (ml/h × concentración) / peso</span> (ajustando unidades y tiempo). Las barras controlan cantidad y dilución (saltos de 50 ml); la rueda controla ml/h.</p>
 </div>
 </details>
 </div>
@@ -851,33 +865,33 @@ function buildMixCell(id) {
     const label = m === 'viales' ? cfg.vialLabel : unitLabel(m === 'ug' ? 'ug' : 'mg');
     return '<button type="button" class="mode-btn" data-drug="' + id + '" data-mode="' + m + '">' + label + '</button>';
   }).join('');
+  const drugTitle = cell.getAttribute('data-name') || id;
   cell.innerHTML =
+    '<div class="mix-drug-title">' + drugTitle + '</div>' +
     '<div class="pres-note">' + cfg.presentacion + '</div>' +
     '<div class="mix-panel">' +
-      '<div class="mix-col">' +
-        '<div class="mix-label">Fármaco</div>' +
-        '<div class="mode-toggle">' + modeBtns + '</div>' +
+      '<div class="mix-row">' +
+        '<div class="mix-row-head">' +
+          '<div class="mix-label">Fármaco</div>' +
+          '<div class="mode-toggle">' + modeBtns + '</div>' +
+          '<div class="mix-readout"><span id="amt_' + id + '_txt">' + cfg.defaultVials + '</span> <span id="amt_' + id + '_unit">' + cfg.vialLabel + '</span></div>' +
+        '</div>' +
         '<input type="hidden" id="mode_' + id + '" value="' + cfg.defaultMode + '">' +
-        '<div class="rate-wheel mix-wheel">' +
-          '<div class="rate-face" data-input="amt_' + id + '"><div class="rate-pointer" id="ptr_amt_' + id + '"></div></div>' +
-          '<input type="range" class="rate-range" id="amt_' + id + '" min="1" max="20" step="1" value="' + cfg.defaultVials + '" aria-label="Cantidad fármaco ' + id + '" oninput="onAmountInput(\'' + id + '\')">' +
-          '<div class="rate-readout"><span id="amt_' + id + '_txt">' + cfg.defaultVials + '</span> <span id="amt_' + id + '_unit">' + cfg.vialLabel + '</span></div>' +
-          '<div class="rate-btns">' +
-            '<button type="button" onclick="stepMixByStep(\'amt_' + id + '\',-1)">−</button>' +
-            '<button type="button" onclick="stepMixByStep(\'amt_' + id + '\',1)">+</button>' +
-          '</div>' +
+        '<div class="mix-progress-wrap">' +
+          '<button type="button" onclick="stepMixByStep(\'amt_' + id + '\',-1)" aria-label="Menos fármaco">−</button>' +
+          '<input type="range" class="mix-progress" id="amt_' + id + '" min="1" max="20" step="1" value="' + cfg.defaultVials + '" aria-label="Cantidad fármaco ' + id + '" oninput="onAmountInput(\'' + id + '\')">' +
+          '<button type="button" onclick="stepMixByStep(\'amt_' + id + '\',1)" aria-label="Más fármaco">+</button>' +
         '</div>' +
       '</div>' +
-      '<div class="mix-col">' +
-        '<div class="mix-label">Dilución</div>' +
-        '<div class="rate-wheel mix-wheel">' +
-          '<div class="rate-face" data-input="vol_' + id + '"><div class="rate-pointer" id="ptr_vol_' + id + '"></div></div>' +
-          '<input type="range" class="rate-range" id="vol_' + id + '" min="' + cfg.volMin + '" max="' + cfg.volMax + '" step="50" value="' + cfg.defaultVol + '" aria-label="Dilución ml ' + id + '" oninput="recalcular()">' +
-          '<div class="rate-readout"><span id="vol_' + id + '_txt">' + cfg.defaultVol + '</span> ml</div>' +
-          '<div class="rate-btns">' +
-            '<button type="button" onclick="stepMix(\'vol_' + id + '\',-50)">−</button>' +
-            '<button type="button" onclick="stepMix(\'vol_' + id + '\',50)">+</button>' +
-          '</div>' +
+      '<div class="mix-row">' +
+        '<div class="mix-row-head">' +
+          '<div class="mix-label">Dilución</div>' +
+          '<div class="mix-readout"><span id="vol_' + id + '_txt">' + cfg.defaultVol + '</span> ml</div>' +
+        '</div>' +
+        '<div class="mix-progress-wrap">' +
+          '<button type="button" onclick="stepMix(\'vol_' + id + '\',-50)" aria-label="Menos dilución">−</button>' +
+          '<input type="range" class="mix-progress" id="vol_' + id + '" min="' + cfg.volMin + '" max="' + cfg.volMax + '" step="50" value="' + cfg.defaultVol + '" aria-label="Dilución ml ' + id + '" oninput="recalcular()">' +
+          '<button type="button" onclick="stepMix(\'vol_' + id + '\',50)" aria-label="Más dilución">+</button>' +
         '</div>' +
       '</div>' +
     '</div>' +
