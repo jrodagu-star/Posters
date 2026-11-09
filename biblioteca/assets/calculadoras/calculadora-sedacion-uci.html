@@ -67,6 +67,31 @@
   .resultado { font-weight: 700; color: #c0392b; background: #fff5e6; padding: 4px 8px; border-radius: 4px; display: inline-block; min-width: 60px; text-align: center; }
   .unidad { color: #666; font-size: 12px; }
 
+  .mix-cell .pres-note { font-size: 11px; color: #555; margin-bottom: 8px; line-height: 1.35; }
+  .mix-panel {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    background: #f3f7fb; border: 1px solid #d5e3f2; border-radius: 8px; padding: 8px;
+  }
+  .mix-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .mix-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #3a5f86; }
+  .mode-toggle { display: flex; gap: 3px; margin-bottom: 2px; }
+  .mode-btn {
+    border: 1px solid #9bb4d0; background: #fff; color: #1a4a7a;
+    border-radius: 999px; padding: 2px 7px; font-size: 10px; font-weight: 700; cursor: pointer;
+  }
+  .mode-btn.active { background: #1a4a7a; color: #fff; border-color: #1a4a7a; }
+  .mix-wheel.rate-wheel { width: 72px; }
+  .mix-wheel .rate-face { width: 72px; height: 72px; }
+  .mix-wheel .rate-pointer { height: 24px; transform-origin: 50% 28px; top: 7px; }
+  .mix-wheel .rate-face::after { inset: 24px; }
+  .mix-wheel .rate-readout { font-size: 12px; }
+  .mix-wheel .rate-btns button { width: 24px; height: 22px; font-size: 12px; }
+  .conc-out {
+    margin-top: 8px; font-size: 12px; background: #e8f5e9; border: 1px solid #a5d6a7;
+    border-radius: 6px; padding: 5px 8px; text-align: center; color: #1b5e20;
+  }
+  .conc-out b { font-size: 13px; }
+
   .rate-wheel {
     width: 84px; user-select: none; touch-action: none;
   }
@@ -191,7 +216,7 @@
 <body>
 
 <h1>Calculadora de perfusión continua — Sedación, analgesia y control de agitación en UCI</h1>
-<p style="font-size:13px;color:#555;">Fármacos agrupados según su efecto principal. Ajusta el peso con el deslizador y la velocidad de perfusión (ml/h) con la rueda de cada fármaco; la dosis se calcula al instante. Los valores se guardan localmente en este navegador.</p>
+<p style="font-size:13px;color:#555;">Fármacos agrupados según su efecto principal. Ajusta el peso, la <b>cantidad de fármaco</b> (viales o mg/µg) y la <b>dilución</b> (saltos de 50 ml) con las ruedas; la concentración y la dosis se calculan al instante. Los valores se guardan localmente en este navegador.</p>
 
 <div class="peso-box">
   <div class="peso-top">
@@ -233,7 +258,7 @@
 
 <tr>
   <td class="fcol">Propofol 2%</td>
-  <td>Vial 2% = <b>20 mg/ml</b><br><span class="dilucion">Sin diluir</span></td>
+  <td class="mix-cell" data-drug="propofol" data-label="Presentación y dilución"></td>
   <td>0,3–3 mg/kg/h<br>(5–50 µg/kg/min)<br><span class="alerta">Máx 4 mg/kg/h si &gt;48 h</span></td>
   <td>
     <div class="dose-bar-wrap">
@@ -266,7 +291,7 @@
 
 <tr>
   <td class="fcol">Midazolam</td>
-  <td>Vial 50 mg/10 ml<br><span class="dilucion">250 mg en 250 ml SSF<br><b>1 mg/ml</b></span></td>
+  <td class="mix-cell" data-drug="midazolam" data-label="Presentación y dilución"></td>
   <td>0,02–0,1 mg/kg/h<br>(1,4–7 mg/h en 70 kg)</td>
   <td>
     <div class="dose-bar-wrap">
@@ -297,7 +322,7 @@
 
 <tr>
   <td class="fcol">Ketamina</td>
-  <td>Vial 500 mg/10 ml (50 mg/ml)<br><span class="dilucion">500 mg en 100 ml SSF<br><b>5 mg/ml</b></span></td>
+  <td class="mix-cell" data-drug="ketamina" data-label="Presentación y dilución"></td>
   <td>0,1–0,5 mg/kg/h (analg.)<br>1–3 mg/kg/h (sedación)</td>
   <td>
     <div class="dose-bar-wrap">
@@ -350,7 +375,7 @@
 
 <tr>
   <td class="fcol">Fentanilo</td>
-  <td>Amp. 150 µg/3 ml (50 µg/ml)<br><span class="dilucion">900 µg en 100 ml SSF<br><b>9 µg/ml</b></span></td>
+  <td class="mix-cell" data-drug="fentanilo" data-label="Presentación y dilución"></td>
   <td>1–3 µg/kg/h<br>(70–210 µg/h en 70 kg)</td>
   <td>
     <div class="dose-bar-wrap">
@@ -380,7 +405,7 @@
 
 <tr>
   <td class="fcol">Remifentanilo</td>
-  <td>Vial 5 mg polvo<br><span class="dilucion">5 mg en 100 ml SSF<br><b>50 µg/ml</b></span></td>
+  <td class="mix-cell" data-drug="remi" data-label="Presentación y dilución"></td>
   <td>0,025–0,2 µg/kg/min<br>(habitual 0,05–0,1 en VM)<br><span class="alerta">&gt;0,05 inhibe respiración</span></td>
   <td>
     <div class="dose-bar-wrap">
@@ -411,7 +436,7 @@
 
 <tr>
   <td class="fcol">Cloruro mórfico</td>
-  <td>Amp. 10 mg/ml<br><span class="dilucion">50 mg en 100 ml SSF<br><b>0,5 mg/ml</b></span></td>
+  <td class="mix-cell" data-drug="morfina" data-label="Presentación y dilución"></td>
   <td>1–12 mg/h<br>(0,015–0,15 mg/kg/h)</td>
   <td>
     <div class="dose-bar-wrap">
@@ -464,7 +489,7 @@
 
 <tr>
   <td class="fcol">Dexmedetomidina</td>
-  <td>Vial 200 µg/2 ml<br><span class="dilucion">200 µg → 50 ml SSF<br><b>4 µg/ml</b></span></td>
+  <td class="mix-cell" data-drug="dexme" data-label="Presentación y dilución"></td>
   <td>0,2–1,4 µg/kg/h<br><span class="alerta">Sin bolo de carga</span></td>
   <td>
     <div class="dose-bar-wrap">
@@ -536,7 +561,7 @@
 
 <tr>
   <td class="fcol">Cisatracurio</td>
-  <td>Vial 150 mg/30 ml (5 mg/ml) o 10 mg/5 ml (2 mg/ml)<br><span class="dilucion">300 mg en 100 ml SSF<br><b>3 mg/ml</b></span></td>
+  <td class="mix-cell" data-drug="cisatracurio" data-label="Presentación y dilución"></td>
   <td>0,5–10 µg/kg/min<br>(habitual 1–3 µg/kg/min)<br>Bolo inicial: 0,15–0,2 mg/kg</td>
   <td>
     <div class="dose-bar-wrap">
@@ -567,7 +592,7 @@
 
 <tr>
   <td class="fcol">Rocuronio</td>
-  <td>Vial 50 mg/5 ml (10 mg/ml)<br><span class="dilucion">500 mg en 100 ml SSF<br><b>5 mg/ml</b></span></td>
+  <td class="mix-cell" data-drug="rocuronio" data-label="Presentación y dilución"></td>
   <td>5–12 µg/kg/min<br>(0,3–0,6 mg/kg/h)<br>Bolo IOT: 0,6–1,2 mg/kg</td>
   <td>
     <div class="dose-bar-wrap">
@@ -624,7 +649,7 @@
   <li>Cisatracurio: <span class="formula">3 mg/ml</span> (300 mg en 100 ml SSF)</li>
   <li>Rocuronio: <span class="formula">5 mg/ml</span> (500 mg en 100 ml SSF)</li>
 </ul>
-<p><b>Fórmula general:</b> <span class="formula">dosis = (ml/h × concentración) / peso</span> (ajustando unidades y tiempo). La rueda controla ml/h; la dosis se calcula automáticamente.</p>
+<p><b>Fórmula general:</b> <span class="formula">concentración = cantidad fármaco / volumen dilución</span>; <span class="formula">dosis = (ml/h × concentración) / peso</span> (ajustando unidades y tiempo). Las ruedas controlan cantidad, dilución (saltos de 50 ml) y ml/h.</p>
 </div>
 </details>
 </div>
@@ -632,62 +657,247 @@
 <p style="font-size:11px;color:#888;margin-top:20px;">Calculadora orientativa. Verificar siempre las dosis según protocolo local, función orgánica y respuesta clínica individual.</p>
 
 <script>
-const drugs = {
+const MIX = {
   propofol: {
+    presentacion: 'Vial 2% = 20 mg/ml (p. ej. vial 50 ml = 1000 mg). Puede usarse sin diluir o diluido.',
+    vialAmount: 1000, vialLabel: 'viales', amountUnit: 'mg', modes: ['viales', 'mg'],
+    defaultMode: 'viales', defaultVials: 1, defaultAmt: 1000, defaultVol: 50,
+    volMin: 50, volMax: 500, doseKind: 'mg_kg_h',
     max: 8, unit: 'mg/kg/h', decimals: 2,
-    doseFromRate: (mlh, peso) => (mlh * 20) / peso,
-    rateFromDose: (d, peso) => (d * peso) / 20,
     zones: [{lim:1, name:'Sedación ligera', color:'#5fb55f'}, {lim:2, name:'Sedación moderada', color:'#f5c542'}, {lim:3, name:'Sedación profunda', color:'#f08a3c'}, {lim:4, name:'Dosis altas', color:'#e8806e'}, {lim:6, name:'⚠️ PRIS', color:'#d94c4c'}, {lim:8, name:'⚠️ Dosis excesivas', color:'#8b1a1a'}]
   },
   midazolam: {
+    presentacion: 'Vial 50 mg/10 ml. Mezcla habitual: 250 mg en 250 ml SSF.',
+    vialAmount: 50, vialLabel: 'viales', amountUnit: 'mg', modes: ['viales', 'mg'],
+    defaultMode: 'viales', defaultVials: 5, defaultAmt: 250, defaultVol: 250,
+    volMin: 50, volMax: 500, doseKind: 'mg_kg_h',
     max: 0.15, unit: 'mg/kg/h', decimals: 3,
-    doseFromRate: (mlh, peso) => mlh / peso,
-    rateFromDose: (d, peso) => d * peso,
     zones: [{lim:0.04, name:'Ansiolisis', color:'#5fb55f'}, {lim:0.07, name:'Sedación ligera', color:'#f5c542'}, {lim:0.1, name:'Sedación profunda', color:'#f08a3c'}, {lim:0.15, name:'Acumulación / delirium', color:'#d94c4c'}]
   },
   ketamina: {
+    presentacion: 'Vial 500 mg/10 ml (50 mg/ml). Mezcla habitual: 500 mg en 100 ml SSF.',
+    vialAmount: 500, vialLabel: 'viales', amountUnit: 'mg', modes: ['viales', 'mg'],
+    defaultMode: 'viales', defaultVials: 1, defaultAmt: 500, defaultVol: 100,
+    volMin: 50, volMax: 500, doseKind: 'mg_kg_h',
     max: 4, unit: 'mg/kg/h', decimals: 2,
-    doseFromRate: (mlh, peso) => (mlh * 5) / peso,
-    rateFromDose: (d, peso) => (d * peso) / 5,
     zones: [{lim:0.5, name:'Analgesia subanestésica', color:'#5fb55f'}, {lim:1.5, name:'Sedación ligera', color:'#f5c542'}, {lim:3, name:'Sedación disociativa', color:'#f08a3c'}, {lim:4, name:'Emergencia / HTA', color:'#d94c4c'}]
   },
   fentanilo: {
+    presentacion: 'Ampolla 150 µg/3 ml (50 µg/ml). Mezcla habitual: 900 µg en 100 ml SSF.',
+    vialAmount: 150, vialLabel: 'ampollas', amountUnit: 'ug', modes: ['viales', 'ug'],
+    defaultMode: 'viales', defaultVials: 6, defaultAmt: 900, defaultVol: 100,
+    volMin: 50, volMax: 500, doseKind: 'ug_kg_h',
     max: 4, unit: 'µg/kg/h', decimals: 2,
-    doseFromRate: (mlh, peso) => (mlh * 9) / peso,
-    rateFromDose: (d, peso) => (d * peso) / 9,
     zones: [{lim:1, name:'Analgesia', color:'#5fb55f'}, {lim:1.7, name:'Analgesia alta', color:'#f08a3c'}, {lim:4, name:'⚠️ Riesgo: sedación profunda / rigidez torácica', color:'#d94c4c'}]
   },
   remi: {
+    presentacion: 'Vial 5 mg polvo. Mezcla habitual: 5 mg en 100 ml SSF (= 50 µg/ml).',
+    vialAmount: 5, vialLabel: 'viales', amountUnit: 'mg', modes: ['viales', 'mg'],
+    defaultMode: 'viales', defaultVials: 1, defaultAmt: 5, defaultVol: 100,
+    volMin: 50, volMax: 500, doseKind: 'ug_kg_min_from_mg_ml',
     max: 0.3, unit: 'µg/kg/min', decimals: 3,
-    doseFromRate: (mlh, peso) => (mlh * 50) / (peso * 60),
-    rateFromDose: (d, peso) => (d * peso * 60) / 50,
     zones: [{lim:0.05, name:'Analgesia sin apnea', color:'#5fb55f'}, {lim:0.1, name:'Analgosedación', color:'#f5c542'}, {lim:0.2, name:'Apnea / bradicardia', color:'#f08a3c'}, {lim:0.3, name:'Rigidez / hipotensión severa', color:'#d94c4c'}]
   },
   morfina: {
+    presentacion: 'Ampolla 10 mg/ml. Mezcla habitual: 50 mg en 100 ml SSF.',
+    vialAmount: 10, vialLabel: 'ampollas', amountUnit: 'mg', modes: ['viales', 'mg'],
+    defaultMode: 'viales', defaultVials: 5, defaultAmt: 50, defaultVol: 100,
+    volMin: 50, volMax: 500, doseKind: 'mg_h',
     max: 12, unit: 'mg/h', decimals: 1,
-    doseFromRate: (mlh) => mlh * 0.5,
-    rateFromDose: (d) => d / 0.5,
     zones: [{lim:3, name:'Analgesia', color:'#5fb55f'}, {lim:6, name:'Analgesia + sedación', color:'#f5c542'}, {lim:10, name:'Sedación profunda', color:'#f08a3c'}, {lim:12, name:'Depresión respiratoria', color:'#d94c4c'}]
   },
   dexme: {
+    presentacion: 'Vial 200 µg/2 ml. Mezcla habitual: 200 µg en 50 ml SSF.',
+    vialAmount: 200, vialLabel: 'viales', amountUnit: 'ug', modes: ['viales', 'ug'],
+    defaultMode: 'viales', defaultVials: 1, defaultAmt: 200, defaultVol: 50,
+    volMin: 50, volMax: 500, doseKind: 'ug_kg_h',
     max: 1.4, unit: 'µg/kg/h', decimals: 2,
-    doseFromRate: (mlh, peso) => (mlh * 4) / peso,
-    rateFromDose: (d, peso) => (d * peso) / 4,
     zones: [{lim:0.4, name:'Sedación ligera cooperativa', color:'#5fb55f'}, {lim:0.7, name:'Sedación moderada', color:'#f5c542'}, {lim:1.2, name:'Sedación profunda', color:'#f08a3c'}, {lim:1.4, name:'↑ bradicardia/hipotensión', color:'#d94c4c'}]
   },
   cisatracurio: {
+    presentacion: 'Vial 150 mg/30 ml (5 mg/ml) o 10 mg/5 ml. Mezcla habitual: 300 mg en 100 ml SSF.',
+    vialAmount: 150, vialLabel: 'viales', amountUnit: 'mg', modes: ['viales', 'mg'],
+    defaultMode: 'viales', defaultVials: 2, defaultAmt: 300, defaultVol: 100,
+    volMin: 50, volMax: 500, doseKind: 'ug_kg_min_from_mg_ml',
     max: 10, unit: 'µg/kg/min', decimals: 2,
-    doseFromRate: (mlh, peso) => (mlh * 3000) / (peso * 60),
-    rateFromDose: (d, peso) => (d * peso * 60) / 3000,
     zones: [{lim:1, name:'Bloqueo parcial', color:'#5fb55f'}, {lim:3, name:'Bloqueo eficaz', color:'#f5c542'}, {lim:6, name:'Bloqueo profundo', color:'#f08a3c'}, {lim:10, name:'Sobre-bloqueo', color:'#d94c4c'}]
   },
   rocuronio: {
+    presentacion: 'Vial 50 mg/5 ml (10 mg/ml). Mezcla habitual: 500 mg en 100 ml SSF.',
+    vialAmount: 50, vialLabel: 'viales', amountUnit: 'mg', modes: ['viales', 'mg'],
+    defaultMode: 'viales', defaultVials: 10, defaultAmt: 500, defaultVol: 100,
+    volMin: 50, volMax: 500, doseKind: 'ug_kg_min_from_mg_ml',
     max: 20, unit: 'µg/kg/min', decimals: 2,
-    doseFromRate: (mlh, peso) => (mlh * 5000) / (peso * 60),
-    rateFromDose: (d, peso) => (d * peso * 60) / 5000,
     zones: [{lim:5, name:'Bloqueo parcial', color:'#5fb55f'}, {lim:10, name:'Bloqueo eficaz', color:'#f5c542'}, {lim:15, name:'Bloqueo profundo', color:'#f08a3c'}, {lim:20, name:'Acumulación', color:'#d94c4c'}]
   }
 };
+
+const drugs = MIX; // alias for zones/max used elsewhere
+
+function unitLabel(unit) {
+  return unit === 'ug' ? 'µg' : unit;
+}
+
+function formatConc(conc, unit) {
+  if (!isFinite(conc) || conc <= 0) return '—';
+  const u = unitLabel(unit);
+  if (conc >= 10) return conc.toFixed(1) + ' ' + u + '/ml';
+  if (conc >= 1) return conc.toFixed(2) + ' ' + u + '/ml';
+  return conc.toFixed(3) + ' ' + u + '/ml';
+}
+
+function getMode(id) {
+  const el = document.getElementById('mode_' + id);
+  return el ? el.value : (MIX[id].defaultMode || 'viales');
+}
+
+function setMode(id, mode) {
+  const cfg = MIX[id];
+  const modeEl = document.getElementById('mode_' + id);
+  if (modeEl) modeEl.value = mode;
+  document.querySelectorAll('.mode-btn[data-drug="' + id + '"]').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-mode') === mode);
+  });
+  const amt = document.getElementById('amt_' + id);
+  const unitTxt = document.getElementById('amt_' + id + '_unit');
+  if (!amt) return;
+  if (mode === 'viales') {
+    const vials = Math.max(1, Math.round((parseFloat(amt.dataset.mgValue) || cfg.defaultAmt) / cfg.vialAmount));
+    amt.min = 1; amt.max = 20; amt.step = 1; amt.value = String(vials);
+    if (unitTxt) unitTxt.textContent = cfg.vialLabel;
+  } else {
+    const base = parseFloat(amt.dataset.mgValue) || cfg.defaultAmt;
+    const maxAmt = cfg.amountUnit === 'ug' ? 5000 : 5000;
+    const step = cfg.amountUnit === 'ug' ? 50 : 10;
+    amt.min = step; amt.max = maxAmt; amt.step = step;
+    amt.value = String(Math.min(maxAmt, Math.max(step, Math.round(base / step) * step)));
+    if (unitTxt) unitTxt.textContent = unitLabel(cfg.amountUnit);
+  }
+  syncAmountDataset(id);
+}
+
+function syncAmountDataset(id) {
+  const cfg = MIX[id];
+  const amt = document.getElementById('amt_' + id);
+  if (!amt) return;
+  const mode = getMode(id);
+  const val = parseFloat(amt.value) || 0;
+  amt.dataset.mgValue = String(mode === 'viales' ? val * cfg.vialAmount : val);
+}
+
+function getDrugAmount(id) {
+  const cfg = MIX[id];
+  const amt = document.getElementById('amt_' + id);
+  if (!amt) return cfg.defaultAmt;
+  const mode = getMode(id);
+  const val = parseFloat(amt.value) || 0;
+  return mode === 'viales' ? val * cfg.vialAmount : val;
+}
+
+function getVolume(id) {
+  const cfg = MIX[id];
+  const vol = document.getElementById('vol_' + id);
+  if (!vol) return cfg.defaultVol;
+  return parseFloat(vol.value) || cfg.defaultVol;
+}
+
+function getConcentration(id) {
+  const vol = getVolume(id);
+  const amount = getDrugAmount(id);
+  if (!vol) return 0;
+  return amount / vol;
+}
+
+function doseFromRate(id, mlh, peso) {
+  const cfg = MIX[id];
+  const conc = getConcentration(id); // mg/ml or µg/ml according to amountUnit
+  switch (cfg.doseKind) {
+    case 'mg_kg_h':
+      return peso ? (mlh * conc) / peso : 0;
+    case 'ug_kg_h':
+      return peso ? (mlh * conc) / peso : 0;
+    case 'mg_h':
+      return mlh * conc;
+    case 'ug_kg_min_from_mg_ml':
+      // conc in mg/ml → µg/ml = conc*1000
+      return peso ? (mlh * conc * 1000) / (peso * 60) : 0;
+    default:
+      return 0;
+  }
+}
+
+function rateFromDose(id, dose, peso) {
+  const cfg = MIX[id];
+  const conc = getConcentration(id);
+  if (!conc) return 0;
+  switch (cfg.doseKind) {
+    case 'mg_kg_h':
+    case 'ug_kg_h':
+      return peso ? (dose * peso) / conc : 0;
+    case 'mg_h':
+      return dose / conc;
+    case 'ug_kg_min_from_mg_ml':
+      return peso ? (dose * peso * 60) / (conc * 1000) : 0;
+    default:
+      return 0;
+  }
+}
+
+function buildMixCell(id) {
+  const cfg = MIX[id];
+  const cell = document.querySelector('.mix-cell[data-drug="' + id + '"]');
+  if (!cell) return;
+  const modeBtns = cfg.modes.map(m => {
+    const label = m === 'viales' ? cfg.vialLabel : unitLabel(m === 'ug' ? 'ug' : 'mg');
+    return '<button type="button" class="mode-btn" data-drug="' + id + '" data-mode="' + m + '">' + label + '</button>';
+  }).join('');
+  cell.innerHTML =
+    '<div class="pres-note">' + cfg.presentacion + '</div>' +
+    '<div class="mix-panel">' +
+      '<div class="mix-col">' +
+        '<div class="mix-label">Fármaco</div>' +
+        '<div class="mode-toggle">' + modeBtns + '</div>' +
+        '<input type="hidden" id="mode_' + id + '" value="' + cfg.defaultMode + '">' +
+        '<div class="rate-wheel mix-wheel">' +
+          '<div class="rate-face" data-input="amt_' + id + '"><div class="rate-pointer" id="ptr_amt_' + id + '"></div></div>' +
+          '<input type="range" class="rate-range" id="amt_' + id + '" min="1" max="20" step="1" value="' + cfg.defaultVials + '" aria-label="Cantidad fármaco ' + id + '" oninput="onAmountInput(\'' + id + '\')">' +
+          '<div class="rate-readout"><span id="amt_' + id + '_txt">' + cfg.defaultVials + '</span> <span id="amt_' + id + '_unit">' + cfg.vialLabel + '</span></div>' +
+          '<div class="rate-btns">' +
+            '<button type="button" onclick="stepMixByStep(\'amt_' + id + '\',-1)">−</button>' +
+            '<button type="button" onclick="stepMixByStep(\'amt_' + id + '\',1)">+</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="mix-col">' +
+        '<div class="mix-label">Dilución</div>' +
+        '<div class="rate-wheel mix-wheel">' +
+          '<div class="rate-face" data-input="vol_' + id + '"><div class="rate-pointer" id="ptr_vol_' + id + '"></div></div>' +
+          '<input type="range" class="rate-range" id="vol_' + id + '" min="' + cfg.volMin + '" max="' + cfg.volMax + '" step="50" value="' + cfg.defaultVol + '" aria-label="Dilución ml ' + id + '" oninput="recalcular()">' +
+          '<div class="rate-readout"><span id="vol_' + id + '_txt">' + cfg.defaultVol + '</span> ml</div>' +
+          '<div class="rate-btns">' +
+            '<button type="button" onclick="stepMix(\'vol_' + id + '\',-50)">−</button>' +
+            '<button type="button" onclick="stepMix(\'vol_' + id + '\',50)">+</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="conc-out">Concentración: <b id="conc_' + id + '">—</b></div>';
+
+  cell.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // convert current amount to dataset before switching
+      syncAmountDataset(id);
+      setMode(id, btn.getAttribute('data-mode'));
+      recalcular();
+    });
+  });
+  setMode(id, cfg.defaultMode);
+}
+
+function onAmountInput(id) {
+  syncAmountDataset(id);
+  recalcular();
+}
 
 function updateMarker(id, dose, cfg) {
   const pct = Math.min(100, Math.max(0, (dose / cfg.max) * 100));
@@ -695,9 +905,10 @@ function updateMarker(id, dose, cfg) {
   if (mk) mk.style.left = pct + '%';
 }
 
-function updatePointer(id, input) {
-  const ptr = document.getElementById('ptr_' + id);
-  if (!ptr || !input) return;
+function updatePointer(input) {
+  if (!input) return;
+  const ptr = document.getElementById('ptr_' + input.id) || document.getElementById('ptr_' + input.id.replace(/^v_/, ''));
+  if (!ptr) return;
   const min = parseFloat(input.min) || 0;
   const max = parseFloat(input.max) || 1;
   const val = parseFloat(input.value) || 0;
@@ -707,6 +918,17 @@ function updatePointer(id, input) {
 }
 
 function stepRate(id, delta) {
+  stepMix(id, delta);
+}
+
+function stepMixByStep(id, dir) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const step = parseFloat(el.step) || 1;
+  stepMix(id, dir * step);
+}
+
+function stepMix(id, delta) {
   const el = document.getElementById(id);
   if (!el) return;
   const min = parseFloat(el.min) || 0;
@@ -715,7 +937,9 @@ function stepRate(id, delta) {
   let next = (parseFloat(el.value) || 0) + delta;
   next = Math.round(next / step) * step;
   next = Math.min(max, Math.max(min, next));
-  el.value = next.toFixed(1);
+  const decimals = step < 1 ? 1 : 0;
+  el.value = next.toFixed(decimals);
+  if (id.indexOf('amt_') === 0) syncAmountDataset(id.slice(4));
   recalcular();
 }
 
@@ -725,27 +949,50 @@ function recalcular() {
   if (pesoTxt) pesoTxt.innerHTML = peso + '<span>kg</span>';
   guardarEstado();
 
-  Object.keys(drugs).forEach(id => {
-    const cfg = drugs[id];
+  Object.keys(MIX).forEach(id => {
+    const cfg = MIX[id];
     const rateEl = document.getElementById('v_' + id);
     const doseEl = document.getElementById('d_' + id);
     const rateTxt = document.getElementById('v_' + id + '_txt');
+    const amtEl = document.getElementById('amt_' + id);
+    const amtTxt = document.getElementById('amt_' + id + '_txt');
+    const volEl = document.getElementById('vol_' + id);
+    const volTxt = document.getElementById('vol_' + id + '_txt');
+    const concEl = document.getElementById('conc_' + id);
     if (!rateEl || !doseEl) return;
+
     const mlh = parseFloat(rateEl.value) || 0;
     if (rateTxt) rateTxt.textContent = mlh.toFixed(1);
-    updatePointer(id, rateEl);
+    updatePointer(rateEl);
+    if (amtEl) {
+      const step = parseFloat(amtEl.step) || 1;
+      amtTxt.textContent = step < 1 ? parseFloat(amtEl.value).toFixed(1) : String(parseFloat(amtEl.value) || 0);
+      updatePointer(amtEl);
+    }
+    if (volEl) {
+      if (volTxt) volTxt.textContent = String(parseFloat(volEl.value) || 0);
+      updatePointer(volEl);
+    }
+    const conc = getConcentration(id);
+    if (concEl) concEl.textContent = formatConc(conc, cfg.amountUnit);
+
     if (!peso && id !== 'morfina') {
       doseEl.textContent = '—';
       updateMarker(id, 0, cfg);
       return;
     }
-    const dose = cfg.doseFromRate(mlh, peso);
+    const dose = doseFromRate(id, mlh, peso);
     doseEl.textContent = dose.toFixed(cfg.decimals);
     updateMarker(id, dose, cfg);
   });
 }
 
 const CAMPOS = ['peso','v_propofol','v_midazolam','v_ketamina','v_fentanilo','v_remi','v_morfina','v_dexme','v_cisatracurio','v_rocuronio'];
+const MIX_CAMPOS = [];
+Object.keys(MIX).forEach(id => {
+  MIX_CAMPOS.push('amt_' + id, 'vol_' + id, 'mode_' + id);
+});
+
 const LEGACY_DOSE = {
   d_propofol: 'propofol', d_midazolam: 'midazolam', d_ketamina: 'ketamina',
   d_fentanilo: 'fentanilo', d_remi: 'remi', d_morfina: 'morfina',
@@ -755,32 +1002,56 @@ const LEGACY_DOSE = {
 function guardarEstado() {
   try {
     const estado = {};
-    CAMPOS.forEach(id => { const el = document.getElementById(id); if (el) estado[id] = el.value; });
-    localStorage.setItem('calc_sedacion_uci_v2', JSON.stringify(estado));
+    CAMPOS.concat(MIX_CAMPOS).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) estado[id] = el.value;
+    });
+    Object.keys(MIX).forEach(id => {
+      const amt = document.getElementById('amt_' + id);
+      if (amt && amt.dataset.mgValue) estado['amtbase_' + id] = amt.dataset.mgValue;
+    });
+    localStorage.setItem('calc_sedacion_uci_v3', JSON.stringify(estado));
   } catch(e) {}
 }
 
 function cargarEstado() {
   try {
-    let raw = localStorage.getItem('calc_sedacion_uci_v2');
+    let raw = localStorage.getItem('calc_sedacion_uci_v3');
     if (raw) {
       const estado = JSON.parse(raw);
+      Object.keys(MIX).forEach(id => {
+        if (estado['mode_' + id]) setMode(id, estado['mode_' + id]);
+        if (estado['amtbase_' + id]) {
+          const amt = document.getElementById('amt_' + id);
+          if (amt) amt.dataset.mgValue = estado['amtbase_' + id];
+          setMode(id, estado['mode_' + id] || getMode(id));
+        } else if (estado['amt_' + id] !== undefined) {
+          const amt = document.getElementById('amt_' + id);
+          if (amt) amt.value = estado['amt_' + id];
+          syncAmountDataset(id);
+        }
+        if (estado['vol_' + id] !== undefined) {
+          const vol = document.getElementById('vol_' + id);
+          if (vol) vol.value = estado['vol_' + id];
+        }
+      });
       CAMPOS.forEach(id => { if (estado[id] !== undefined) { const el = document.getElementById(id); if (el) el.value = estado[id]; } });
       return;
     }
-    raw = localStorage.getItem('calc_sedacion_uci');
+    raw = localStorage.getItem('calc_sedacion_uci_v2') || localStorage.getItem('calc_sedacion_uci');
     if (!raw) return;
     const old = JSON.parse(raw);
     const peso = parseFloat(old.peso) || 70;
     const pesoEl = document.getElementById('peso');
     if (pesoEl && old.peso !== undefined) pesoEl.value = Math.min(200, Math.max(30, Math.round(peso)));
+    CAMPOS.forEach(id => { if (old[id] !== undefined) { const el = document.getElementById(id); if (el) el.value = old[id]; } });
     Object.keys(LEGACY_DOSE).forEach(doseId => {
       const drugId = LEGACY_DOSE[doseId];
       if (old[doseId] === undefined) return;
       const rateEl = document.getElementById('v_' + drugId);
       if (!rateEl) return;
       const dose = parseFloat(old[doseId]) || 0;
-      const rate = drugs[drugId].rateFromDose(dose, peso);
+      const rate = rateFromDose(drugId, dose, peso);
       const max = parseFloat(rateEl.max) || rate;
       rateEl.value = Math.min(max, Math.max(0, rate)).toFixed(1);
     });
@@ -806,7 +1077,9 @@ function bindWheels() {
       const step = parseFloat(input.step) || 0.1;
       let val = min + pct * (max - min);
       val = Math.round(val / step) * step;
-      input.value = val.toFixed(1);
+      const decimals = step < 1 ? 1 : 0;
+      input.value = val.toFixed(decimals);
+      if (input.id.indexOf('amt_') === 0) syncAmountDataset(input.id.slice(4));
       recalcular();
     }
 
@@ -824,6 +1097,7 @@ function bindWheels() {
   });
 }
 
+Object.keys(MIX).forEach(buildMixCell);
 cargarEstado();
 bindWheels();
 recalcular();
