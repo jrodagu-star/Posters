@@ -1,0 +1,2254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tratamientos · Hoja de medicación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Archivo+Narrow:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#131A17;
+    --ink-2:#33403A;
+    --muted:#6D7A72;
+    --faint:#96A29A;
+    --paper:#EBEEE8;
+    --card:#FFFFFF;
+    --rule:#D2DAD2;
+    --rule-soft:#E3E8E2;
+    --green:#0B5D4E;
+    --green-2:#12836D;
+    --green-soft:#C9E0D7;
+    --amber:#9A5A10;
+    --amber-soft:#F0E2CE;
+    --grey-st:#6D7A72;
+    --red:#8C2F1B;
+    --shadow:0 1px 0 rgba(19,26,23,.04), 0 12px 32px -20px rgba(19,26,23,.35);
+    --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans:"Archivo", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --disp:"Archivo Narrow", "Arial Narrow", "Helvetica Neue", system-ui, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  html,body{overflow-x:hidden}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--sans);font-size:14.5px;line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+    background-image:linear-gradient(to bottom, rgba(255,255,255,.55), rgba(255,255,255,0) 320px);
+  }
+  ::selection{background:var(--green-soft);color:var(--ink)}
+  a{color:inherit}
+  button,input,select,textarea{font:inherit;color:inherit}
+  :focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:2px}
+  .wrap{max-width:1460px;margin:0 auto;padding:0 26px 64px}
+  @media (max-width:640px){.wrap{padding:0 14px 48px}}
+
+  /* ---------- masthead ---------- */
+  .mast{
+    position:sticky;top:0;z-index:40;
+    display:flex;align-items:center;justify-content:space-between;gap:14px 22px;flex-wrap:wrap;
+    padding:14px 0 13px;margin-bottom:2px;
+    background:linear-gradient(to bottom, var(--paper) 68%, rgba(235,238,232,0));
+    border-bottom:1px solid var(--ink);
+  }
+  .brand{display:flex;align-items:center;gap:13px;min-width:0;flex:0 1 auto}
+  .cross{position:relative;width:26px;height:26px;flex:0 0 auto}
+  .cross::before,.cross::after{content:"";position:absolute;background:var(--green)}
+  .cross::before{left:10px;top:0;width:6px;height:26px}
+  .cross::after{top:10px;left:0;height:6px;width:26px}
+  .eyebrow{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:1px;white-space:nowrap;
+  }
+  h1{
+    font-family:var(--disp);font-weight:700;font-size:32px;line-height:.94;
+    letter-spacing:.005em;text-transform:uppercase;margin:0;
+  }
+  .patient{display:flex;align-items:center;gap:14px;min-width:0;margin-left:auto;margin-right:6px}
+  .pt-name{display:flex;flex-direction:column;min-width:0}
+  .pt-name label{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .pt-name input{
+    border:0;border-bottom:1px dashed var(--rule);background:transparent;padding:1px 0;
+    font-family:var(--disp);font-size:16px;font-weight:600;letter-spacing:.01em;color:var(--ink);
+    width:246px;max-width:40vw;text-transform:uppercase;font-size:15.5px;
+  }
+  .pt-name input::placeholder{color:var(--faint);text-transform:none;font-weight:500;font-family:var(--sans);font-size:13px;letter-spacing:0}
+  .pt-name input:hover{border-bottom-color:var(--faint)}
+  .pt-name input:focus-visible{outline:none;border-bottom:1px solid var(--green)}
+  .pt-counts{display:flex;align-items:stretch;border:1px solid var(--rule);background:var(--card)}
+  .ptc{display:flex;flex-direction:column;justify-content:center;padding:4px 11px 5px;min-width:66px}
+  .ptc + .ptc{border-left:1px solid var(--rule-soft)}
+  .ptc b{font-family:var(--disp);font-size:22px;line-height:.95;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .ptc span{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;white-space:nowrap}
+  .ptc.act b{color:var(--green)}
+  .ptc.off b{color:var(--ink-2)}
+  .ptc.zero b{color:var(--faint)}
+  .ptc.bump{animation:ptbump .45s ease}
+  @keyframes ptbump{0%{transform:scale(1)}35%{transform:scale(1.14)}100%{transform:scale(1)}}
+  .mast-tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+  .datebox{display:flex;align-items:center;gap:8px;border:1px solid var(--rule);background:var(--card);padding:6px 9px}
+  .datebox label{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .datebox input{border:0;background:transparent;font-family:var(--mono);font-size:12.5px;padding:1px 0;width:118px}
+  .datebox input:focus-visible{outline:none;background:var(--green-soft)}
+
+  .btn{
+    appearance:none;border:1px solid var(--ink);background:var(--ink);color:#fff;
+    padding:8px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+    cursor:pointer;transition:background .12s,color .12s,border-color .12s;white-space:nowrap;
+  }
+  .btn:hover{background:var(--green);border-color:var(--green)}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+  .btn.ghost:hover{background:var(--card);border-color:var(--ink);color:var(--ink)}
+  .btn.sm{padding:6px 10px;font-size:10px}
+  .btn[disabled]{opacity:.4;cursor:not-allowed}
+
+  /* ---------- panels / hero ---------- */
+  .hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:0;margin-top:22px;
+    background:var(--card);border:1px solid var(--rule);box-shadow:var(--shadow)}
+  .panel{padding:18px 20px 16px;min-width:0}
+  .panel + .panel{border-left:1px solid var(--rule)}
+  .panel-h{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:14px}
+  .panel-h h2{
+    font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    font-weight:500;color:var(--ink-2);margin:0;
+  }
+  .panel-h .sub{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.04em;text-align:right}
+
+  /* clock chart */
+  .clock{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;align-items:end;height:132px}
+  .col{position:relative;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+  .col .n{
+    font-family:var(--mono);font-size:9.5px;color:var(--green);text-align:center;margin-bottom:3px;
+    font-weight:700;opacity:0;transition:opacity .15s;
+  }
+  .col .n.show{opacity:1}
+  .col .b{background:var(--rule-soft);min-height:2px;transition:height .35s ease,background .15s}
+  .col.on .b{background:var(--green)}
+  .col.peak .b{background:var(--green-2)}
+  .clock-axis{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;margin-top:7px;border-top:1px solid var(--rule);padding-top:5px}
+  .clock-axis span{font-family:var(--mono);font-size:9px;color:var(--faint);text-align:left}
+  .clock-foot{margin-top:9px;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.02em}
+  .clock-empty{height:132px;display:flex;align-items:center;font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+  /* stats */
+  .bigstat{display:flex;align-items:flex-end;gap:10px;margin-bottom:2px}
+  .bigstat b{
+    font-family:var(--disp);font-size:66px;line-height:.8;font-weight:700;letter-spacing:-.01em;color:var(--green);
+  }
+  .bigstat span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-bottom:7px}
+  .stack{display:flex;height:7px;margin:14px 0 13px;gap:2px}
+  .stack i{display:block;height:100%}
+  .key{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;font-size:12.5px}
+  .key .k{display:flex;align-items:center;gap:7px;color:var(--ink-2)}
+  .key .sw{width:8px;height:8px;flex:0 0 auto}
+  .key .v{font-family:var(--mono);font-size:12.5px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+  .key .k.mut{color:var(--muted)}
+  .soon{margin-top:14px;border-top:1px dashed var(--rule);padding-top:10px}
+  .soon-h{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:6px}
+  .soon-row{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--ink-2);padding:2px 0}
+  .soon-row span:last-child{font-family:var(--mono);font-size:10.5px;color:var(--amber);white-space:nowrap}
+
+  /* ---------- toolbar ---------- */
+  .toolbar{display:flex;align-items:center;gap:9px 10px;flex-wrap:wrap;margin:16px 0 0}
+  .search{position:relative;flex:1 1 260px;max-width:420px}
+  .search input{
+    width:100%;border:1px solid var(--rule);background:var(--card);padding:9px 12px 9px 32px;
+    font-size:13.5px;border-radius:0;
+  }
+  .search input::placeholder{color:var(--faint)}
+  .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.45}
+  .chips{display:flex;gap:0;border:1px solid var(--rule);background:var(--card)}
+  .chip{
+    appearance:none;border:0;background:transparent;padding:9px 11px;cursor:pointer;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+    border-right:1px solid var(--rule-soft);
+  }
+  .chip:last-child{border-right:0}
+  .chip:hover{color:var(--ink);background:#F5F8F4}
+  .chip[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .chip .c{opacity:.6;margin-left:5px}
+  select.sel{
+    border:1px solid var(--rule);background:var(--card);padding:9px 10px;font-size:12px;
+    font-family:var(--mono);max-width:215px;
+  }
+  .grow{flex:1}
+  .count{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-left:auto}
+  .tb-break{flex-basis:100%;height:0}
+
+  /* ---------- table ---------- */
+  .tablewrap{margin-top:12px;background:var(--card);border:1px solid var(--rule);box-shadow:var(--shadow);overflow:auto}
+  table{width:100%;border-collapse:collapse;min-width:1330px}
+  thead th{
+    position:sticky;top:0;z-index:2;background:#F6F8F5;text-align:left;
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;font-weight:500;
+    color:var(--muted);padding:9px 10px;border-bottom:1px solid var(--ink);white-space:nowrap;
+  }
+  thead th.sortable{cursor:pointer;user-select:none}
+  thead th.sortable:hover{color:var(--ink)}
+  thead th .arw{opacity:0;font-size:9px}
+  thead th[data-dir] .arw{opacity:1;color:var(--green)}
+  tbody tr{cursor:pointer;border-bottom:1px solid var(--rule-soft)}
+  tbody tr:last-child{border-bottom:0}
+  tbody tr:hover{background:#F7FAF6}
+  tbody tr.is-susp td .med-name{color:var(--muted)}
+  tbody tr.is-anul td{opacity:.62}
+  td{padding:8px 10px;vertical-align:middle}
+  td:nth-child(2){min-width:230px}
+  td.st-cell{width:112px;padding-left:0}
+  .statusbar{display:flex;align-items:center;gap:8px;padding-left:12px;border-left:3px solid transparent}
+  tr.s-activo .statusbar{border-left-color:var(--green)}
+  tr.s-suspendido .statusbar{border-left-color:var(--amber)}
+  tr.s-finalizado .statusbar{border-left-color:var(--rule)}
+  tr.s-anulado .statusbar{border-left-color:var(--red)}
+  .dot{width:6px;height:6px;border-radius:50%;flex:0 0 auto}
+  .s-activo .dot{background:var(--green)}
+  .s-suspendido .dot{background:var(--amber)}
+  .s-finalizado .dot{background:var(--faint)}
+  .s-anulado .dot{background:var(--red)}
+  .st-lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2)}
+  .med{display:flex;flex-direction:column;gap:1px;min-width:0;max-width:296px}
+  .med-name{font-weight:500;font-size:13.5px;letter-spacing:-.005em;line-height:1.25;white-space:normal}
+  .med-sub{font-family:var(--mono);font-size:10.5px;color:var(--muted);white-space:normal}
+  .warn{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;
+    background:var(--amber);color:#fff;font-family:var(--mono);font-size:9px;font-weight:700;margin-left:6px;
+    vertical-align:1px;flex:0 0 auto}
+  .num{font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .pauta{font-family:var(--mono);font-size:11.5px;white-space:nowrap}
+  .pauta b{font-weight:700}
+  .strip{display:grid;grid-template-columns:repeat(24,1fr);gap:1px;height:13px;width:110px;flex:0 0 auto}
+  .strip i{display:block;background:var(--rule-soft);height:100%}
+  .strip i.on{background:var(--green)}
+  tr.is-susp .strip i.on{background:var(--amber);opacity:.55}
+  tr.is-final .strip i.on{background:var(--faint)}
+  .strip.na{opacity:.5}
+  .strip-cap{display:flex;justify-content:space-between;width:110px;font-family:var(--mono);font-size:8px;color:var(--faint);margin-top:2px}
+  .via{font-family:var(--mono);font-size:10px;letter-spacing:.03em;color:var(--ink-2);white-space:nowrap}
+  .fin-miss{color:var(--faint)}
+  .fin-calc::after{content:"*";color:var(--faint)}
+  .days{font-family:var(--mono);font-size:11px;text-align:right}
+  .doc{display:inline-block;font-size:11.5px;color:var(--ink-2);white-space:nowrap;max-width:128px;overflow:hidden;text-overflow:ellipsis}
+  .empty-row td{padding:44px 16px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px}
+  .tablefoot{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:10px 14px;
+    border-top:1px solid var(--rule);font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.04em;flex-wrap:wrap}
+  .tablefoot .lit{color:var(--faint)}
+
+  /* ---------- paste screen ---------- */
+  .paste-wrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;margin-top:24px;align-items:start}
+  .paste-card{background:var(--card);border:1px solid var(--rule);box-shadow:var(--shadow)}
+  .paste-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;border-bottom:1px solid var(--rule)}
+  .paste-head h2{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;margin:0;font-weight:500;color:var(--ink-2)}
+  .paste-head .hintkey{font-family:var(--mono);font-size:9.5px;color:var(--faint);letter-spacing:.05em}
+  textarea#paste{
+    display:block;width:100%;min-height:340px;border:0;padding:16px 18px;resize:vertical;
+    font-family:var(--mono);font-size:11.5px;line-height:1.6;background:
+      repeating-linear-gradient(to bottom, transparent 0 18.4px, #F1F4EF 18.4px 19.4px);
+    background-color:var(--card);white-space:pre;overflow:auto;
+  }
+  textarea#paste:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--green-soft)}
+  textarea#paste::placeholder{color:var(--faint);white-space:pre-wrap}
+  .paste-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border-top:1px solid var(--rule);flex-wrap:wrap}
+  .paste-foot .meta{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.03em}
+  .paste-foot .meta b{color:var(--ink)}
+  .paste-note{margin-top:3px;font-size:11.5px;color:var(--amber);line-height:1.4}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  .aside{border:1px solid var(--rule);background:rgba(255,255,255,.55);padding:16px 17px}
+  .aside h3{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 9px;font-weight:500}
+  .aside ol{margin:0 0 16px;padding-left:16px;font-size:12.5px;color:var(--ink-2);line-height:1.55}
+  .aside ol li{margin-bottom:5px}
+  .aside p{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 12px}
+  .aside .sep{height:1px;background:var(--rule);margin:15px 0}
+  .privacy{display:flex;gap:8px;font-family:var(--mono);font-size:9.5px;line-height:1.5;color:var(--faint);letter-spacing:.02em}
+  .err{
+    display:none;margin:0 0 14px;padding:10px 13px;border-left:3px solid var(--red);background:#F7EDE9;
+    font-size:12.5px;color:#6B2417;
+  }
+  .err.show{display:block}
+  .drop{outline:2px dashed var(--green);outline-offset:-8px}
+
+  /* ---------- drawer ---------- */
+  .backdrop{position:fixed;inset:0;background:rgba(19,26,23,.28);opacity:0;pointer-events:none;transition:opacity .18s;z-index:60}
+  .backdrop.on{opacity:1;pointer-events:auto}
+  .drawer{
+    position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--card);z-index:61;
+    transform:translateX(102%);transition:transform .22s ease;display:flex;flex-direction:column;
+    box-shadow:-24px 0 60px -40px rgba(0,0,0,.6);
+  }
+  .drawer.on{transform:translateX(0)}
+  .drawer-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 14px;border-bottom:1px solid var(--rule)}
+  .drawer-h .eyebrow{margin-bottom:4px}
+  .drawer-h h3{margin:0;font-family:var(--disp);font-size:24px;line-height:1.05;text-transform:uppercase;letter-spacing:.01em;font-weight:700}
+  .x{appearance:none;background:transparent;border:1px solid var(--rule);width:28px;height:28px;cursor:pointer;font-size:14px;line-height:1;flex:0 0 auto}
+  .x:hover{border-color:var(--ink)}
+  .drawer-b{overflow:auto;padding:16px 20px 30px}
+  .dstate{display:flex;align-items:center;gap:8px;padding:9px 12px;border-left:3px solid var(--rule);background:#F6F8F5;margin-bottom:16px}
+  .dstate .t{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+  dl{display:grid;grid-template-columns:110px 1fr;gap:9px 12px;margin:0 0 18px;font-size:13px}
+  dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:2px}
+  dd{margin:0;color:var(--ink);overflow-wrap:anywhere}
+  dd.mono{font-family:var(--mono);font-size:12px}
+  .obsblock{border:1px solid var(--rule);padding:11px 12px;font-size:12.5px;color:var(--ink-2);line-height:1.5;background:#FBFCFA;white-space:pre-wrap}
+  .week{display:flex;gap:4px;margin:2px 0 0}
+  .week span{width:20px;height:20px;display:grid;place-items:center;font-family:var(--mono);font-size:9.5px;border:1px solid var(--rule);color:var(--faint)}
+  .week span.on{background:var(--green);border-color:var(--green);color:#fff}
+
+  /* ---------- misc ---------- */
+  footer{margin-top:22px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:9.5px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  /* therapeutic classes */
+  .g1{--gc:#14615A;--gb:#DCEBE6}
+  .g2{--gc:#4A3C7A;--gb:#E5E1F0}
+  .g3{--gc:#8C2F1B;--gb:#F3DED7}
+  .g4{--gc:#1F5A78;--gb:#DEE9EF}
+  .g5{--gc:#6B5312;--gb:#EFE7D1}
+  .g6{--gc:#46603A;--gb:#E4EBDD}
+  .g7{--gc:#6D3B5E;--gb:#EDE0E9}
+  .g8{--gc:#55615A;--gb:#E7EAE6}
+  .badge{
+    display:inline-block;background:var(--gb);color:var(--gc);
+    font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+    padding:2px 6px;white-space:nowrap;
+  }
+  .inn{
+    display:inline-block;font-family:var(--mono);font-size:9px;font-weight:400;letter-spacing:.02em;
+    color:var(--ink-2);background:#EEF2EC;border:1px solid var(--rule);
+    padding:1px 5px;margin-left:5px;vertical-align:1px;white-space:nowrap;text-transform:lowercase;
+  }
+  .inn.lg{font-size:10.5px;padding:2px 7px;margin-left:0}
+  .inn.guia{background:var(--amber-soft);border-color:#E2CFAF;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;font-size:8.5px}
+  .cf{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:10px;
+    padding-top:9px;border-top:1px dashed var(--rule)}
+  .cf-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .cf-tag{display:inline-flex;align-items:center;gap:5px;background:#EEF2EC;border:1px solid var(--rule);
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;color:var(--ink-2)}
+  .cf-tag b{font-weight:500;color:var(--muted)}
+  .cf-x{appearance:none;border:0;background:transparent;cursor:pointer;color:var(--faint);
+    font-size:10px;line-height:1;padding:0 0 0 2px}
+  .cf-x:hover{color:var(--red)}
+  .cf-clear{appearance:none;border:0;background:transparent;cursor:pointer;margin-left:auto;
+    white-space:nowrap;
+    font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);
+    text-decoration:underline;text-underline-offset:3px;padding:0}
+  .cf-clear:hover{color:var(--ink)}
+  /* ---------- vistas (carpetas) ---------- */
+  .views{margin-top:12px}
+  .tabs{display:flex;align-items:flex-end;gap:2px;padding:0 0 0 3px;position:relative;top:1px}
+  .tab{appearance:none;cursor:pointer;display:inline-flex;align-items:baseline;gap:8px;
+    padding:7px 15px 8px;border:1px solid var(--rule);border-bottom:0;background:#E1E5DE;
+    color:var(--muted);font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;margin-bottom:-1px;transition:background .12s,color .12s}
+  .tab:hover{background:#EBEEE8;color:var(--ink)}
+  .tab[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:inset 0 2px 0 var(--green);z-index:2}
+  .tab{min-width:0}
+  .tab span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tab em{font-style:normal;font-size:8.5px;letter-spacing:.05em;color:var(--faint);font-weight:400;white-space:nowrap}
+  .tab[aria-selected="true"] em{color:var(--muted)}
+  .tab:focus-visible{outline:2px solid var(--green);outline-offset:-3px}
+  .views>.tl,.views>.tablewrap{margin-top:0}
+  .tl-h2{display:none}
+
+  /* ---------- timeline ---------- */
+  .tl{margin-top:10px;background:var(--card);border:1px solid var(--rule);box-shadow:var(--shadow)}
+  .tl-h{display:flex;align-items:center;justify-content:space-between;gap:14px;
+    padding:11px 14px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+  .tl-h-l{display:flex;align-items:baseline;gap:10px;min-width:0;flex-wrap:wrap}
+  .tl-h h2{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    font-weight:500;color:var(--ink-2);margin:0}
+  .tl-sub{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.03em}
+  .tl-h-r{display:flex;align-items:center;gap:9px}
+  .seg{display:flex;border:1px solid var(--rule)}
+  .seg button{appearance:none;border:0;background:transparent;cursor:pointer;padding:5px 9px;
+    font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+    border-right:1px solid var(--rule-soft)}
+  .seg button:last-child{border-right:0}
+  .seg button:hover{color:var(--ink);background:#F5F8F4}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+  .tl-toggle{appearance:none;border:1px solid var(--rule);background:transparent;cursor:pointer;
+    padding:5px 9px;font-family:var(--mono);font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .tl-toggle:hover{border-color:var(--ink);color:var(--ink)}
+  .tl-dates{display:flex;align-items:center;gap:6px;border:1px solid var(--rule);padding:3px 4px 3px 8px}
+  .tl-dates label{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .tl-dates input{border:0;background:transparent;width:88px;font-family:var(--mono);font-size:10.5px;
+    padding:3px 2px;color:var(--ink)}
+  .tl-dates input:focus-visible{outline:none;background:var(--green-soft)}
+  .tl-dates input::placeholder{color:var(--faint);font-size:10px}
+  .tl-dates .sep{width:1px;height:14px;background:var(--rule)}
+  .tl-dates button{appearance:none;border:0;background:transparent;cursor:pointer;padding:3px 6px;
+    font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+  .tl-dates button:hover{color:var(--ink)}
+  .tl-dates button[disabled]{color:var(--faint);cursor:default}
+  .tl-bar.clip-l::before,.tl-bar.clip-r::after{content:"";position:absolute;top:50%;margin-top:-4px;
+    width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent}
+  .tl-bar.clip-l::before{left:0;border-left:5px solid rgba(255,255,255,.9)}
+  .tl-bar.clip-r::after{right:0;border-right:5px solid rgba(255,255,255,.9)}
+  .tl-body{padding:10px 14px 4px;--tlname:212px}
+  .tl-axis,.tl-row{display:grid;grid-template-columns:var(--tlname) minmax(0,1fr)}
+  .tl-axis{padding-bottom:5px;border-bottom:1px solid var(--rule)}
+  .tl-axis-lab{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+  .tl-axis-tr{position:relative;height:14px}
+  .tl-tick{position:absolute;top:0;font-family:var(--mono);font-size:9px;color:var(--faint);
+    white-space:nowrap;transform:translateX(-1px);padding-left:3px}
+  .tl-tick::before{content:"";position:absolute;left:0;top:12px;width:1px;height:5px;background:var(--rule)}
+  .tl-rows{overflow-y:auto;max-height:414px;overscroll-behavior:contain}
+  .tl-row{cursor:pointer;height:23px;border-bottom:1px solid #F1F4EF}
+  .tl-row:hover{background:#F7FAF6}
+  .tl-row:last-child{border-bottom:0}
+  .tl-name{display:flex;align-items:center;gap:6px;padding-right:10px;min-width:0}
+  .tl-name b{font-weight:500;font-size:11.5px;color:var(--ink);white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis;letter-spacing:-.004em}
+  .tl-dot{width:5px;height:5px;border-radius:50%;flex:0 0 auto}
+  .tl-name b{min-width:0}
+  .tl-n{flex:0 0 auto;font-family:var(--mono);font-style:normal;font-size:8.5px;letter-spacing:.04em;
+    color:var(--muted);border:1px solid var(--rule);padding:0 3px;line-height:12px;border-radius:1px}
+  .tl-bar{cursor:pointer}
+  .tl-tr{position:relative;height:23px}
+  .tl-bar{position:absolute;top:6px;height:11px;min-width:3px;border-radius:1px}
+  .tl-bar.est{opacity:.72;box-shadow:inset 0 0 0 1px rgba(0,0,0,.10);
+    background-image:repeating-linear-gradient(135deg, rgba(255,255,255,.5) 0 2px, rgba(255,255,255,0) 2px 6px)}
+  .tl-bar.est::after{content:"";position:absolute;right:-2px;top:-2px;height:calc(100% + 4px);
+    border-right:1px dashed rgba(19,26,23,.55)}
+  .tl-bar{cursor:help}
+  .tip{position:fixed;z-index:90;pointer-events:none;max-width:300px;background:var(--ink);color:#fff;
+    padding:9px 11px 10px;box-shadow:0 14px 34px -14px rgba(0,0,0,.55);opacity:0;
+    transform:translateY(4px);transition:opacity .12s,transform .12s}
+  .tip.on{opacity:1;transform:none}
+  .tip h4{margin:0 0 5px;font-family:var(--sans);font-size:12px;font-weight:600;line-height:1.3}
+  .tip .tr{font-family:var(--mono);font-size:10px;color:#C4D0C8;line-height:1.6}
+  .tip .tr b{color:#fff;font-weight:500}
+  .tip .badge{margin:0 0 6px;background:rgba(255,255,255,.14);color:#fff}
+  .tip .est-note{margin-top:7px;padding-top:6px;border-top:1px solid rgba(255,255,255,.2);
+    font-family:var(--mono);font-size:9.5px;line-height:1.5;color:#F0C689}
+  .tl-bar.now{top:3px;height:17px}
+  .tl-now{position:absolute;top:0;bottom:0;width:1px;background:repeating-linear-gradient(to bottom,var(--ink) 0 3px,transparent 3px 6px);opacity:.55}
+  .tl-now-lbl.l{left:auto;right:calc(100% + 3px)}
+  .tl-now-lbl{position:absolute;top:-2px;left:3px;font-family:var(--mono);font-size:8px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--ink);opacity:.7;white-space:nowrap}
+  .tl-row.off .tl-name b{color:var(--faint);font-weight:400}
+  .tl-row.off .tl-dot{opacity:.4}
+  .tl-out{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:9px;
+    color:var(--muted);letter-spacing:.06em;white-space:nowrap;background:#fff;padding:0 3px}
+  .tl-out.izq{left:3px}
+  .tl-out.der{right:3px}
+  .tl-empty{padding:26px 4px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .tl-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:9px 14px;border-top:1px solid var(--rule)}
+  .tl-leg{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--muted)}
+  .tl-leg i{width:9px;height:9px;display:block;border-radius:1px}
+  .tl-note{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:.03em}
+  .prof{margin-top:16px;border-top:1px dashed var(--rule);padding-top:11px}
+  .prof-h{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+  .prof-row{
+    display:grid;grid-template-columns:118px 1fr 22px;gap:9px;align-items:center;width:100%;
+    background:transparent;border:0;padding:3px 0;cursor:pointer;text-align:left;
+  }
+  .prof-row:hover .prof-l{color:var(--ink)}
+  .prof-row[aria-pressed="true"] .prof-l{color:var(--gc);font-weight:600}
+  .prof-l{font-size:11.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .prof-b{display:block;height:7px;background:var(--rule-soft)}
+  .prof-b i{display:block;height:100%;background:var(--gc)}
+  .prof-n{font-family:var(--mono);font-size:10.5px;color:var(--muted);text-align:right}
+  .prof-more{font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:5px;letter-spacing:.04em}
+  /* fila: borrar */
+  .td-act{width:36px;padding-left:0;padding-right:10px;text-align:right}
+  .rowdel{appearance:none;border:1px solid transparent;background:transparent;color:var(--faint);
+    width:22px;height:22px;line-height:1;cursor:pointer;font-size:12px;opacity:0;transition:opacity .12s,color .12s,border-color .12s}
+  tr:hover .rowdel,tr:focus-within .rowdel,.rowdel:focus-visible{opacity:1}
+  .rowdel:hover{color:var(--red);border-color:var(--red)}
+  .btn.danger{background:transparent;color:var(--red);border-color:#DCC2B9}
+  .btn.danger:hover{background:var(--red);border-color:var(--red);color:#fff}
+  .drawer-f{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;
+    border-top:1px solid var(--rule);margin-top:auto;flex:0 0 auto;background:var(--card)}
+  .drawer-f .hint{font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:.04em;text-align:right;line-height:1.4}
+  .rep{display:inline-block;font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--amber);border:1px solid #E2CFAF;background:#FBF3E7;padding:1px 4px;margin-left:5px;vertical-align:1px}
+
+  /* panel de añadir */
+  .sheet{position:fixed;inset:0;z-index:75;display:grid;place-items:center;padding:20px;
+    background:rgba(19,26,23,.32)}
+  .sheet[hidden]{display:none}
+  .sheet-card{background:var(--card);border:1px solid var(--ink);width:min(780px,100%);max-height:calc(100vh - 40px);
+    display:flex;flex-direction:column;box-shadow:0 40px 80px -40px rgba(0,0,0,.6)}
+  .sheet-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px 12px;border-bottom:1px solid var(--rule)}
+  .sheet-h h3{margin:0;font-family:var(--disp);font-size:24px;line-height:1;text-transform:uppercase;letter-spacing:.01em}
+  .sheet-h .eyebrow{margin-bottom:3px}
+  .sheet-p{margin:0;padding:12px 18px 0;font-size:12.5px;color:var(--ink-2);line-height:1.5}
+  .sheet-p b{color:var(--ink)}
+  #sheetText{display:block;width:100%;min-height:220px;flex:1 1 auto;border:0;border-top:1px solid var(--rule-soft);
+    margin-top:12px;padding:14px 18px;resize:vertical;font-family:var(--mono);font-size:11.5px;line-height:1.6;white-space:pre;overflow:auto}
+  #sheetText:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--green-soft)}
+  #sheetText::placeholder{color:var(--faint);white-space:pre-wrap}
+  .sheet-err{display:none;margin:0;padding:9px 18px;border-left:3px solid var(--red);background:#F7EDE9;font-size:12px;color:#6B2417}
+  .sheet-err.show{display:block}
+  .sheet-f{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;
+    border-top:1px solid var(--rule);flex-wrap:wrap}
+  .sheet-meta{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.03em}
+  .sheet-meta b{color:var(--ink)}
+  .sheet-actions{display:flex;gap:8px}
+  .toast{
+    position:fixed;left:22px;bottom:22px;transform:translateY(20px);background:var(--ink);color:#fff;
+    font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:10px 16px;z-index:80;opacity:0;pointer-events:none;
+    transition:opacity .18s,transform .18s;
+  }
+  .toast.on{opacity:1;transform:translateY(0)}
+  .toast{display:flex;align-items:center;gap:12px;pointer-events:none}
+  .toast.on.act{pointer-events:auto}
+  .toast button{appearance:none;border:0;background:transparent;color:#9FE3CF;cursor:pointer;
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    text-decoration:underline;text-underline-offset:3px;padding:0}
+  .toast button:hover{color:#fff}
+
+  @media (max-width:1370px){
+    .patient{order:3;flex:1 1 100%;margin:2px 0 0;justify-content:space-between;gap:12px}
+    .pt-name{flex:1 1 auto;min-width:0}
+    .pt-name input{width:100%;max-width:none}
+    .pt-counts{flex:0 0 auto}
+    .mast-tools{margin-left:auto}
+  }
+  @media (max-width:1080px){
+    .hero{grid-template-columns:1fr}
+    .panel + .panel{border-left:0;border-top:1px solid var(--rule)}
+    .paste-wrap{grid-template-columns:1fr}
+  }
+  @media (max-width:720px){
+    h1{font-size:24px}
+    .search{flex:1 1 100%;max-width:none}
+    .cf-clear{margin-left:0}
+    .tl-body{--tlname:132px;padding-left:10px;padding-right:10px}
+    .tl-h{padding:10px 12px;gap:8px}
+    .tl-h-r{flex-wrap:wrap;gap:7px;width:100%}
+    .tl-dates{flex:1 1 auto;min-width:0;gap:2px;padding-left:6px}
+    .tl-dates label{flex:1 1 auto;min-width:0}
+    .tl-dates input{width:64px;flex:1 1 auto;min-width:0}
+    .tl-name b{font-size:10.5px}
+    .tl-tick{font-size:8px}
+    .tl-sub{font-size:9px}
+    .tl-row{height:22px}
+    .tl-tr{height:22px}
+    .tl-bar{top:6px;height:10px}
+    .tl-bar.now{top:3px;height:16px}
+    .mast{flex-wrap:wrap;gap:10px}
+    .mast-tools{width:100%;justify-content:flex-start}
+    .tabs{gap:1px;padding:0 0 0 1px;width:100%}
+    .tab{flex:1 1 0;justify-content:center;padding:8px 8px 9px;font-size:8.5px;letter-spacing:.08em;gap:5px}
+    .tab em{font-size:8px}
+    .chips{overflow-x:auto;max-width:100%;scrollbar-width:none}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{flex:0 0 auto}
+    .patient{order:3;width:100%;margin:2px 0 0;flex-wrap:wrap;justify-content:space-between;gap:6px 10px}
+    .pt-name{flex:1 1 100%}
+    .pt-name input{width:100%;max-width:none;font-size:15px}
+    .pt-counts{margin-left:auto}
+    .ptc{min-width:0;padding:3px 9px 4px}
+    .ptc b{font-size:19px}
+    .ptc span{font-size:8px;letter-spacing:.08em}
+    .bigstat b{font-size:52px}
+    .clock{height:100px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+  @media (max-width:430px){
+    .tab em{display:none}
+  }
+
+  @media print{
+    body{background:#fff}
+    .mast{position:static;border-bottom:1px solid #000}
+    .mast-tools,.toolbar,.drawer,.backdrop,.toast,footer .r,.tablefoot .lit{display:none!important}
+    .patient{margin:0 0 0 auto;gap:10px}
+    .pt-name input{border:0;width:auto;font-size:15px;text-transform:none}
+    .pt-counts{border-color:#999}
+    .ptc b{font-size:18px}
+    .ptc.bump{animation:none}
+    .wrap{max-width:none;padding:0}
+    .hero,.tablewrap,.paste-card{box-shadow:none;border-color:#999}
+    .tabs{display:none!important}
+    #tlPanel[hidden],#tblPanel[hidden]{display:block!important}
+    #tlPanel{margin-top:12px}
+    .tl-h2{display:block!important}
+    .views>.tablewrap{margin-top:14px}
+    table{min-width:0;font-size:9px}
+    thead th{position:static;background:#eee}
+    tbody tr{page-break-inside:avoid}
+    td,thead th{padding:4px 6px}
+    .strip{width:96px;height:9px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="brand">
+      <div class="cross" aria-hidden="true"></div>
+      <div>
+        <div class="eyebrow" id="mastEyebrow">Hoja de medicación</div>
+        <h1>Tratamientos</h1>
+      </div>
+    </div>
+    <div class="patient">
+      <div class="pt-name">
+        <label for="ptName">Paciente</label>
+        <input type="text" id="ptName" placeholder="Sin nombre" autocomplete="off" spellcheck="false" aria-label="Nombre del paciente">
+      </div>
+      <div class="pt-counts" aria-live="polite">
+        <div class="ptc off" id="ptTotal" title="Tratamientos en la lista"><b>0</b><span>tratamientos</span></div>
+        <div class="ptc act" id="ptAct" title="Tratamientos activos en la fecha de referencia"><b>0</b><span>activos</span></div>
+      </div>
+    </div>
+    <div class="mast-tools">
+      <div class="datebox">
+        <label for="refdate">Fecha</label>
+        <input type="text" id="refdate" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" aria-label="Fecha de referencia">
+      </div>
+      <button class="btn ghost sm" id="btnResumen" title="Copiar los tratamientos activos como texto">Copiar activos</button>
+      <button class="btn ghost sm" id="btnCsv">CSV</button>
+      <button class="btn ghost sm" id="btnPrint">Imprimir</button>
+      <button class="btn ghost sm" id="btnAdd" title="Pegar más tratamientos sin borrar los actuales">Añadir</button>
+      <button class="btn sm" id="btnNuevo">Nuevo análisis</button>
+    </div>
+  </header>
+
+  <!-- ================= PASTE SCREEN ================= -->
+  <section id="screenPaste">
+    <div class="paste-wrap">
+      <div class="paste-card">
+        <div class="paste-head">
+          <h2>1 · Pega la tabla de tratamientos</h2>
+          <span class="hintkey">Ctrl / ⌘ + V sobre esta zona</span>
+        </div>
+        <div class="err" id="parseErr" role="alert"></div>
+        <textarea id="paste" spellcheck="false" aria-label="Texto de tratamientos"
+          placeholder="Pega aquí el listado copiado de la historia clínica (columnas separadas por tabuladores).
+
+Estado	Medicamento	Dosis	Pauta	Horas	Vía	…
+CONFIRMADO	MEROPENEM vial 1 g	1 g	C/8	8-16-24	INTRAVENOSA	…"></textarea>
+        <div class="paste-foot">
+          <div>
+            <div class="meta" id="pasteMeta">Sin contenido</div>
+            <div class="paste-note" id="pasteNote" hidden></div>
+          </div>
+          <div class="actions">
+            <button class="btn ghost sm" id="btnBack" hidden>Volver a la lista</button>
+            <button class="btn ghost sm" id="btnSample">Cargar ejemplo</button>
+            <button class="btn ghost sm" id="btnFile">Abrir .txt</button>
+            <input type="file" id="fileInput" accept=".txt,.tsv,.csv,text/plain" hidden>
+            <button class="btn" id="btnAnalizar">Analizar</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="aside">
+        <h3>Cómo funciona</h3>
+        <ol>
+          <li>Copia el listado completo desde la pantalla de prescripción, con encabezados si los hay.</li>
+          <li>Pega sin recortar: las filas que ocupan varias líneas se reconstruyen solas.</li>
+          <li>Revisa activos, suspendidos y fechas. Filtra, ordena o abre una prescripción para verlo todo.</li>
+          <li>Elige un <b>tipo de fármaco</b> en el menú —o haz clic en el perfil terapéutico— para ver solo antibióticos, sedantes, vasoactivos, nutrición…</li>
+          <li>La <b>línea de tiempo</b> y el gráfico de 24 h siguen a los filtros: muestran solo lo que hay en la lista.</li>
+          <li>Con una lista abierta, <b>Añadir</b> pega más tratamientos del mismo paciente sin borrar los que ya hay; la <b>✕</b> de cada fila quita uno (se puede deshacer).</li>
+        </ol>
+        <div class="sep"></div>
+        <h3>Qué calcula</h3>
+        <p><b>Activo</b>: confirmado y sin fecha de fin, o con fin igual o posterior a la fecha de referencia. <b>Suspendido</b>: retirado por el facultativo. <b>Finalizado</b>: fin anterior a la fecha de referencia.</p>
+        <p>La fecha de fin marcada con <span class="num">*</span> no venía en el texto: se estima como inicio + días prescritos − 1.</p>
+        <p>El <b>tipo</b> se deduce del nombre del fármaco. Los antifúngicos y antivirales se agrupan con los antibióticos como <b>antimicrobianos</b>. Lo que no reconoce queda en «Otros».</p>
+        <p>Los nombres comerciales muestran al lado el <b>principio activo</b>, contrastado con CIMA (AEMPS).</p>
+        <div class="sep"></div>
+        <div class="privacy">
+          <span aria-hidden="true">●</span>
+          <span>Todo ocurre en tu navegador. No se envía ningún dato a ningún servidor.</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= RESULTS SCREEN ================= -->
+  <section id="screenData" hidden>
+    <div class="hero">
+      <div class="panel">
+        <div class="panel-h">
+          <h2>Carga por hora · <span id="chartScope">tratamientos activos</span></h2>
+          <span class="sub" id="clockSub"></span>
+        </div>
+        <div id="clockHost"></div>
+        <div id="chartFilter" hidden></div>
+        <div id="profileHost"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h">
+          <h2>Estado del listado</h2>
+          <span class="sub" id="statSub"></span>
+        </div>
+        <div class="bigstat"><b id="kActivos">0</b><span>activos<br>ahora</span></div>
+        <div class="stack" id="stack" aria-hidden="true"></div>
+        <div class="key" id="key"></div>
+        <div id="soonHost"></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6"/></svg>
+        <input type="search" id="q" placeholder="Buscar medicamento, dosis, observación o facultativo" aria-label="Buscar">
+      </div>
+      <div class="tb-break"></div>
+      <div class="chips" id="estadoChips" role="group" aria-label="Filtrar por estado"></div>
+      <select class="sel" id="tipoSel" aria-label="Filtrar por tipo de fármaco"></select>
+      <select class="sel" id="viaSel" aria-label="Filtrar por vía"></select>
+      <select class="sel" id="docSel" aria-label="Filtrar por facultativo"></select>
+      <button class="cf-clear" id="btnClear" hidden title="Quitar todos los tratamientos de la lista">Vaciar lista</button>
+      <div class="count" id="countLbl"></div>
+    </div>
+
+    <div class="views">
+    <div class="tabs" role="tablist" aria-label="Vista de los datos">
+      <button class="tab" id="tabTl" role="tab" aria-selected="true" aria-controls="tlPanel" tabindex="0">
+        <span>Línea de tiempo</span><em id="tabTlN"></em>
+      </button>
+      <button class="tab" id="tabTbl" role="tab" aria-selected="false" aria-controls="tblPanel" tabindex="-1">
+        <span>Listado</span><em id="tabTblN"></em>
+      </button>
+    </div>
+
+    <section class="tl" id="tlPanel" role="tabpanel" aria-labelledby="tabTl" aria-label="Línea de tiempo de los tratamientos">
+      <div class="tl-h">
+        <div class="tl-h-l">
+          <h2 class="tl-h2">Línea de tiempo</h2>
+          <span class="tl-sub" id="tlSub"></span>
+        </div>
+        <div class="tl-h-r">
+          <div class="seg" id="tlColor" role="group" aria-label="Colorear por">
+            <button data-c="estado" aria-pressed="true">Estado</button>
+            <button data-c="tipo" aria-pressed="false">Tipo</button>
+          </div>
+          <div class="tl-dates" id="tlDates">
+            <label>Desde <input type="text" id="tlFrom" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" aria-label="Inicio del rango visible"></label>
+            <span class="sep" aria-hidden="true"></span>
+            <label>Hasta <input type="text" id="tlTo" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" aria-label="Fin del rango visible"></label>
+            <button id="tlReset" disabled title="Ver todo el rango disponible">Todo</button>
+          </div>
+        </div>
+      </div>
+      <div class="tl-body" id="tlBody"></div>
+      <div class="tl-foot" id="tlFoot"></div>
+    </section>
+
+    <div class="tablewrap" id="tblPanel" role="tabpanel" aria-labelledby="tabTbl" hidden>
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th class="sortable" data-k="estado" style="padding-left:12px">Estado<span class="arw"> ▲</span></th>
+            <th class="sortable" data-k="med">Medicamento<span class="arw"> ▲</span></th>
+            <th class="sortable" data-k="tipo">Tipo<span class="arw"> ▲</span></th>
+            <th class="sortable" data-k="pauta">Pauta<span class="arw"> ▲</span></th>
+            <th>Horario</th>
+            <th class="sortable" data-k="via">Vía<span class="arw"> ▲</span></th>
+            <th class="sortable" data-k="inicio">Inicio<span class="arw"> ▲</span></th>
+            <th class="sortable" data-k="finSort">Fin<span class="arw"> ▲</span></th>
+            <th class="sortable" data-k="dias" style="text-align:right">Días<span class="arw"> ▲</span></th>
+            <th class="sortable" data-k="prescriptor">Facultativo<span class="arw"> ▲</span></th>
+            <th class="th-act" aria-label="Acciones"></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="tablefoot">
+        <span id="footLbl"></span>
+        <span class="lit"><span class="fin-calc">*</span> fin estimada (inicio + días prescritos − 1) · clic en una fila para ver el detalle</span>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Lectura local · sin conexión · sin registro</span>
+    <span class="r">Los datos no salen de este navegador</span>
+  </footer>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+  <div class="drawer-h">
+    <div>
+      <div class="eyebrow" id="drawerEyebrow">Prescripción</div>
+      <h3 id="drawerTitle">—</h3>
+    </div>
+    <button class="x" id="drawerClose" aria-label="Cerrar">✕</button>
+  </div>
+  <div class="drawer-b" id="drawerBody"></div>
+  <div class="drawer-f">
+    <button class="btn ghost sm danger" id="btnDrawerDel">Eliminar del listado</button>
+    <span class="hint">Se puede deshacer</span>
+  </div>
+</aside>
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-card">
+    <div class="sheet-h">
+      <div>
+        <div class="eyebrow">Añadir a la lista</div>
+        <h3 id="sheetTitle">Más tratamientos</h3>
+      </div>
+      <button class="x" id="sheetClose" aria-label="Cerrar">✕</button>
+    </div>
+    <p class="sheet-p">Pega otro bloque del <b>mismo paciente</b><b id="sheetWho"></b>. Se añade a los <b><span id="sheetCount">0</span></b> tratamientos que ya tienes: no se borra ninguno.</p>
+    <textarea id="sheetText" spellcheck="false" aria-label="Tratamientos a añadir"
+      placeholder="Pega aquí el nuevo listado (columnas separadas por tabuladores)."></textarea>
+    <div class="sheet-err" id="sheetErr" role="alert"></div>
+    <div class="sheet-f">
+      <span class="sheet-meta" id="sheetMeta">Sin contenido</span>
+      <div class="sheet-actions">
+        <button class="btn ghost sm" id="sheetCancel">Cancelar</button>
+        <button class="btn sm" id="sheetAdd">Añadir a la lista</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  const $  = (s, r) => (r || document).querySelector(s);
+  const RE_DATE = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+  const MONTHS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const ESTADOS = { activo:'Activo', suspendido:'Suspendido', finalizado:'Finalizado', anulado:'Anulado' };
+
+  /* ---------------- therapeutic classes ---------------- */
+  // Cada clase: [id, etiqueta, familia de color, etiqueta corta, patrones].
+  // Se evalúa en orden; los patrones específicos van antes que las familias.
+  const CLASSES = [
+    ['antibiotico',  'Antibiótico',  'g1', null, ['MEROPENEM','IMIPENEM','ERTAPENEM','CEFIDEROCOL','CEFTAROLINA','ZAVICEFTA','CEFTAZIDIMA','CEFEPIMA','CEFTRIAXONA','CEFUROXIMA','VANCOMICINA','LINEZOLID','DAPTOMICINA','PANTOMICINA','ERITROMICINA','AZITROMICINA','CLARITROMICINA','PIPERACILINA','AMICACINA','GENTAMICINA','TOBRAMICINA','METRONIDAZOL','CLINDAMICINA','LEVOFLOXACINO','CIPROFLOXACINO','MOXIFLOXACINO','COLISTINA','AMPICILINA','AMOXICILINA','CLOXACILINA','PENICILINA','BACTROBAN','MUPIROCINA','TRIMETOPRIM','SULFAMETOXAZOL','FOSFOMICINA','RIFAMPICINA']],
+    ['antifungico',  'Antifúngico',  'g1', null, ['ISAVUCONAZOL','MICAFUNGINA','CASPOFUNGINA','ANIDULAFUNGINA','VORICONAZOL','POSACONAZOL','FLUCONAZOL','AMFOTERICINA','ANFOTERICINA','ECALTA','CRESEMBA']],
+    ['antiviral',    'Antiviral',    'g1', null, ['ACICLOVIR','REMDESIVIR','OSELTAMIVIR','GANCICLOVIR','VALACICLOVIR']],
+    ['diuretico',    'Diurético',    'g3', null, ['SEGURIL','FUROSEMIDA','EDEMOX','ACETAZOLAMIDA','MANITOL','ESPIRONOLACTONA','TORASEMIDA','HIDROCLOROTIAZIDA','BUMETANIDA']],
+    ['vasoactivo',   'Fármaco vasoactivo','g3', 'Vasoactivo', ['NOREPINEFRINA','NORADRENALINA','NORAGES','DOBUTAMINA','DOPAMINA','ADRENALINA','FENILEFRINA','ARGIPRESINA','EMPRESSIN','VASOPRESINA','MILRINONA','ISOPROTERENOL','TERLIPRESINA','GEMPRESSIN']],
+    ['antihipertensivo','Antihipertensivo','g3', null, ['CLEVIDIPINO','URAPIDILO','LABETALOL','NICARDIPINO','ENALAPRIL','AMLODIPINO','CAPTOPRIL','VALSARTAN','LOSARTAN','HIDRALAZINA','NITROGLICERINA','NITROPRUSIATO']],
+    ['antiarritmico','Antiarrítmico','g3', null, ['AMIODARONA','TRANGOREX','DIGOXINA','ADENOSINA','VERAPAMILO']],
+    ['anticoagulante','Anticoagulante','g3', null, ['BEMIPARINA','HIBOR','HEPARINA','ENOXAPARINA','CLEXANE','DALTEPARINA','SINTROM','ACENOCUMAROL','WARFARINA','ARGATROBAN','APIXABAN','RIVAROXABAN']],
+    ['hemostatico',  'Hemostático',  'g3', null, ['OCTAPLEX','COMPLEJO PROTROMBINICO','FEIBA','ACIDO TRANEXAMICO','TRANEXAMICO','FIBRINOGENO']],
+    ['hematopoyetico','Estimulante hematopoyético','g3', 'Hematopoyético', ['FILGRASTIM','ACCOFIL','LENOGRASTIM','EPOETINA','DARBEPOETINA']],
+    ['sedante',      'Sedante',      'g2', null, ['MIDAZOLAM','PROPOFOL','DEXMEDETOMIDINA','ETOMIDATO','TIOPENTAL','KETAMINA']],
+    ['ansiolitico',  'Ansiolítico',  'g2', null, ['DIAZEPAM','VALIUM','CLORAZEPATO','LORAZEPAM','ALPRAZOLAM','BROMAZEPAM','CLOBAZAM']],
+    ['antipsicotico','Antipsicótico','g2', null, ['HALOPERIDOL','QUETIAPINA','OLANZAPINA','RISPERIDONA','LEVOMEPROMAZINA','CLORPROMAZINA','ARIPIPRAZOL']],
+    ['antidepresivo','Antidepresivo','g2', null, ['SERTRALINA','TRAZODONA','FLUOXETINA','PAROXETINA','CITALOPRAM','ESCITALOPRAM','MIRTAZAPINA','VENLAFAXINA','AMITRIPTILINA']],
+    ['relajante',    'Relajante muscular','g2', 'Relajante', ['ROCURONIO','CISATRACURIO','ATRACURIO','VECURONIO','SUCCINILCOLINA','PANCURONIO','BACLOFENO']],
+    ['anestesico',   'Anestésico local','g2', null, ['LIDOCAINA','BUPIVACAINA','ROPIVACAINA','MEPIVACAINA']],
+    ['analgesico',   'Analgésico',   'g2', null, ['PARACETAMOL','METAMIZOL','MORFINA','FENTANILO','FENTANEST','REMIFENTANILO','PETIDINA','DOLANTINA','TRAMADOL','OXICODONA','CODEINA','NALBUFINA']],
+    ['antinflamatorio','Antiinflamatorio','g2', null, ['METILPREDNISOLONA','DEXAMETASONA','BUDESONIDA','BUDENA','ACTOCORTINA','HIDROCORTISONA','PREDNISONA','PREDNISOLONA','IBUPROFENO','DEXKETOPROFENO','KETOROLACO','DICLOFENACO','CELECOXIB']],
+    ['procinetico',  'Procinético',  'g5', null, ['METOCLOPRAMIDA','DOMPERIDONA','CISAPRIDA','LEVOSULPIRIDA']],
+    ['antiemetico',  'Antiemético',  'g5', null, ['ONDANSETRON','GRANISETRON','TROPISETRON','DOLASETRON']],
+    ['antiulceroso', 'Antiulceroso', 'g5', null, ['OMEPRAZOL','PANTOPRAZOL','LANSOPRAZOL','ESOMEPRAZOL','RANITIDINA','FAMOTIDINA','SUCRALFATO']],
+    ['broncodilatador','Broncodilatador','g4', null, ['SALBUTAMOL','SALBUAIR','BROMURO DE IPRATROPIO','IPRATROPIO','TERBUTALINA','FORMOTEROL','SALMETEROL']],
+    ['antitusigeno', 'Antitusígeno', 'g4', null, ['TOSEINA','CODEINA','DEXTROMETORFANO']],
+    ['nutricion',    'Nutrición',    'g6', null, ['NUTRICION','NOVASOURCE','ISOPLASMAL','OLICLINOMEL','KABIVEN','NEPRO','FRESUBIN','ENSURE','PROTEIN','SMOFLIPID','AMINOVEN','DIPEPTIVEN','AMINOACIDOS']],
+    ['fluidos',      'Fluidos y expansores','g6', 'Fluidos', ['ISOFUNDIN','ALBUNORM','ALBUTEIN','ALBUMINA','GELASPAN','GELATINA','RINGER','SUERO CLORURO SODICO','SUERO GLUCOSADO','GLUCOSADO','SALINO','VOLUVEN','PLASMA']],
+    ['electrolitos', 'Electrolitos y vitaminas','g6', 'Electrolitos', ['CLORURO POTASICO','FOSFATO MONOPOTASICO','CLORURO CALCICO','SUPLECAL','GLUCONATO CALCIO','SULFATO MAGNESICO','BICARBONATO SODICO','KONAKION','FITOMENADIONA','TIAMINA','VITAMINA','MAGNESIO','FOLINATO','ACIDO FOLICO']],
+    ['insulina',     'Insulina',     'g7', null, ['ACTRAPID','INSULINA','NOVORAPID','HUMALOG','LANTUS','GLARGINA','LEVEMIR','TRESIBA']],
+    ['otros',        'Otros',        'g8', null, ['MEDICAMENTO NO INCLUIDO','NO INCLUIDO']]
+  ];
+
+  const SHORT = { fluidos:'Fluidos', electrolitos:'Electrolitos', vasoactivo:'Vasoactivo',
+    relajante:'Relajante', antinflamatorio:'Antiinflamatorio', broncodilatador:'Broncodilatador',
+    hematopoyetico:'Hematopoyético' };
+
+  const CLS = {};
+  CLASSES.forEach(c => { CLS[c[0]] = { id:c[0], label:c[1], group:c[2], short: c[3] || SHORT[c[0]] || c[1], pats:c[4] }; });
+
+  // Agrupaciones clínicas: los antifúngicos y antivirales son antimicrobianos,
+  // igual que los antibióticos, y así se pueden ver juntos.
+  const FAMILIES = [
+    ['micro',   'Antimicrobianos',            ['antibiotico','antifungico','antiviral']],
+    ['sed',     'Analgesia y sedación',       ['analgesico','antinflamatorio','sedante','ansiolitico','antipsicotico','antidepresivo','relajante','anestesico']],
+    ['cardio',  'Cardiovascular y coagulación',['vasoactivo','antihipertensivo','antiarritmico','diuretico','anticoagulante','hemostatico','hematopoyetico']],
+    ['digest',  'Digestivo',                  ['procinetico','antiemetico','antiulceroso']],
+    ['resp',    'Respiratorio',               ['broncodilatador','antitusigeno']],
+    ['soporte', 'Soporte y nutrición',        ['nutricion','fluidos','electrolitos','insulina']],
+    ['otros',   'Otros',                      ['otros']]
+  ];
+  const FAM_OF = {};
+  FAMILIES.forEach(f => f[2].forEach(id => { FAM_OF[id] = f[0]; }));
+
+  // Nombres comerciales → principio activo (verificado en CIMA, AEMPS).
+  const BRANDS = {
+    'SEGURIL':    ['furosemida', 'diuretico'],
+    'FENTANEST':  ['fentanilo', 'analgesico'],
+    'ISOFUNDIN':  ['cristaloide balanceado', 'fluidos'],
+    'ALBUNORM':   ['albúmina humana', 'fluidos'],
+    'ALBUTEIN':   ['albúmina humana', 'fluidos'],
+    'ACTOCORTINA':['hidrocortisona', 'antinflamatorio'],
+    'ECALTA':     ['anidulafungina', 'antifungico'],
+    'CRESEMBA':   ['isavuconazol', 'antifungico'],
+    'ZYVOXID':    ['linezolid', 'antibiotico'],
+    'PANTOMICINA':['eritromicina', 'antibiotico'],
+    'ZINFORO':    ['ceftarolina', 'antibiotico'],
+    'FETCROJA':   ['cefiderocol', 'antibiotico'],
+    'ZAVICEFTA':  ['ceftazidima/avibactam', 'antibiotico'],
+    'BACTROBAN':  ['mupirocina', 'antibiotico'],
+    'KONAKION':   ['fitomenadiona (vit. K1)', 'electrolitos'],
+    'SUPLECAL':   ['gluconato cálcico', 'electrolitos'],
+    'HIBOR':      ['bemiparina', 'anticoagulante'],
+    'OCTAPLEX':   ['complejo protrombínico', 'hemostatico'],
+    'ACCOFIL':    ['filgrastim', 'hematopoyetico'],
+    'NOVASOURCE': ['nutrición enteral', 'nutricion'],
+    'ISOPLASMAL': ['aminoácidos (nutrición parenteral)', 'nutricion'],
+    'GELASPAN':   ['gelatina succinilada', 'fluidos'],
+    'EDEMOX':     ['acetazolamida', 'diuretico'],
+    'NORAGES':    ['norepinefrina', 'vasoactivo'],
+    'EMPRESSIN':  ['argipresina', 'vasoactivo'],
+    'TRANGOREX':  ['amiodarona', 'antiarritmico'],
+    'VALIUM':     ['diazepam', 'ansiolitico'],
+    'DOLANTINA':  ['petidina', 'analgesico'],
+    'SALBUAIR':   ['salbutamol', 'broncodilatador'],
+    'BUDENA':     ['budesonida', 'antinflamatorio'],
+    'TOSEINA':    ['codeína', 'antitusigeno'],
+    'CLEXANE':    ['enoxaparina', 'anticoagulante'],
+    'DIGESIC':    ['fentanilo', 'analgesico'],
+    'DUROGESIC':  ['fentanilo', 'analgesico'],
+    'NOLOTIL':    ['metamizol', 'analgesico'],
+    'PERFALGAN':  ['paracetamol', 'analgesico'],
+    'ACTRAPID':   ['insulina', 'insulina']
+  };
+  const BRAND_KEYS = Object.keys(BRANDS).sort((a, b) => b.length - a.length);
+
+  function marcaDe(med){
+    const t = (med || '').toUpperCase();
+    for(const k of BRAND_KEYS){
+      if(t === k || t.indexOf(k + ' ') === 0 || t.indexOf(k + '\n') === 0) return k;
+    }
+    return null;
+  }
+
+  function tipoDe(med){
+    const k = marcaDe(med);
+    if(k) return BRANDS[k][1];
+    const t = norm((med || '').replace(/\n/g, ' ')).toUpperCase();
+    for(const c of CLASSES){
+      for(const pat of c[4]){
+        if(t.indexOf(pat) > -1) return c[0];
+      }
+    }
+    return 'otros';
+  }
+
+  function innDe(med){
+    const k = marcaDe(med);
+    return k ? BRANDS[k][0] : '';
+  }
+
+  // --- principio activo: agrupa presentaciones y dosis del mismo fármaco ---
+  const ACCENT = {
+    sodico:'sódico', calcico:'cálcico', potasico:'potásico', monopotasico:'monopotásico',
+    dipotasico:'dipotásico', magnesico:'magnésico', albumina:'albúmina', nutricion:'nutrición',
+    acidos:'ácidos', aminoacidos:'aminoácidos'
+  };
+  const MINOR = { de:1, del:1, en:1, y:1, la:1, el:1, los:1, las:1 };
+
+  function prettyINN(s){
+    return (s || '').split(/\s+/).map((w, i) => {
+      const lw = w.toLowerCase();
+      const cw = ACCENT[lw] || lw;
+      if(i > 0 && MINOR[lw]) return cw;
+      return cw.charAt(0).toUpperCase() + cw.slice(1);
+    }).join(' ');
+  }
+
+  function activoDe(med){
+    const raw = (med || '').replace(/\n/g, ' ').trim();
+    const k = marcaDe(raw);
+    if(k) return { key: norm(BRANDS[k][0]), label: prettyINN(BRANDS[k][0]) };
+    let t = raw.replace(/^DDS\s+(pasta|susp)\s+\S+\s+/i, '');
+    t = t.split(/\s+(?:amp|vial|bolsa|comp|pda|jer|sol|susp|parche|sob|cap|t\/|f\/)(?=\s|\/|\d)/i)[0];
+    t = t.replace(/\s+(LIPURO|MATRIX)\s*$/i, '').trim() || raw;
+    return { key: norm(t), label: prettyINN(t) };
+  }
+
+  let UID = 0;
+
+  const state = {
+    patient: '',
+    rows: [],
+    ref: startOfDay(new Date()),
+    q: '', estado: 'todos', tipo: '', via: '', doc: '',
+    sort: { k: 'estado', dir: 1 },
+    view: 'tl',
+    open: null
+  };
+
+  /* ---------------- dates ---------------- */
+  function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function parseDate(s){
+    const m = RE_DATE.exec((s || '').trim());
+    if(!m) return null;
+    const d = new Date(+m[3], +m[2] - 1, +m[1]);
+    return isNaN(d) ? null : d;
+  }
+  function parseDateTime(s){
+    const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?/.exec((s || '').trim());
+    if(!m) return null;
+    return new Date(+m[3], +m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0));
+  }
+  const pad = n => String(n).padStart(2, '0');
+  function fmtDate(d){ return d ? pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() : ''; }
+  function fmtShort(d){ return d ? pad(d.getDate()) + ' ' + MONTHS[d.getMonth()] : ''; }
+  function addDays(d, n){ const x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; }
+  function diffDays(a, b){ return Math.round((startOfDay(b) - startOfDay(a)) / 86400000); }
+  function isoLocal(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+
+  const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
+  /* ---------------- parsing ---------------- */
+  // Blocks: a record starts at every line beginning with a tab.
+  // Any other line is a continuation of the previous record (cells that wrapped).
+  function splitRecords(text){
+    const lines = text.replace(/\r\n?/g, '\n').split('\n');
+    const withTab = lines.filter(l => l.trim()).slice(0, 40).some(l => l.charAt(0) === '\t');
+    const blocks = [];
+    if(!withTab){
+      lines.forEach(l => { if(l.trim()) blocks.push([l]); });
+      return blocks;
+    }
+    let buf = [];
+    for(const ln of lines){
+      if(!ln.trim()) continue;
+      if(ln.charAt(0) === '\t'){
+        if(buf.length) blocks.push(buf);
+        buf = [ln];
+      } else if(buf.length){
+        buf.push(ln);
+      }
+    }
+    if(buf.length) blocks.push(buf);
+    return blocks;
+  }
+
+  function parseHoras(val, pauta){
+    const out = [];
+    const p = (pauta || '').trim();
+    if(/^pc\b/i.test(p)) return { tipo: 'continuo', horas: [] };
+    const nums = (val || '').match(/\d{1,2}/g) || [];
+    nums.forEach(n => { const h = parseInt(n, 10); if(h >= 0 && h <= 23 && out.indexOf(h) === -1) out.push(h); });
+    out.sort((a, b) => a - b);
+    return { tipo: out.length ? 'pautado' : 'sin', horas: out };
+  }
+
+  function weekdays(freq){
+    const f = (freq || '').toUpperCase();
+    const map = { L:0, M:1, X:2, J:3, V:4, S:5, D:6 };
+    if(!/\(/.test(f)) return null;
+    const inside = f.slice(f.indexOf('(') + 1, f.lastIndexOf(')'));
+    const days = inside.split(/[^LMXJVSD]+/).filter(Boolean);
+    if(!days.length) return null;
+    return [0,1,2,3,4,5,6].map(i => days.indexOf(Object.keys(map).find(k => map[k] === i)) > -1);
+  }
+
+  function parse(text){
+    const blocks = splitRecords(text);
+    const rows = [];
+    let invalid = 0;
+    for(const b of blocks){
+      const raw = b.join('\n');
+      const f = raw.split('\t').map(v => v.replace(/\u00a0/g, ' ').replace(/[ ]+$/gm, '').trim());
+      if(f.length < 8){ invalid++; continue; }
+      const hasDate = f.some(v => RE_DATE.test(v));
+      if(!hasDate && /(medicament|tratamiento|prescrip|estado|dosis)/i.test(raw)){ continue; }
+
+      let dateIdx = -1;
+      for(let i = 8; i < f.length; i++){ if(RE_DATE.test(f[i])){ dateIdx = i; break; } }
+      const shift = dateIdx >= 0 ? 12 - dateIdx : 0;
+      const g = i => ((f[i - shift] == null) ? '' : f[i - shift]).trim();
+
+      let med = g(4);
+      if(!med && !g(5)){ invalid++; continue; }
+
+      // "MEDICAMENTO NO INCLUIDO EN GUIA": el nombre real está en observaciones.
+      let guia = '';
+      if(/NO INCLUIDO/.test(med.toUpperCase())){
+        const alt = (g(10) || '')
+          .replace(/\[[^\]]*\]/g, ' ')
+          .replace(/\bSUSPENDIDO\b/gi, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        if(alt && alt.length > 2){ guia = med; med = alt; }
+      }
+
+      const estRaw = (g(1) || '').toUpperCase();
+      const inicio = parseDate(g(12));
+      const fin = parseDate(g(13));
+      const dias = parseInt(g(15), 10);
+      const pauta = g(7);
+      const horasRaw = g(8);
+
+      let est = 'activo';
+      if(/ANUL|CANCEL/.test(estRaw)) est = 'anulado';
+      else if(/SUSPEND|RETIR|CESA/.test(estRaw)) est = 'suspendido';
+      else if(fin && startOfDay(fin) < state.ref) est = 'finalizado';
+
+      const finPrev = fin || (inicio && dias > 0 ? addDays(inicio, dias - 1) : null);
+
+      rows.push({
+        id: ++UID,
+        estado: est, estadoRaw: g(1) || 'CONFIRMADO', alerta: /exclam/i.test(g(2)),
+        med, guia, inn: innDe(med), tipo: tipoDe(med), dosis: g(5), diluyente: g(6), pauta, horasRaw, via: g(9), obs: g(10), freq: g(11),
+        inicio, fin, finPrev, dias: isNaN(dias) ? null : dias,
+        prescriptor: g(16), fechaSusp: g(17) || g(13), quienSusp: g(18),
+        fechaPresc: g(19), prescriptorUp: g(20),
+        horaInfo: parseHoras(horasRaw, pauta),
+        week: weekdays(g(11)),
+        raw: raw
+      });
+    }
+    return { rows, invalid };
+  }
+
+  /* ---------------- render: hero ---------------- */
+  function visible(){ return state.rows.filter(matches); }
+
+  function matches(r){
+    if(state.estado !== 'todos' && r.estado !== state.estado) return false;
+    if(state.tipo){
+      if(state.tipo.indexOf('fam:') === 0){
+        const fam = state.tipo.slice(4);
+        if((FAM_OF[r.tipo] || 'otros') !== fam) return false;
+      } else if(r.tipo !== state.tipo) return false;
+    }
+    if(state.via && r.via !== state.via) return false;
+    if(state.doc && r.prescriptor !== state.doc) return false;
+    if(!state.q) return true;
+    const q = norm(state.q);
+    return norm([r.med, r.guia, r.inn, r.dosis, r.obs, r.via, r.prescriptor, r.pauta].join(' ')).indexOf(q) > -1;
+  }
+
+  function counts(){
+    const c = { activo:0, suspendido:0, finalizado:0, anulado:0, sinFin:0, continuo:0 };
+    state.rows.forEach(r => {
+      c[r.estado] = (c[r.estado] || 0) + 1;
+      if(r.estado === 'activo' && !r.fin) c.sinFin++;
+      if(r.estado === 'activo' && r.horaInfo.tipo === 'continuo') c.continuo++;
+    });
+    return c;
+  }
+
+  function activeByClass(){
+    const map = {};
+    state.rows.forEach(r => {
+      if(r.estado !== 'activo') return;
+      map[r.tipo] = (map[r.tipo] || 0) + 1;
+    });
+    return Object.keys(map).map(k => ({ id:k, n:map[k], label:CLS[k].label, group:CLS[k].group }))
+      .sort((a, b) => b.n - a.n || a.label.localeCompare(b.label));
+  }
+
+  function renderProfile(){
+    const list = activeByClass();
+    const host = $('#profileHost');
+    if(!list.length){ host.innerHTML = ''; return; }
+    const max = list[0].n;
+    const top = list.slice(0, 7);
+    host.innerHTML =
+      '<div class="prof"><div class="prof-h"><span>Perfil terapéutico · activos</span><span>' + list.length + ' tipos</span></div>' +
+      top.map(t =>
+        '<button class="prof-row ' + t.group + '" data-tipo="' + t.id + '" aria-pressed="' + (state.tipo === t.id) + '" title="Ver solo ' + esc(t.label) + '">' +
+          '<span class="prof-l">' + esc(t.label) + '</span>' +
+          '<span class="prof-b"><i style="width:' + Math.max(4, t.n / max * 100) + '%"></i></span>' +
+          '<span class="prof-n">' + t.n + '</span>' +
+        '</button>'
+      ).join('') +
+      (list.length > 7 ? '<div class="prof-more">y ' + (list.length - 7) + ' tipos más en el menú</div>' : '') +
+      '</div>';
+  }
+
+  // ---------------- timeline ----------------
+  const TL = { color: 'estado', open: true, from: null, to: null };
+
+  const EST_COLOR = { activo:'var(--green)', suspendido:'var(--amber)', finalizado:'var(--faint)', anulado:'var(--red)' };
+
+  function tlColorOf(r){
+    if(TL.color === 'tipo') return 'var(--gc)';
+    return EST_COLOR[r.estado];
+  }
+
+  // tooltip global de la línea de tiempo
+  let tipEl = null;
+  function ensureTip(){
+    if(!tipEl){
+      tipEl = document.createElement('div');
+      tipEl.className = 'tip';
+      tipEl.setAttribute('role', 'tooltip');
+      document.body.appendChild(tipEl);
+    }
+    return tipEl;
+  }
+  function placeTip(x, y){
+    const t = ensureTip();
+    const pad = 14;
+    const w = t.offsetWidth, h = t.offsetHeight;
+    let left = x + pad, top = y + pad;
+    if(left + w > window.innerWidth - 8) left = x - w - pad;
+    if(top + h > window.innerHeight - 8) top = y - h - pad;
+    t.style.left = Math.max(8, left) + 'px';
+    t.style.top = Math.max(8, top) + 'px';
+  }
+  function showTip(el, e){
+    const t = ensureTip();
+    t.innerHTML = el.dataset.tip || '';
+    t.classList.add('on');
+    placeTip(e.clientX, e.clientY);
+  }
+  function moveTip(e){ if(tipEl && tipEl.classList.contains('on')) placeTip(e.clientX, e.clientY); }
+  function hideTip(){ if(tipEl) tipEl.classList.remove('on'); }
+
+  function renderTimeline(){
+    const RANK = { activo:0, suspendido:1, finalizado:2, anulado:3 };
+    const list = visible().slice().sort((a, b) => {
+      if(RANK[a.estado] !== RANK[b.estado]) return RANK[a.estado] - RANK[b.estado];
+      const va = a.inicio ? a.inicio.getTime() : 9e15;
+      const vb = b.inicio ? b.inicio.getTime() : 9e15;
+      return va - vb || a.med.localeCompare(b.med);
+    });
+
+    const body = $('#tlBody'), foot = $('#tlFoot'), sub = $('#tlSub');
+    if(!TL.open){
+      body.style.display = 'none'; foot.style.display = 'none'; sub.textContent = '';
+      hideTip();
+      return;
+    }
+    body.style.display = ''; foot.style.display = '';
+
+    if(!list.length){
+      sub.textContent = '';
+      body.innerHTML = '<div class="tl-empty">' + (state.rows.length
+        ? 'Ningún tratamiento con los filtros actuales.'
+        : 'La lista está vacía. Añade tratamientos para ver la línea de tiempo.') + '</div>';
+      foot.innerHTML = '';
+      return;
+    }
+
+    // dominio temporal
+    let min = null, max = null;
+    list.forEach(r => {
+      if(r.inicio && (!min || r.inicio < min)) min = r.inicio;
+      const e = r.finPrev || r.fin;
+      if(e && (!max || e > max)) max = e;
+    });
+    if(!min) min = addDays(state.ref, -30);
+    if(!max) max = state.ref;
+    if(min > max) min = max;
+    // dominio automático: un día de margen a cada lado
+    const auto0 = addDays(min, -1), auto1 = addDays(max, 2);
+    const d0 = TL.from ? new Date(TL.from.getTime()) : auto0;
+    const d1 = TL.to ? new Date(TL.to.getTime()) : auto1;
+    const span = Math.max(1, diffDays(d0, d1));
+    const manual = !!(TL.from || TL.to);
+    const pos = d => Math.min(100, Math.max(0, (diffDays(d0, d) / span) * 100));
+
+    // marcas del eje
+    const steps = [1, 2, 3, 7, 14, 21, 30, 60];
+    const nameW = window.innerWidth <= 720 ? 132 : 212;
+    const avail = Math.max(160, ($('#tlBody').clientWidth || 900) - nameW - 28);
+    const maxTicks = Math.max(3, Math.min(12, Math.floor(avail / 74)));
+    const step = steps.filter(n => span / n <= maxTicks)[0] || 60;
+    let ticks = [];
+    for(let d = new Date(d0); d <= d1; d = addDays(d, step)) ticks.push(new Date(d));
+    const nowX0 = (diffDays(d0, state.ref) / span) * 100;
+    const nowVis = nowX0 >= 0 && nowX0 <= 100;
+    const tickHTML = ticks.map(d => {
+      const x = (diffDays(d0, d) / span) * 100;
+      if(x > 93) return '';
+      if(nowVis && Math.abs(x - nowX0) < 7.5) return '';  // no pisar la marca «hoy»
+      return '<span class="tl-tick" style="left:' + x.toFixed(3) + '%">' + fmtShort(d) + '</span>';
+    }).join('');
+
+    const nowX = (diffDays(d0, state.ref) / span) * 100;
+    const showNow = nowX >= 0 && nowX <= 100;
+
+    // ---- una sola línea por fármaco: varias prescripciones del mismo medicamento
+    //      van en la misma fila, separadas en alturas si se solapan ----
+    const groups = [], gmap = {};
+    list.forEach(r => {
+      const a = activoDe(r.med);
+      let g = gmap[a.key];
+      if(!g){ g = gmap[a.key] = { med: a.label, label: a.label, rows: [] }; groups.push(g); }
+      g.rows.push(r);
+    });
+
+    groups.forEach(g => {
+      g.rows.sort((a, b) => {
+        const va = a.inicio ? a.inicio.getTime() : 9e15;
+        const vb = b.inicio ? b.inicio.getTime() : 9e15;
+        return va - vb || a.id - b.id;
+      });
+      g.segs = [];
+      g.rows.forEach(r => {
+        const st = r.inicio;
+        let en = r.fin || r.finPrev;
+        if(!en && r.estado === 'activo') en = state.ref;
+        if(!st && !en) return;
+        const a = st || en, b = en || st;
+        const e2 = b < a ? a : b;
+        let fuera = '';
+        if(startOfDay(e2) < startOfDay(d0)) fuera = 'izq';
+        else if(startOfDay(a) > startOfDay(d1)) fuera = 'der';
+        g.segs.push({ r, s: a, e: e2, fuera, lane: 0 });
+      });
+      g.segs.sort((a, b) => a.s - b.s);
+      const lanes = [];
+      g.segs.forEach(seg => {
+        const s0 = seg.s.getTime(), e0 = seg.e.getTime();
+        let done = false;
+        for(let i = 0; i < lanes.length && !done; i++){
+          if(lanes[i] <= s0){ seg.lane = i; lanes[i] = e0 + 1; done = true; }
+        }
+        if(!done){ seg.lane = lanes.length; lanes.push(e0 + 1); }
+      });
+      g.lanes = Math.max(1, lanes.length);
+      g.inView = g.segs.filter(x => !x.fuera);
+      g.outSide = g.inView.length ? '' : (g.segs[0] ? g.segs[0].fuera : '');
+    });
+
+    const nMed = groups.length;
+
+    const rowsHTML = groups.map(g => {
+      const H = g.lanes === 1 ? 23 : 12 + g.lanes * 13;
+      const many = g.rows.length > 1;
+      const bars = g.inView.map(seg => {
+        const r = seg.r;
+        const a = diffDays(d0, seg.s) / span, b = diffDays(d0, seg.e) / span;
+        const clipL = a < 0, clipR = b > 1;
+        const visA = Math.max(0, Math.min(1, a)), visB = Math.max(0, Math.min(1, b));
+        const l = visA * 100, w2 = (visB - visA) * 100;
+        const est = !r.fin;
+        const pasada = r.estado === 'activo' && r.finPrev && startOfDay(r.finPrev) < state.ref;
+        const grpC = TL.color === 'tipo' ? ' ' + CLS[r.tipo].group : '';
+        const nth = many ? ' <span style="opacity:.6;font-weight:400">· ' + (g.rows.indexOf(r) + 1) + '/' + g.rows.length + '</span>' : '';
+        const tip =
+          '<h4>' + esc(g.med) + nth + '</h4>' +
+          '<span class="badge ' + CLS[r.tipo].group + '">' + esc(ESTADOS[r.estado]) + ' · ' + esc(CLS[r.tipo].short) + '</span>' +
+          '<div class="tr">Presentación <b>' + esc(r.med.split('\n')[0]) + '</b>' +
+            (r.dosis ? '<br>' + esc(r.dosis) : '') + '</div>' +
+          '<div class="tr">Inicio <b>' + fmtDate(seg.s) + '</b><br>' +
+            (r.fin
+              ? 'Fin <b>' + fmtDate(r.fin) + '</b> <span style="opacity:.75">(del texto)</span>'
+              : (r.finPrev ? 'Fin estimado <b>' + fmtDate(seg.e) + '</b>' : 'Fin <b>no consta</b>: barra hasta hoy')) +
+            (r.dias ? ' · ' + r.dias + ' días prescritos' : '') + '</div>' +
+          (est
+            ? '<div class="est-note">' +
+              (r.finPrev
+                ? 'Fin ESTIMADO, no figura en el texto original:<br>inicio + ' + r.dias + ' días prescritos − 1.'
+                : 'Sin fecha de fin ni días prescritos: la barra se dibuja hasta hoy.') +
+              (pasada ? '<br>Ya se ha superado la fecha estimada y sigue activo.' : '') +
+              '</div>'
+            : '');
+        const geo = g.lanes === 1
+          ? 'top:6px;height:11px;'
+          : 'top:' + (7 + seg.lane * 13) + 'px;height:11px;';
+        return '<span class="tl-bar' + grpC + (est ? ' est' : '') + (clipL ? ' clip-l' : '') + (clipR ? ' clip-r' : '') +
+          '" data-id="' + r.id + '" style="' + geo + 'left:' + l.toFixed(3) + '%;width:' +
+          Math.max(w2, 0.45).toFixed(3) + '%;background-color:' + tlColorOf(r) +
+          '" data-tip="' + esc(tip) + '"></span>';
+      }).join('');
+
+      const uniq = [];
+      g.rows.forEach(r => { const c = tlColorOf(r); if(uniq.indexOf(c) < 0) uniq.push(c); });
+      const dot = uniq.slice(0, 3).map(c =>
+        '<span class="tl-dot' + (TL.color === 'tipo' ? ' ' + CLS[g.rows[0]].group : '') +
+        '" style="background:' + c + '"></span>').join('');
+      const outHTML = g.outSide
+        ? '<span class="tl-out ' + g.outSide + '">' + (g.outSide === 'izq' ? '◂ antes' : 'después ▸') + '</span>'
+        : '';
+      const main = g.rows.filter(r => r.estado === 'activo')[0] || g.rows[g.rows.length - 1];
+      return '<div class="tl-row' + (g.outSide ? ' off' : '') + '" data-id="' + main.id + '" tabindex="0"' +
+          ' style="height:' + H + 'px" title="' + esc(g.med) +
+          (many ? ' — ' + g.rows.length + ' prescripciones de ' + g.label : '') + '">' +
+        '<div class="tl-name">' + dot + '<b>' + esc(g.med) + '</b>' +
+          (many ? '<i class="tl-n">×' + g.rows.length + '</i>' : '') + '</div>' +
+        '<div class="tl-tr" style="height:' + H + 'px">' + bars + outHTML +
+          (showNow ? '<span class="tl-now" style="left:' + nowX.toFixed(3) + '%"></span>' : '') +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    hideTip();
+    body.innerHTML =
+      '<div class="tl-axis"><div class="tl-axis-lab">' + nMed + (nMed === 1 ? ' ppio. activo' : ' ppios. activos') + '</div>' +
+        '<div class="tl-axis-tr">' + tickHTML + (showNow ? '<span class="tl-now-lbl' + (nowX > 82 ? ' l' : '') + '" style="' +
+              (nowX > 82 ? 'left:auto;right:' + (100 - nowX).toFixed(3) + '%' : 'left:' + nowX.toFixed(3) + '%') +
+              '">hoy</span>' : '') + '</div>' +
+      '</div>' +
+      '<div class="tl-rows">' + rowsHTML + '</div>';
+
+    const inRange = list.filter(r => {
+      const st = r.inicio, en = r.fin || r.finPrev || state.ref;
+      return st && en && en >= d0 && st <= d1;
+    }).length;
+    const spanTxt = fmtShort(d0) + ' → ' + fmtShort(d1) + ' ' + d1.getFullYear();
+    sub.textContent = nMed + (nMed === 1 ? ' principio activo · ' : ' principios activos · ') + list.length + (list.length === 1 ? ' prescripción · ' : ' prescripciones · ') + spanTxt +
+      (manual ? ' · rango manual (' + inRange + ' en vista)' : '') +
+      (activeFilters().length ? ' · filtrado' : '');
+
+    // el botón "Todo" solo se activa cuando hay rango manual
+    const rs = $('#tlReset');
+    if(rs) rs.disabled = !manual;
+    const fi = $('#tlFrom'), ti = $('#tlTo');
+    if(fi && document.activeElement !== fi) fi.value = manual ? fmtDate(d0) : '';
+    if(ti && document.activeElement !== ti) ti.value = manual ? fmtDate(d1) : '';
+
+    // leyenda
+    const counts = {};
+    list.forEach(r => {
+      const k = TL.color === 'tipo' ? CLS[r.tipo].label : ESTADOS[r.estado];
+      counts[k] = (counts[k] || 0) + 1;
+    });
+    const colorFor = k => {
+      if(TL.color === 'tipo'){
+        const id = Object.keys(CLS).filter(x => CLS[x].label === k)[0];
+        return CLS[id] ? 'var(--gc)' : 'var(--faint)';
+      }
+      const e = Object.keys(ESTADOS).filter(x => ESTADOS[x] === k)[0];
+      return EST_COLOR[e] || 'var(--faint)';
+    };
+    foot.innerHTML = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 7).map(k =>
+      '<span class="tl-leg ' + (TL.color === 'tipo' ? CLS[Object.keys(CLS).filter(x => CLS[x].label === k)[0]].group : '') + '">' +
+      '<i style="background:' + colorFor(k) + '"></i>' + esc(k) + ' ' + counts[k] + '</span>'
+    ).join('') +
+    '<span class="tl-leg"><i style="background:var(--faint);opacity:.72;' +
+      'background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.85) 0 2px,rgba(255,255,255,0) 2px 5px)"></i>' +
+      'rayada = fin estimado</span>' +
+    '<span class="tl-note">' + (TL.color === 'estado'
+      ? 'una línea por principio activo · pasa el cursor por una barra para ver esa prescripción'
+      : 'color = familia terapéutica · clic en una fila para abrirla') + '</span>';
+
+    body.querySelectorAll('.tl-bar').forEach(b => {
+      b.addEventListener('mouseenter', e => showTip(e.currentTarget, e));
+      b.addEventListener('mousemove', e => moveTip(e));
+      b.addEventListener('mouseleave', hideTip);
+      b.addEventListener('click', e => {
+        if(!b.dataset.id) return;
+        e.stopPropagation(); hideTip(); openDrawer(+b.dataset.id);
+      });
+    });
+
+    body.querySelectorAll('.tl-row').forEach(row => {
+      row.addEventListener('click', () => openDrawer(+row.dataset.id));
+      row.addEventListener('keydown', e => {
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDrawer(+row.dataset.id); }
+      });
+    });
+  }
+
+  // Filtros activos, en forma de lista [{k, label}]
+  function activeFilters(){
+    const out = [];
+    if(state.tipo){
+      const t = state.tipo.indexOf('fam:') === 0 ? state.tipo.slice(4) : state.tipo;
+      const f = FAMILIES.filter(x => x[0] === t)[0];
+      out.push({ k:'tipo', label: f ? f[1] : CLS[t].label });
+    }
+    if(state.estado !== 'todos') out.push({ k:'estado', label: ESTADOS[state.estado] + 's' });
+    if(state.via) out.push({ k:'via', label: state.via });
+    if(state.doc) out.push({ k:'doc', label: state.doc });
+    if(state.q.trim()) out.push({ k:'q', label: '«' + state.q.trim() + '»' });
+    return out;
+  }
+
+  function renderChart(){
+    // El gráfico sigue a la tabla: solo los tratamientos visibles con el filtro actual.
+    const src = visible().filter(r => r.estado === 'activo');
+    const load = new Array(24).fill(0);
+    let continuos = 0;
+    src.forEach(r => {
+      if(r.horaInfo.tipo === 'continuo'){ continuos++; return; }
+      r.horaInfo.horas.forEach(h => { load[h]++; });
+    });
+
+    const max = Math.max.apply(null, load);
+    const host = $('#clockHost');
+    if(!max){
+      host.innerHTML = '<div class="clock-empty">' +
+        (src.length
+          ? (continuos
+              ? continuos + (continuos === 1 ? ' tratamiento en perfusión continua' : ' tratamientos en perfusión continua') + ', sin horario fijo.'
+              : 'Ninguno de los tratamientos filtrados tiene horas de administración.')
+          : 'Ningún tratamiento activo con los filtros actuales.') +
+        '</div>';
+    } else {
+      host.innerHTML =
+        '<div class="clock">' + load.map((n, h) =>
+          '<div class="col' + (n ? ' on' : '') + (n === max ? ' peak' : '') + '" title="' + pad(h) + ':00 · ' + n + ' dosis">' +
+            '<span class="n' + (n === max ? ' show' : '') + '">' + (n || '') + '</span>' +
+            '<span class="b" style="height:' + (n ? Math.max(3, n / max * 100) : 2) + '%"></span>' +
+          '</div>'
+        ).join('') + '</div>' +
+        '<div class="clock-axis">' + load.map((n, h) =>
+          '<span>' + ([0,6,12,18].indexOf(h) > -1 ? pad(h) : '') + '</span>'
+        ).join('') + '</div>';
+    }
+
+    const totalDoses = load.reduce((a, b) => a + b, 0);
+    const filt = activeFilters();
+    $('#chartScope').textContent = filt.length ? 'vista filtrada' : 'tratamientos activos';
+    $('#clockSub').textContent = (totalDoses ? totalDoses + ' dosis/día' : 'sin dosis programadas') +
+      (continuos ? ' · ' + continuos + ' en perfusión' : '') +
+      (filt.length ? ' · ' + src.length + ' activos' : '');
+
+    const box = $('#chartFilter');
+    if(!filt.length){
+      box.hidden = true;
+      box.innerHTML = '';
+      return;
+    }
+    box.hidden = false;
+    box.innerHTML = '<span class="cf-lbl">Aplicado</span>' +
+      filt.map(f => '<span class="cf-tag">' + esc(f.label) +
+        '<button class="cf-x" data-clear="' + f.k + '" aria-label="Quitar filtro ' + esc(f.label) + '" title="Quitar">✕</button></span>'
+      ).join('') +
+      '<button class="cf-clear" data-clear="all">Quitar todos</button>';
+  }
+
+  function renderHero(){
+    const c = counts();
+    $('#kActivos').textContent = c.activo;
+    $('#statSub').textContent = state.rows.length + ' prescripciones';
+
+    const tot = state.rows.length || 1;
+    const defs = [
+      ['activo', 'Activos', 'var(--green)'],
+      ['suspendido', 'Suspendidos', 'var(--amber)'],
+      ['finalizado', 'Finalizados', 'var(--faint)'],
+      ['anulado', 'Anulados', 'var(--red)']
+    ];
+    $('#stack').innerHTML = defs.map(d =>
+      '<i style="width:' + (c[d[0]] / tot * 100).toFixed(3) + '%;background:' + d[2] + '"></i>'
+    ).join('');
+    $('#key').innerHTML = defs.filter(d => c[d[0]] > 0).map(d =>
+      '<div class="k"><span class="sw" style="background:' + d[2] + '"></span>' + d[1] + '</div>' +
+      '<div></div><div class="v">' + c[d[0]] + '</div>'
+    ).join('');
+
+    const soon = state.rows.filter(r => {
+      if(r.estado !== 'activo' || !r.finPrev) return false;
+      const d = diffDays(state.ref, r.finPrev);
+      return d >= 0 && d <= 1;
+    }).sort((a, b) => a.finPrev - b.finPrev);
+
+    $('#soonHost').innerHTML = soon.length
+      ? '<div class="soon"><div class="soon-h"><span>Acaban hoy o mañana</span><span>' + soon.length + '</span></div>' +
+        soon.slice(0, 4).map(r =>
+          '<div class="soon-row"><span>' + esc(r.med.length > 30 ? r.med.slice(0, 29) + '…' : r.med) + '</span>' +
+          '<span>' + (diffDays(state.ref, r.finPrev) === 0 ? 'hoy' : 'mañana') + '</span></div>'
+        ).join('') +
+        (soon.length > 4 ? '<div class="soon-row" style="color:var(--faint)"><span>y ' + (soon.length - 4) + ' más</span><span></span></div>' : '') +
+        '</div>'
+      : (c.activo ? '<div class="soon"><div class="soon-h"><span>Acaban hoy o mañana</span><span>0</span></div></div>' : '');
+
+    renderChart();
+    renderProfile();
+  }
+
+  /* ---------------- render: table ---------------- */
+  function stripHTML(r){
+    if(r.horaInfo.tipo === 'continuo'){
+      return '<div class="strip" title="Perfusión continua">' + '<i class="on"></i>'.repeat(24) + '</div>' +
+             '<div class="strip-cap"><span>cont.</span><span>24 h</span></div>';
+    }
+    const on = r.horaInfo.horas;
+    if(!on.length) return '<div class="strip na" title="Sin horas definidas">' + '<i></i>'.repeat(24) + '</div>';
+    return '<div class="strip" title="' + esc(on.map(h => pad(h) + 'h').join(' · ')) + '">' +
+      Array.from({ length: 24 }, (_, h) => '<i' + (on.indexOf(h) > -1 ? ' class="on"' : '') + '></i>').join('') +
+      '</div><div class="strip-cap"><span>00</span><span>24</span></div>';
+  }
+
+  function rowHTML(r){
+    const cls = 's-' + r.estado + (r.estado === 'suspendido' ? ' is-susp' : '') + (r.estado === 'finalizado' ? ' is-final' : '') + (r.estado === 'anulado' ? ' is-anul' : '');
+    const diasTx = r.inicio ? diffDays(r.inicio, state.ref) + 1 : null;
+    const finTxt = r.fin
+      ? fmtDate(r.fin)
+      : (r.finPrev ? '<span class="fin-miss">' + fmtDate(r.finPrev) + '</span>' : '<span class="fin-miss">—</span>');
+    const finCls = !r.fin && r.finPrev ? ' fin-calc' : '';
+    return '<tr class="' + cls + '" data-id="' + r.id + '" tabindex="0">' +
+      '<td class="st-cell"><div class="statusbar"><span class="dot"></span><span class="st-lbl">' + ESTADOS[r.estado] + '</span></div></td>' +
+      '<td><div class="med"><span class="med-name">' + esc(r.med) +
+        (r.inn ? ' <span class="inn" title="Principio activo">' + esc(r.inn) + '</span>' : '') +
+        (r.guia ? ' <span class="inn guia" title="Prescrito como «' + esc(r.guia) + '»; nombre tomado de observaciones">no en guía</span>' : '') +
+        (r.dup ? ' <span class="rep" title="Ya había una prescripción idéntica en la lista">repetido</span>' : '') +
+        (r.alerta ? '<span class="warn" title="Prescripción marcada con señal de exclamación">!</span>' : '') + '</span>' +
+        (r.dosis ? '<span class="med-sub">' + esc(r.dosis.replace(/\n/g, ' · ')) + '</span>' : '') + '</div></td>' +
+      '<td><span class="badge ' + CLS[r.tipo].group + '" title="' + esc(CLS[r.tipo].label) + '">' + esc(CLS[r.tipo].short) + '</span></td>' +
+      '<td><span class="pauta"><b>' + esc(r.pauta || '—') + '</b>' + (r.horasRaw && r.horaInfo.tipo !== 'continuo' ? ' · <span style="color:var(--muted)">' + esc(r.horasRaw) + ' h</span>' : '') + '</span></td>' +
+      '<td>' + stripHTML(r) + '</td>' +
+      '<td><span class="via">' + esc(r.via || '—') + '</span></td>' +
+      '<td><span class="num">' + (r.inicio ? fmtDate(r.inicio) : '—') + '</span></td>' +
+      '<td><span class="num' + finCls + '">' + finTxt + '</span></td>' +
+      '<td><span class="days" title="' + (r.estado === 'activo' ? 'Días en tratamiento' : 'Días prescritos') + '">' + (r.estado === 'activo' && diasTx > 0 ? diasTx : (r.dias || '—')) + '</span></td>' +
+      '<td><span class="doc" title="' + esc(r.prescriptor) + '">' + esc(r.prescriptor || '—') + '</span></td>' +
+      '<td class="td-act"><button class="rowdel" data-del="' + r.id + '" title="Eliminar del listado" aria-label="Eliminar ' + esc(r.med.split('\n')[0]) + '">✕</button></td>' +
+    '</tr>';
+  }
+
+  const SORTERS = {
+    estado: r => ({ activo:0, suspendido:1, finalizado:2, anulado:3 }[r.estado]),
+    med: r => norm(r.med),
+    tipo: r => norm(CLS[r.tipo].label),
+    pauta: r => norm(r.pauta),
+    via: r => norm(r.via),
+    inicio: r => r.inicio ? r.inicio.getTime() : 0,
+    finSort: r => (r.finPrev ? r.finPrev.getTime() : 8e15),
+    dias: r => r.dias || 0,
+    prescriptor: r => norm(r.prescriptor)
+  };
+
+  function renderTable(){
+    const list = visible().slice();
+    const s = SORTERS[state.sort.k] || SORTERS.estado;
+    list.sort((a, b) => {
+      const va = s(a), vb = s(b);
+      if(va < vb) return -1 * state.sort.dir;
+      if(va > vb) return 1 * state.sort.dir;
+      return a.med.localeCompare(b.med);
+    });
+
+    const tb = $('#tbody');
+    tb.innerHTML = list.length
+      ? list.map(rowHTML).join('')
+      : '<tr class="empty-row"><td colspan="11">' +
+        (state.rows.length
+          ? 'Ningún tratamiento coincide con el filtro. Prueba a limpiar la búsqueda.'
+          : 'No quedan tratamientos en la lista. Usa «Añadir» para pegar más, o «Nuevo análisis» para empezar de cero.') +
+        '</td></tr>';
+
+    $('#countLbl').textContent = list.length + ' de ' + state.rows.length;
+    $('#btnClear').hidden = !state.rows.length;
+    const c = counts();
+    $('#footLbl').textContent = list.length + ' prescripciones mostradas · ' + c.activo + ' activas · ' +
+      new Date().getHours() + ':' + pad(new Date().getMinutes()) + ' actualizado';
+
+    document.querySelectorAll('thead th.sortable').forEach(th => {
+      const k = th.dataset.k;
+      th.removeAttribute('data-dir');
+      th.querySelector('.arw').textContent = ' ▲';
+      if(k === state.sort.k){
+        th.setAttribute('data-dir', state.sort.dir);
+        th.querySelector('.arw').textContent = state.sort.dir > 0 ? ' ▲' : ' ▼';
+      }
+    });
+  }
+
+  function renderFilters(){
+    const c = counts();
+    const chips = [['todos', 'Todos', state.rows.length], ['activo', 'Activos', c.activo], ['suspendido', 'Suspendidos', c.suspendido], ['finalizado', 'Finalizados', c.finalizado]];
+    $('#estadoChips').innerHTML = chips.map(x =>
+      '<button class="chip" data-est="' + x[0] + '" aria-pressed="' + (state.estado === x[0]) + '">' + x[1] +
+      '<span class="c">' + x[2] + '</span></button>'
+    ).join('');
+
+    const countTipo = k => state.rows.reduce((a, r) => a + (r.tipo === k ? 1 : 0), 0);
+    const countFam = f => state.rows.reduce((a, r) => a + ((FAM_OF[r.tipo] || 'otros') === f ? 1 : 0), 0);
+    let opts = '<option value="">Todos los tipos (' + state.rows.length + ')</option>';
+    FAMILIES.forEach(f => {
+      const members = f[2].filter(k => countTipo(k) > 0)
+        .sort((a, b) => countTipo(b) - countTipo(a) || CLS[a].label.localeCompare(CLS[b].label));
+      if(!members.length) return;
+      opts += '<optgroup label="' + esc(f[1]) + '">';
+      if(members.length > 1){
+        opts += '<option value="fam:' + f[0] + '"' + (state.tipo === 'fam:' + f[0] ? ' selected' : '') + '>▸ ' +
+          esc(f[1]) + ' (' + countFam(f[0]) + ')</option>';
+      }
+      members.forEach(k => {
+        opts += '<option value="' + k + '"' + (state.tipo === k ? ' selected' : '') + '>' +
+          esc(CLS[k].label) + ' (' + countTipo(k) + ')</option>';
+      });
+      opts += '</optgroup>';
+    });
+    $('#tipoSel').innerHTML = opts;
+
+    const vias = [...new Set(state.rows.map(r => r.via).filter(Boolean))].sort();
+    $('#viaSel').innerHTML = '<option value="">Todas las vías</option>' +
+      vias.map(v => '<option value="' + esc(v) + '"' + (state.via === v ? ' selected' : '') + '>' + esc(v) + '</option>').join('');
+
+    const docs = [...new Set(state.rows.map(r => r.prescriptor).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    $('#docSel').innerHTML = '<option value="">Todos los facultativos</option>' +
+      docs.map(v => '<option value="' + esc(v) + '"' + (state.doc === v ? ' selected' : '') + '>' + esc(v) + '</option>').join('');
+  }
+
+  function dupKey(r){
+    return [norm(r.med), norm(r.dosis), norm(r.pauta), norm(r.horasRaw), fmtDate(r.inicio), norm(r.prescriptor)].join('|');
+  }
+
+  let undoBuffer = null;
+
+  function refreshAll(){
+    if(!state.rows.length){
+      state.tipo = ''; state.via = ''; state.doc = '';
+    }
+    renderAll();
+    if(state.rows.length && !visible().length){
+      // el filtro dejó de tener sentido tras borrar: limpiamos
+      state.estado = 'todos';
+      renderFilters(); renderTimeline(); renderTable();
+    }
+  }
+
+  function appendRows(list){
+    const keys = {};
+    state.rows.forEach(r => { keys[dupKey(r)] = true; });
+    let dups = 0;
+    list.forEach(r => {
+      const k = dupKey(r);
+      r.dup = !!keys[k];
+      if(r.dup) dups++;
+      else keys[k] = true;
+      state.rows.push(r);
+    });
+    return dups;
+  }
+
+  function deleteRow(id){
+    const i = state.rows.findIndex(r => r.id === id);
+    if(i < 0) return;
+    const row = state.rows[i];
+    undoBuffer = { rows: state.rows.slice(), at: i };
+    state.rows.splice(i, 1);
+    if(state.open != null && !state.rows.some(r => r.id === state.open)) closeDrawer();
+    refreshAll();
+    toast('«' + row.med.split('\n')[0].slice(0, 30) + '» eliminado', 'Deshacer', () => {
+      if(!undoBuffer) return;
+      state.rows = undoBuffer.rows.slice();
+      undoBuffer = null;
+      refreshAll();
+      toast('Tratamiento restaurado');
+    });
+  }
+
+  function deleteAll(){
+    if(!state.rows.length) return;
+    undoBuffer = { rows: state.rows.slice(), at: 0 };
+    state.rows = [];
+    state.estado = 'todos'; state.tipo = ''; state.via = ''; state.doc = ''; state.q = '';
+    $('#q').value = '';
+    closeDrawer();
+    refreshAll();
+    toast('Listado vaciado', 'Deshacer', () => {
+      if(!undoBuffer) return;
+      state.rows = undoBuffer.rows.slice();
+      undoBuffer = null;
+      refreshAll();
+      toast('Listado restaurado');
+    });
+  }
+
+  let lastCounts = { total: -1, act: -1 };
+
+  function renderCounters(){
+    const total = state.rows.length;
+    const act = state.rows.reduce((a, r) => a + (r.estado === 'activo' ? 1 : 0), 0);
+    const tEl = $('#ptTotal'), aEl = $('#ptAct');
+    tEl.querySelector('b').textContent = total;
+    aEl.querySelector('b').textContent = act;
+    tEl.classList.toggle('zero', total === 0);
+    aEl.classList.toggle('zero', act === 0);
+    if(lastCounts.total !== -1 && lastCounts.total !== total) bumpCount(tEl);
+    if(lastCounts.act !== -1 && lastCounts.act !== act) bumpCount(aEl);
+    lastCounts = { total, act };
+  }
+  function bumpCount(el){
+    el.classList.remove('bump');
+    void el.offsetWidth;
+    el.classList.add('bump');
+    setTimeout(() => el.classList.remove('bump'), 500);
+  }
+
+  function renderTabCounts(){
+    const list = visible();
+    const keys = new Set();
+    list.forEach(r => keys.add(activoDe(r.med).key));
+    const t1 = $('#tabTlN'), t2 = $('#tabTblN');
+    if(t1) t1.textContent = keys.size + ' · ' + list.length;
+    if(t2) t2.textContent = list.length + ' de ' + state.rows.length;
+  }
+
+  function renderAll(){
+    renderCounters();
+    renderTabCounts();
+    renderHero();
+    renderFilters();
+    renderTimeline();
+    renderTable();
+  }
+
+  /* ---------------- drawer ---------------- */
+  function openDrawer(id){
+    const r = state.rows.find(x => x.id === id);
+    if(!r) return;
+    state.open = id;
+    $('#drawerTitle').textContent = r.med || 'Prescripción';
+    $('#drawerEyebrow').textContent = (state.patient.trim() ? state.patient + ' · ' : '') + 'Prescripción · ' + (r.via || 'vía sin definir');
+
+    const diasTx = r.inicio ? diffDays(r.inicio, state.ref) + 1 : null;
+    const finTxt = r.fin ? fmtDate(r.fin) + (r.estado === 'activo' ? ' (último día previsto)' : '')
+      : (r.finPrev ? fmtDate(r.finPrev) + ' (estimada)' : 'sin fecha de fin');
+    const weekHTML = r.week
+      ? '<div class="week">' + ['L','M','X','J','V','S','D'].map((d, i) =>
+          '<span class="' + (r.week[i] ? 'on' : '') + '">' + d + '</span>').join('') + '</div>'
+      : '<span style="color:var(--faint)">—</span>';
+
+    $('#drawerBody').innerHTML =
+      '<div class="dstate" style="border-left-color:' + ({ activo:'var(--green)', suspendido:'var(--amber)', finalizado:'var(--faint)', anulado:'var(--red)' }[r.estado]) + '">' +
+        '<span class="dot" style="background:' + ({ activo:'var(--green)', suspendido:'var(--amber)', finalizado:'var(--faint)', anulado:'var(--red)' }[r.estado]) + '"></span>' +
+        '<span class="t">' + ESTADOS[r.estado] + '</span>' +
+        (r.alerta ? '<span class="warn" style="margin-left:auto">!</span>' : '') +
+      '</div>' +
+      '<dl>' +
+        '<dt>Principio activo</dt><dd>' + (r.inn ? '<span class="inn lg">' + esc(r.inn) + '</span>' : '<span style="color:var(--faint)">—</span>') + '</dd>' +
+        (r.guia ? '<dt>Registro</dt><dd>' + esc(r.guia) + '<br><span style="color:var(--muted);font-size:12px">Nombre tomado de las observaciones</span></dd>' : '') +
+        '<dt>Tipo</dt><dd><span class="badge ' + CLS[r.tipo].group + '">' + CLS[r.tipo].label + '</span></dd>' +
+        '<dt>Dosis</dt><dd>' + esc(r.dosis || '—') + '</dd>' +
+        '<dt>Diluyente</dt><dd>' + esc(r.diluyente || '—') + '</dd>' +
+        '<dt>Pauta</dt><dd class="mono">' + esc(r.pauta || '—') + (r.horasRaw ? '  ·  ' + esc(r.horasRaw) : '') + '</dd>' +
+        '<dt>Horario</dt><dd>' + (r.horaInfo.tipo === 'continuo' ? 'Perfusión continua' : (r.horaInfo.horas.length ? r.horaInfo.horas.map(h => pad(h) + ':00').join(' · ') : '—')) + '</dd>' +
+        '<dt>Semana</dt><dd>' + weekHTML + '</dd>' +
+        '<dt>Inicio</dt><dd class="mono">' + (fmtDate(r.inicio) || '—') + '</dd>' +
+        '<dt>Fin</dt><dd class="mono">' + finTxt + '</dd>' +
+        '<dt>Duración</dt><dd class="mono">' + (r.dias === 0 ? 'indefinida' : (r.dias != null ? r.dias + ' días' : '—')) + (diasTx > 0 ? '  ·  ' + diasTx + ' en curso' : '') + '</dd>' +
+        '<dt>Prescrito por</dt><dd>' + esc(r.prescriptor || '—') + '</dd>' +
+        '<dt>Fecha</dt><dd class="mono">' + esc(r.fechaPresc || '—') + '</dd>' +
+        (r.estado === 'suspendido' || r.quienSusp
+          ? '<dt>Suspendido</dt><dd>' + esc(r.fechaSusp || '—') + (r.quienSusp ? '<br>' + esc(r.quienSusp) : '') + '</dd>' : '') +
+      '</dl>' +
+      '<dt style="margin-bottom:7px">Observaciones</dt>' +
+      '<div class="obsblock">' + esc(r.obs || 'Sin observaciones') + '</div>' +
+      '<p style="font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:18px;letter-spacing:.04em">FILA ORIGINAL</p>' +
+      '<div class="obsblock" style="font-family:var(--mono);font-size:10.5px;max-height:150px;overflow:auto">' + esc(r.raw) + '</div>';
+
+    $('#drawer').classList.add('on');
+    $('#drawer').setAttribute('aria-hidden', 'false');
+    $('#backdrop').classList.add('on');
+  }
+  function closeDrawer(){
+    $('#drawer').classList.remove('on');
+    $('#drawer').setAttribute('aria-hidden', 'true');
+    $('#backdrop').classList.remove('on');
+    state.open = null;
+  }
+
+  /* ---------------- actions ---------------- */
+  let toastTimer;
+  function toast(msg, actionLabel, actionFn){
+    const t = $('#toast');
+    t.innerHTML = '';
+    const span = document.createElement('span');
+    span.textContent = msg;
+    t.appendChild(span);
+    t.classList.toggle('act', !!actionLabel);
+    if(actionLabel){
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = actionLabel;
+      b.addEventListener('click', () => { t.classList.remove('on'); actionFn(); });
+      t.appendChild(b);
+    }
+    t.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.classList.remove('on'); t.classList.remove('act'); }, actionLabel ? 6000 : 1700);
+  }
+
+  function analyze(){
+    const txt = $('#paste').value;
+    if(!txt.trim()){ showErr('Pega primero el listado de tratamientos.'); return; }
+    const res = parse(txt);
+    if(!res.rows.length){
+      showErr('No se reconocen columnas en el texto. Copia la tabla completa desde la historia clínica: las columnas deben venir separadas por tabuladores.');
+      return;
+    }
+    if(state.rows.length && !confirm('Ya tienes ' + state.rows.length + ' tratamientos en la lista.\n\n«Aceptar» reemplaza la lista por esta nueva. Para añadir sin borrar, usa «Añadir» o «Volver a la lista».')) return;
+    showErr('');
+    state.rows = res.rows;
+    UID = 0;
+    state.rows.forEach(r => { r.id = ++UID; });
+    state.estado = 'todos'; state.tipo = ''; state.via = ''; state.doc = ''; state.q = '';
+    $('#q').value = '';
+    $('#screenPaste').hidden = true;
+    $('#screenData').hidden = false;
+    renderAll();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast(res.rows.length + ' prescripciones leídas' + (res.invalid ? ' · ' + res.invalid + ' filas ignoradas' : ''));
+  }
+
+  function showErr(msg){
+    const e = $('#parseErr');
+    e.textContent = msg;
+    e.classList.toggle('show', !!msg);
+  }
+
+  function backToPaste(){
+    closeDrawer();
+    $('#screenData').hidden = true;
+    $('#screenPaste').hidden = false;
+    $('#paste').value = '';
+    updateMeta();
+    const hay = state.rows.length > 0;
+    $('#btnBack').hidden = !hay;
+    const note = $('#pasteNote');
+    note.hidden = !hay;
+    note.textContent = hay
+      ? 'Al pulsar «Analizar» se reemplazan los ' + state.rows.length + ' tratamientos actuales. Para añadir sin borrar, usa «Volver a la lista» y luego «Añadir».'
+      : '';
+    window.scrollTo({ top: 0 });
+  }
+
+  function csvCell(v){ return '"' + String(v == null ? '' : v).replace(/"/g, '""').replace(/\n/g, ' ') + '"'; }
+
+  function exportCsv(){
+    if(!state.rows.length) return;
+    const head = ['Paciente','Estado','Medicamento','Principio activo','Tipo','Dosis','Diluyente','Pauta','Horas','Via','Frecuencia','Observaciones','Inicio','Fin','Fin estimada','Dias','Prescriptor','Fecha prescripcion'];
+    const lines = [head.map(csvCell).join(';')];
+    visible().forEach(r => {
+      lines.push([
+        state.patient, ESTADOS[r.estado], r.med, r.inn, CLS[r.tipo].label, r.dosis, r.diluyente, r.pauta, r.horasRaw, r.via, r.freq, r.obs,
+        fmtDate(r.inicio), fmtDate(r.fin), r.fin ? '' : fmtDate(r.finPrev), r.dias, r.prescriptor, r.fechaPresc
+      ].map(csvCell).join(';'));
+    });
+    const blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'tratamientos_' + isoLocal(state.ref) + '.csv';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast(visible().length + ' filas exportadas');
+  }
+
+  function resumen(){
+    const act = state.rows.filter(r => r.estado === 'activo');
+    if(!act.length){ toast('No hay tratamientos activos'); return; }
+    const groups = {};
+    act.forEach(r => { (groups[r.tipo] = groups[r.tipo] || []).push(r); });
+    const lines = [(state.patient.trim() ? state.patient.toUpperCase().trim() + ' · ' : '') + 'TRATAMIENTOS ACTIVOS (' + act.length + ') · ' + fmtDate(state.ref)];
+    Object.keys(groups).sort((a, b) => groups[b].length - groups[a].length).forEach(k => {
+      lines.push('', CLS[k].label.toUpperCase() + ' (' + groups[k].length + ')');
+      groups[k].forEach(r => lines.push('  · ' + r.med + (r.inn ? ' (' + r.inn + ')' : '') + ' — ' + (r.dosis || 's/dosis') + ' · ' + (r.pauta || '') +
+        (r.horasRaw && r.horaInfo.tipo !== 'continuo' ? ' (' + r.horasRaw + ' h)' : '') + ' · ' + (r.via || '') +
+        ' · desde ' + fmtDate(r.inicio) + (r.dias != null ? ' (' + r.dias + ' d)' : '')));
+    });
+    const txt = lines.join('\n');
+    copyText(txt);
+  }
+
+  function copyText(txt){
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(txt).then(() => toast('Resumen copiado al portapapeles'))
+        .catch(() => fallbackCopy(txt));
+    } else fallbackCopy(txt);
+  }
+  function fallbackCopy(txt){
+    const ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast('Resumen copiado al portapapeles'); }
+    catch(e){ toast('No se pudo copiar'); }
+    document.body.removeChild(ta);
+  }
+
+  /* ---------------- sample ---------------- */
+  const SAMPLE = [
+    ['','CONFIRMADO','','','MEROPENEM vial 1 g','1 g','','C/8','8-16-24','INTRAVENOSA','','DIARIA (L-M-X-J-V-S-D)','16/11/2026','','','4','Dra. Elena Vidal','','','16/11/2026 09:12','ELENA VIDAL','','','N'],
+    ['','CONFIRMADO','Señal Exclamación','','NORADRENALINA amp 4 mg/4 mL\nSUERO GLUCOSADO vial 5% 100 mL','16 mg Referido a: NOREPINEFRINA\n100 mL Referido a: GLUCOSA','Glucosado 5% 50 mL','PC','4','INTRAVENOSA','Titular según MAP','','05/11/2026','','','0','Dr. Marc Soler','','','05/11/2026 09:33','MARC SOLER','','','S'],
+    ['','CONFIRMADO','','','PARACETAMOL vial 1 g/100 mL','1 g','','C/8 ALTERNO','4-12-20','INTRAVENOSA','Alternar cada 4 h con metamizol','DIARIA (L-M-X-J-V-S-D)','31/10/2026','','','20','Dra. Elena Vidal','','','31/10/2026 11:32','ELENA VIDAL','','','N'],
+    ['','CONFIRMADO','','','OMEPRAZOL vial 40 mg','40 mg','','C/24','8','INTRAVENOSA','','DIARIA (L-M-X-J-V-S-D)','13/10/2026','','','38','Dra. Elena Vidal','','','13/10/2026 10:24','ELENA VIDAL','','','N'],
+    ['','CONFIRMADO','Señal Exclamación','','MIDAZOLAM amp 15 mg/3 mL','5 mg','Fisiológico 0,9% 15 mL','SI PRECISA C/6','6-12-18-24','INTRAVENOSA','','DIARIA (L-M-X-J-V-S-D)','18/11/2026','18/11/2026','1','2','Dr. Marc Soler','','','18/11/2026 18:06','MARC SOLER','','','N'],
+    ['','CONFIRMADO','','','INSULINA ACTRAPID vial 100 UI/mL','1 UI','','C/6','6-12-18-24','SUBCUTÁNEA','Según pauta de bomba -120/10','DIARIA (L-M-X-J-V-S-D)','15/11/2026','','','5','Dra. Elena Vidal','','','15/11/2026 08:45','ELENA VIDAL','','','N'],
+    ['','CONFIRMADO','','','ENOXAPARINA vial 40 mg','40 mg','','C/24','9','SUBCUTÁNEA','','DIARIA (L-M-X-J-V-S-D)','10/11/2026','','','30','Dr. Marc Soler','','','10/11/2026 12:20','MARC SOLER','','','N'],
+    ['','CONFIRMADO','Señal Exclamación','','FENTANILO MATRIX parche 50 mcg/h','1 parche','','CADA 72 HORAS','12','TRANSDÉRMICA','','CADA 72 HORAS','12/11/2026','','','30','Dr. Marc Soler','','','12/11/2026 09:36','MARC SOLER','','','N'],
+    ['','CONFIRMADO','Señal Exclamación','','NUTRICION PARENTERAL CENTRAL','1 unidad','mL','PC','22','INTRAVENOSA','','','09/10/2026','','','0','Dra. Elena Vidal','','','16/10/2026 20:16','ELENA VIDAL','','','N'],
+    ['','CONFIRMADO','','','HEPARINA SODICA vial 5.000 UI/mL','5.000 UI','','C/8','8-16-24','INTRAVENOSA','','DIARIA (L)','17/11/2026','','','7','Dra. Elena Vidal','','','17/11/2026 10:05','ELENA VIDAL','','','N'],
+    ['','SUSPENDIDO DOCTOR','','','SEGURIL amp 20 mg/2 mL','10 mg','','C/8','8-16-24','INTRAVENOSA','[SUSPENDIDO]','DIARIA (L-M-X-J-V-S-D)','16/11/2026','18/11/2026','','3','Dra. Elena Vidal','18/11/2026','Dr. Marc Soler','16/11/2026 11:58','ELENA VIDAL','','','N'],
+    ['','SUSPENDIDO DOCTOR','','','ISOFUNDIN vial 500 mL','500 mL','','DU','14','INTRAVENOSA','[SUSPENDIDO]','DIARIA (J)','16/11/2026','16/11/2026','1','1','Dr. Marc Soler','17/11/2026','Dra. Elena Vidal','16/11/2026 13:22','MARC SOLER','','','N'],
+    ['','SUSPENDIDO DOCTOR','Señal Exclamación','','PROPOFOL LIPURO amp 200 mg/20 mL (1%)','20 mg','','DU','15','INTRAVENOSA','[SUSPENDIDO] descanso nocturno','DIARIA (X)','18/11/2026','18/11/2026','1','1','Dr. Marc Soler','18/11/2026','Dr. Marc Soler','18/11/2026 18:06','MARC SOLER','','','N'],
+    ['','SUSPENDIDO DOCTOR','','','METAMIZOL amp 2 g/5 mL','2 g','','C/8','8-16-24','INTRAVENOSA','[SUSPENDIDO]','DIARIA (L-M-X-J-V-S-D)','31/10/2026','18/11/2026','','19','Dra. Elena Vidal','18/11/2026','Dr. Marc Soler','31/10/2026 11:32','ELENA VIDAL','','','N'],
+    ['','CONFIRMADO','','','DEXCLORFENIRAMINA amp 5 mg','5 mg','','C/8','8-16-24','INTRAVENOSA','','DIARIA (L-M-X-J-V-S-D)','01/11/2026','07/11/2026','5','7','Dra. Elena Vidal','','','01/11/2026 13:10','ELENA VIDAL','','','N']
+  ].map(r => r.join('\t')).join('\n');
+
+  /* ---------------- wiring ---------------- */
+  /* ---------------- añadir más tratamientos ---------------- */
+  let sheetOpen = false;
+
+  function sheetMeta(){
+    const v = $('#sheetText').value;
+    if(!v.trim()){ $('#sheetMeta').textContent = 'Sin contenido'; return; }
+    const b = splitRecords(v).length;
+    $('#sheetMeta').innerHTML = '<b>' + b + '</b> ' + (b === 1 ? 'fila detectada' : 'filas detectadas') +
+      ' · ' + v.length.toLocaleString('es-ES') + ' caracteres';
+  }
+  function openSheet(){
+    sheetOpen = true;
+    $('#sheetCount').textContent = state.rows.length;
+    $('#sheetWho').textContent = state.patient.trim() ? ' (' + state.patient.trim() + ')' : '';
+    $('#sheetErr').classList.remove('show');
+    $('#sheet').hidden = false;
+    sheetMeta();
+    setTimeout(() => $('#sheetText').focus(), 40);
+  }
+  function closeSheet(){
+    sheetOpen = false;
+    $('#sheet').hidden = true;
+    $('#sheetText').value = '';
+    sheetMeta();
+    $('#sheetErr').classList.remove('show');
+  }
+  function addFromSheet(){
+    const txt = $('#sheetText').value;
+    if(!txt.trim()){ $('#sheetErr').textContent = 'Pega primero el listado que quieres añadir.'; $('#sheetErr').classList.add('show'); return; }
+    const res = parse(txt);
+    if(!res.rows.length){
+      $('#sheetErr').textContent = 'No se reconocen columnas. Copia la tabla completa de la historia clínica (columnas separadas por tabuladores).';
+      $('#sheetErr').classList.add('show');
+      return;
+    }
+    if(!state.rows.length){
+      state.rows = res.rows;
+      closeSheet();
+      $('#screenPaste').hidden = true;
+      $('#screenData').hidden = false;
+      refreshAll();
+      toast(res.rows.length + ' tratamientos cargados');
+      return;
+    }
+    const dups = appendRows(res.rows);
+    $('#screenPaste').hidden = true;
+    $('#screenData').hidden = false;
+    closeSheet();
+    refreshAll();
+    toast(res.rows.length + (res.rows.length === 1 ? ' añadido' : ' añadidos') +
+      ' · total ' + state.rows.length +
+      (dups ? ' · ' + dups + (dups === 1 ? ' repetido' : ' repetidos') : ''));
+  }
+
+  $('#btnAdd').addEventListener('click', openSheet);
+  $('#btnClear').addEventListener('click', () => {
+    if(state.rows.length) deleteAll();
+  });
+  $('#sheetClose').addEventListener('click', closeSheet);
+  $('#sheetCancel').addEventListener('click', closeSheet);
+  $('#sheetAdd').addEventListener('click', addFromSheet);
+  $('#sheetText').addEventListener('input', sheetMeta);
+  $('#sheet').addEventListener('mousedown', e => { if(e.target.id === 'sheet') closeSheet(); });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && sheetOpen) closeSheet();
+    if((e.ctrlKey || e.metaKey) && e.key === 'Enter' && sheetOpen) addFromSheet();
+  });
+
+  $('#ptName').value = state.patient;
+  $('#ptName').addEventListener('input', e => { state.patient = e.target.value; });
+  $('#refdate').value = fmtDate(state.ref);
+
+  $('#refdate').addEventListener('input', e => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 8);
+    let out = digits.slice(0, 2);
+    if(digits.length > 2) out += '/' + digits.slice(2, 4);
+    if(digits.length > 4) out += '/' + digits.slice(4, 8);
+    e.target.value = out;
+  });
+  $('#refdate').addEventListener('change', e => {
+    const d = parseDate(e.target.value);
+    if(!d){ e.target.value = fmtDate(state.ref); toast('Fecha no válida · usa dd/mm/aaaa'); return; }
+    state.ref = startOfDay(d);
+    e.target.value = fmtDate(state.ref);
+    state.rows.forEach(r => {
+      let est = 'activo';
+      if(/ANUL|CANCEL/.test(r.estadoRaw.toUpperCase())) est = 'anulado';
+      else if(/SUSPEND|RETIR|CESA/.test(r.estadoRaw.toUpperCase())) est = 'suspendido';
+      else if(r.fin && startOfDay(r.fin) < state.ref) est = 'finalizado';
+      r.estado = est;
+    });
+    if(state.rows.length) renderAll();
+  });
+  if(location.hash === '#demo'){ $('#paste').value = SAMPLE; analyze(); }
+
+  $('#btnAnalizar').addEventListener('click', analyze);
+  $('#btnNuevo').addEventListener('click', backToPaste);
+  $('#btnBack').addEventListener('click', () => {
+    $('#screenPaste').hidden = true;
+    $('#screenData').hidden = false;
+    window.scrollTo({ top: 0 });
+  });
+  $('#btnCsv').addEventListener('click', exportCsv);
+  $('#btnResumen').addEventListener('click', resumen);
+  $('#btnPrint').addEventListener('click', () => window.print());
+  $('#btnSample').addEventListener('click', () => {
+    $('#paste').value = SAMPLE;
+    updateMeta();
+    analyze();
+  });
+  $('#btnFile').addEventListener('click', () => $('#fileInput').click());
+  $('#fileInput').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    const rd = new FileReader();
+    rd.onload = () => { $('#paste').value = String(rd.result); updateMeta(); };
+    rd.readAsText(f, 'utf-8');
+  });
+
+  $('#paste').addEventListener('input', updateMeta);
+  $('#paste').addEventListener('dragover', e => { e.preventDefault(); $('#paste').classList.add('drop'); });
+  $('#paste').addEventListener('dragleave', () => $('#paste').classList.remove('drop'));
+  $('#paste').addEventListener('drop', e => {
+    e.preventDefault();
+    $('#paste').classList.remove('drop');
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f){ const rd = new FileReader(); rd.onload = () => { $('#paste').value = String(rd.result); updateMeta(); }; rd.readAsText(f, 'utf-8'); }
+    else if(e.dataTransfer.getData('text')){ $('#paste').value = e.dataTransfer.getData('text'); updateMeta(); }
+  });
+  document.addEventListener('paste', e => {
+    if(sheetOpen) return;
+    const tag = (e.target && e.target.tagName) || '';
+    if(/INPUT|TEXTAREA|SELECT/.test(tag)) return;
+    if($('#screenData').hidden || !state.rows.length) return;
+    const t = e.clipboardData && e.clipboardData.getData('text');
+    if(!t || !t.trim()) return;
+    e.preventDefault();
+    openSheet();
+    const box = $('#sheetText');
+    box.value = t;
+    box.dispatchEvent(new Event('input'));
+  });
+
+  function updateMeta(){
+    const v = $('#paste').value;
+    if(!v.trim()){ $('#pasteMeta').textContent = 'Sin contenido'; return; }
+    const b = splitRecords(v).length;
+    $('#pasteMeta').innerHTML = '<b>' + b + '</b> filas detectadas · ' + v.length.toLocaleString('es-ES') + ' caracteres';
+  }
+
+
+  $('#estadoChips').addEventListener('click', e => {
+    const b = e.target.closest('.chip');
+    if(!b) return;
+    state.estado = b.dataset.est;
+    renderFilters(); renderChart(); renderTimeline(); renderTable();
+  });
+  $('#tipoSel').addEventListener('change', e => {
+    state.tipo = e.target.value;
+    renderProfile(); renderChart(); renderTimeline(); renderTable();
+  });
+  $('#profileHost').addEventListener('click', e => {
+    const b = e.target.closest('.prof-row');
+    if(!b) return;
+    state.tipo = state.tipo === b.dataset.tipo ? '' : b.dataset.tipo;
+    $('#tipoSel').value = state.tipo;
+    renderProfile(); renderChart(); renderTimeline(); renderTable();
+  });
+  $('#viaSel').addEventListener('change', e => { state.via = e.target.value; renderChart(); renderTimeline(); renderTable(); });
+  $('#docSel').addEventListener('change', e => { state.doc = e.target.value; renderChart(); renderTimeline(); renderTable(); });
+  $('#q').addEventListener('input', e => { state.q = e.target.value; renderChart(); renderTimeline(); renderTable(); });
+
+  document.querySelectorAll('thead th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.dataset.k;
+      if(state.sort.k === k) state.sort.dir *= -1;
+      else state.sort = { k, dir: 1 };
+      renderTable();
+    });
+  });
+
+  $('#tbody').addEventListener('click', e => {
+    const del = e.target.closest('[data-del]');
+    if(del){ e.stopPropagation(); deleteRow(+del.dataset.del); return; }
+    const tr = e.target.closest('tr[data-id]');
+    if(tr) openDrawer(+tr.dataset.id);
+  });
+  $('#tbody').addEventListener('keydown', e => {
+    if(e.key === 'Enter' || e.key === ' '){
+      const tr = e.target.closest('tr[data-id]');
+      if(tr){ e.preventDefault(); openDrawer(+tr.dataset.id); }
+    }
+  });
+  $('#tlPanel').addEventListener('mouseleave', () => { if(typeof hideTip === 'function') hideTip(); });
+  window.addEventListener('scroll', () => { if(typeof hideTip === 'function') hideTip(); }, { passive:true });
+  // --- rango de fechas manual del eje ---
+  function bindDateMask(el){
+    el.addEventListener('input', () => {
+      const d = el.value.replace(/\D/g, '').slice(0, 8);
+      let out = d.slice(0, 2);
+      if(d.length > 2) out += '/' + d.slice(2, 4);
+      if(d.length > 4) out += '/' + d.slice(4, 8);
+      el.value = out;
+    });
+  }
+  ['#tlFrom', '#tlTo'].forEach(sel => bindDateMask($(sel)));
+
+  function applyRange(){
+    const f = parseDate($('#tlFrom').value), t = parseDate($('#tlTo').value);
+    if($('#tlFrom').value && !f){ toast('Fecha inicial no válida · dd/mm/aaaa'); $('#tlFrom').value = TL.from ? fmtDate(TL.from) : ''; return; }
+    if($('#tlTo').value && !t){ toast('Fecha final no válida · dd/mm/aaaa'); $('#tlTo').value = TL.to ? fmtDate(TL.to) : ''; return; }
+    if(f && t && t < f){ toast('El fin es anterior al inicio · fechas intercambiadas'); TL.from = startOfDay(t); TL.to = startOfDay(f); }
+    else { TL.from = f ? startOfDay(f) : null; TL.to = t ? startOfDay(t) : null; }
+    renderTimeline();
+  }
+  $('#tlFrom').addEventListener('change', applyRange);
+  $('#tlTo').addEventListener('change', applyRange);
+  $('#tlFrom').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); applyRange(); } });
+  $('#tlTo').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); applyRange(); } });
+  $('#tlReset').addEventListener('click', () => {
+    TL.from = null; TL.to = null;
+    $('#tlFrom').value = ''; $('#tlTo').value = '';
+    renderTimeline();
+  });
+
+  $('#tlColor').addEventListener('click', e => {
+    const b = e.target.closest('button[data-c]');
+    if(!b) return;
+    TL.color = b.dataset.c;
+    [...$('#tlColor').children].forEach(x => x.setAttribute('aria-pressed', x.dataset.c === TL.color));
+    renderTimeline();
+  });
+  // vista activa: línea de tiempo | listado
+  function setView(v){
+    state.view = v;
+    const isTl = v === 'tl';
+    $('#tlPanel').hidden = !isTl;
+    $('#tblPanel').hidden = isTl;
+    $('#tabTl').setAttribute('aria-selected', String(isTl));
+    $('#tabTbl').setAttribute('aria-selected', String(!isTl));
+    $('#tabTl').tabIndex = isTl ? 0 : -1;
+    $('#tabTbl').tabIndex = isTl ? -1 : 0;
+    if(isTl) renderTimeline(); else renderTable();
+  }
+  $('#tabTl').addEventListener('click', () => setView('tl'));
+  $('#tabTbl').addEventListener('click', () => setView('tbl'));
+  $('#tabTl').addEventListener('keydown', e => {
+    if(e.key === 'ArrowRight' || e.key === 'End'){ e.preventDefault(); setView('tbl'); $('#tabTbl').focus(); }
+  });
+  $('#tabTbl').addEventListener('keydown', e => {
+    if(e.key === 'ArrowLeft' || e.key === 'Home'){ e.preventDefault(); setView('tl'); $('#tabTl').focus(); }
+  });
+  $('#chartFilter').addEventListener('click', e => {
+    const b = e.target.closest('[data-clear]');
+    if(!b) return;
+    const k = b.dataset.clear;
+    if(k === 'all' || k === 'tipo'){ state.tipo = ''; $('#tipoSel').value = ''; }
+    if(k === 'all' || k === 'estado') state.estado = 'todos';
+    if(k === 'all' || k === 'via'){ state.via = ''; $('#viaSel').value = ''; }
+    if(k === 'all' || k === 'doc'){ state.doc = ''; $('#docSel').value = ''; }
+    if(k === 'all' || k === 'q'){ state.q = ''; $('#q').value = ''; }
+    renderFilters(); renderProfile(); renderChart(); renderTimeline(); renderTable();
+  });
+  $('#drawerClose').addEventListener('click', closeDrawer);
+  $('#btnDrawerDel').addEventListener('click', () => {
+    if(state.open != null) deleteRow(state.open);
+  });
+  $('#btnAdd').addEventListener('click', openSheet);
+  $('#backdrop').addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && state.open != null) closeDrawer();
+    if((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !$('#screenPaste').hidden) analyze();
+  });
+})();
+</script>
+</body>
+</html>

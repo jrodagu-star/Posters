@@ -326,6 +326,13 @@ const HERRAMIENTAS = [
     action: 'external-tab'
   },
   {
+    id: 'tratamientos',
+    title: 'Tratamientos',
+    description: 'Hoja de medicación: pega el listado de la historia clínica y revisa activos, horarios y línea de tiempo.',
+    path: '../biblioteca/assets/herramientas/tratamientos.html?v=20261119a',
+    audiences: ['medicina']
+  },
+  {
     id: 'edicion',
     title: 'Edición',
     description: 'Gestionar carpetas, pósteres y guardar la biblioteca.',
@@ -1035,6 +1042,14 @@ function openFormacion(item) {
   if (closeBtn) closeBtn.addEventListener('click', () => showFormacion());
 }
 
+function visibleHerramientas() {
+  const audience = state.audienceFilter || DEFAULT_AUDIENCE;
+  return HERRAMIENTAS.filter(item => {
+    if (!Array.isArray(item.audiences) || !item.audiences.length) return true;
+    return item.audiences.includes(audience);
+  });
+}
+
 function showHerramientas() {
   closeLightbox().catch(() => {});
   closeHtmlLightbox().catch(() => {});
@@ -1050,15 +1065,18 @@ function showHerramientas() {
   if (els.herramientasBtn) els.herramientasBtn.classList.add('active');
   els.selectedInfo.textContent = 'Selección actual: Herramientas';
   els.title.textContent = 'Herramientas';
-  els.meta.textContent = 'Aplicaciones y utilidades';
+  els.meta.textContent = 'Aplicaciones y utilidades · ' + filterLabel();
   els.crumbs.textContent = 'Herramientas';
-  const cards = HERRAMIENTAS.map(item =>
+  const list = visibleHerramientas();
+  const cards = list.length
+    ? list.map(item =>
     '<button type="button" class="calculadora-card" data-herramienta-id="' + escapeHtml(item.id) + '">' +
       '<span class="calculadora-card-title">' + escapeHtml(item.title) + '</span>' +
       '<span class="calculadora-card-desc">' + escapeHtml(item.description) + '</span>' +
       '<span class="calculadora-card-cta">Abrir</span>' +
     '</button>'
-  ).join('');
+    ).join('')
+    : '<div class="empty"><strong>Herramientas</strong>No hay herramientas para ' + escapeHtml(filterLabel()) + '.</div>';
   els.viewer.innerHTML =
     '<div class="calculadoras-panel">' +
       '<div class="calculadoras-panel-head">' +
@@ -1090,7 +1108,44 @@ function openHerramienta(item) {
     openHerramientaExternalTab(item);
     return;
   }
+  if (item.path) {
+    openHerramientaLocal(item);
+    return;
+  }
   openHerramientaExternal(item);
+}
+
+function openHerramientaLocal(item) {
+  if (!item || !item.path) return;
+  closeLightbox().catch(() => {});
+  closeHtmlLightbox().catch(() => {});
+  closePdfLightbox().catch(() => {});
+  parkEdicionHost();
+  state.currentFile = null;
+  state.currentFileParentId = null;
+  state.currentPath = null;
+  state.selectedId = null;
+  state.selectedType = null;
+  document.querySelectorAll('.file-label.active, .result-item.active, .folder-label.selected').forEach(el => el.classList.remove('active', 'selected'));
+  clearSectionButtons();
+  if (els.herramientasBtn) els.herramientasBtn.classList.add('active');
+  els.title.textContent = item.title;
+  els.meta.textContent = 'Herramienta · ' + filterLabel();
+  els.crumbs.textContent = 'Herramientas / ' + item.title;
+  els.selectedInfo.textContent = 'Selección actual: ' + item.title;
+  const src = normalizeAssetPath(item.path);
+  els.viewer.innerHTML =
+    '<div class="calculadora-view">' +
+      '<div class="calculadora-toolbar">' +
+        '<div class="calculadora-toolbar-title">' + escapeHtml(item.title) + '</div>' +
+        '<div class="calculadora-toolbar-actions">' +
+          '<button type="button" class="btn btn-accent" id="closeHerramientaBtn">Cerrar</button>' +
+        '</div>' +
+      '</div>' +
+      '<iframe class="calculadora-frame" id="herramientaFrame" title="' + escapeHtml(item.title) + '" src="' + escapeHtml(src) + '"></iframe>' +
+    '</div>';
+  const closeBtn = document.getElementById('closeHerramientaBtn');
+  if (closeBtn) closeBtn.addEventListener('click', () => showHerramientas());
 }
 
 function openHerramientaExternalTab(item) {
@@ -1913,6 +1968,10 @@ function refreshAfterFilterChange() {
   }
   if (els.calculadorasBtn && els.calculadorasBtn.classList.contains('active')) {
     showCalculadoras();
+    return;
+  }
+  if (els.herramientasBtn && els.herramientasBtn.classList.contains('active')) {
+    showHerramientas();
     return;
   }
   if (state.currentFile && !matchesAudienceFilter(state.currentFile)) {
